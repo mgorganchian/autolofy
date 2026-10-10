@@ -175,7 +175,7 @@ sí quedan en inglés, porque no muestran la palabra. Se coló con `YES` dos vec
   con **rango medio**, sin eso los 37 autos de 5 asientos caían a 0 por un solo auto
   de 4.
 - La **vista Ranking** (botón Tabla/Ranking; bajo el nombre va el texto de la celda solo si dice
-  algo más que la cifra grande, 2026-10-10) ordena del mejor al peor **solo las 17
+  algo más que la cifra grande, y el precio en chico si se rankea por otra cosa, 2026-10-10) ordena del mejor al peor **solo las 17
   filas de `PCTL_DIR`**, y lee los números con el **mismo `pctlValor()`** que los
   barras de percentil: no tiene parser propio, así que hereda los vetos. Lo que no se puede
   rankear va al final en **tres grupos distintos que no hay que fusionar**: "Sin dato"

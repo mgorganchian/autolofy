@@ -296,3 +296,13 @@ test('en el celular se elige qué rankear en un desplegable con todos los criter
   await sel.selectOption('Garantía general');
   await expect(page.locator('#rkTitulo')).toContainText('Garantía');
 });
+
+test('el precio va chico debajo del nombre solo si se rankea por otra cosa', async ({ page }) => {
+  // Pedido del 2026-10-10: rankeando por precio repetía la cifra grande.
+  await page.goto('/index.html?tabla');
+  await abrirRanking(page);
+  await elegirFila(page, 'Precio de lista (versión tope de gama de la tabla)');
+  await expect(page.locator('#rkLista .rk-precio')).toHaveCount(0);
+  await elegirFila(page, 'Potencia total del sistema (kW)');
+  await expect(page.locator('#rkLista .rk-precio').first()).toHaveText(/^USD [\d.]+$/);
+});
