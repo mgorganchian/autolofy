@@ -302,6 +302,7 @@ test.describe('fotos en celular', () => {
   test('en pantallas de alta densidad la portada en alta reemplaza a la miniatura', async ({ page }, info) => {
     test.skip(info.project.name !== 'celular', 'solo en celular');
     const img = page.locator('#theadTable th:not(.feat-col):not(.col-hidden) img.car-photo').first();
-    await expect(img).toHaveAttribute('src', /\/fotos\/[a-z0-9-]+-1\.jpg$/);
+    // La mediana de 480 px si alcanza (2026-10-10), o la de 900 px.
+    await expect(img).toHaveAttribute('src', /\/fotos\/(med\/[a-z0-9-]+|[a-z0-9-]+-1)\.jpg$/);
   });
 });
