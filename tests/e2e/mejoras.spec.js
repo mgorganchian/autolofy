@@ -341,3 +341,64 @@ test('accesibilidad y carga: el panel "Elegir autos" se maneja con teclado y sus
   await expect(page.locator('a.saltar')).toHaveAttribute('href', '#contenido');
   await expect(page.locator('main#contenido')).toHaveCount(1);
 });
+
+test('botón Atrás: deshace el último paso (ficha, Grupos, vista, comparar) sin salir del sitio', async ({ page }) => {
+  // Pedido del 2026-10-10 (Baymard: el 59% de los sitios lo rompe).
+  await page.goto('/index.html?tabla');
+  await expect(page.locator(FILAS_DATOS)).toHaveCount(N_FILAS);
+  const inicio = page.url();
+  // Ficha: abrir y volver
+  await page.locator('#theadTable .th-nombre').first().click();
+  await expect(page.locator('#fichaAuto')).toBeVisible();
+  await expect(page).toHaveURL(/[?&]auto=/);
+  await page.goBack();
+  await expect(page.locator('#fichaAuto')).toBeHidden();
+  await expect(page).toHaveURL(inicio);
+  // Cerrar con ✕ también vuelve el paso (no deja uno de más)
+  await page.locator('#theadTable .th-nombre').first().click();
+  await expect(page.locator('#fichaAuto')).toBeVisible();
+  await page.locator('#fichaCerrar').click();
+  await expect(page.locator('#fichaAuto')).toBeHidden();
+  await expect(page).toHaveURL(inicio);
+  // Vista: Ranking y volver a la tabla
+  await page.click('#vistaRanking');
+  await expect(page.locator('#rankingView')).toBeVisible();
+  await page.goBack();
+  await expect(page.locator('#rankingView')).toBeHidden();
+  await expect(page.locator('#tbodyWrap')).toBeVisible();
+  // Grupos → un auto → Atrás vuelve a Grupos → Atrás cierra Grupos
+  await page.click('#gruposBtn');
+  await expect(page.locator('#gruposVista')).toBeVisible();
+  await page.locator('#gruposHoja .grupo-auto').first().click();
+  await expect(page.locator('#fichaAuto')).toBeVisible();
+  await page.goBack();
+  await expect(page.locator('#fichaAuto')).toBeHidden();
+  await expect(page.locator('#gruposVista')).toBeVisible();
+  await page.goBack();
+  await expect(page.locator('#gruposVista')).toBeHidden();
+  // Comparar desde una ficha y volver: la ficha reaparece y la comparación se deshace
+  await page.locator('#theadTable .th-nombre').first().click();
+  await expect(page.locator('#fichaAuto')).toBeVisible();
+  await page.locator('#fichaHoja [data-comparar]').first().click();
+  await expect(page).toHaveURL(/[?&]autos=/);
+  await expect(page.locator('#fichaAuto')).toBeHidden();
+  await page.goBack();
+  await expect(page.locator('#fichaAuto')).toBeVisible();
+  await expect(page).not.toHaveURL(/[?&]autos=/);
+  expect(await page.evaluate(() => colVisible.filter(Boolean).length)).toBe(await page.evaluate(() => CARS.length));
+});
+
+test('botón Atrás: cierra el visor de fotos y el panel "Elegir autos"', async ({ page }) => {
+  await page.goto('/index.html');
+  await page.locator('.elegir-foto').first().click();
+  await expect(page.locator('#visorFotos')).toBeVisible();
+  await page.goBack();
+  await expect(page.locator('#visorFotos')).toBeHidden();
+  await expect(page.locator('#elegirHoja')).toBeVisible();     // sigue en la portada
+  await page.goto('/index.html?tabla');
+  await page.click('#openModalBtn');
+  await expect(page.locator('#modalOverlay')).toBeVisible();
+  await page.goBack();
+  await expect(page.locator('#modalOverlay')).toBeHidden();
+  await expect(page).toHaveURL(/\?tabla$/);
+});

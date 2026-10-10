@@ -261,6 +261,15 @@ sí quedan en inglés, porque no muestran la palabra. Se coló con `YES` dos vec
   puntero por encima. Zonas táctiles de 24 px como mínimo (flechitas 44). Los destellos son 3 y no
   sin fin (WCAG 2.2.2). `scroll-padding` para que lo fijo no tape el foco. `<main>` y "Saltar al
   contenido". En la computadora la base es 112,5% (el 90% del texto quedaba debajo de 14 px).
+- **Botón Atrás** (2026-10-10, Baymard: el 59% de los sitios lo rompe): cada vista o ventana que se
+  abre con un toque deja un paso en el historial (`pasoHist`), y cerrar con ✕/Esc vuelve ese paso
+  (`cerrarPorHistoria`) en vez de dejar uno de más. La URL manda en qué se compara y qué auto se mira;
+  el estado guarda vista, capa (`ficha`, `grupos`, `conces`, `panel`) y visor. Lo que abre la carga no
+  deja pasos (Atrás desde un link directo sale del sitio). Encadenados: ficha → Grupos y Grupos → ficha
+  con `sinHistoria` (Atrás vuelve a la ventana anterior); "Comparar" desde una ventana con
+  `compararConPaso`; el Comparar del panel reemplaza el paso del panel (`enTransicion`). Durante el
+  popstate la URL no se reescribe. Sin otros parámetros, la URL lleva `?tabla` si no se está en
+  Ayudame a elegir. `mejoras.spec.js` recorre los casos.
 - **Modo oscuro**: todo color sale de las variables de `:root`; el oscuro solo cambia sus
   valores (por `prefers-color-scheme` y por `data-theme`, que el botón guarda en
   `localStorage`). **No volver a escribir colores fijos en el CSS** (`#fff`, `#666`…):
