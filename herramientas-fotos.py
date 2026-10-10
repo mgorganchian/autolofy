@@ -404,6 +404,12 @@ def portada(slug, args):
                     os.path.join(tmp, 'p.jpg'), '--out', miniatura], check=True, capture_output=True)
     # La miniatura vive en fotos/mini/<slug>.jpg (2026-10-06: embebidas pesaban 1,3 MB).
     shutil.copyfile(miniatura, os.path.join(FOTOS, 'mini', slug + '.jpg'))
+    # Y la mediana de 480 px, la que se ve en el celular (2026-10-10: la de 900 px pesaba de más).
+    mediana = os.path.join(tmp, 'med.jpg')
+    subprocess.run(['sips', '-s', 'format', 'jpeg', '-s', 'formatOptions', '72', '-z', '304', '480',
+                    os.path.join(tmp, 'p.jpg'), '--out', mediana], check=True, capture_output=True)
+    os.makedirs(os.path.join(FOTOS, 'med'), exist_ok=True)
+    shutil.copyfile(mediana, os.path.join(FOTOS, 'med', slug + '.jpg'))
     m = re.search(r'<img class="car-photo" data-slug="%s"[^>]*>' % re.escape(slug), html)
     if not m: sys.exit('no encontré la miniatura de ' + slug)
     tag = re.sub(r' data-credito="[^"]*"', '', m.group(0))

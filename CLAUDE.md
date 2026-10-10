@@ -251,6 +251,16 @@ sí quedan en inglés, porque no muestran la palabra. Se coló con `YES` dos vec
   `#fff` en esa zona.** Texto sobre el verde de acción: `--sobre-verde` (blanco en claro, oscuro en
   oscuro: blanco sobre el verde del tema oscuro daba 3:1). Contraste medido en todas las vistas y
   los dos temas: nada por debajo de 4,5:1. "Elegir autos" es verde y destella (`destelloElegir`).
+- **Arreglos medidos** (2026-10-10, auditoría con Playwright): la portada decide la vista antes de
+  pintar (`arranca-elegir` en el `<head>`: el salto medía 0,56 de CLS); las miniaturas llevan
+  `loading="lazy"` (el panel cerrado bajaba 124 fotos, 1,15 MB); en el celular la tabla usa
+  `fotos/med/<slug>.jpg` (480 px) en vez de la de 900 px (9,3 MB) — `herramientas-fotos.py portada`
+  la regenera; `vercel.json` guarda fotos y logos un día. Las cinco ventanas pasan por
+  `dialogoAbierto`/`dialogoCerrado` (foco adentro, Tab no se escapa, vuelve al botón); el panel se
+  cierra con Esc. Los carteles de ayuda se abren con Tab, se cierran con Esc y se puede pasar el
+  puntero por encima. Zonas táctiles de 24 px como mínimo (flechitas 44). Los destellos son 3 y no
+  sin fin (WCAG 2.2.2). `scroll-padding` para que lo fijo no tape el foco. `<main>` y "Saltar al
+  contenido". En la computadora la base es 112,5% (el 90% del texto quedaba debajo de 14 px).
 - **Modo oscuro**: todo color sale de las variables de `:root`; el oscuro solo cambia sus
   valores (por `prefers-color-scheme` y por `data-theme`, que el botón guarda en
   `localStorage`). **No volver a escribir colores fijos en el CSS** (`#fff`, `#666`…):

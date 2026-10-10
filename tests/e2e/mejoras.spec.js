@@ -320,3 +320,24 @@ test('tema claro: el encabezado, el de la tabla y las categorías son claros, y 
   const [r, g, b] = (await page.locator('header').evaluate(h => getComputedStyle(h).backgroundColor)).match(/[\d.]+/g).map(Number);
   expect((r + g + b) / 3).toBeLessThan(60);   // en el oscuro sigue oscuro
 });
+
+test('accesibilidad y carga: el panel "Elegir autos" se maneja con teclado y sus fotos no se bajan de entrada', async ({ page }) => {
+  // Arreglos medidos el 2026-10-10: Tab se escapaba al fondo, Esc no cerraba y las 124 fotos
+  // del panel cerrado se bajaban en cada visita (1,15 MB).
+  await page.goto('/index.html?tabla');
+  await expect(page.locator(FILAS_DATOS)).toHaveCount(N_FILAS);
+  const sinLazy = await page.locator('#modelList img').evaluateAll(is => is.filter(i => i.loading !== 'lazy').length);
+  expect(sinLazy).toBe(0);
+  await page.focus('#openModalBtn');
+  await page.keyboard.press('Enter');
+  await expect(page.locator('#modalOverlay')).toBeVisible();
+  for (let k = 0; k < 25; k++){
+    await page.keyboard.press('Tab');
+    expect(await page.evaluate(() => !!document.activeElement.closest('.modal-sheet'))).toBe(true);
+  }
+  await page.keyboard.press('Escape');
+  await expect(page.locator('#modalOverlay')).toBeHidden();
+  expect(await page.evaluate(() => document.activeElement.id)).toBe('openModalBtn');
+  await expect(page.locator('a.saltar')).toHaveAttribute('href', '#contenido');
+  await expect(page.locator('main#contenido')).toHaveCount(1);
+});
