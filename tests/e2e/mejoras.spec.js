@@ -42,7 +42,7 @@ test('ayudame a elegir: la franja de precio es piso y techo, y con enchufe en ca
   // La barra ya no nombra los sugeridos (2026-10-10: mucho texto): dice si cambiaron y se ilumina.
   await expect(barra).toContainText(/Nuevas sugerencias|Sin cambios/);
   await expect(barra).toHaveClass(/cambio/);
-  for (const t of await res.locator("ul").allTextContents()) expect(t).not.toMatch(/necesita dónde cargar/);
+  for (const t of await res.locator("ul").allTextContents()) expect(t).not.toMatch(/necesita dónde cargar/i);
   await page.locator('label:has(input[name="el-presu"][value=""])').click();
   await expect(res).toHaveCount(N);
   await page.locator('[data-elegir-comparar="top"]').click();
@@ -291,4 +291,15 @@ test('respaldo de fábrica: la fábrica en el Mercosur tiene fuente, se ve en la
   const sel = page.locator('#rkElegirSel');
   if (await sel.isVisible()) await sel.selectOption('__medida'); else await page.locator('#rkScroll .rk-chip[data-fila="__medida"]').click();
   await expect(page.locator('select[data-peso="__respaldo"]')).toHaveValue('3');
+});
+
+test('ayudame a elegir: cada sugerido tiene a lo sumo 4 renglones y en el celular cada uno entra en una línea', async ({ page }) => {
+  // Pedido del 2026-10-10: precio y propulsión, cómo es el auto y los dos motivos que más pesan.
+  await page.goto('/index.html');
+  const items = page.locator('.elegir-res > li');
+  for (const n of await items.locator('ul').evaluateAll(us => us.map(u => u.children.length))) expect(n).toBeLessThanOrEqual(4);
+  await expect(items.first().locator('ul > li').nth(1)).toHaveText(/\d,\d m/);   // el renglón de cómo es el auto
+  if (page.viewportSize().width > 640) return;
+  const dobles = await page.locator('.elegir-res ul > li').evaluateAll(ls => ls.filter(li => li.getBoundingClientRect().height > 1.5 * parseFloat(getComputedStyle(li).lineHeight)).map(li => li.textContent));
+  expect(dobles).toEqual([]);
 });
