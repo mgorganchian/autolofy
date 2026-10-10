@@ -1080,7 +1080,19 @@ try{var t=localStorage.getItem('tema');if(t==='dark'||t==='light')document.docum
   .elegir-ops input:focus-visible + span{outline:2px solid var(--link);outline-offset:1px}
   .elegir-res-tit{border-top:2px solid var(--ink);padding-top:8px}
   .elegir-res{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(auto-fill,minmax(185px,1fr));gap:14px}
-  @media (min-width:900px){ .elegir-res{grid-template-columns:repeat(5,minmax(0,1fr))} }   /* los 5 en una fila (elegirN) */
+  /* Escritorio (2026-10-10): preguntas en una columna a la izquierda y sugerencias a la derecha, en
+     tarjetas con la foto al costado, para que la primera pantalla ya muestre los autos con su
+     información. */
+  @media (min-width:900px){
+    .elegir-cuerpo{display:grid;grid-template-columns:minmax(300px,360px) minmax(0,1fr);gap:0 32px;align-items:start}
+    .elegir-cuerpo .elegir-preg{grid-template-columns:1fr !important}
+    .elegir-resultados .elegir-res-tit{margin-top:0}
+    .elegir-res{grid-template-columns:repeat(2,minmax(0,1fr));gap:14px 22px}
+    .elegir-res > li{grid-template-columns:150px 1fr auto;grid-template-areas:"nombre nombre ver" "foto motivos motivos";column-gap:12px;row-gap:4px;
+      border-bottom:1px solid var(--line);padding-bottom:10px}
+    .elegir-res > li > .minicar{width:150px}
+    .elegir-res ul{margin:0;padding-left:16px}
+  }
   /* Tarjeta: en escritorio, foto arriba y texto abajo; en el celular, nombre arriba y foto
      a la izquierda con "Ver su página" debajo, para que entren las 4 (pedido del 2026-10-09). */
   /* "Ver ficha" a la derecha del nombre (2026-10-10): la tarjeta ocupa un renglón menos. */
@@ -5283,14 +5295,26 @@ function elegirCalcular(r){
     // nada que repita lo que ya se respondió (la franja, o las plazas si son las pedidas).
     const motivos = [];
     // Más cortos todavía el 2026-10-10 (pedido del usuario: mucho texto con la letra más grande).
-    const prop = { ev: r.enchufe === 'si' ? 'eléctrico' : 'eléctrico (precisa cargador)', phev: 'enchufable', hev: 'híbrido', mhev: 'mild-hybrid', ice: 'nafta o diésel' }[c.type] || '';
+    const prop = { ev: 'eléctrico', phev: 'enchufable', hev: 'híbrido', mhev: 'mild-hybrid', ice: 'nafta o diésel' }[c.type] || '';
     motivos.push(SIM_PRECIO[i] != null ? 'USD ' + SIM_PRECIO[i].toLocaleString('es-AR') + (prop ? ', ' + prop : '') : prop.charAt(0).toUpperCase() + prop.slice(1));
-    if (SIM_ASIENTOS[i] != null && SIM_ASIENTOS[i] !== plazas && !(plazas >= 6 && SIM_ASIENTOS[i] === 7)) motivos.push(SIM_ASIENTOS[i] + ' asientos');
-    ps.filter(x => x[1].c >= 4).forEach(x => motivos.push('Top 20% en ' + (MOTIVO_CORTO[x[0]] || rkTitulo(x[0]).toLowerCase())));
-    if (bonus && esTodoterreno(i)) motivos.push('Todoterreno');
-    if (fab || merc) motivos.push(fab && merc ? 'Lo trae la marca, que fabrica en ' + merc.pais : fab ? 'Lo trae la marca' : 'La marca fabrica en ' + merc.pais);
-    if (gAnos != null) motivos.push('Garantía ' + cleanVal(FILA_POR_NOMBRE['Garantía general'][i + 1]).replace(' años o ', ' años, ').replace(/(\d+)\.000 km/, '$1 mil km'));
-    return { i, puntos, motivos: motivos.filter(Boolean) };
+    // Cuatro renglones (2026-10-10): precio y propulsión, cómo es el auto (tipo, tamaño, largo y
+    // potencia) y los dos motivos que más pesan, con el respaldo de fábrica primero.
+    // Cada renglón entra en uno solo en el celular (~26 caracteres): si con el tamaño no entra, va
+    // solo el tipo, que el largo ya dice el tamaño.
+    const pot = rkValor(i, FILA_POT);
+    const caract = tam => [c.body + (tam && SEGMENT_LABELS[c.size] && c.size !== 'nd' ? ' ' + SEGMENT_LABELS[c.size].toLowerCase() : ''),
+      SIM_LARGO[i] != null ? (SIM_LARGO[i] / 1000).toLocaleString('es-AR', { minimumFractionDigits: 1, maximumFractionDigits: 1 }) + ' m' : '',
+      pot.tipo === 'ok' ? Math.round(pot.n) + ' kW' : ''].filter(Boolean).join(', ');
+    motivos.push(caract(true).length <= 26 ? caract(true) : caract(false));
+    const resto = [];
+    if (c.type === 'ev' && r.enchufe !== 'si') resto.push('Necesita dónde cargar');
+    if (fab) resto.push('Lo trae la marca');
+    if (merc) resto.push('Marca con fábrica en ' + merc.pais);   // de la marca, no del auto
+    ps.filter(x => x[1].c >= 4).forEach(x => resto.push('Top 20% en ' + (MOTIVO_CORTO[x[0]] || rkTitulo(x[0]).toLowerCase())));
+    if (bonus && esTodoterreno(i)) resto.push('Todoterreno');
+    if (gAnos != null) resto.push('Garantía ' + cleanVal(FILA_POR_NOMBRE['Garantía general'][i + 1]).replace(' años o ', ' años, ').replace(/(\d+)\.000 km/, '$1 mil km').replace(/ sin límite de km$/, ', km libre'));
+    if (SIM_ASIENTOS[i] != null && SIM_ASIENTOS[i] !== plazas && !(plazas >= 6 && SIM_ASIENTOS[i] === 7)) resto.push(SIM_ASIENTOS[i] + ' asientos');
+    return { i, puntos, motivos: motivos.concat(resto).filter(Boolean).slice(0, 4) };
   }).sort((a, b) => b.puntos - a.puntos);
   return { top: res.slice(0, elegirN()), todos: res.map(x => x.i), total: res.length, sinPrecio: sinPrecioIdx.length, sinPrecioIdx };
 }
@@ -5304,9 +5328,9 @@ function pintarElegir(cambio){
   hoja.innerHTML = '<h2 id="elegirTitulo" class="elegir-titulo">Ayudame a elegir</h2>' +
     '<p class="ficha-nota">5 preguntas y te sugerimos ' + elegirN() + ' autos. ' +
       '<button type="button" class="mini-btn" id="elegirTabla">Ver la tabla</button></p>' +
-    '<div class="elegir-preg">' + ELEGIR_PREG.map(q => '<fieldset><legend>' + q.t + '</legend><div class="elegir-ops">' +
+    '<div class="elegir-cuerpo"><div class="elegir-preg">' + ELEGIR_PREG.map(q => '<fieldset><legend>' + q.t + '</legend><div class="elegir-ops">' +
       q.ops.map(([v, t]) => '<label><input type="radio" name="el-' + q.k + '" value="' + v + '"' + (r[q.k] === v ? ' checked' : '') + '><span>' + t + '</span></label>').join('') + '</div></fieldset>').join('') + '</div>' +
-    '<h3 class="elegir-res-tit" id="elegirResTit">' + (out.top.length ? 'Te sugerimos' : 'Ningún auto a la venta cumple todo eso') + '</h3>' +
+    '<div class="elegir-resultados"><h3 class="elegir-res-tit" id="elegirResTit">' + (out.top.length ? 'Te sugerimos' : 'Ningún auto a la venta cumple todo eso') + '</h3>' +
     (out.top.length ? '<ol class="elegir-res">' + out.top.map(x => {
       const im = TH_AUTO[x.i].querySelector('img.car-photo');
       const n = listaDeFotos(SLUG_AUTO[x.i]).length;
@@ -5319,7 +5343,7 @@ function pintarElegir(cambio){
       // Cuántos cumplen ya lo dice la barra: acá solo los que quedaron afuera por no tener precio.
       (out.sinPrecio ? '<p class="elegir-acc"><span class="ficha-nota">' + out.sinPrecio + ' auto' + (out.sinPrecio === 1 ? '' : 's') + ' más cumple' + (out.sinPrecio === 1 ? '' : 'n') + ' lo demás pero no publica' + (out.sinPrecio === 1 ? '' : 'n') + ' precio en dólares.</span></p>' : '')
       : '<p class="ficha-nota">Probá con otro presupuesto o con otro tipo de auto.' + (out.sinPrecio ? ' Hay ' + out.sinPrecio + ' autos sin precio en dólares que no se pueden filtrar por presupuesto.' : '') + '</p>' +
-        '');
+        '') + '</div></div>';   // cierra .elegir-resultados y .elegir-cuerpo
   // Barra al pie del panel (2026-10-09): en el celular la lista queda debajo de las preguntas,
   // fuera de la pantalla, y parecía que tocar una opción no cambiaba nada. La barra muestra
   // siempre las sugerencias y se ilumina en cada cambio.
