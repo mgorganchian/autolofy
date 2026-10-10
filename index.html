@@ -3617,7 +3617,13 @@ function rkItemHTML(r, maxN, valorHTML, extraHTML, mios){
     (a.foto ? miniFoto(SLUG_AUTO[r.i], a.foto, ' class="rk-foto"', 'chica') : '<span></span>') +
     '<div class="rk-cuerpo"><div class="rk-nombre"><span>' + rkEsc(a.nombre) + '</span>' + a.iconos + rkNoVenta(r.i) + '</div>' +
     (maxN ? '<div class="rk-barra" aria-hidden="true"><i style="width:' + Math.max(2, 100 * r.n / maxN).toFixed(1) + '%"></i></div>' : '') +
-    (extraHTML || '') + '</div><div class="rk-valor">' + valorHTML + '</div></li>';
+    (extraHTML || '') + rkPrecioChico(r.i) + '</div><div class="rk-valor">' + valorHTML + '</div></li>';
+}
+// Si se rankea por otra cosa que el precio, el precio va chico debajo del nombre (2026-10-10).
+// Rankeando por precio no, porque repetiría la cifra grande.
+function rkPrecioChico(i){
+  if (String(rkActual).startsWith('Precio de lista') || SIM_PRECIO[i] == null) return '';
+  return '<div class="rk-orig rk-precio">USD ' + SIM_PRECIO[i].toLocaleString('es-AR') + '</div>';
 }
 function rkValorHTML(r, k){
   const unidad = rkUnidadDe(k);
