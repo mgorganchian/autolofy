@@ -261,6 +261,10 @@ sí quedan en inglés, porque no muestran la palabra. Se coló con `YES` dos vec
   puntero por encima. Zonas táctiles de 24 px como mínimo (flechitas 44). Los destellos son 3 y no
   sin fin (WCAG 2.2.2). `scroll-padding` para que lo fijo no tape el foco. `<main>` y "Saltar al
   contenido". En la computadora la base es 112,5% (el 90% del texto quedaba debajo de 14 px).
+- **Encabezado compacto** (2026-10-10): `#theadWrap` se pega con `top` negativo igual al alto de las
+  fotos (`compactarThead`), así al bajar las fotos salen de la pantalla y quedan nombre, descripción
+  y botones (celular: 208 → 104 px). No cambia ningún alto, así que no salta. "Ocultar filas sin
+  dato" no hace falta aparte: "Solo diferencias" ya oculta las filas que son s/d en todos.
 - **Botón Atrás** (2026-10-10, Baymard: el 59% de los sitios lo rompe): cada vista o ventana que se
   abre con un toque deja un paso en el historial (`pasoHist`), y cerrar con ✕/Esc vuelve ese paso
   (`cerrarPorHistoria`) en vez de dejar uno de más. La URL manda en qué se compara y qué auto se mira;

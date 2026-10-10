@@ -402,3 +402,13 @@ test('botón Atrás: cierra el visor de fotos y el panel "Elegir autos"', async 
   await expect(page.locator('#modalOverlay')).toBeHidden();
   await expect(page).toHaveURL(/\?tabla$/);
 });
+
+test('encabezado compacto: al bajar, las fotos se van y el encabezado fijo ocupa la mitad', async ({ page }) => {
+  // Pedido del 2026-10-10 (NN/g: lo fijo, lo más bajo posible). Sin cambiar alturas: no salta.
+  await page.goto('/index.html?autos=tank-300,byd-shark,jac-t9');
+  await expect(page.locator(FILAS_DATOS)).toHaveCount(N_FILAS);
+  await page.evaluate(() => window.scrollTo(0, 1500));
+  const r = await page.locator('#theadWrap').evaluate(t => { const b = t.getBoundingClientRect(); return { visible: b.bottom, alto: b.height }; });
+  expect(r.visible).toBeLessThan(r.alto * 0.65);
+  await expect(page.locator('#theadTable th:not(.feat-col):not(.col-hidden) .th-nombre').first()).toBeInViewport();
+});

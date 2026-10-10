@@ -2579,6 +2579,7 @@ const diffCheckbox = document.getElementById('diffOnly');
 diffCheckbox.addEventListener('change', applyFilters);
 
 function applyColumnVisibility(){
+  requestAnimationFrame(() => { if (typeof compactarThead === 'function') compactarThead(); });
   // Con table-layout:fixed el ancho se reparte por POSICIÓN de columna, no por auto:
   // una celda oculta no ocupa lugar y los autos visibles se corren a la izquierda,
   // pero cada <col> sigue sumando su ancho. Con 2 autos elegidos la tabla medía
@@ -4074,9 +4075,25 @@ let rkScrollTabla = 0;
 function ajustarScrollPadding(){
   const raiz = document.documentElement.style;
   raiz.scrollPaddingBottom = vistaActual === 'elegir' ? '160px' : '';
-  raiz.scrollPaddingTop = vistaActual === 'tabla' && theadWrap.offsetHeight ? (theadWrap.offsetHeight + 8) + 'px' : '';
+  raiz.scrollPaddingTop = vistaActual === 'tabla' && theadWrap.offsetHeight ? (theadWrap.offsetHeight - fotosThead + 8) + 'px' : '';
 }
-window.addEventListener('resize', () => ajustarScrollPadding());
+// Encabezado compacto al bajar (2026-10-10, NN/g: lo fijo, lo más bajo posible): el encabezado se
+// pega más arriba, a la altura de las fotos, así al bajar las fotos se van de la pantalla y quedan
+// el nombre, la descripción y los botones. No cambia el alto de nada, así que no salta.
+let fotosThead = 0;
+function compactarThead(){
+  const th = TH_AUTO.find(t => !t.classList.contains('col-hidden'));
+  const caja = th && th.querySelector('.car-photo-box');
+  fotosThead = 0;
+  if (caja && caja.getClientRects().length){
+    const r = caja.getBoundingClientRect(), rt = th.getBoundingClientRect();
+    fotosThead = Math.max(0, Math.round(r.bottom - rt.top + parseFloat(getComputedStyle(caja).marginBottom || 0)));
+  }
+  theadWrap.style.top = fotosThead ? -fotosThead + 'px' : '';
+  ajustarScrollPadding();
+}
+window.addEventListener('resize', () => compactarThead());
+window.addEventListener('load', () => compactarThead());
 function mostrarVista(v){
   document.documentElement.classList.remove('arranca-elegir');   // de acá en más manda el script
   const rk = v === 'ranking', el = v === 'elegir', tabla = !rk && !el;
@@ -4103,7 +4120,7 @@ function mostrarVista(v){
   document.getElementById('rankingView').hidden = !rk;
   document.getElementById('elegirHoja').hidden = !el;
   document.body.classList.toggle('vista-elegir', el);
-  ajustarScrollPadding();
+  if (tabla) compactarThead(); else ajustarScrollPadding();
   if (el){
     document.getElementById('noResults').style.display = 'none';
     pintarElegir();
