@@ -875,7 +875,10 @@ if(!location.search&&!location.hash)document.documentElement.classList.add('arra
   .mini-nav{position:absolute;top:50%;transform:translateY(-50%);z-index:2;width:22px;height:22px;padding:0;border:0;border-radius:50%;
     background:rgba(10,15,30,.55);color:#fff;font:700 15px/22px var(--fuente-tabla);text-align:center;cursor:pointer;opacity:.7;transition:opacity .15s}
   .mini-nav.ant{left:3px} .mini-nav.sig{right:3px}
-  .mini-nav::before{content:"";position:absolute;inset:-11px}   /* zona táctil de 44 px (2026-10-10) */
+  /* Zona táctil de unos 44 px (2026-10-10), que crece hacia adentro de la foto y no hacia afuera:
+     afuera se metía en la columna de al lado y cerraba el zoom de esa foto. */
+  .mini-nav::before{content:"";position:absolute;top:-11px;bottom:-11px}
+  .mini-nav.ant::before{left:-3px;right:-18px} .mini-nav.sig::before{left:-18px;right:-3px}
   .minicar:hover .mini-nav,.mini-nav:focus-visible{opacity:1}
   .mini-nav:hover{background:rgba(10,15,30,.8)}
   .mini-nav:focus-visible{outline:2px solid var(--link);outline-offset:1px}
@@ -3271,9 +3274,11 @@ function openModal(){
   modalOverlay.style.display = 'flex';
   document.body.classList.add('modal-open');
   dialogoAbierto(modalOverlay.querySelector('.modal-sheet'));
+  pasoHist({ capa: 'panel' });
 }
 function closeModal(){
   if (modalOverlay.style.display === 'none') return;
+  if (cerrarPorHistoria('capa', 'panel')) return;
   modalOverlay.style.display = 'none';
   document.body.classList.remove('modal-open');
   dialogoCerrado(modalOverlay.querySelector('.modal-sheet'));
@@ -3300,8 +3305,8 @@ function ocultarTitulo(){
   }
 }
 document.getElementById('compareBtn').addEventListener('click', ()=>{
-  aplicarSeleccion();
-  closeModal();
+  // El paso del panel pasa a ser el de la comparación: Atrás vuelve a lo de antes de abrirlo.
+  enTransicion(() => { closeModal(); aplicarSeleccion(); });
   ocultarTitulo();
   window.scrollTo({top: 0, behavior: suave()});
 });
@@ -3439,7 +3444,7 @@ document.addEventListener('pointerover', e => {
   if (t && (t.closest('#fotoZoom') || t.closest('.car-photo') === zoomActivo || (caja && caja.contains(zoomActivo)))) {
     clearTimeout(zCierre); zCierre = null; return;
   }
-  if (!zCierre) zCierre = setTimeout(cerrarZoom, 350);
+  if (!zCierre) zCierre = setTimeout(cerrarZoom, 600);
 });
 window.addEventListener('scroll', cerrarZoom, true);
 window.addEventListener('resize', cerrarZoom);
@@ -4114,9 +4119,9 @@ function mostrarVista(v){
     theadWrap.scrollLeft = tbodyWrap.scrollLeft;      // el header vuelve alineado con el cuerpo
   }
 }
-document.getElementById('vistaElegir').addEventListener('click', () => mostrarVista('elegir'));
-document.getElementById('vistaTabla').addEventListener('click', () => mostrarVista('tabla'));
-document.getElementById('vistaRanking').addEventListener('click', () => mostrarVista('ranking'));
+document.getElementById('vistaElegir').addEventListener('click', () => irAVista('elegir'));
+document.getElementById('vistaTabla').addEventListener('click', () => irAVista('tabla'));
+document.getElementById('vistaRanking').addEventListener('click', () => irAVista('ranking'));
 document.getElementById('rkScroll').addEventListener('change', e => {
   if (e.target.id !== 'rkElegirSel') return;
   rkActual = e.target.value;
@@ -4416,16 +4421,102 @@ ordenSel.addEventListener('change', () => {
 // La comparación vive en la URL (?autos=slug,slug&ref=slug&orden=clave): el que
 // recibe el link ve los mismos autos, la misma referencia y el mismo orden. Solo
 // nombres de autos: nada personal.
-function urlGuardar(){
+function urlCalcular(){
   const p = new URLSearchParams();
   const elegidos = CARS.map((_, i) => i).filter(i => colVisible[i]);
   if (elegidos.length < CARS.length) p.set('autos', elegidos.map(i => SLUG_AUTO[i]).join(','));
   if (refIdx !== null) p.set('ref', SLUG_AUTO[refIdx]);
   if (ordenActual) p.set('orden', ordenActual);
   if (fichaActual !== null) p.set('auto', SLUG_AUTO[fichaActual]);
-  const q = p.toString().replace(/%2C/g, ',');
-  try { history.replaceState(null, '', location.pathname + (q ? '?' + q : '') + location.hash); } catch (e) {}
+  let q = p.toString().replace(/%2C/g, ',');
+  // Sin otros parámetros, "?tabla" dice que se está en la tabla o el ranking: sin eso, recargar o
+  // compartir abría "Ayudame a elegir" (2026-10-10).
+  if (!q && vistaActual !== 'elegir') q = 'tabla';
+  return location.pathname + (q ? '?' + q : '') + location.hash;
 }
+// modo 'paso': además de actualizar la URL, deja un paso en el historial (ver "Botón Atrás").
+function urlSinFicha(){ const f = fichaActual; fichaActual = null; const u = urlCalcular(); fichaActual = f; return u; }
+function urlGuardar(modo){
+  if (urlCongelada) return;
+  const url = urlCalcular();
+  if (modo === 'paso') pasoHist({ capa: fichaActual !== null ? 'ficha' : null, visor: false }, url);
+  else try { history.replaceState(history.state, '', url); } catch (e) {}
+}
+
+// ============ Botón Atrás (2026-10-10) =====================================
+// Cada vista o ventana que se abre con un toque deja un paso en el historial del navegador, y
+// Atrás lo deshace en vez de sacar a la persona del sitio (Baymard: el 59% de los sitios lo rompe).
+// La URL sigue mandando en qué se compara y qué auto se mira (?autos=, ?auto=); el estado del
+// historial guarda la vista ('elegir', 'tabla', 'ranking'), la ventana abierta (capa: 'ficha',
+// 'grupos', 'conces', 'panel') y si está el visor de fotos.
+let historiaModo = 'push';   // 'push' agrega pasos; 'replace' reemplaza el actual; 'off' no toca nada
+let urlCongelada = false;    // mientras se encadenan cambios, la URL se escribe una sola vez al final
+let desdeHistoria = false;   // true mientras se aplica un paso del historial
+function pasoHist(cambios, url){
+  if (desdeHistoria || historiaModo === 'off') return;
+  const st = Object.assign({ capa: null, visor: false }, history.state || {}, { vista: vistaActual }, cambios);
+  try { (historiaModo === 'replace' ? history.replaceState : history.pushState).call(history, st, '', url || urlCalcular()); } catch (e) {}
+}
+// Cerrar desde la interfaz (✕, Esc, tocar afuera): si esa ventana dejó su paso, se vuelve un paso
+// y la cierra el popstate. Devuelve true en ese caso.
+function cerrarPorHistoria(clave, valor){
+  if (desdeHistoria || historiaModo === 'off') return false;
+  const st = history.state || {};
+  if (st[clave] !== valor) return false;
+  if (historiaModo === 'push'){ history.back(); return true; }
+  try { history.replaceState(Object.assign({}, st, { [clave]: clave === 'visor' ? false : null }), '', location.href); } catch (e) {}
+  return false;
+}
+function sinHistoria(fn){ const m = historiaModo, c = urlCongelada; historiaModo = 'off'; urlCongelada = true; try { fn(); } finally { historiaModo = m; urlCongelada = c; } }
+function enTransicion(fn){ const m = historiaModo; historiaModo = 'replace'; try { fn(); } finally { historiaModo = m; } }
+// Acciones que arman una comparación desde una ventana (ficha, Grupos): un paso nuevo con la
+// comparación, así Atrás vuelve a la ventana de la que se vino.
+function compararConPaso(fn){ sinHistoria(fn); pasoHist({ capa: null, visor: false }); }
+function irAVista(v){ mostrarVista(v); pasoHist({ vista: v, capa: null, visor: false }); }
+// La comparación de la URL (autos, referencia, orden), aplicada si cambió.
+function sincronizarSeleccion(){
+  let p; try { p = new URLSearchParams(location.search); } catch (e) { return; }
+  const porSlug = slug => SLUG_AUTO.indexOf(slug);
+  const autos = (p.get('autos') || '').split(',').map(porSlug).filter(i => i >= 0);
+  const quiere = autos.length ? autos.slice().sort((a, b) => a - b) : CARS.map((_, i) => i);
+  const actuales = CARS.map((_, i) => i).filter(i => colVisible[i]);
+  const ref = porSlug(p.get('ref') || ''), orden = p.get('orden') || '';
+  const refQuiere = ref >= 0 && quiere.includes(ref) ? ref : null;
+  const ordenQuiere = ORDEN_FILAS.some(o => o.clave === orden) ? orden : '';
+  if (quiere.join() === actuales.join() && refQuiere === refIdx && ordenQuiere === ordenActual) return;
+  ordenActual = ordenQuiere; ordenSel.value = ordenQuiere;
+  if (autos.length) simFijar(autos);
+  else {
+    selectedBrands = new Set(BRANDS); selectedSegments = new Set(SEGMENTS); selectedBodies = new Set(BODIES);
+    selectedProps = new Set(PROPS); selectedSeats = new Set(SEATS); selectedStatus = new Set(STATUSES); selectedGrupos = new Set(GRUPOS);
+    CARS.forEach((_, i) => modelChecked.set(i, true));
+    precioMin = PRECIO_PISO; precioMax = PRECIO_TECHO; precioSinDato = true;
+  }
+  simRefrescarSelector();
+  refIdx = refQuiere;
+  aplicarSeleccion();
+}
+window.addEventListener('popstate', e => {
+  const st = e.state || {};
+  // La URL ya es la del paso al que se volvió: mientras se aplica, nadie la reescribe.
+  const congelada = urlCongelada;
+  desdeHistoria = true; urlCongelada = true;
+  try {
+    if (!st.visor && !visor.hidden) cerrarVisor();
+    if (st.capa !== 'panel' && modalOverlay.style.display !== 'none') closeModal();
+    if (st.capa !== 'grupos' && grupoAbierto) cerrarGrupos();
+    if (st.capa !== 'conces' && concesAbierta) cerrarConces();
+    sincronizarSeleccion();
+    const slug = new URLSearchParams(location.search).get('auto');
+    const fi = slug ? SLUG_AUTO.indexOf(slug) : -1;
+    if (fi < 0 && fichaActual !== null) cerrarFicha();
+    if (st.vista && st.vista !== vistaActual) mostrarVista(st.vista);
+    if (fi >= 0 && fichaActual !== fi) abrirFicha(fi);
+    if (st.capa === 'grupos' && !grupoAbierto) abrirGrupos();
+    if (st.capa === 'conces' && !concesAbierta) abrirConces();
+    if (st.capa === 'panel' && modalOverlay.style.display === 'none') openModal();
+  } finally { desdeHistoria = false; urlCongelada = congelada; actualizarTitulo(); }
+});
 function urlCargar(){
   let p;
   try { p = new URLSearchParams(location.search); } catch (e) { return; }
@@ -4557,12 +4648,14 @@ function abrirVisor(slug, k){
   visor.querySelector('.visor-puntos').innerHTML = vFotos.length > 1 ? vFotos.map(() => '<i></i>').join('') : '';
   visor.hidden = false;
   dialogoAbierto(visor);
+  pasoHist({ visor: true });
   document.body.classList.add('visor-abierto');
   visorMostrar(k || 0);
   visor.querySelector('.visor-cerrar').focus();
 }
 function cerrarVisor(){
   if (visor.hidden) return;
+  if (cerrarPorHistoria('visor', true)) return;
   visor.hidden = true;
   dialogoCerrado(visor);
   document.body.classList.remove('visor-abierto');
@@ -4764,6 +4857,7 @@ function fichaFortalezas(i){
 }
 
 async function abrirFicha(i){
+  // De un parecido a otro también es un paso (urlGuardar('paso') más abajo): Atrás vuelve al anterior.
   fichaActual = i;
   const c = CARS[i], slug = SLUG_AUTO[i];
   const fotos = listaDeFotos(slug);
@@ -4815,7 +4909,7 @@ async function abrirFicha(i){
   fichaFoto(0);
   if (fotos.length > 1) alDeslizar(hoja.querySelector('.ficha-foto'), () => fichaFoto(fichaFotoIdx + 1), () => fichaFoto(fichaFotoIdx - 1));
   document.getElementById('fichaCerrar').focus();
-  urlGuardar(); actualizarTitulo();
+  urlGuardar('paso'); actualizarTitulo();
   pintarDondeVerlo(i);
   const fuentes = (await cargarManifiesto()).get(c.name) || [];
   if (fichaActual !== i) return;
@@ -4830,6 +4924,7 @@ async function abrirFicha(i){
 }
 function cerrarFicha(){
   if (fichaActual === null) return;
+  if (cerrarPorHistoria('capa', 'ficha')) return;
   const i = fichaActual;
   fichaActual = null;
   document.getElementById('fichaAuto').hidden = true;
@@ -4877,12 +4972,12 @@ document.addEventListener('click', e => {
   const otro = e.target.closest('.ficha-sim-auto, [data-ficha-idx]');
   if (otro){ abrirFicha(+(otro.dataset.idx || otro.dataset.fichaIdx)); return; }
   const cmp = e.target.closest('[data-comparar]');
-  if (cmp){ const i = fichaActual; simFijar([i, +cmp.dataset.comparar]); simRefrescarSelector(); cerrarFicha(); aplicarSeleccion(); ocultarTitulo(); return; }
-  if (e.target.closest('#fichaVerTabla')){ const i = fichaActual; simFijar([i]); simRefrescarSelector(); cerrarFicha(); aplicarSeleccion(); ocultarTitulo(); window.scrollTo({ top: 0 }); return; }
+  if (cmp){ const i = fichaActual; compararConPaso(() => { simFijar([i, +cmp.dataset.comparar]); simRefrescarSelector(); cerrarFicha(); aplicarSeleccion(); }); ocultarTitulo(); return; }
+  if (e.target.closest('#fichaVerTabla')){ const i = fichaActual; compararConPaso(() => { simFijar([i]); simRefrescarSelector(); cerrarFicha(); aplicarSeleccion(); }); ocultarTitulo(); window.scrollTo({ top: 0 }); return; }
   if (e.target.closest('#fichaSumar')){
     const i = fichaActual;
-    if (colVisible.every(Boolean)) simFijar([i]); else simHabilitar(i);
-    simRefrescarSelector(); cerrarFicha(); aplicarSeleccion(); ocultarTitulo(); return;
+    compararConPaso(() => { if (colVisible.every(Boolean)) simFijar([i]); else simHabilitar(i);
+      simRefrescarSelector(); cerrarFicha(); aplicarSeleccion(); }); ocultarTitulo(); return;
   }
 });
 document.addEventListener('keydown', e => {
@@ -4934,6 +5029,7 @@ function abrirGrupos(enfocar){
     }).join('');
   document.getElementById('gruposVista').hidden = false;
   dialogoAbierto(document.getElementById('gruposVista'));
+  if (!grupoAbierto) pasoHist({ capa: 'grupos', visor: false }, urlSinFicha());
   document.body.classList.add('modal-open');
   grupoAbierto = true;
   const foco = enfocar && document.querySelector('#gruposHoja .grupo[data-grupo="' + CSS.escape(enfocar) + '"]');
@@ -4942,6 +5038,7 @@ function abrirGrupos(enfocar){
 }
 function cerrarGrupos(){
   if (!grupoAbierto) return;
+  if (cerrarPorHistoria('capa', 'grupos')) return;
   grupoAbierto = false;
   document.getElementById('gruposVista').hidden = true;
   dialogoCerrado(document.getElementById('gruposVista'));
@@ -4949,18 +5046,18 @@ function cerrarGrupos(){
   if (fichaActual === null) document.body.classList.remove('modal-open');
 }
 document.getElementById('gruposBtn').addEventListener('click', () => abrirGrupos());
-document.getElementById('verGruposModal').addEventListener('click', () => { closeModal(); abrirGrupos(); });
+document.getElementById('verGruposModal').addEventListener('click', () => { enTransicion(() => closeModal()); abrirGrupos(); });
 document.addEventListener('click', e => {
   const vg = e.target.closest ? e.target.closest('.ficha-ver-grupo') : null;
-  if (vg){ const g = vg.dataset.grupo; cerrarFicha(); abrirGrupos(g); return; }
+  if (vg){ const g = vg.dataset.grupo; sinHistoria(() => cerrarFicha()); abrirGrupos(g); return; }
   if (!grupoAbierto) return;
   if (e.target === document.getElementById('gruposVista') || e.target.closest('#gruposCerrar')){ cerrarGrupos(); return; }
   const a = e.target.closest('.grupo-auto');
-  if (a){ cerrarGrupos(); abrirFicha(+a.dataset.idx); return; }
+  if (a){ sinHistoria(() => cerrarGrupos()); abrirFicha(+a.dataset.idx); return; }
   const cg = e.target.closest('[data-comparar-grupo]');
   if (cg){
     const idx = CARS.map((_, i) => i).filter(i => grupoDe(i) === cg.dataset.compararGrupo);
-    simFijar(idx); simRefrescarSelector(); cerrarGrupos(); aplicarSeleccion(); ocultarTitulo(); window.scrollTo({ top: 0 });
+    compararConPaso(() => { simFijar(idx); simRefrescarSelector(); cerrarGrupos(); aplicarSeleccion(); }); ocultarTitulo(); window.scrollTo({ top: 0 });
   }
 });
 document.addEventListener('keydown', e => { if (e.key === 'Escape' && grupoAbierto) cerrarGrupos(); });
@@ -5058,6 +5155,7 @@ async function abrirConces(){
   hoja.innerHTML = '<button type="button" class="ficha-cerrar" id="concesCerrar" aria-label="Cerrar">✕</button><h2 id="concesTitulo" class="grupos-titulo">Concesionarios</h2><p class="ficha-vacio">Cargando la red oficial…</p>';
   document.getElementById('concesVista').hidden = false;
   dialogoAbierto(document.getElementById('concesVista'));
+  if (!concesAbierta) pasoHist({ capa: 'conces', visor: false }, urlSinFicha());
   document.body.classList.add('modal-open');
   concesAbierta = true;
   document.getElementById('concesCerrar').focus();
@@ -5096,6 +5194,7 @@ function pintarConces(){
 }
 function cerrarConces(){
   if (!concesAbierta) return;
+  if (cerrarPorHistoria('capa', 'conces')) return;
   concesAbierta = false;
   document.getElementById('concesVista').hidden = true;
   dialogoCerrado(document.getElementById('concesVista'));
@@ -5270,7 +5369,7 @@ document.addEventListener('click', e => {
     const sec = document.getElementById('fichaDondeSec'); if (sec) sec.scrollIntoView({ behavior: suave(), block: 'start' });
   } else if (t.closest('.ficha-ver-conces') && fichaActual !== null){
     concesFiltro.marca = CARS[fichaActual].brand;
-    cerrarFicha(); abrirConces();
+    sinHistoria(() => cerrarFicha()); abrirConces();
   }
 });
 
@@ -5472,7 +5571,7 @@ elegirHoja.addEventListener('change', e => {
   if (barra){ barra.classList.remove('cambio'); void barra.offsetWidth; barra.classList.add('cambio'); }
 });
 elegirHoja.addEventListener('click', e => {
-  if (e.target.closest('#elegirTabla')) return mostrarVista('tabla');
+  if (e.target.closest('#elegirTabla')) return irAVista('tabla');
   const f = e.target.closest('[data-elegir-ficha]');
   if (f){ abrirFicha(+f.dataset.elegirFicha); return; }
   if (e.target.closest('#elegirVer')){ document.getElementById('elegirResTit').scrollIntoView({ behavior: suave(), block: 'start' }); return; }
@@ -5486,12 +5585,16 @@ elegirHoja.addEventListener('click', e => {
 });
 
 ordenarColumnas();          // el orden por dimensiones, desde la carga
+// Lo que abre la carga no deja pasos: Atrás desde ahí sale del sitio, como en cualquier página.
+historiaModo = 'off';
 urlCargar();
 actualizarResumen();
 renderDiferencias();
 // La portada empieza en "Ayudame a elegir" (pedido del 2026-10-09). Un link con parámetros
 // (?autos=, ?auto=, ?ref=…) abre lo que pide, y ?tabla abre la tabla directo (lo usan los tests).
 if (!location.search && !location.hash) mostrarVista('elegir');
+historiaModo = 'push';
+try { history.replaceState({ vista: vistaActual, capa: null, visor: false }, '', location.href); } catch (e) {}
 
 // Tooltip propio: instantáneo, sin el delay nativo del navegador. Funciona con mouse y con tap en mobile.
 const tooltipBox = document.getElementById('tooltipBox');
