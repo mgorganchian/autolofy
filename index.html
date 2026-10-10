@@ -1123,8 +1123,9 @@ try{var t=localStorage.getItem('tema');if(t==='dark'||t==='light')document.docum
   .ficha-hist-svg{display:block;width:100%;max-width:320px;height:auto}
   .ficha-hist-svg path{fill:none;stroke:var(--ink-2);stroke-width:2}
   .ficha-hist-svg circle{fill:var(--paper);stroke:var(--ink);stroke-width:1.5}
-  .ficha-hist-lista{list-style:none;margin:4px 0;padding:0;display:flex;flex-wrap:wrap;gap:2px 16px;font-size:.74rem}
-  .ficha-hist-lista li{display:flex;gap:6px;align-items:baseline;font-variant-numeric:tabular-nums}
+  .ficha-hist-lista{list-style:none;margin:4px 0;padding:0;display:grid;grid-template-columns:max-content max-content max-content;gap:2px 12px;font-size:.74rem;align-items:baseline}
+  .ficha-hist-lista li{display:contents;font-variant-numeric:tabular-nums}
+  .ficha-hist-lista b{text-align:right}   /* los precios alineados en columna (2026-10-10) */
   .ficha-hist-lista span{color:var(--ink-3)} .ficha-hist-lista a{color:var(--link)}
   .cc-cotizar{display:flex;flex-wrap:wrap;align-items:center;gap:6px;margin:6px 0 2px;font-size:.72rem;color:var(--ink-2)}
   .cc-cotizar .ficha-btn{padding:3px 10px;font-size:.74rem;text-decoration:none}
@@ -1271,7 +1272,7 @@ try{var t=localStorage.getItem('tema');if(t==='dark'||t==='light')document.docum
      eficiencia energética usada solo para codificar información. Lo único audaz es
      la franja de origen de cada dato; el resto, calmo. Radios por jerarquía: 3px en
      pestañas y chips, 4px en botones, 6px en paneles, 2px en fotos. */
-  body{font-family:var(--fuente);-webkit-font-smoothing:antialiased}
+  body{font-family:var(--fuente);-webkit-font-smoothing:antialiased;font-variant-numeric:tabular-nums}   /* cifras de ancho fijo en todo el sitio (2026-10-10) */
   .sr{position:absolute;left:0;top:0;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
   /* El texto oculto se ancla en su celda: si no, un absolute sin ancestro posicionado
      se escapa del contenedor con scroll y estira la página entera (pasó: 15.000 px). */
@@ -1331,6 +1332,12 @@ try{var t=localStorage.getItem('tema');if(t==='dark'||t==='light')document.docum
   .banda-nd{background:repeating-linear-gradient(135deg,var(--ink-3) 0 2px,transparent 2px 4px)}
   .rk-marca{display:inline-block;width:4px;height:.95em;vertical-align:-1px;margin-left:6px;cursor:help;border-radius:0}
   .rk-marca.ext{background:var(--banda-ext)} .rk-marca.nota{background:var(--banda-note)}
+  .rk-marca.vacia{visibility:hidden}
+  .rk-ciclo-fila{line-height:1.1;margin-top:1px}
+  .rk-ciclo-fila,.rk-valor .rk-est{padding-right:10px}   /* el ancho de la franja: termina donde la cifra */
+  .rk-pos{text-align:right !important;padding-right:4px}   /* puestos de 1 y 2 cifras con las unidades alineadas */
+  .rk-iconos{white-space:nowrap;margin-left:4px}
+  .rk-iconos .prop-icon{vertical-align:-1px}
 
 
   /* Ranking: filas de planilla, no tarjetas */
@@ -3401,9 +3408,12 @@ function rkUnidad(nombre){
   return m ? m[1] : '';
 }
 function rkEtiqueta(nombre){ return nombre.replace(/\s*\([^()]*\)\s*$/, ''); }
-function rkNumero(n, nombre){
+// `dec`: cantidad fija de decimales, la misma para toda la lista, así las cifras quedan alineadas
+// en columna (canon de presentación de números, 2026-10-10). Sin `dec`, hasta 2 como antes.
+function rkNumero(n, nombre, dec){
   if (nombre.startsWith('Garantía')) return String(Math.floor(n));   // los km desempatan, no se muestran
-  const t = n.toLocaleString('es-AR', {maximumFractionDigits: 2});
+  const t = dec == null ? n.toLocaleString('es-AR', {maximumFractionDigits: 2})
+                        : n.toLocaleString('es-AR', {minimumFractionDigits: dec, maximumFractionDigits: dec});
   return nombre.startsWith('Precio') ? 'USD ' + t : t;
 }
 function rkEsc(s){ return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/"/g,'&quot;'); }
@@ -3615,7 +3625,7 @@ function rkItemHTML(r, maxN, valorHTML, extraHTML, mios){
   return '<li class="rk-item' + (mios.includes(r.i) ? ' rk-mio' : '') + '" data-auto="' + rkEsc(a.nombre) + '" data-idx="' + r.i + '" data-valor="' + r.n + '" tabindex="0">' +
     '<span class="rk-pos">' + (r.pos != null ? r.pos : '–') + '</span>' +
     (a.foto ? miniFoto(SLUG_AUTO[r.i], a.foto, ' class="rk-foto"', 'chica') : '<span></span>') +
-    '<div class="rk-cuerpo"><div class="rk-nombre"><span>' + rkEsc(a.nombre) + '</span>' + a.iconos + rkNoVenta(r.i) + '</div>' +
+    '<div class="rk-cuerpo"><div class="rk-nombre"><span>' + rkEsc(a.nombre) + '<span class="rk-iconos">' + a.iconos + '</span></span>' + rkNoVenta(r.i) + '</div>' +
     (maxN ? '<div class="rk-barra" aria-hidden="true"><i style="width:' + Math.max(2, 100 * r.n / maxN).toFixed(1) + '%"></i></div>' : '') +
     (extraHTML || '') + rkPrecioChico(r.i) + '</div><div class="rk-valor">' + valorHTML + '</div></li>';
 }
@@ -3625,17 +3635,26 @@ function rkPrecioChico(i){
   if (String(rkActual).startsWith('Precio de lista') || SIM_PRECIO[i] == null) return '';
   return '<div class="rk-orig rk-precio">USD ' + SIM_PRECIO[i].toLocaleString('es-AR') + '</div>';
 }
-function rkValorHTML(r, k){
+// Las cifras de la lista quedan alineadas en columna (2026-10-10): la franja de aclaración tiene
+// su lugar reservado en todas las filas (vacío si no hay), y el ciclo va en el renglón de abajo
+// para que su ancho no corra la cifra.
+function rkValorHTML(r, k, dec){
   const unidad = rkUnidadDe(k);
   const u = unidad ? '<small>' + rkEsc(unidad) + '</small>' : '';
+  const marca = rkMarcaHTML(r.v) || '<span class="rk-marca vacia" aria-hidden="true"></span>';
   if (r.orig != null){
     // Grande: la cifra de la ficha con su ciclo. Chico: el estimado WLTP por el que se ordena.
-    return rkNumero(r.orig, k) + u + ' <span class="rk-ciclo">' + rkEsc(r.ciclo) + '</span>' + rkMarcaHTML(r.v) +
-      (r.est ? '<div class="rk-est" title="Estimado WLTP, solo para ordenar">≈ ' + rkNumero(r.n, k) + ' WLTP est.</div>' : '');
+    return rkNumero(r.orig, k, dec) + u + marca + '<div class="rk-ciclo-fila"><span class="rk-ciclo">' + rkEsc(r.ciclo) + '</span></div>' +
+      (r.est ? '<div class="rk-est" title="Estimado WLTP, solo para ordenar">≈ ' + rkNumero(r.n, k, dec) + ' WLTP est.</div>' : '');
   }
-  return (k === 'usd-kw' || k === 'usd-km' ? 'USD ' + r.n.toLocaleString('es-AR') : rkNumero(r.n, k) + u) +
-    (k === FILA_COMB && r.ciclo ? ' <span class="rk-ciclo">' + rkEsc(r.ciclo) + '</span>' : '') + rkMarcaHTML(r.v) +
+  return (k === 'usd-kw' || k === 'usd-km' ? 'USD ' + r.n.toLocaleString('es-AR') : rkNumero(r.n, k, dec) + u) + marca +
+    (k === FILA_COMB && r.ciclo ? '<div class="rk-ciclo-fila"><span class="rk-ciclo">' + rkEsc(r.ciclo) + '</span></div>' : '') +
     (r.est ? '<div class="rk-est">con autonomía estimada a WLTP</div>' : '');
+}
+// Cuántos decimales lleva la lista: los de la cifra que más tiene (hasta 2).
+function rkDecimales(lista){
+  return Math.min(2, Math.max(0, ...lista.map(r => { const x = r.orig != null ? r.orig : r.n;
+    const t = String(x), i = t.indexOf('.'); return typeof x === 'number' && i >= 0 ? t.length - i - 1 : 0; })));
 }
 function rkOrigHTML(r){
   if (typeof r.v !== 'string' || !r.v) return '';
@@ -3734,13 +3753,13 @@ function renderRanking(){
     resto.ciclo.push(...(porCiclo['ciclo no informado'] || []));
     lista.innerHTML = ciclos.map(c => {
       const g = rkOrdenar(porCiclo[c], dir), max = Math.max(...g.map(r => r.n));
-      return '<li class="rk-subtitulo">' + rkEsc(c) + ' (' + g.length + ')</li>' + g.map(r => rkItemHTML(r, max, rkValorHTML(r, k), rkOrigHTML(r), cand.mios)).join('');
+      return '<li class="rk-subtitulo">' + rkEsc(c) + ' (' + g.length + ')</li>' + g.map(r => rkItemHTML(r, max, rkValorHTML(r, k, rkDecimales(g)), rkOrigHTML(r), cand.mios)).join('');
     }).join('') || '<li class="rk-vacio">Ninguno de estos autos tiene esta cifra con su ciclo informado.</li>';
     document.getElementById('rkGrafico').innerHTML = '';
   } else {
     rkOrdenar(ok, dir);
     const max = ok.reduce((m, r) => Math.max(m, r.n), 0) || 1;
-    lista.innerHTML = ok.length ? ok.map(r => rkItemHTML(r, max, rkValorHTML(r, k), rkOrigHTML(r), cand.mios)).join('')
+    lista.innerHTML = ok.length ? ok.map(r => rkItemHTML(r, max, rkValorHTML(r, k, rkDecimales(ok)), rkOrigHTML(r), cand.mios)).join('')
       : '<li class="rk-vacio">Ninguno de estos autos tiene esta cifra para comparar.</li>';
     document.getElementById('rkGrafico').innerHTML = (k === FILA_PRECIO || rkEsDerivada(k)) ? '' : rkGraficoHTML(ok, k, cand.mios);
   }

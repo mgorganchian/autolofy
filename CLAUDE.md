@@ -239,6 +239,11 @@ sí quedan en inglés, porque no muestran la palabra. Se coló con `YES` dos vec
   cuerpo en `1rem` (18 px; su texto es más grande de base). Solo en pantalla: al imprimir no cambia. Todos los tamaños de letra van en `rem`
   para que suban juntos: **no escribir tamaños de letra en px**. El ancho de las columnas va
   en `vw` y no cambia.
+- **Cifras alineadas en columna** (2026-10-10, también en el canon de kamiPay): todo el sitio usa
+  dígitos de ancho fijo (`tabular-nums` en `body`). En el Ranking la franja de aclaración tiene su
+  lugar reservado en todas las filas (`.rk-marca.vacia`), el ciclo va en el renglón de abajo y
+  la lista lleva la misma cantidad de decimales (`rkDecimales`). Nada de ancho variable a la
+  derecha de una cifra que esté en columna. `ranking.spec.js` lo cubre.
 - **Modo oscuro**: todo color sale de las variables de `:root`; el oscuro solo cambia sus
   valores (por `prefers-color-scheme` y por `data-theme`, que el botón guarda en
   `localStorage`). **No volver a escribir colores fijos en el CSS** (`#fff`, `#666`…):

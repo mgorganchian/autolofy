@@ -124,7 +124,7 @@ test.describe('vista ranking', () => {
   test('las cifras de otro ciclo o mercado van marcadas, con su explicación', async ({ page }) => {
     await abrirRanking(page);
     await elegirFila(page, 'Autonomía eléctrica (km)');
-    const marcas = page.locator('#rkLista .rk-marca');
+    const marcas = page.locator('#rkLista .rk-marca:not(.vacia)');   // las vacías solo reservan el lugar
     expect(await marcas.count()).toBeGreaterThan(0);
     const tips = await marcas.evaluateAll(ms => ms.map(m => m.dataset.tip || ''));
     expect(tips.filter(t => t.trim() === '')).toEqual([]);
@@ -305,4 +305,21 @@ test('el precio va chico debajo del nombre solo si se rankea por otra cosa', asy
   await expect(page.locator('#rkLista .rk-precio')).toHaveCount(0);
   await elegirFila(page, 'Potencia total del sistema (kW)');
   await expect(page.locator('#rkLista .rk-precio').first()).toHaveText(/^USD [\d.]+$/);
+});
+
+test('las cifras del ranking quedan alineadas en columna, con la misma cantidad de decimales', async ({ page }) => {
+  // Pedido del 2026-10-10 (y canon de kamiPay): la franja de aclaración corría algunas cifras.
+  await page.goto('/index.html?tabla');
+  await abrirRanking(page);
+  for (const fila of ['Precio de lista (versión tope de gama de la tabla)', 'Consumo de combustible (L/100km)', 'Aceleración 0-100 km/h (s)']){
+    await elegirFila(page, fila);
+    const r = await page.locator('#rkLista .rk-valor').evaluateAll(vs => vs.map(v => {
+      const t = v.firstChild, rg = document.createRange(); rg.selectNodeContents(t);
+      return { der: Math.round(v.querySelector('.rk-marca').getBoundingClientRect().right), txt: t.textContent.trim() };
+    }));
+    expect(r.length).toBeGreaterThan(3);
+    expect(new Set(r.map(x => x.der)).size, fila).toBe(1);
+    const dec = new Set(r.map(x => (/,(\d+)/.exec(x.txt) || ['', ''])[1].length));
+    expect(dec.size, fila + ': ' + r.map(x => x.txt).join(' / ')).toBe(1);
+  }
 });
