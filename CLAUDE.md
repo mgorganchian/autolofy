@@ -319,6 +319,14 @@ sí quedan en inglés, porque no muestran la palabra. Se coló con `YES` dos vec
   elegir una más alta dice que querés gastar más, y dentro de la franja el precio no suma. Con
   enchufe en casa, los enchufables van primero (`ELEGIR_ENCHUFE`). Un enchufable nunca se
   presenta como de bajo consumo (`RK_APARTE`).
+- **Respaldo de fábrica** (2026-10-10, pedido del usuario: en Argentina da miedo conseguir repuestos;
+  después del precio es de lo que más pesa): `MARCAS_INFO[marca].fabrica_mercosur` = planta que
+  **ya produce** autos en el Mercosur, con fuente (BYD, GWM en Haval/Ora/Tank/Poer, Chery por CAOA,
+  Changan por CAOA; las anunciadas no cuentan: Geely, Leapmotor, GAC, MG, Omoda/Jaecoo). Es de la
+  marca, no del auto. En Ayudame a elegir suma 1 que lo traiga la casa matriz y .6 la fábrica en el
+  Mercosur; en A tu medida es el criterio "Respaldo de fábrica" (`rkRespaldo`, en "Mucho" por
+  defecto); en el comparador cuenta como otra fila; en la tabla, "Fábrica en Brasil" en la fila del
+  importador. Revisar las anunciadas cuando empiecen a producir.
 - **Respaldo** (2026-10-09, pedido del usuario): las dos garantías están en `PCTL_DIR` (años y,
   a igual plazo, kilómetros: vale años + km/250.000, sin pasar nunca un año; 2026-10-09): tienen barra, ★ y ranking. Quién lo importa
   (`IMPORTA_FABRICA`: BYD, Omoda, Jaecoo y Leapmotor los trae la casa matriz, según
