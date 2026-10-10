@@ -60,12 +60,12 @@ test('ayudame a elegir: comparar todos los que cumplen, y sumando los que no pub
   const n = Number(/Los (\d+)/.exec(await todos.textContent())[1]);
   expect(n).toBeGreaterThan(4);
   const conSin = page.locator('[data-elegir-comparar="sinprecio"]');
-  const m = /Los (\d+) \(\+(\d+) sin precio\)/.exec(await conSin.textContent());
-  expect(Number(m[1])).toBe(n + Number(m[2]));
+  const m = /\+(\d+) sin precio/.exec(await conSin.textContent());
+  expect(Number(m[1])).toBeGreaterThan(0);
   await conSin.click();
   await expect(page).toHaveURL(/\?autos=/);
   const autos = new URL(page.url()).searchParams.get('autos').split(',');
-  expect(autos).toHaveLength(Number(m[1]));
+  expect(autos).toHaveLength(n + Number(m[1]));
 });
 
 test('ayudame a elegir: en el celular los botones de comparar van en una fila, siempre a la vista', async ({ page }) => {

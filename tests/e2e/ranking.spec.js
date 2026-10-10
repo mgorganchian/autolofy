@@ -26,7 +26,10 @@ async function abrirRanking(page, { todos = false } = {}) {
 const A_LA_VENTA = CARS.filter(c => c.status === 'venta').map(c => c.name);
 const HERRAMIENTAS = ['usd-kw', 'usd-km', '__medida', '__gasto'];
 async function elegirFila(page, nombre) {
-  await page.locator(`#rkScroll .rk-chip[data-fila="${nombre}"]`).click();
+  // En el celular se elige en el desplegable; en escritorio, con los botones (2026-10-10).
+  const sel = page.locator('#rkElegirSel');
+  if (await sel.isVisible()) await sel.selectOption(nombre);
+  else await page.locator(`#rkScroll .rk-chip[data-fila="${nombre}"]`).click();
   await expect(page.locator('#rkScroll .rk-chip.active')).toHaveAttribute('data-fila', nombre);
 }
 const enLista = page => page.locator('#rkLista .rk-item').evaluateAll(ls => ls.map(l => l.dataset.auto));
@@ -280,4 +283,16 @@ test('garantía: a igual plazo gana la de más kilómetros, y los kilómetros nu
   const fila = page.locator('#mainTable tr[data-nombre="Garantía general"]');
   await expect(fila.locator('.mejor-sel')).toHaveCount(1);
   await expect(fila.locator('td[data-col]:has(.mejor-sel)')).toContainText('100.000 km');
+});
+
+test('en el celular se elige qué rankear en un desplegable con todos los criterios', async ({ page }) => {
+  // Pedido del 2026-10-10: la fila de botones se corría de costado y no se veía que había más que el precio.
+  await page.goto('/index.html?tabla');
+  await abrirRanking(page);
+  const sel = page.locator('#rkElegirSel');
+  if (page.viewportSize().width > 640){ await expect(sel).toBeHidden(); return; }
+  await expect(sel).toBeVisible();
+  await expect(sel.locator('option')).toHaveCount(FILAS_RANKING.length + HERRAMIENTAS.length);
+  await sel.selectOption('Garantía general');
+  await expect(page.locator('#rkTitulo')).toContainText('Garantía');
 });
