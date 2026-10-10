@@ -133,7 +133,7 @@ test.describe('orden de columnas', () => {
   test('por defecto, por dimensiones: largo, después ancho, después alto, y sin largo al final', async ({ page }) => {
     await abrir(page);
     await expect(page.locator('#ordenSel')).toHaveValue('');
-    await expect(page.locator('#ordenSel option:checked')).toHaveText(/Dimensiones/);
+    await expect(page.locator('#ordenSel option:checked')).toHaveText(/tamaño/);
     const dims = await page.evaluate(() => DIMS);
     const orden = (await idxVisibles(page)).map(i => dims[i]);
     const conLargo = orden.filter(d => d[0] != null);

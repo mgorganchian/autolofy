@@ -886,7 +886,17 @@ try{var t=localStorage.getItem('tema');if(t==='dark'||t==='light')document.docum
   .rk-mios[aria-pressed="true"]{background:var(--byd-blue);border-color:var(--byd-blue);color:#fff}
   .rk-filtros{display:flex;flex-wrap:wrap;gap:6px 10px;align-items:center;border:0;padding:0;margin:0;min-width:0}
   .rk-filtros[disabled]{opacity:.45}
-  .rk-sel{display:inline-flex;align-items:center;gap:4px;font-size:.7rem;color:var(--ink-2)}
+  .rk-sel{position:relative;display:inline-flex;align-items:center;gap:4px;font-size:.7rem;color:var(--ink-2)}
+  .rk-elegir{position:relative;display:none}
+  @media screen and (max-width:640px){
+    #rkScroll .rk-chip{display:none}
+    .rk-elegir{display:block;width:100%}
+    .rk-elegir select{width:100%;font:inherit;font-weight:700;padding:6px 8px;border-radius:4px;border:1px solid rgba(255,255,255,.4);background:transparent;color:#fff}
+    .rk-elegir option,.rk-elegir optgroup{color:var(--ink);background:var(--surface)}
+    .rk-filtros{display:grid;grid-template-columns:1fr 1fr}
+    .rk-filtros .rk-sel select{width:100%}
+    .rk-filtros .rk-check{grid-column:1 / -1}
+  }
   .rk-sel select{font-size:.72rem;padding:3px 4px;border-radius:6px;border:1px solid var(--border-strong);background:var(--surface);color:var(--ink);max-width:40vw}
   .rk-check{display:inline-flex;align-items:center;gap:5px;font-size:.7rem;color:var(--ink-2);cursor:pointer}
   .rk-chip-herr{font-weight:600}
@@ -1176,7 +1186,7 @@ try{var t=localStorage.getItem('tema');if(t==='dark'||t==='light')document.docum
   #mainTable tr:has(.pct) > td[data-col]{vertical-align:top;position:relative;padding-bottom:20px}
   .pct{position:absolute;left:8px;right:8px;bottom:8px;height:6px;margin:0;border-radius:3px;background:var(--pct-off);overflow:hidden}
   .pct i{display:block;height:100%;border-radius:3px;background-image:linear-gradient(90deg,var(--etq-e),var(--etq-d) 50%,var(--etq-a));background-repeat:no-repeat;
-    -webkit-mask-image:linear-gradient(90deg,rgba(0,0,0,.2) var(--z,0%),rgba(0,0,0,.45) var(--z,0%),#000);mask-image:linear-gradient(90deg,rgba(0,0,0,.2) var(--z,0%),rgba(0,0,0,.45) var(--z,0%),#000)}
+    -webkit-mask-image:linear-gradient(90deg,rgba(0,0,0,.15) var(--z,0%),rgba(0,0,0,.45) var(--z,0%),#000 calc(50% + var(--z,0%) / 2),#000);mask-image:linear-gradient(90deg,rgba(0,0,0,.15) var(--z,0%),rgba(0,0,0,.45) var(--z,0%),#000 calc(50% + var(--z,0%) / 2),#000)}
   .pct.leyenda{position:relative;display:inline-block;left:auto;right:auto;bottom:auto;width:56px;vertical-align:middle}
   @media print{ .dif{display:none !important} }
 
@@ -1191,7 +1201,7 @@ try{var t=localStorage.getItem('tema');if(t==='dark'||t==='light')document.docum
   /* ============ Segunda fila de herramientas ============================== */
   .toolbar-2{flex-wrap:wrap;justify-content:space-between}
   .herr-tabla,.herr-gral{display:inline-flex;gap:6px;align-items:center;flex-wrap:wrap}
-  .orden-sel{display:inline-flex;align-items:center;gap:5px;font-size:.68rem;color:rgba(255,255,255,.85)}
+  .orden-sel{position:relative;display:inline-flex;align-items:center;gap:5px;font-size:.68rem;color:rgba(255,255,255,.85)}
   .orden-sel select{font-size:.68rem;padding:3px 4px;border-radius:6px;border:1px solid rgba(255,255,255,.4);
     background:rgba(255,255,255,.14);color:#fff;max-width:46vw}
   .orden-sel select option{color:var(--ink);background:var(--surface)}
@@ -1201,6 +1211,7 @@ try{var t=localStorage.getItem('tema');if(t==='dark'||t==='light')document.docum
   .precio-rango{display:grid;grid-template-columns:auto 1fr;gap:4px 10px;align-items:center;font-size:.76rem;color:var(--ink)}
   .precio-rango output{font-weight:700;font-variant-numeric:tabular-nums}
   .precio-rango input[type=range]{width:100%;accent-color:var(--byd-blue)}
+  .precio-fecha{display:block;font-size:.66rem;font-weight:400;color:var(--ink-3);margin-top:2px;cursor:help}
   .precio-sd{display:flex;align-items:center;gap:6px;font-size:.72rem;color:var(--ink-2);margin-top:6px;cursor:pointer}
 
   /* ============ Categorías plegables ===================================== */
@@ -1418,6 +1429,118 @@ try{var t=localStorage.getItem('tema');if(t==='dark'||t==='light')document.docum
     .mini-nav{display:none !important}
     footer{font-size:.6rem}
   }
+  /* Letra chica en el celular (pedido del 2026-10-10: los detalles de Ayudame a elegir, la barra y
+     sus botones seguían chicos). Todo lo que estaba por debajo de .8rem sube un 20% (15 px pasa a 18);
+     las cifras con aclaración van del mismo tamaño que las demás. Quedan afuera los nombres de fila
+     de la tabla y el encabezado de los autos, que tienen columnas angostas. Generado a partir de las
+     reglas de arriba: si se agrega una letra chica nueva, sumarla acá. */
+  @media screen and (max-width:640px){
+    header p{font-size:0.936rem}
+    .cat-btn{font-size:0.936rem}
+    .legend{font-size:0.888rem}
+    #fotoZoom .credito{font-size:0.7rem}
+    thead th small{font-size:0.792rem}
+    .val-nd{font-size:0.8rem}
+    .val-ext{font-size:0.8rem}
+    .val-note{font-size:0.8rem}
+    footer{font-size:0.816rem}
+    .car-chip{font-size:0.864rem}
+    .preset-btn{font-size:0.816rem}
+    .diff-toggle{font-size:0.816rem}
+    .filter-step-title .hint{font-size:0.816rem}
+    .mini-btn{font-size:0.792rem}
+    .dropdown-btn{font-size:0.936rem}
+    .mcard-txt b{font-size:0.912rem}
+    .mcard-txt small{font-size:0.744rem}
+    .advanced-toggle{font-size:0.84rem}
+    .edit-btn{font-size:0.864rem}
+    .legend-toggle{font-size:0.816rem}
+    .vista-toggle button{font-size:0.912rem}
+    .rk-head p{font-size:0.888rem}
+    .rk-orig{font-size:0.792rem}
+    .rk-valor small{font-size:0.84rem}
+    .rk-resto h3{font-size:0.936rem}
+    .rk-resto p{font-size:0.84rem}
+    .rk-resto li{font-size:0.864rem}
+    .sim-titulo{font-size:0.936rem}
+    .sim-crit button{font-size:0.84rem}
+    .sim-lista b{font-size:0.912rem}
+    .sim-lista small{font-size:0.768rem}
+    .sim-sumar{font-size:0.84rem}
+    .sim-todos{font-size:0.888rem}
+    .sim-vacio{font-size:0.864rem}
+    .sim-btn{font-size:0.72rem}
+    .rk-mios{font-size:0.888rem}
+    .rk-sel{font-size:0.84rem}
+    .rk-sel select{font-size:0.864rem}
+    .rk-check{font-size:0.84rem}
+    .rk-ciclo{font-size:0.7rem}
+    .rk-est{font-size:0.768rem}
+    .rk-estado{font-size:0.7rem}
+    .rk-como{font-size:0.84rem}
+    .rk-cobertura{font-size:0.84rem}
+    .rk-grafico figcaption{font-size:0.816rem}
+    .rk-f-sub{font-size:0.816rem}
+    .rk-f-lista li{font-size:0.888rem}
+    .rk-pesos label,.rk-gasto label{font-size:0.864rem}
+    .rk-pesos select,.rk-gasto input{font-size:0.888rem}
+    .visor-pie{font-size:0.864rem}
+    .ficha-cred{font-size:0.72rem}
+    .ficha-chips span{font-size:0.864rem}
+    .ficha-btn{font-size:0.936rem}
+    .ficha-datos dt{font-size:0.792rem}
+    .ficha-puntos-lista li{font-size:0.912rem}
+    .ficha-nota,.ficha-vacio{font-size:0.84rem}
+    .ficha-sim-auto b{font-size:0.936rem}
+    .ficha-sim-auto small{font-size:0.768rem}
+    .ficha-links a{font-size:0.936rem}
+    .grupo-cabeza span{font-size:0.864rem}
+    .grupo-cabeza .ficha-btn{font-size:0.864rem}
+    .grupo-rel{font-size:0.792rem}
+    .grupo-det,.grupo-imp{font-size:0.888rem}
+    .grupo-det small,.grupo-imp small{font-size:0.792rem}
+    .grupo-auto{font-size:0.84rem}
+    .ficha-ver-grupo{font-size:0.816rem}
+    .cc-filtros input{font-size:0.936rem}
+    .cc-prov h3 small{font-size:0.888rem}
+    .cc-serv{font-size:0.744rem}
+    .cc-marcas span{font-size:0.792rem}
+    .cc-linea{font-size:0.912rem}
+    .cc-links{font-size:0.888rem}
+    .cc-dist{font-size:0.864rem}
+    .cc-zona{font-size:0.864rem}
+    .elegir-ops span{font-size:0.912rem}
+    .elegir-nfotos{font-size:0.744rem}
+    .elegir-res ul{font-size:0.864rem}
+    .elegir-barra{font-size:0.864rem}
+    .elegir-barra-btns .ficha-btn{font-size:0.84rem}
+    .ficha-hist-lista{font-size:0.888rem}
+    .cc-cotizar{font-size:0.864rem}
+    .cc-cotizar .ficha-btn{font-size:0.888rem}
+    .promo{font-size:0.912rem}
+    .promo-tipo{font-size:0.744rem}
+    .promo-pie{font-size:0.816rem}
+    .donde-mejor-tit{font-size:0.864rem}
+    .colores li{font-size:0.936rem}
+    .video-info small{font-size:0.816rem}
+    .video-acciones{font-size:0.864rem}
+    .todos-autos li{font-size:0.936rem}
+    .dif{font-size:0.888rem}
+    .dif-gana small,.dif small{font-size:0.792rem}
+    .mejor-sel{font-size:0.816rem}
+    .share-btn{font-size:0.864rem}
+    #refInfo .mini-btn{font-size:0.816rem}
+    .orden-sel{font-size:0.912rem}
+    .orden-sel select{font-size:0.912rem}
+    .precio-rango{font-size:0.912rem}
+    .precio-sd{font-size:0.864rem}
+    .video-tipo{font-size:0.744rem}
+    .ref-btn{font-size:0.72rem}
+    .ref-cmp{font-size:0.72rem}
+    .precio-fecha{font-size:.792rem}
+    .cota{display:none}   /* repetía el 124 del subtítulo y sumaba dos renglones (2026-10-10) */
+    .legend-toggle,.diff-toggle{font-size:0.912rem}
+  }
   /* Títulos en el celular (pedido del 2026-10-10): ya eran grandes, así que no siguen el 130% de
      la letra; quedan apenas más grandes que antes. Lo que sube es el texto de los detalles. */
   @media screen and (max-width:640px){
@@ -1435,7 +1558,7 @@ try{var t=localStorage.getItem('tema');if(t==='dark'||t==='light')document.docum
 
 <header id="mainHeader">
   <h1 id="mainTitle">Autos chinos en Argentina</h1>
-  <p id="headerSubtitle">124 autos comparados con sus fichas técnicas oficiales.</p>
+  <p id="headerSubtitle">124 autos y sus fichas oficiales.</p>
   <div class="cota" aria-hidden="true"><span>124 autos</span></div>
 
   <!-- Barra compacta: siempre visible, es la única forma de reabrir el selector -->
@@ -1466,15 +1589,15 @@ try{var t=localStorage.getItem('tema');if(t==='dark'||t==='light')document.docum
   </div>
   <div class="toolbar-row toolbar-2">
     <span class="herr-tabla" id="herrTabla">
-      <label class="orden-sel"><span>Ordenar autos:</span>
-        <select id="ordenSel"><option value="">Dimensiones (más grande primero)</option></select>
+      <label class="orden-sel"><span class="sr">Ordenar autos</span>
+        <select id="ordenSel"><option value="" title="Largo, ancho y alto: el más grande primero">Por tamaño</option></select>
       </label>
       <button class="legend-toggle" id="plegarTodoBtn" type="button">Plegar todo</button>
     </span>
     <span class="herr-gral">
       <button class="legend-toggle" id="concesBtn" type="button" title="Dónde ver y comprar cada marca">Concesionarios</button>
       <button class="legend-toggle" id="gruposBtn" type="button" title="Qué grupo automotriz está detrás de cada marca">Grupos</button>
-      <button class="legend-toggle" id="imprimirBtn" type="button" title="Imprimir o guardar como PDF lo que estás viendo">Imprimir o PDF</button>
+      <button class="legend-toggle" id="imprimirBtn" type="button" title="Imprimir o guardar como PDF lo que estás viendo">Imprimir</button>
       <button class="legend-toggle" id="temaBtn" type="button" aria-label="Cambiar entre modo claro y oscuro"></button>
     </span>
   </div>
@@ -1797,7 +1920,7 @@ try{var t=localStorage.getItem('tema');if(t==='dark'||t==='light')document.docum
   <br><br>
   ⚠️ En la ficha de Yuan Pro las filas de potencia/par de "motor de combustión interna" (130 kW / 290 N·m) contradicen la naturaleza 100% eléctrica del auto indicada en la portada del mismo PDF — es un error de plantilla (copiado de una ficha PHEV). El valor de 130 kW está confirmado por pruebas independientes para esta misma batería (45.12 kWh), por lo que se mantiene marcado con *.
   <br><br>
-  Fecha de consulta: <span id="fechaConsulta">5 de octubre de 2026</span> (última verificación de las fichas técnicas oficiales). Los precios son de las listas de agosto 2026.
+  Fecha de consulta: <span id="fechaConsulta">5 de octubre de 2026</span> (última verificación de las fichas técnicas oficiales). Cada precio dice la fecha de su lista.
 </footer>
 
 <script>
@@ -2239,8 +2362,9 @@ function pctlFila(row){
 }
 
 // Tramo marcado (pedido del 2026-10-09): la barra se marca en un cuarto de la escala que
-// termina en el puntaje del auto, y lo de atrás queda al 20%. Dentro del tramo la opacidad sube
-// de izquierda a derecha y llega al 100% en la punta, que es el puntaje. Así los tramos miden lo
+// termina en el puntaje del auto, y lo de atrás queda al 15%. Dentro del tramo la opacidad sube
+// del 45% al 100% a mitad del tramo, y la mitad de la derecha (un octavo de la escala, la punta que
+// es el puntaje) va plena (2026-10-10). Así los tramos miden lo
 // mismo y lo que cambia es dónde están y de qué color (rojo, ámbar o verde); solo las de los
 // peores, que no llegan a un cuarto, quedan más cortas. Devuelve dónde empieza el tramo,
 // en % del largo de la barra (el --z de la máscara del CSS).
@@ -3444,22 +3568,33 @@ function rkChips(){
   const cont = document.getElementById('rkScroll');
   const chip = (k, txt, extra) => '<button type="button" class="cat-btn rk-chip' + (extra || '') + (k === rkActual ? ' active' : '') +
     '" aria-pressed="' + (k === rkActual) + '" data-fila="' + rkEsc(k) + '">' + rkEsc(txt) + '</button>';
-  cont.innerHTML = Object.entries(RK_HERRAMIENTAS).map(([k, t]) => chip(k, t, ' rk-chip-herr')).join('') +
+  // En el celular, un desplegable con todos los criterios en vez de la fila de botones que se
+  // corría de costado y solo mostraba los primeros tres (2026-10-10: no se veía que se puede
+  // rankear por otras cosas además del precio).
+  const op = (k, t) => '<option value="' + rkEsc(k) + '"' + (k === rkActual ? ' selected' : '') + '>' + rkEsc(t) + '</option>';
+  cont.innerHTML = '<label class="rk-elegir"><span class="sr">Rankear por</span><select id="rkElegirSel">' +
+      '<optgroup label="Según lo que buscás">' + Object.entries(RK_HERRAMIENTAS).map(([k, t]) => op(k, t)).join('') + '</optgroup>' +
+      '<optgroup label="Por un dato">' + RK_FILAS.map(f => op(f[0], rkEtiqueta(f[0]))).join('') + '</optgroup>' +
+      '<optgroup label="Por una cuenta">' + Object.entries(RK_DERIVADAS).map(([k, d]) => op(k, d.titulo)).join('') + '</optgroup>' +
+    '</select></label>' +
+    Object.entries(RK_HERRAMIENTAS).map(([k, t]) => chip(k, t, ' rk-chip-herr')).join('') +
     RK_FILAS.map(f => chip(f[0], rkEtiqueta(f[0]))).join('') +
     Object.entries(RK_DERIVADAS).map(([k, d]) => chip(k, d.titulo, ' rk-chip-deriv')).join('');
 }
 
 function rkFiltrosHTML(cand){
-  const sel = (id, etiqueta, opciones, valor) => '<label class="rk-sel"><span>' + etiqueta + '</span><select id="' + id + '">' +
+  // La etiqueta queda para lectores de pantalla: la primera opción ya dice qué filtra (2026-10-10,
+  // menos renglones en el celular).
+  const sel = (id, etiqueta, opciones, valor) => '<label class="rk-sel"><span class="sr">' + etiqueta + '</span><select id="' + id + '">' +
     opciones.map(([v, t]) => '<option value="' + rkEsc(v) + '"' + (String(valor) === String(v) ? ' selected' : '') + '>' + rkEsc(t) + '</option>').join('') + '</select></label>';
   const bloqueado = cand.hayMios && rkFiltro.mios;
-  const familias = [['', 'Todas'], ['combustion', 'Nafta o diésel'], ['hibrido', 'Híbridos'], ['enchufable', 'Enchufables'], ['electrico', 'Eléctricos']];
-  const topes = [[0, 'Sin límite'], ...[20000, 25000, 30000, 35000, 40000, 50000, 60000, 80000].map(n => [n, 'USD ' + n.toLocaleString('es-AR')])];
+  const familias = [['', 'Toda propulsión'], ['combustion', 'Nafta o diésel'], ['hibrido', 'Híbridos'], ['enchufable', 'Enchufables'], ['electrico', 'Eléctricos']];
+  const topes = [[0, 'Cualquier precio'], ...[20000, 25000, 30000, 35000, 40000, 50000, 60000, 80000].map(n => [n, 'Hasta USD ' + n.toLocaleString('es-AR')])];
   return (cand.hayMios ? '<button type="button" class="rk-mios" id="rkMios" aria-pressed="' + rkFiltro.mios + '">' +
       (rkFiltro.mios ? '✓ ' : '') + 'Mis ' + cand.mios.length + ' autos</button>' : '') +
     '<fieldset class="rk-filtros"' + (bloqueado ? ' disabled title="Sacá «Mis autos» para filtrar entre todos"' : '') + '>' +
-    sel('rkBody', 'Carrocería', [['', 'Todas'], ...BODIES.map(b => [b, b])], rkFiltro.body) +
-    sel('rkSize', 'Tamaño', [['', 'Todos'], ...SEGMENTS.filter(s => s !== 'Sin dato').map(s => [s, s])], rkFiltro.size) +
+    sel('rkBody', 'Carrocería', [['', 'Toda carrocería'], ...BODIES.map(b => [b, b])], rkFiltro.body) +
+    sel('rkSize', 'Tamaño', [['', 'Todo tamaño'], ...SEGMENTS.filter(s => s !== 'Sin dato').map(s => [s, s])], rkFiltro.size) +
     sel('rkProp', 'Propulsión', familias, rkFiltro.prop) +
     sel('rkPrecio', 'Hasta', topes, rkFiltro.precioMax) +
     '<label class="rk-check"><input type="checkbox" id="rkTodos"' + (rkFiltro.todos ? ' checked' : '') + '> Incluir preventa y no lanzados</label>' +
@@ -3499,7 +3634,9 @@ function rkValorHTML(r, k){
 function rkOrigHTML(r){
   if (typeof r.v !== 'string' || !r.v) return '';
   const original = (cleanVal(r.v) || '').trim();
-  const soloNumero = original.replace(/\s+/g, '') === String(r.n).replace('.', ',') || original === String(r.n);
+  // Si dice lo mismo que la cifra grande ("USD 16.900" con 16900), no se repite (2026-10-10).
+  const sinUnidad = original.replace(/^USD\s*/, '').replace(/\s*[a-zA-Z·\/]+$/, '').replace(/\s+/g, '');
+  const soloNumero = [String(r.n).replace('.', ','), r.n.toLocaleString('es-AR')].includes(sinUnidad) || original === String(r.n);
   return soloNumero || r.orig != null ? '' : '<div class="rk-orig" title="' + rkEsc(original) + '">' + rkEsc(original) + '</div>';
 }
 
@@ -3831,6 +3968,11 @@ function mostrarVista(v){
 document.getElementById('vistaElegir').addEventListener('click', () => mostrarVista('elegir'));
 document.getElementById('vistaTabla').addEventListener('click', () => mostrarVista('tabla'));
 document.getElementById('vistaRanking').addEventListener('click', () => mostrarVista('ranking'));
+document.getElementById('rkScroll').addEventListener('change', e => {
+  if (e.target.id !== 'rkElegirSel') return;
+  rkActual = e.target.value;
+  renderRanking();
+});
 document.getElementById('rkScroll').addEventListener('click', e => {
   const b = e.target.closest('.rk-chip');
   if (!b) return;
@@ -3908,7 +4050,11 @@ const ordenSel = document.getElementById('ordenSel');
 ORDEN_FILAS.forEach(o => {
   const op = document.createElement('option');
   op.value = o.clave;
-  op.textContent = rkEtiqueta(o.nombre) + (o.dir < 0 ? ' (menor primero)' : ' (mayor primero)');
+  // "Por precio de lista" (2026-10-10, sin el título "Ordenar autos:" ni "(menor primero)": el
+  // mejor siempre va primero y el texto largo se cortaba en el celular). La clave no cambia.
+  const t = (ETIQUETA_CORTA[o.nombre] || rkEtiqueta(o.nombre)).replace(/\s*\([^()]*\)\s*$/, '');
+  op.textContent = 'Por ' + t.charAt(0).toLowerCase() + t.slice(1);
+  op.title = rkEtiqueta(o.nombre) + (o.dir < 0 ? ' (menor primero)' : ' (mayor primero)');
   ordenSel.appendChild(op);
 });
 
@@ -4371,6 +4517,7 @@ function coloresHTML(slug){
   return '<section class="ficha-colores"><h3>Colores en Argentina</h3>' + cuerpo + '</section>';
 }
 let fuentesManifiesto = null;   // Map nombre -> [{tipo, url}]
+const fichaVerificada = new Map();   // nombre -> 'AAAA-MM-DD' de la última verificación de su ficha
 async function cargarManifiesto(){
   if (fuentesManifiesto) return fuentesManifiesto;
   fuentesManifiesto = new Map();
@@ -4379,8 +4526,9 @@ async function cargarManifiesto(){
     if (!r.ok) return fuentesManifiesto;
     for (const l of (await r.text()).split('\n')){
       if (!l.trim() || l.startsWith('#')) continue;
-      const [auto, archivo, url] = l.split('\t');
+      const [auto, archivo, url, , fecha] = l.split('\t');
       if (!url || !/^https:\/\//.test(url) || !/\.pdf(\?|$)/i.test(url)) continue;
+      if (/^\d{4}-\d{2}-\d{2}$/.test(fecha || '') && !(fichaVerificada.get(auto) >= fecha)) fichaVerificada.set(auto, fecha);
       const tipo = /etiqueta/i.test(archivo) ? 'Etiqueta de consumo' : /folleto|brochure/i.test(archivo) ? 'Folleto'
         : /manual/i.test(archivo) ? 'Manual' : /garant/i.test(archivo) ? 'Certificado de garantía' : 'Ficha técnica';
       if (!fuentesManifiesto.has(auto)) fuentesManifiesto.set(auto, []);
@@ -4389,6 +4537,29 @@ async function cargarManifiesto(){
   } catch (e) { /* sin red o abierto como archivo local: la página se arma igual, sin links */ }
   return fuentesManifiesto;
 }
+
+// Fecha de cada precio en la tabla (pedido del 2026-10-10: "los precios son de agosto" no era cierto
+// para todos). Sale de HISTORIAL_PRECIOS (la fecha de la lista oficial que trae ese precio) y, al
+// tocarla, dice cuándo se verificó por última vez la ficha del auto (fichas-fuentes.tsv). Un auto
+// sin historial no lleva fecha: no se adivina.
+const fechaCorta = f => { const [a, m, d] = f.split('-'); return +d + '/' + +m + '/' + a; };
+function fechasDePrecio(){
+  const tr = document.querySelector('#mainTable tr[data-nombre^="Precio de lista"]');
+  if (!tr) return;
+  CARS.forEach((c, i) => {
+    const h = HISTORIAL_PRECIOS[SLUG_AUTO[i]], td = tr.querySelector('td[data-col="' + i + '"]');
+    if (!h || !h.length || !td || td.querySelector('.precio-fecha')) return;
+    const f = h[h.length - 1][0], el = document.createElement('small');
+    el.className = 'precio-fecha'; el.textContent = 'Lista del ' + fechaCorta(f);
+    el.dataset.tip = 'Precio de la lista oficial del ' + fechaCorta(f) + '.';
+    td.insertBefore(el, td.querySelector('.pct'));
+  });
+  cargarManifiesto().then(() => tr.querySelectorAll('.precio-fecha').forEach(el => {
+    const i = +el.closest('td').dataset.col, f = fichaVerificada.get(CARS[i].name);
+    if (f) el.dataset.tip += ' Ficha técnica verificada el ' + fechaCorta(f) + '.';
+  }));
+}
+fechasDePrecio();
 
 function fichaFoto(k){
   const i = fichaActual, slug = SLUG_AUTO[i], fotos = listaDeFotos(slug);
@@ -4932,7 +5103,8 @@ const ELEGIR_PREG = [
   // Franjas, no topes (pedido del 2026-10-09): elegir una más alta dice que querés gastar más
   // que en la anterior. Cortes elegidos para que cada franja tenga una cantidad pareja de autos
   // a la venta (16 a 19 de los 104 con precio en dólares, octubre 2026); revisarlos si cambia mucho.
-  { k: 'presu', t: '¿Cuánto querés gastar?', ops: [['0-28500', 'Hasta USD 28.500'], ['28501-32000', 'USD 28.501 a 32.000'], ['32001-35500', 'USD 32.001 a 35.500'], ['35501-38500', 'USD 35.501 a 38.500'], ['38501-48000', 'USD 38.501 a 48.000'], ['48001-', 'Más de USD 48.000'], ['', 'Me da igual']] },
+    // Sin "USD" en cada opción (2026-10-10, menos renglones): lo dice la pregunta.
+  { k: 'presu', t: '¿Cuánto querés gastar? (USD)', ops: [['0-28500', 'Hasta 28.500'], ['28501-32000', '28.501 a 32.000'], ['32001-35500', '32.001 a 35.500'], ['35501-38500', '35.501 a 38.500'], ['38501-48000', '38.501 a 48.000'], ['48001-', 'Más de 48.000'], ['', 'Me da igual']] },
   { k: 'plazas', t: '¿Cuántos viajan seguido?', ops: [['4', 'Hasta 4'], ['5', '5'], ['6', '6 o 7']] },
   { k: 'uso', t: '¿Para qué lo vas a usar más?', ops: [['ciudad', 'Ciudad'], ['mixto', 'Ciudad y ruta'], ['ruta', 'Mucha ruta'], ['tierra', 'Tierra o campo'], ['carga', 'Trabajo o carga']] },
   { k: 'enchufe', t: '¿Podés cargarlo en tu casa o en el trabajo?', ops: [['si', 'Sí'], ['no', 'No'], ['nose', 'No sé']] },
@@ -5053,8 +5225,8 @@ function pintarElegir(cambio){
   // Es una vista de la página, como Tabla y Ranking (2026-10-09): el título del sitio es el de la
   // página, y acá va el de la sección.
   hoja.innerHTML = '<h2 id="elegirTitulo" class="elegir-titulo">Ayudame a elegir</h2>' +
-    '<p class="ficha-nota">Cinco preguntas y te sugerimos ' + elegirN() + ' autos a la venta. ' +
-      '<button type="button" class="mini-btn" id="elegirTabla">Ver la tabla con los ' + CARS.length + ' autos</button></p>' +
+    '<p class="ficha-nota">5 preguntas y te sugerimos ' + elegirN() + ' autos. ' +
+      '<button type="button" class="mini-btn" id="elegirTabla">Ver la tabla</button></p>' +
     '<div class="elegir-preg">' + ELEGIR_PREG.map(q => '<fieldset><legend>' + q.t + '</legend><div class="elegir-ops">' +
       q.ops.map(([v, t]) => '<label><input type="radio" name="el-' + q.k + '" value="' + v + '"' + (r[q.k] === v ? ' checked' : '') + '><span>' + t + '</span></label>').join('') + '</div></fieldset>').join('') + '</div>' +
     '<h3 class="elegir-res-tit" id="elegirResTit">' + (out.top.length ? 'Te sugerimos' : 'Ningún auto a la venta cumple todo eso') + '</h3>' +
@@ -5080,7 +5252,9 @@ function pintarElegir(cambio){
   const botones = [
     out.top.length ? btn('top', out.top.length === 1 ? 'Este' : 'Estos ' + out.top.length, true) : '',
     out.total > out.top.length ? btn('todos', 'Los ' + out.total) : '',
-    out.sinPrecio ? btn('sinprecio', out.total ? 'Los ' + (out.total + out.sinPrecio) + ' (+' + out.sinPrecio + ' sin precio)' : 'Los ' + out.sinPrecio + ' sin precio') : '',
+    // "+8 sin precio" (2026-10-10): con la letra más grande, "Los 24 (+8 sin precio)" no entraba en
+    // la fila de botones del celular. Suma los que cumplen y los que no publican precio en dólares.
+    out.sinPrecio ? btn('sinprecio', out.total ? '+' + out.sinPrecio + ' sin precio' : 'Los ' + out.sinPrecio + ' sin precio') : '',
   ].join('');
   hoja.insertAdjacentHTML('beforeend', '<div class="elegir-barra" role="status" aria-live="polite"><p class="elegir-barra-txt">' +
     (igual ? '<em>Sin cambios.</em> ' : cambio && out.top.length ? '<em>Nuevas sugerencias.</em> ' : '') +

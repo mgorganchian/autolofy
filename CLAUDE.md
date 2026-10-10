@@ -160,8 +160,8 @@ sí quedan en inglés, porque no muestran la palabra. Se coló con `YES` dos vec
   o más autos elegidos, **la misma barra se recalibra** (`recalibrarBarras`, 2026-10-09): arranca
   en su valor general y se desliza a su lugar entre los elegidos (el mejor la llena; el resto,
   valor/mejor). Al volver a todos, regresa a `data-g`. La barra se marca en un tramo de un
-  cuarto de la escala que termina en el puntaje, con la opacidad subiendo de izquierda a derecha
-  hasta el 100% en la punta, y lo de atrás queda al 20% (`barraZona`, máscara
+  cuarto de la escala que termina en el puntaje, con la opacidad subiendo del 45% al 100% hasta la
+  mitad del tramo y plena en la otra mitad (2026-10-10), y lo de atrás queda al 15% (`barraZona`, máscara
   `--z`): los tramos miden igual y cambian de lugar y color. Pedido del 2026-10-09. Va **solo en las 17 filas
   donde "mejor" tiene una dirección objetiva** (`PCTL_DIR` en el script). Las
   dimensiones (Longitud, Ancho, Altura, Distancia entre ejes) **no lo llevan a
@@ -174,7 +174,8 @@ sí quedan en inglés, porque no muestran la palabra. Se coló con `YES` dos vec
   filas en kW y una en **km/l** dentro de la fila en L/100km. Los empates se reparten
   con **rango medio**, sin eso los 37 autos de 5 asientos caían a 0 por un solo auto
   de 4.
-- La **vista Ranking** (botón Tabla/Ranking) ordena del mejor al peor **solo las 17
+- La **vista Ranking** (botón Tabla/Ranking; bajo el nombre va el texto de la celda solo si dice
+  algo más que la cifra grande, 2026-10-10) ordena del mejor al peor **solo las 17
   filas de `PCTL_DIR`**, y lee los números con el **mismo `pctlValor()`** que los
   barras de percentil: no tiene parser propio, así que hereda los vetos. Lo que no se puede
   rankear va al final en **tres grupos distintos que no hay que fusionar**: "Sin dato"
@@ -205,7 +206,8 @@ sí quedan en inglés, porque no muestran la palabra. Se coló con `YES` dos vec
   tildado, y habilitar su marca tildaba de rebote a sus hermanos de marca (8 autos en
   vez de 2). `tests/e2e/similares.spec.js` lo cubre.
 - **Las columnas se pueden mover** (2026-10-03): el auto de referencia (📌) va primero
-  y "Ordenar autos" reordena el resto. **El orden por defecto es "Dimensiones"**: largo,
+  y el desplegable de orden ("Por tamaño", "Por precio de lista"…; sin título visible desde el
+  2026-10-10) reordena el resto. **El orden por defecto es "Dimensiones"**: largo,
   a igual largo ancho, a igual ancho alto, más grande primero (`compararDims`); así el
   orden de `CARS` ya no importa y los autos nuevos se pueden agregar al final. Se mueven los `<th>` y `<td>` en el DOM, sin
   tocar `DATA` ni `CARS`. Por eso **nunca buscar el `<th>` de un auto por posición**:
@@ -229,8 +231,9 @@ sí quedan en inglés, porque no muestran la palabra. Se coló con `YES` dos vec
   130% (ya eran grandes: bloque "Títulos en el celular" al final del `<style>`). En Grupos, una línea
   por marca: la historia, el detalle del importador y las fuentes van en el tooltip. Los motivos
   de Ayudame a elegir son cortos (`MOTIVO_CORTO`).
-  Nada de "…" en nombres de autos ni resúmenes: si no entra, va en dos renglones. Los textos de
-  ayuda se acortaron para que haya menos para leer. `mejoras.spec.js` falla si un nombre de fila
+  Nada de "…" en nombres de autos ni resúmenes: si no entra, va en dos renglones. Lo que estaba por
+  debajo de .8rem sube otro 20% en el celular (bloque "Letra chica en el celular", generado a partir
+  de las reglas: una letra chica nueva hay que sumarla ahí). Los textos de ayuda se acortaron para que haya menos para leer. `mejoras.spec.js` falla si un nombre de fila
   se parte en cualquier sílaba en el celular.
   Las páginas de `autos/` y `novedades` (las arma `herramientas-paginas.py`) usan 115% con el
   cuerpo en `1rem` (18 px; su texto es más grande de base). Solo en pantalla: al imprimir no cambia. Todos los tamaños de letra van en `rem`
@@ -580,8 +583,10 @@ cada push a `main`, en segundos. Netlify quedó atrás — el `netlify.toml` sig
 repo pero no cumple ninguna función.
 
 La **Fecha de consulta** del pie (`#fechaConsulta`) es la de la última verificación de
-las fichas oficiales, **no la de los precios**, que siguen siendo de las listas de agosto
-2026. La actualiza la rutina sola, y solo si pudo verificar todas las fichas: no
+las fichas oficiales, **no la de los precios**. Cada precio de la tabla lleva su fecha ("Lista del
+3/10/2026", de la última entrada de `HISTORIAL_PRECIOS`; al tocarla, la última verificación de la
+ficha de ese auto según `fichas-fuentes.tsv`: `fechasDePrecio()`, 2026-10-10). Un auto sin
+historial no lleva fecha. La de consulta la actualiza la rutina sola, y solo si pudo verificar todas las fichas: no
 tocarla a mano.
 
 **Circuito de PR (pedido del usuario, 2026-10-09): de ahora en más, todo cambio va por pull
