@@ -303,3 +303,20 @@ test('ayudame a elegir: cada sugerido tiene a lo sumo 4 renglones y en el celula
   const dobles = await page.locator('.elegir-res ul > li').evaluateAll(ls => ls.filter(li => li.getBoundingClientRect().height > 1.5 * parseFloat(getComputedStyle(li).lineHeight)).map(li => li.textContent));
   expect(dobles).toEqual([]);
 });
+
+test('tema claro: el encabezado, el de la tabla y las categorías son claros, y "Elegir autos" destella en verde', async ({ page }) => {
+  // Pedido del 2026-10-10: nada oscuro arriba en el tema claro, con contraste fácil de leer.
+  await page.emulateMedia({ colorScheme: 'light' });
+  await page.goto('/index.html?autos=tank-300,byd-shark');
+  await expect(page.locator(FILAS_DATOS)).toHaveCount(N_FILAS);
+  const claros = await page.evaluate(() => ['header', '#theadWrap', '#theadTable thead th', '#mainTable tr.cat-row td'].map(sel => {
+    const [r, g, b] = getComputedStyle(document.querySelector(sel)).backgroundColor.match(/[\d.]+/g).map(Number);
+    return [sel, (r + g + b) / 3 > 180];
+  }));
+  for (const [sel, ok] of claros) expect(ok, sel).toBe(true);
+  const btn = page.locator('#openModalBtn');
+  expect(await btn.evaluate(b => getComputedStyle(b).animationName)).toBe('destelloElegir');
+  await page.emulateMedia({ colorScheme: 'dark' });
+  const [r, g, b] = (await page.locator('header').evaluate(h => getComputedStyle(h).backgroundColor)).match(/[\d.]+/g).map(Number);
+  expect((r + g + b) / 3).toBeLessThan(60);   // en el oscuro sigue oscuro
+});

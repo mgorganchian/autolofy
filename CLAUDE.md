@@ -244,6 +244,13 @@ sí quedan en inglés, porque no muestran la palabra. Se coló con `YES` dos vec
   lugar reservado en todas las filas (`.rk-marca.vacia`), el ciclo va en el renglón de abajo y
   la lista lleva la misma cantidad de decimales (`rkDecimales`). Nada de ancho variable a la
   derecha de una cifra que esté en columna. `ranking.spec.js` lo cubre.
+- **Tema claro arriba** (2026-10-10, pedido del usuario): el encabezado, la barra de selección, el
+  panel "Elegir autos", el encabezado de la tabla y las categorías usan `--h-bg`, `--h-ink`,
+  `--h-rgb` (tintas y bordes translúcidos: `rgb(var(--h-rgb) / .3)`) y `--h-inv-*` (chip activo):
+  claros en el tema claro, oscuros en el oscuro. **No volver a escribir `rgba(255,255,255,…)` ni
+  `#fff` en esa zona.** Texto sobre el verde de acción: `--sobre-verde` (blanco en claro, oscuro en
+  oscuro: blanco sobre el verde del tema oscuro daba 3:1). Contraste medido en todas las vistas y
+  los dos temas: nada por debajo de 4,5:1. "Elegir autos" es verde y destella (`destelloElegir`).
 - **Modo oscuro**: todo color sale de las variables de `:root`; el oscuro solo cambia sus
   valores (por `prefers-color-scheme` y por `data-theme`, que el botón guarda en
   `localStorage`). **No volver a escribir colores fijos en el CSS** (`#fff`, `#666`…):
