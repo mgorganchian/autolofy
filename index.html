@@ -1083,11 +1083,12 @@ try{var t=localStorage.getItem('tema');if(t==='dark'||t==='light')document.docum
   @media (min-width:900px){ .elegir-res{grid-template-columns:repeat(5,minmax(0,1fr))} }   /* los 5 en una fila (elegirN) */
   /* Tarjeta: en escritorio, foto arriba y texto abajo; en el celular, nombre arriba y foto
      a la izquierda con "Ver su página" debajo, para que entren las 4 (pedido del 2026-10-09). */
-  .elegir-res > li{display:grid;grid-template-areas:"foto" "nombre" "motivos" "ver";gap:6px;align-content:start}
+  /* "Ver ficha" a la derecha del nombre (2026-10-10): la tarjeta ocupa un renglón menos. */
+  .elegir-res > li{display:grid;grid-template-columns:1fr auto;grid-template-areas:"foto foto" "nombre ver" "motivos motivos";gap:6px;align-content:start;align-items:start}
   .elegir-res > li > b{grid-area:nombre} .elegir-res > li > .minicar{grid-area:foto}
   .elegir-foto{position:relative;display:block;width:100%;padding:0;border:0;background:none;cursor:zoom-in;line-height:0}
   .elegir-nfotos{position:absolute;right:5px;bottom:5px;line-height:1.2;font-family:var(--fuente-tabla);font-size:.62rem;font-weight:700;background:rgba(10,15,30,.75);color:#fff;border-radius:3px;padding:1px 5px}
-  .elegir-res > li > ul{grid-area:motivos} .elegir-res > li > button{grid-area:ver;justify-self:start}
+  .elegir-res > li > ul{grid-area:motivos} .elegir-res > li > button{grid-area:ver;justify-self:end;align-self:center;white-space:nowrap}
   .elegir-res img{width:100%;aspect-ratio:300/190;object-fit:contain;background:#fff;border-radius:2px}
   .elegir-res b{font-family:var(--fuente-titulo);font-size:1.1rem}
   .elegir-res ul{margin:4px 0 6px;padding-left:16px;font-size:.76rem;line-height:1.4}
@@ -1102,13 +1103,21 @@ try{var t=localStorage.getItem('tema');if(t==='dark'||t==='light')document.docum
   .elegir-barra-btns{display:flex;flex-wrap:wrap;align-items:center;gap:6px;margin-top:4px !important}
   .elegir-barra-btns span{font-family:var(--fuente-tabla);font-weight:700;color:var(--ink-2)}
   .elegir-barra-btns .ficha-btn{padding:4px 9px;font-size:.74rem;white-space:nowrap}
+  /* El botón principal de la barra, más grande y con un destello (2026-10-10): las respuestas
+     elegidas también son verdes, y este es el que hay que apretar. */
+  .elegir-barra-btns .ficha-btn.primario{font-size:.9rem !important;padding:6px 14px !important;font-weight:700;
+    animation:destelloComparar 2.4s ease-in-out infinite}
+  @keyframes destelloComparar{0%,55%,100%{box-shadow:0 0 0 0 transparent}
+    15%{box-shadow:0 0 0 3px var(--paper),0 0 0 6px var(--byd-blue)}
+    35%{box-shadow:0 0 0 3px var(--paper),0 0 14px 6px var(--byd-blue)}}
+  @media (prefers-reduced-motion:reduce){ .elegir-barra-btns .ficha-btn.primario{animation:none;box-shadow:0 0 0 3px var(--paper),0 0 0 5px var(--byd-blue)} }
   .elegir-barra em{font-style:normal;font-weight:700;color:var(--ink-2)}
   @keyframes elegirCambio{from{background:var(--note-bg)}to{background:var(--paper)}}
   .elegir-barra.cambio{animation:elegirCambio 1.2s ease-out}
   @media (prefers-reduced-motion:reduce){ .elegir-barra.cambio{animation:none} }
   @media (max-width:640px){
     .elegir-res{grid-template-columns:1fr;gap:10px}
-    .elegir-res > li{grid-template-columns:96px 1fr;grid-template-areas:"nombre nombre" "foto motivos" "ver motivos";
+    .elegir-res > li{grid-template-columns:96px 1fr auto;grid-template-areas:"nombre nombre ver" "foto motivos motivos";
       column-gap:10px;row-gap:2px;border-bottom:1px solid var(--line);padding-bottom:6px}
     .elegir-res{gap:8px}
     .elegir-res img{width:96px}
@@ -1116,7 +1125,7 @@ try{var t=localStorage.getItem('tema');if(t==='dark'||t==='light')document.docum
     .elegir-res b{font-size:1rem}
     .elegir-barra-btns .ficha-btn{padding:4px 7px;font-size:.7rem}
     .elegir-res ul{margin:0;font-size:.72rem;line-height:1.3;padding-left:14px}
-    .elegir-res > li > button{align-self:start}
+    .elegir-res > li > button{align-self:center}
   }
   .ficha-hist-res{margin:2px 0 4px;font-family:var(--fuente-tabla);font-weight:700;font-size:.9rem}
   .ficha-hist-res.baja{color:var(--etq-a)} .ficha-hist-res.sube{color:var(--etq-e)}
