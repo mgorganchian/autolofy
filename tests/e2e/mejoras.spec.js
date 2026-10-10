@@ -75,9 +75,10 @@ test('ayudame a elegir: en el celular los botones de comparar van en una fila, s
   await page.locator('label:has(input[name="el-presu"][value="32001-35500"])').click();
   const btns = page.locator('.elegir-barra-btns .ficha-btn');
   await expect(btns).toHaveCount(3);
-  const tops = await btns.evaluateAll(bs => bs.map(b => Math.round(b.getBoundingClientRect().top)));
-  expect(new Set(tops).size).toBe(1);
-  for (const t of tops) expect(t).toBeLessThan(844);
+  // El principal es más alto (2026-10-10): la misma fila es el mismo centro, no el mismo borde.
+  const centros = await btns.evaluateAll(bs => bs.map(b => { const r = b.getBoundingClientRect(); return r.top + r.height / 2; }));
+  expect(Math.max(...centros) - Math.min(...centros)).toBeLessThan(4);
+  for (const c of centros) expect(c).toBeLessThan(844);
 });
 
 test('pedir cotización: WhatsApp solo con número internacional y el auto en el mensaje', async ({ page }) => {
@@ -260,4 +261,15 @@ test('en el celular los nombres de fila no se parten en cualquier sílaba ni hay
   await page.click('#vistaRanking');
   const cortados = await page.locator('#rkLista .rk-nombre span, #rkLista .rk-orig').evaluateAll(els => els.filter(e => e.scrollWidth > e.clientWidth + 1).map(e => e.textContent));
   expect(cortados).toEqual([]);
+});
+
+test('ayudame a elegir: "Ver ficha" va en el renglón del nombre y el botón de comparar destella', async ({ page }) => {
+  // Pedido del 2026-10-10: tarjetas más bajas y que se note cuál es el botón a apretar.
+  await page.goto('/index.html');
+  const li = page.locator('.elegir-res > li').first();
+  const [nombre, ver] = await Promise.all([li.locator('> b').boundingBox(), li.locator('[data-elegir-ficha]').boundingBox()]);
+  expect(Math.abs((nombre.y + nombre.height / 2) - (ver.y + ver.height / 2))).toBeLessThan(nombre.height);
+  expect(ver.x).toBeGreaterThan(nombre.x + nombre.width);
+  const anim = await page.locator('.elegir-barra-btns .ficha-btn.primario').evaluate(b => getComputedStyle(b).animationName);
+  expect(anim).toBe('destelloComparar');
 });

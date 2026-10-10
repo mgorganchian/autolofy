@@ -324,6 +324,9 @@ sí quedan en inglés, porque no muestran la palabra. Se coló con `YES` dos vec
   (`IMPORTA_FABRICA`: BYD, Omoda, Jaecoo y Leapmotor los trae la casa matriz, según
   `MARCAS_INFO`) cuenta como una fila más en "Gana en más filas" cuando los elegidos difieren,
   y en Ayudame a elegir suma puntos y aparece como motivo.
+- **Tarjetas de Ayudame a elegir** (2026-10-10): "Ver ficha" a la derecha del nombre (un renglón
+  menos). El botón principal de la barra ("Estos 4") es más grande y destella (`destelloComparar`,
+  quieto con `prefers-reduced-motion`): las respuestas elegidas también son verdes.
 - **Pedir cotización**: WhatsApp solo con número internacional; elige el contacto de la marca.
 
 ## Concesionarios (2026-10-05)
