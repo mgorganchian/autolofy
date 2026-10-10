@@ -273,3 +273,22 @@ test('ayudame a elegir: "Ver ficha" va en el renglón del nombre y el botón de 
   const anim = await page.locator('.elegir-barra-btns .ficha-btn.primario').evaluate(b => getComputedStyle(b).animationName);
   expect(anim).toBe('destelloComparar');
 });
+
+test('respaldo de fábrica: la fábrica en el Mercosur tiene fuente, se ve en la tabla y pesa en A tu medida', async ({ page }) => {
+  // Pedido del 2026-10-10: después del precio, de lo que más pesa (repuestos).
+  await page.goto('/index.html?tabla');
+  await expect(page.locator(FILAS_DATOS)).toHaveCount(N_FILAS);
+  const fabs = await page.evaluate(() => Object.entries(MARCAS_INFO).filter(([, m]) => m.fabrica_mercosur).map(([k, m]) => [k, m.fabrica_mercosur]));
+  expect(fabs.map(([k]) => k).sort()).toEqual(['BYD', 'Changan', 'Chery', 'Haval', 'Ora', 'Poer', 'Tank']);
+  for (const [k, f] of fabs){
+    expect(f.fuentes.length, k).toBeGreaterThan(0);
+    for (const u of f.fuentes) expect(u, k).toMatch(/^https:\/\//);
+    expect(f.pais && f.planta && f.desde, k).toBeTruthy();
+  }
+  const byd = await page.evaluate(() => CARS.findIndex(c => c.brand === 'BYD' && c.status === 'venta'));
+  await expect(page.locator(`#mainTable tr[data-nombre="Importador en Argentina"] td[data-col="${byd}"] .fabrica-merc`)).toHaveText('Fábrica en Brasil');
+  await page.click('#vistaRanking');
+  const sel = page.locator('#rkElegirSel');
+  if (await sel.isVisible()) await sel.selectOption('__medida'); else await page.locator('#rkScroll .rk-chip[data-fila="__medida"]').click();
+  await expect(page.locator('select[data-peso="__respaldo"]')).toHaveValue('3');
+});
