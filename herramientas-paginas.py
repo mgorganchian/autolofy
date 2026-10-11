@@ -13,6 +13,7 @@ Nunca editarlas a mano. tests/e2e/paginas.spec.js falla si quedaron desactualiza
 """
 import html as H
 import json
+from urllib.parse import quote
 from datetime import date, datetime, timezone
 import os
 import re
@@ -20,6 +21,8 @@ import sys
 
 RAIZ = os.path.dirname(os.path.abspath(__file__))
 SITIO = 'https://autoschinos-ar.vercel.app'
+# El formulario para avisar un dato mal (el mismo que FORM_DATO_MAL del script; entry.1360569446 = Auto).
+FORM_DATO_MAL = 'https://docs.google.com/forms/d/e/1FAIpQLSdytJoPO5w4I-AjJiVyj_wwnPmWQFWs9k3sfjOMgyMXEkgKyQ/viewform'
 DIR = os.path.join(RAIZ, 'autos')
 DIR_VS = os.path.join(RAIZ, 'comparar')
 
@@ -171,6 +174,7 @@ td small{{display:block;font-size:.75rem;color:var(--ink2)}} .colores{{list-styl
 {videos_html}
 {''.join(secciones)}
 <footer><p>Datos de la ficha técnica oficial argentina; lo que sale de otra fuente está aclarado. "Sin dato" quiere decir que la fuente no lo informa, no que el auto no lo tenga.</p>
+<p><a href="{FORM_DATO_MAL}?usp=pp_url&amp;entry.1360569446={quote(nombre)}" rel="nofollow">¿Ves un dato mal? Avisanos</a>.</p>
 <p><a href="/">Volver al comparativo</a>. <a href="/quien-hace-esto">Quién hace esto</a>.</p></footer>
 </main></body></html>
 '''
@@ -409,6 +413,8 @@ h2{{font-size:1.15rem;margin:24px 0 6px;border-bottom:2px solid var(--ink)}} .su
 </ul>
 <h2>Privacidad</h2>
 <p>El sitio no tiene publicidad ni programas que sigan lo que hacés, y no pide registrarte. Lo que guardás (los autos que seguís, tu provincia, tu cochera) queda en tu navegador.</p>
+<h2>¿Viste un dato mal?</h2>
+<p>Avisame en <a href="{FORM_DATO_MAL}" rel="nofollow">este formulario</a> (es de Google; lo que escribís lo veo solo yo). Si podés, pasá el link de la ficha o la página oficial que lo dice: cada dato del sitio tiene que tener su fuente.</p>
 <p><a href="/">Volver al comparativo</a></p>
 </main></body></html>
 '''
