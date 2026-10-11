@@ -261,6 +261,14 @@ sí quedan en inglés, porque no muestran la palabra. Se coló con `YES` dos vec
   puntero por encima. Zonas táctiles de 24 px como mínimo (flechitas 44). Los destellos son 3 y no
   sin fin (WCAG 2.2.2). `scroll-padding` para que lo fijo no tape el foco. `<main>` y "Saltar al
   contenido". En la computadora la base es 112,5% (el 90% del texto quedaba debajo de 14 px).
+- **Red de service y ofertas** (2026-10-10): `RED_OFICIAL` (lo escribe `herramientas-paginas.py` desde
+  `concesionarios.json`, entre `/*red:inicio*/` y `/*red:fin*/`) da puntos de la red y talleres por marca
+  y provincia; una marca cuya red no distingue el taller lleva `talleres: null` y se dice "red de N
+  puntos", nunca "0 talleres". Se ve en la fila del importador, en la ficha (chips de respaldo) y en
+  Ayudame a elegir (motivo y hasta .4 de puntaje). Ofertas: un precio publicado se compara con la lista
+  **solo si es de la misma versión** (`promoComparable`: la promo nombra una versión cuyas palabras están
+  en la de la tabla, o el modelo tiene una única versión) y en dólares; así salen la línea "para la
+  versión de la tabla…" en Dónde comprarlo y el ranking "Rebajas publicadas".
 - **Encabezado compacto** (2026-10-10): `#theadWrap` se pega con `top` negativo igual al alto de las
   fotos (`compactarThead`), así al bajar las fotos salen de la pantalla y quedan nombre, descripción
   y botones (celular: 208 → 104 px). No cambia ningún alto, así que no salta. "Ocultar filas sin
