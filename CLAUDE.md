@@ -560,11 +560,12 @@ sí quedan en inglés, porque no muestran la palabra. Se coló con `YES` dos vec
   tiene un BYD Song Pro GS y quiere que otros evalúen los chinos con datos (y lo dice para que se
   tenga en cuenta). **Solo afirma lo que es cierto**: si se suma publicidad o algo que mida visitas,
   hay que cambiar "Privacidad"; `paginas.spec.js` falla si aparece un script de seguimiento conocido.
-- **¿Dato mal?** (2026-10-11): un Google Form del dueño (en su cuenta personal; el detalle, en
-  `CONTEXTO_LOCAL_PRIVADO.md`): las respuestas van a una planilla que solo ve él y le llega un mail con
-  cada una. Se abre precargado con el auto desde su página, su página estática y "Quién hace esto"
-  (`FORM_DATO_MAL`, `datoMalURL`; los `entry.N` son los de cada pregunta: si se rehace el formulario,
-  cambian). Pide la fuente: cada dato tiene que tener la suya.
+- **Sugerencias** (2026-10-11; empezó como "¿Dato mal?"): un Google Form del dueño (en su cuenta
+  personal; el detalle, en `CONTEXTO_LOCAL_PRIVADO.md`) para un dato mal, un auto que falta o una idea:
+  las respuestas van a una planilla que solo ve él y le llega un mail con cada una. Se abre precargado
+  con el auto desde su página, su página estática, el pie y "Quién hace esto" (`FORM_SUGERENCIAS`,
+  `sugerenciaURL`; los `entry.N` son los de cada pregunta: si se rehace el formulario, cambian). Si es
+  un dato, pide la fuente.
 - **No agregan datos ni se editan a mano.** Si cambia `index.html`, se regeneran:
   `tests/e2e/paginas.spec.js` falla si quedaron desactualizadas (corre el script con
   `--check`). La rutina semanal lo hace sola (tarea F).
