@@ -117,7 +117,7 @@ test.describe('vista Concesionarios', () => {
     expect(n).toBeGreaterThan(0);
     expect(n).toBeLessThan(tdf.length + 1);
 
-    await page.keyboard.press('Escape');
+    await page.click('#vistaTabla');
     await expect(page.locator('#concesVista')).toBeHidden();
   });
 

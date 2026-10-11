@@ -382,6 +382,12 @@ sí quedan en inglés, porque no muestran la palabra. Se coló con `YES` dos vec
   la misma versión; una corrección reemplaza la última entrada. Lo escribe la rutina (tarea D).
 - **Novedades** (`/novedades` y `/novedades.xml`): las arma `herramientas-paginas.py` con el
   historial, las promos vigentes y `novedades.json` (solo hitos del sitio). No editar a mano.
+- **Grupos y Concesionarios también son vistas de la página** (2026-10-11, pedido del usuario), no
+  ventanas encima: en el iPhone, como ventanas, la página de atrás se arrastraba y el final quedaba
+  bajo la barra del navegador (`max-height: 94vh`). `mostrarVista('grupos'|'conces')`, sus botones
+  quedan marcados (`aria-pressed`), se sale con las pestañas o con Atrás (Esc ya no las cierra) y la URL
+  lleva `?vista=grupos` o `?vista=concesionarios`. En la lista del ranking el estado va corto ("No
+  lanzado", `ESTADO_CORTO`) y baja de renglón si no entra: el largo tapaba el precio.
 - **La portada abre "Ayudame a elegir"** (2026-10-09), que es una **vista de la página** como Tabla
   y Ranking (pestaña `#vistaElegir`, sección `#elegirHoja`, `mostrarVista('elegir')`), no un panel
   encima de la tabla: el panel modal confundía (título repetido, tabla oscurecida e inaccesible).

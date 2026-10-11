@@ -841,7 +841,7 @@ if(!location.search&&!location.hash)document.documentElement.classList.add('arra
   .rk-pos{font-weight:700;font-size:.95rem;text-align:center;color:var(--accent-ink);font-variant-numeric:tabular-nums}
   .rk-foto{width:64px;height:40px;object-fit:contain;background:#fff;border-radius:6px;display:block}
   .rk-cuerpo{min-width:0}
-  .rk-nombre{font-size:.8rem;font-weight:600;display:flex;align-items:center;gap:4px;min-width:0}
+  .rk-nombre{font-size:.8rem;font-weight:600;display:flex;flex-wrap:wrap;align-items:center;gap:2px 6px;min-width:0}
   .rk-nombre span{min-width:0}
   .rk-nombre .prop-icon{flex-shrink:0}
   .rk-barra{height:6px;background:var(--paper);border-radius:3px;margin-top:5px;overflow:hidden}
@@ -969,6 +969,11 @@ if(!location.search&&!location.hash)document.documentElement.classList.add('arra
     cursor:pointer;text-decoration:underline dotted rgb(var(--h-rgb) / .5);text-underline-offset:2px}
   .th-nombre:hover{text-decoration-color:var(--h-ink)}
   .th-nombre:focus-visible{outline:2px solid var(--h-ink);outline-offset:1px}
+  /* Grupos y Concesionarios son vistas de la página como Tabla y Ranking (2026-10-11): en el iPhone,
+     como ventanas, la página de atrás se arrastraba y el final quedaba bajo la barra del navegador. */
+  .vista-pagina{padding:0 0 32px}
+  .ficha-hoja.vista-hoja{max-height:none;overflow:visible;border-radius:0;box-shadow:none;margin:0 auto;background:transparent}
+  .legend-toggle[aria-pressed="true"]{background:var(--h-inv-bg);color:var(--h-inv-ink);border-color:var(--h-inv-bg)}
   .ficha-overlay{position:fixed;inset:0;z-index:1000;background:rgba(10,15,30,.6);display:flex;align-items:flex-end;justify-content:center}
   .ficha-overlay[hidden]{display:none}
   .ficha-hoja{position:relative;background:var(--paper);color:var(--ink);width:100%;max-width:880px;max-height:94vh;overflow-y:auto;
@@ -2002,6 +2007,8 @@ if(!location.search&&!location.hash)document.documentElement.classList.add('arra
 <div class="no-results" id="noResults" style="display:none">No se encontraron características con ese término.</div>
 <div class="sim" id="simPanel" role="dialog" aria-label="Autos similares" hidden></div>
 <section class="elegir" id="elegirHoja" aria-labelledby="elegirTitulo" hidden></section>
+<section class="vista-pagina" id="gruposVista" aria-labelledby="gruposTitulo" hidden><div class="ficha-hoja vista-hoja" id="gruposHoja"></div></section>
+<section class="vista-pagina" id="concesVista" aria-labelledby="concesTitulo" hidden><div class="ficha-hoja vista-hoja" id="concesHoja"></div></section>
 <section class="ranking" id="rankingView" hidden>
   <div class="rk-filtros-wrap" id="rkFiltros"></div>
   <div class="rk-head"><h2 id="rkTitulo"></h2><p id="rkSub"></p></div>
@@ -2011,8 +2018,6 @@ if(!location.search&&!location.hash)document.documentElement.classList.add('arra
   <div class="rk-resto" id="rkResto"></div>
   <div class="sim rk-ficha" id="rkFicha" role="dialog" aria-label="Puestos del auto" hidden></div>
 </section>
-<div class="ficha-overlay" id="concesVista" role="dialog" aria-modal="true" aria-labelledby="concesTitulo" hidden><div class="ficha-hoja" id="concesHoja"></div></div>
-<div class="ficha-overlay" id="gruposVista" role="dialog" aria-modal="true" aria-labelledby="gruposTitulo" hidden><div class="ficha-hoja" id="gruposHoja"></div></div>
 <div class="ficha-overlay" id="fichaAuto" role="dialog" aria-modal="true" aria-labelledby="fichaNombre" hidden><div class="ficha-hoja" id="fichaHoja"></div></div>
 <div id="tooltipBox"></div>
 
@@ -2936,6 +2941,8 @@ function actualizarTitulo(){
   document.title = ficha ? ficha + ' · ' + TITULO_BASE
     : vistaActual === 'elegir' ? 'Ayudame a elegir · ' + TITULO_BASE
     : vistaActual === 'ranking' ? 'Ranking · ' + TITULO_BASE
+    : vistaActual === 'grupos' ? 'Grupos automotrices · ' + TITULO_BASE
+    : vistaActual === 'conces' ? 'Concesionarios · ' + TITULO_BASE
     : sel.length < CARS.length && sel.length <= 4 ? sel.map(c => c.short).join(' vs ') + ' · ' + TITULO_BASE
     : sel.length < CARS.length ? sel.length + ' autos · ' + TITULO_BASE : TITULO_BASE;
 }
@@ -3888,7 +3895,10 @@ function rkMarcaHTML(v){
   return v.startsWith('NOTE:') ? '<span class="rk-marca nota" role="img" aria-label="con aclaración" data-tip="' + rkEsc(tip || 'Aclaración: métrica no directamente comparable entre estas fichas.') + '"></span>'
        : v.startsWith('EXT:')  ? '<span class="rk-marca ext" role="img" aria-label="de otra fuente" data-tip="' + rkEsc(tip || 'Dato de otra fuente, no oficial de la ficha AR.') + '"></span>' : '';
 }
-const rkNoVenta = i => CARS[i].status !== 'venta' ? '<span class="rk-estado">' + rkEsc(STATUS_LABELS[CARS[i].status] || CARS[i].status) + '</span>' : '';
+// En la lista va corto (2026-10-11): "Aún no lanzado en Argentina" no entraba al lado del nombre en el
+// celular y tapaba el precio.
+const ESTADO_CORTO = { preventa: 'En preventa', nolanzado: 'No lanzado', discontinuado: 'Discontinuado' };
+const rkNoVenta = i => CARS[i].status !== 'venta' ? '<span class="rk-estado" title="' + rkEsc(STATUS_LABELS[CARS[i].status] || '') + '">' + rkEsc(ESTADO_CORTO[CARS[i].status] || CARS[i].status) + '</span>' : '';
 
 // Una fila de la lista. `valorHTML` es lo que se lee grande a la derecha.
 function rkItemHTML(r, maxN, valorHTML, extraHTML, mios){
@@ -4349,12 +4359,13 @@ window.addEventListener('resize', () => compactarThead());
 window.addEventListener('load', () => compactarThead());
 function mostrarVista(v){
   document.documentElement.classList.remove('arranca-elegir');   // de acá en más manda el script
-  const rk = v === 'ranking', el = v === 'elegir', tabla = !rk && !el;
-  vistaActual = rk ? 'ranking' : el ? 'elegir' : 'tabla';
+  const rk = v === 'ranking', el = v === 'elegir', gr = v === 'grupos', cc = v === 'conces', tabla = !rk && !el && !gr && !cc;
+  const otra = el || gr || cc;   // vistas sin la barra de selección ni la leyenda
+  vistaActual = rk ? 'ranking' : el ? 'elegir' : gr ? 'grupos' : cc ? 'conces' : 'tabla';
   actualizarTitulo();
   // "Elegir autos" vuelve a destellar al llegar a la tabla o al ranking (son 3 veces, no sin fin).
   const eb = document.getElementById('openModalBtn');
-  if (!el && eb){ eb.style.animation = 'none'; void eb.offsetWidth; eb.style.animation = ''; }
+  if (!otra && eb){ eb.style.animation = 'none'; void eb.offsetWidth; eb.style.animation = ''; }
   // Al esconder la tabla el navegador le pierde el scroll horizontal: se guarda
   // para que al volver siga en los mismos autos.
   if (!tabla && tbodyWrap.style.display !== 'none') rkScrollTabla = tbodyWrap.scrollLeft;
@@ -4366,19 +4377,22 @@ function mostrarVista(v){
                     document.getElementById('herrTabla'), document.getElementById('difBox')])
     x.style.display = tabla ? '' : 'none';
   // "Elegir autos" y "Cómo leer la tabla" son de la tabla y el ranking, no de las preguntas.
-  document.getElementById('summaryBar').style.display = el ? 'none' : '';
-  document.getElementById('legendToggleBtn').style.display = el ? 'none' : '';
-  if (el) document.getElementById('legendBox').style.display = 'none';
+  document.getElementById('summaryBar').style.display = otra ? 'none' : '';
+  document.getElementById('legendToggleBtn').style.display = otra ? 'none' : '';
+  if (otra) document.getElementById('legendBox').style.display = 'none';
+  document.getElementById('gruposVista').hidden = !gr;
+  document.getElementById('concesVista').hidden = !cc;
+  document.getElementById('gruposBtn').setAttribute('aria-pressed', String(gr));
+  document.getElementById('concesBtn').setAttribute('aria-pressed', String(cc));
   document.getElementById('rkScroll').style.display = rk ? '' : 'none';
   document.getElementById('rankingView').hidden = !rk;
   document.getElementById('elegirHoja').hidden = !el;
   document.body.classList.toggle('vista-elegir', el);
   if (tabla) compactarThead(); else ajustarScrollPadding();
-  if (el){
-    document.getElementById('noResults').style.display = 'none';
-    pintarElegir();
-    return;
-  }
+  if (otra) document.getElementById('noResults').style.display = 'none';
+  if (el){ pintarElegir(); return; }
+  if (gr){ pintarGrupos(); return; }
+  if (cc){ pintarConcesVista(); return; }
   if (rk){
     document.getElementById('noResults').style.display = 'none';
     renderRanking();
@@ -4966,6 +4980,7 @@ function urlCalcular(){
   if (refIdx !== null) p.set('ref', SLUG_AUTO[refIdx]);
   if (ordenActual) p.set('orden', ordenActual);
   if (fichaActual !== null) p.set('auto', SLUG_AUTO[fichaActual]);
+  if (vistaActual === 'grupos' || vistaActual === 'conces') p.set('vista', vistaActual === 'grupos' ? 'grupos' : 'concesionarios');
   let q = p.toString().replace(/%2C/g, ',');
   // Sin otros parámetros, "?tabla" dice que se está en la tabla o el ranking: sin eso, recargar o
   // compartir abría "Ayudame a elegir" (2026-10-10).
@@ -4985,8 +5000,8 @@ function urlGuardar(modo){
 // Cada vista o ventana que se abre con un toque deja un paso en el historial del navegador, y
 // Atrás lo deshace en vez de sacar a la persona del sitio (Baymard: el 59% de los sitios lo rompe).
 // La URL sigue mandando en qué se compara y qué auto se mira (?autos=, ?auto=); el estado del
-// historial guarda la vista ('elegir', 'tabla', 'ranking'), la ventana abierta (capa: 'ficha',
-// 'grupos', 'conces', 'panel') y si está el visor de fotos.
+// historial guarda la vista ('elegir', 'tabla', 'ranking', 'grupos', 'conces'), la ventana abierta
+// (capa: 'ficha', 'panel') y si está el visor de fotos.
 let historiaModo = 'push';   // 'push' agrega pasos; 'replace' reemplaza el actual; 'off' no toca nada
 let urlCongelada = false;    // mientras se encadenan cambios, la URL se escribe una sola vez al final
 let desdeHistoria = false;   // true mientras se aplica un paso del historial
@@ -5044,16 +5059,12 @@ window.addEventListener('popstate', e => {
   try {
     if (!st.visor && !visor.hidden) cerrarVisor();
     if (st.capa !== 'panel' && modalOverlay.style.display !== 'none') closeModal();
-    if (st.capa !== 'grupos' && grupoAbierto) cerrarGrupos();
-    if (st.capa !== 'conces' && concesAbierta) cerrarConces();
     sincronizarSeleccion();
     const slug = new URLSearchParams(location.search).get('auto');
     const fi = slug ? SLUG_AUTO.indexOf(slug) : -1;
     if (fi < 0 && fichaActual !== null) cerrarFicha();
     if (st.vista && st.vista !== vistaActual) mostrarVista(st.vista);
     if (fi >= 0 && fichaActual !== fi) abrirFicha(fi);
-    if (st.capa === 'grupos' && !grupoAbierto) abrirGrupos();
-    if (st.capa === 'conces' && !concesAbierta) abrirConces();
     if (st.capa === 'panel' && modalOverlay.style.display === 'none') openModal();
   } finally { desdeHistoria = false; urlCongelada = congelada; actualizarTitulo(); }
 });
@@ -5619,8 +5630,17 @@ document.addEventListener('keydown', e => {
 // Qué grupo está detrás de cada marca, con qué relación (marca propia, submarca,
 // adquirida, joint venture, participación) y quién la importa en Argentina. Todo con
 // fuente: las relaciones corporativas chinas cambian seguido.
-let grupoAbierto = false;
+// Ir a la vista Grupos, opcionalmente con un grupo enfocado (desde la página de un auto).
+let grupoEnfocar = null;
 function abrirGrupos(enfocar){
+  grupoEnfocar = enfocar || null;
+  if (vistaActual === 'grupos') pintarGrupos(); else irAVista('grupos');
+  window.scrollTo({ top: 0 });
+  const foco = grupoEnfocar && document.querySelector('#gruposHoja .grupo[data-grupo="' + CSS.escape(grupoEnfocar) + '"]');
+  if (foco){ foco.classList.add('enfocado'); foco.scrollIntoView({ block: 'start' }); }
+  grupoEnfocar = null;
+}
+function pintarGrupos(){
   const porGrupo = new Map();
   CARS.forEach((c, i) => {
     const g = grupoDe(i), s = submarcaDe(i);
@@ -5636,7 +5656,6 @@ function abrirGrupos(enfocar){
   const hosts = urls => (urls || []).slice(0, 4).map(u => { try { return new URL(u).hostname.replace(/^www\./, ''); } catch (e) { return u; } }).join(', ');
   const tip = (txt, urls) => txt ? ' data-tip="' + rkEsc(txt + (urls && urls.length ? ' Fuentes: ' + hosts(urls) + '.' : '')) + '"' : '';
   document.getElementById('gruposHoja').innerHTML =
-    '<button type="button" class="ficha-cerrar" id="gruposCerrar" aria-label="Cerrar">✕</button>' +
     '<h2 id="gruposTitulo" class="grupos-titulo">Grupos automotrices</h2>' +
     '<p class="ficha-nota">' + new Set(CARS.map((_, i) => submarcaDe(i))).size + ' marcas, ' + grupos.length +
     ' grupos. Tocá una marca o un importador para ver su historia. Datos de octubre de 2026.</p>' +
@@ -5654,40 +5673,21 @@ function abrirGrupos(enfocar){
             '<p class="grupo-autos">' + autos.map(i => '<button type="button" class="grupo-auto" data-idx="' + i + '">' + rkEsc(CARS[i].name) + '</button>').join('') + '</p></div>';
         }).join('') + '</section>';
     }).join('');
-  document.getElementById('gruposVista').hidden = false;
-  dialogoAbierto(document.getElementById('gruposVista'));
-  if (!grupoAbierto) pasoHist({ capa: 'grupos', visor: false }, urlSinFicha());
-  document.body.classList.add('modal-open');
-  grupoAbierto = true;
-  const foco = enfocar && document.querySelector('#gruposHoja .grupo[data-grupo="' + CSS.escape(enfocar) + '"]');
-  if (foco){ foco.classList.add('enfocado'); foco.scrollIntoView({ block: 'start' }); }
-  document.getElementById('gruposCerrar').focus();
-}
-function cerrarGrupos(){
-  if (!grupoAbierto) return;
-  if (cerrarPorHistoria('capa', 'grupos')) return;
-  grupoAbierto = false;
-  document.getElementById('gruposVista').hidden = true;
-  dialogoCerrado(document.getElementById('gruposVista'));
-  document.getElementById('gruposHoja').innerHTML = '';
-  if (fichaActual === null) document.body.classList.remove('modal-open');
 }
 document.getElementById('gruposBtn').addEventListener('click', () => abrirGrupos());
 document.getElementById('verGruposModal').addEventListener('click', () => { enTransicion(() => closeModal()); abrirGrupos(); });
 document.addEventListener('click', e => {
   const vg = e.target.closest ? e.target.closest('.ficha-ver-grupo') : null;
   if (vg){ const g = vg.dataset.grupo; sinHistoria(() => cerrarFicha()); abrirGrupos(g); return; }
-  if (!grupoAbierto) return;
-  if (e.target === document.getElementById('gruposVista') || e.target.closest('#gruposCerrar')){ cerrarGrupos(); return; }
+  if (vistaActual !== 'grupos') return;
   const a = e.target.closest('.grupo-auto');
-  if (a){ sinHistoria(() => cerrarGrupos()); abrirFicha(+a.dataset.idx); return; }
+  if (a){ abrirFicha(+a.dataset.idx); return; }
   const cg = e.target.closest('[data-comparar-grupo]');
   if (cg){
     const idx = CARS.map((_, i) => i).filter(i => grupoDe(i) === cg.dataset.compararGrupo);
-    compararConPaso(() => { simFijar(idx); simRefrescarSelector(); cerrarGrupos(); aplicarSeleccion(); }); ocultarTitulo(); window.scrollTo({ top: 0 });
+    compararConPaso(() => { simFijar(idx); simRefrescarSelector(); mostrarVista('tabla'); aplicarSeleccion(); }); ocultarTitulo(); window.scrollTo({ top: 0 });
   }
 });
-document.addEventListener('keydown', e => { if (e.key === 'Escape' && grupoAbierto) cerrarGrupos(); });
 
 
 // ============ Concesionarios ===============================================
@@ -5775,19 +5775,16 @@ const PROV_ORDEN = (a, b) => a.localeCompare(b, 'es');
 // --- Vista completa -------------------------------------------------------------
 let concesFiltro = { provincia: '', marca: '', grupo: '', q: '' };
 try { const g = JSON.parse(localStorage.getItem('concesProv') || 'null'); if (g) concesFiltro.provincia = g; } catch (e) {}
-let concesAbierta = false;
 const grupoDeMarca = m => { const i = CARS.findIndex(c => c.brand === m); return i >= 0 ? grupoDe(i) : 'Sin dato'; };
-async function abrirConces(){
+function abrirConces(){
+  if (vistaActual === 'conces') pintarConcesVista(); else irAVista('conces');
+  window.scrollTo({ top: 0 });
+}
+async function pintarConcesVista(){
   const hoja = document.getElementById('concesHoja');
-  hoja.innerHTML = '<button type="button" class="ficha-cerrar" id="concesCerrar" aria-label="Cerrar">✕</button><h2 id="concesTitulo" class="grupos-titulo">Concesionarios</h2><p class="ficha-vacio">Cargando la red oficial…</p>';
-  document.getElementById('concesVista').hidden = false;
-  dialogoAbierto(document.getElementById('concesVista'));
-  if (!concesAbierta) pasoHist({ capa: 'conces', visor: false }, urlSinFicha());
-  document.body.classList.add('modal-open');
-  concesAbierta = true;
-  document.getElementById('concesCerrar').focus();
+  hoja.innerHTML = '<h2 id="concesTitulo" class="grupos-titulo">Concesionarios</h2><p class="ficha-vacio">Cargando la red oficial…</p>';
   await cargarConces();
-  if (concesAbierta) pintarConces();
+  if (vistaActual === 'conces') pintarConces();
 }
 function pintarConces(){
   const d = concesDatos, hoja = document.getElementById('concesHoja');
@@ -5804,8 +5801,7 @@ function pintarConces(){
   const porProv = new Map();
   lista.forEach(c => { if (!porProv.has(c.provincia)) porProv.set(c.provincia, []); porProv.get(c.provincia).push(c); });
   const sinRed = Object.entries(d.marcas || {}).filter(([, m]) => !m.total).map(([k, m]) => k + (m.aviso ? ' (' + m.aviso + ')' : ''));
-  hoja.innerHTML = '<button type="button" class="ficha-cerrar" id="concesCerrar" aria-label="Cerrar">✕</button>' +
-    '<h2 id="concesTitulo" class="grupos-titulo">Concesionarios</h2>' +
+  hoja.innerHTML = '<h2 id="concesTitulo" class="grupos-titulo">Concesionarios</h2>' +
     '<p class="ficha-nota">La red oficial que publica cada marca, consultada el ' + concesEsc(d.fecha || '') + '. Llamá antes de ir: las redes cambian seguido.</p>' +
     '<div class="cc-filtros">' + sel('ccProv', 'Provincia', provincias, f.provincia) + sel('ccMarca', 'Marca', marcas, f.marca) + sel('ccGrupo', 'Grupo', grupos, f.grupo) +
       '<label class="rk-sel"><span>Buscar</span><input type="search" id="ccQ" placeholder="Ciudad o nombre" value="' + concesEsc(f.q) + '"></label></div>' +
@@ -5818,15 +5814,6 @@ function pintarConces(){
       porProv.get(p).sort((a, b) => PROV_ORDEN(a.ciudad || '', b.ciudad || '') || PROV_ORDEN(a.nombre, b.nombre)).map(c => concesTarjetaHTML(c, false)).join('') + '</ul></section>').join('')) +
     (lista.length ? '' : '<p class="ficha-vacio">Ningún concesionario con esos filtros.</p>') +
     (sinRed.length ? '<p class="ficha-nota">Sin red publicada todavía: ' + concesEsc(sinRed.join('; ')) + '.</p>' : '');
-}
-function cerrarConces(){
-  if (!concesAbierta) return;
-  if (cerrarPorHistoria('capa', 'conces')) return;
-  concesAbierta = false;
-  document.getElementById('concesVista').hidden = true;
-  dialogoCerrado(document.getElementById('concesVista'));
-  document.getElementById('concesHoja').innerHTML = '';
-  if (fichaActual === null && !grupoAbierto) document.body.classList.remove('modal-open');
 }
 document.getElementById('concesBtn').addEventListener('click', abrirConces);
 document.getElementById('concesVista').addEventListener('change', e => {
@@ -5843,11 +5830,6 @@ document.getElementById('concesVista').addEventListener('input', e => {
   pintarConces();
   const n = document.getElementById('ccQ'); n.focus(); try { n.setSelectionRange(pos, pos); } catch (er) {}
 });
-document.addEventListener('click', e => {
-  if (!concesAbierta) return;
-  if (e.target === document.getElementById('concesVista') || (e.target.closest && e.target.closest('#concesCerrar'))) cerrarConces();
-});
-document.addEventListener('keydown', e => { if (e.key === 'Escape' && concesAbierta) cerrarConces(); });
 
 // --- "Dónde comprarlo" en la página de cada auto ------------------------------------
 // Pedido del usuario (2026-10-08): todos los concesionarios que venden el auto, con la zona
@@ -5989,14 +5971,14 @@ async function pintarDondeVerlo(i){
 }
 function dondeRepintar(){
   if (fichaActual !== null) pintarDondeVerlo(fichaActual);
-  if (concesAbierta) pintarConces();
+  if (vistaActual === 'conces' && concesDatos) pintarConces();
 }
 function dondeGuardarLoc(u){
   miUbic = u;
   try { if (u && u.tipo !== 'gps') localStorage.setItem('concesLoc', JSON.stringify(u)); else if (!u) localStorage.removeItem('concesLoc'); } catch (e) {}
 }
 document.addEventListener('change', e => {
-  if (fichaActual === null && !concesAbierta) return;
+  if (fichaActual === null && vistaActual !== 'conces') return;
   if (e.target.id === 'dondeProv'){
     concesFiltro.provincia = e.target.value;
     try { localStorage.setItem('concesProv', JSON.stringify(e.target.value)); } catch (er) {}
@@ -6009,7 +5991,7 @@ document.addEventListener('change', e => {
 });
 document.addEventListener('click', e => {
   const t = e.target.closest ? e.target : null;
-  if (!t || (fichaActual === null && !concesAbierta)) return;
+  if (!t || (fichaActual === null && vistaActual !== 'conces')) return;
   if (t.closest('#dondeGps')){
     const aviso = document.getElementById('dondeAviso');
     if (!navigator.geolocation){ if (aviso) aviso.textContent = 'Este navegador no comparte la ubicación: elegí tu provincia y localidad.'; return; }
@@ -6289,6 +6271,8 @@ if (barrasSeg) aplicarBarras(); else renderDiferencias();
 // La portada empieza en "Ayudame a elegir" (pedido del 2026-10-09). Un link con parámetros
 // (?autos=, ?auto=, ?ref=…) abre lo que pide, y ?tabla abre la tabla directo (lo usan los tests).
 if (!location.search && !location.hash) mostrarVista('elegir');
+// Un link a Grupos o Concesionarios (?vista=grupos / ?vista=concesionarios) abre esa vista.
+{ const vq = new URLSearchParams(location.search).get('vista'); if (vq === 'grupos' || vq === 'concesionarios') mostrarVista(vq === 'grupos' ? 'grupos' : 'conces'); }
 historiaModo = 'push';
 try { history.replaceState({ vista: vistaActual, capa: null, visor: false }, '', location.href); } catch (e) {}
 pintarSeguidosBtn(); pintarAvisoSeguidos();
