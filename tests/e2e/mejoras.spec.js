@@ -444,3 +444,73 @@ test('ayudame a elegir: sin presupuesto preelegido, resumen con "Cambiar" y, si 
   await page.locator('.elegir-foto').first().click();
   await expect(page.locator('#visorFotos .foto-num')).toHaveText(/^1 de \d+$/);
 });
+
+test('cuánto tarda en cargar: estimado en casa, y el tiempo de la ficha cuando lo publica', async ({ page }) => {
+  // 2026-10-10: el Seal U (18,3 kWh, 6,6 kW, sin carga rápida) tiene todo en la ficha.
+  await abrir(page, '?auto=seal-u-dm-i');
+  const s = page.locator('.ficha-carga');
+  await expect(s.locator('dt')).toHaveText(['Enchufe común (10 A)', 'Cargador de pared de 7 kW', 'Carga rápida']);
+  await expect(s.locator('dd')).toHaveText(['8 h 20 min', '2 h 50 min (el auto admite 6,6 kW)', 'No tiene']);
+  await expect(s.locator('.ficha-nota')).toContainText('es el mínimo');
+  // Con dos rangos en la celda va el que cubre más batería ("6 h de 5-100%", no "3 h de 30-80%").
+  await abrir(page, '?auto=leapmotor-c10');
+  await expect(page.locator('.ficha-carga dd').nth(1)).toHaveText('5 a 100% en 6 h');
+  // Un naftero no tiene la sección.
+  await abrir(page, '?auto=tank-300');
+  await expect(page.locator('.ficha-carga')).toHaveCount(0);
+});
+
+test('¿entra en mi cochera?: entran, no entran y sin dato; la página del auto lo repite', async ({ page }) => {
+  await abrir(page);
+  await page.locator('#vistaRanking').click();
+  // En el celular se elige en el desplegable; en escritorio, con los botones.
+  const sel = page.locator('#rkElegirSel');
+  if (await sel.isVisible()) await sel.selectOption('__cochera');
+  else await page.locator('#rkScroll .rk-chip[data-fila="__cochera"]').click();
+  await expect(page.locator('#rkLista .rk-vacio')).toContainText('Cargá el largo');
+  // Metros con coma, centímetros o milímetros dan lo mismo.
+  await page.locator('#cLargo').fill('4,6');
+  await page.locator('#cAncho').fill('250');
+  const entran = await page.locator('#rkLista .rk-item').count();
+  expect(entran).toBeGreaterThan(10);
+  await page.locator('#cAncho').fill('2500');
+  await expect(page.locator('#rkLista .rk-item')).toHaveCount(entran);
+  // Ordenados por lo que sobra en la medida más justa, de mayor a menor.
+  const vals = await page.locator('#rkLista .rk-item').evaluateAll(l => l.map(li => +li.dataset.valor));
+  expect(vals).toEqual([...vals].sort((a, b) => b - a));
+  await expect(page.locator('#rkLista .rk-item .rk-orig').first()).toHaveText(/^Sobran \d+ cm de largo y \d+ cm de ancho\.$/);
+  // El Tank 300 (4.760 mm) no entra en 4,6 m: le faltan 16 cm.
+  await expect(page.locator('#rkResto [data-grupo="no"] li[data-auto="Tank 300"]')).toHaveAttribute('data-tip', 'Le faltan 16 cm de largo.');
+  await abrir(page, '?auto=tank-300');
+  await expect(page.locator('.ficha-cochera')).toContainText('No entra en tu cochera. Le faltan 16 cm de largo.');
+  await page.locator('.ficha-cochera [data-ir-cochera]').click();
+  await expect(page.locator('#rkTitulo')).toHaveText('¿Entra en mi cochera?');
+  await expect(page.locator('#cLargo')).toBeFocused();
+});
+
+test('tamaño a escala y fotos lado a lado al comparar; los todoterreno se reconocen', async ({ page }) => {
+  await abrir(page, '?autos=song-pro,byd-sealion-7,baic-bj40-pro,tank-300');
+  const esc = page.locator('#difBox details[data-dif="escala"]');
+  await esc.locator('summary').click();
+  await expect(esc.locator('.esc-fila')).toHaveCount(4);
+  // Mismo factor de escala para todos: ancho dibujado / largo es igual en cada fila.
+  const k = await esc.locator('.esc-fila').evaluateAll(fs => fs.map(f => {
+    const mm = parseFloat(f.querySelector('.esc-med').textContent.replace(',', '.')) * 1000;
+    return f.querySelector('svg').getBoundingClientRect().width / mm;
+  }));
+  k.forEach(x => expect(x).toBeCloseTo(k[0], 3));
+  // Los todoterreno usan su silueta (antes esTodoterreno nunca encontraba ninguno).
+  await expect(esc.locator('use[href="#b-offroad"]')).toHaveCount(2);
+  // Sin scroll horizontal en el celular.
+  expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1)).toBe(true);
+  // Las fotos: una por auto en la misma vista, con su crédito; cambiar de vista no cierra nada.
+  const fotos = page.locator('#difBox details[data-dif="fotos"]');
+  await fotos.locator('summary').click();
+  await expect(fotos.locator('figure')).toHaveCount(4);
+  await page.locator('#vistaLadoSel').selectOption('tres-cuartos-delantero');
+  await expect(fotos.locator('figure img').first()).toHaveAttribute('src', /fotos\/[a-z0-9-]+-\d+\.jpg$/);
+  // El crédito va en cada foto que lo tiene en CREDITOS_POR_FOTO (las del tablero, todas).
+  await page.locator('#vistaLadoSel').selectOption('tablero');
+  expect(await fotos.locator('figure img').evaluateAll(l => l.every(im => im.closest('figure').querySelector('.lado-cred')))).toBe(true);
+  await expect(esc).toHaveAttribute('open', '');
+});

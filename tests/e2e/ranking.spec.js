@@ -24,7 +24,7 @@ async function abrirRanking(page, { todos = false } = {}) {
   if (todos) await page.locator('#rkTodos').check();
 }
 const A_LA_VENTA = CARS.filter(c => c.status === 'venta').map(c => c.name);
-const HERRAMIENTAS = ['usd-kw', 'usd-km', '__medida', '__gasto', '__rebajas'];
+const HERRAMIENTAS = ['usd-kw', 'usd-km', '__medida', '__gasto', '__rebajas', '__cochera'];
 async function elegirFila(page, nombre) {
   // En el celular se elige en el desplegable; en escritorio, con los botones (2026-10-10).
   const sel = page.locator('#rkElegirSel');

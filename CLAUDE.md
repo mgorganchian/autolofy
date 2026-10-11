@@ -297,6 +297,24 @@ sí quedan en inglés, porque no muestran la palabra. Se coló con `YES` dos vec
   repita en cada hoja.
 - Los **7 todoterreno** (BJ40 ×2, BJ60, BJ30 ×2, Tank 300, Jetour T2) usan la silueta
   `b-offroad` pero su campo `body` **sigue siendo `"SUV"`**: cambia el dibujo, no el filtro.
+  La lista está por slug en `TODOTERRENO` (2026-10-10): el encabezado ya no lleva silueta (la
+  reemplazó la foto) y `esTodoterreno` la buscaba ahí, así que Ayudame a elegir nunca encontraba
+  ninguno. El T2 i-DM no está en la lista: se sumó después y nadie lo decidió.
+- **Carga, cochera, escala y fotos lado a lado** (2026-10-10, ideas de EV Database, vehiclesizes.com
+  y Autohome):
+  - "Cuánto tarda en cargar" en la página de cada eléctrico o enchufable (`cargaHTML`): en casa es
+    la batería sobre la potencia (enchufe de 10 A = 2,2 kW; pared = 7 kW o lo que admita el auto), y
+    se presenta como **el mínimo**, sin inventar un factor de pérdidas. Si la celda trae el tiempo de
+    la ficha ("30 a 80% en 20 min"), va ese y no se calcula (`tiempoFicha`, el rango más amplio). La
+    carga rápida nunca se calcula.
+  - "¿Entra en mi cochera?" es una herramienta del Ranking (`__cochera`): largo, ancho y alto
+    opcional en metros (acepta cm o mm), guardados en el navegador (`rkCochera`). Entran, no entran
+    (cuánto falta) y sin dato. La nota avisa que las fichas miden el ancho sin espejos: no se suma
+    ningún margen inventado. La página del auto lo repite si ya se cargó.
+  - Al comparar, "Tamaño a escala" (las siluetas estiradas a su largo y alto, misma escala, regla de
+    1 m; `SIL_CAJA` es la caja de cada silueta dentro de su `<symbol>`) y "Fotos lado a lado" (la
+    misma vista de cada auto, con el crédito de cada foto). Van plegados y siguen abiertos al
+    cambiar la selección (`difAbiertos`).
 
 ---
 
