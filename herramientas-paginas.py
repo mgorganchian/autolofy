@@ -208,6 +208,25 @@ h2{{font-size:1.05rem;margin:2px 0}} p{{margin:2px 0}}
     return pagina_html, rss
 
 
+def red_oficial():
+    d = json.load(open(os.path.join(RAIZ, 'concesionarios.json'), encoding='utf-8'))
+    red = {}
+    for c in d.get('concesionarios', []):
+        serv = set(c.get('servicios') or [])
+        for m in c.get('marcas', []):
+            r = red.setdefault(m, {'puntos': 0, 'talleres': 0, 'distingue': False, 'prov': {}})
+            pr = r['prov'].setdefault(c.get('provincia') or 's/d', {'puntos': 0, 'talleres': 0})
+            r['puntos'] += 1; pr['puntos'] += 1
+            if 'posventa' in serv:
+                r['talleres'] += 1; pr['talleres'] += 1; r['distingue'] = True
+    for m, r in red.items():
+        if not r['distingue']:
+            r['talleres'] = None
+            for pr in r['prov'].values(): pr['talleres'] = None
+        del r['distingue']
+    return {'fecha': d.get('fecha'), 'marcas': red}
+
+
 def generar():
     data, cars, slugs, creditos, colores, videos = leer()
     salida = {}
@@ -226,6 +245,10 @@ def generar():
     nav = ('<nav class="todos-autos" aria-label="Página de cada auto"><h2>La página de cada auto</h2><ul>' +
            ''.join(f'<li><a href="/autos/{sl}">{H.escape(c["name"])}</a></li>' for c, sl in lista) + '</ul></nav>')
     s = re.sub(r'(<!-- autos:inicio[^>]*-->\n).*?(<!-- autos:fin -->)', lambda m: m.group(1) + nav + '\n' + m.group(2), s, flags=re.S)
+    # Resumen de la red oficial por marca (2026-10-10), para mostrar talleres sin bajar los 440 KB de
+    # concesionarios.json en la portada. Una marca cuya red no distingue el taller lleva talleres: null.
+    red = red_oficial()
+    s = re.sub(r'(/\*red:inicio\*/).*?(/\*red:fin\*/)', lambda m: m.group(1) + json.dumps(red, ensure_ascii=False, separators=(',', ':'), sort_keys=True) + m.group(2), s, flags=re.S)
     salida[idx] = s
     return salida, slugs
 

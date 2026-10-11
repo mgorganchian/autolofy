@@ -24,7 +24,7 @@ async function abrirRanking(page, { todos = false } = {}) {
   if (todos) await page.locator('#rkTodos').check();
 }
 const A_LA_VENTA = CARS.filter(c => c.status === 'venta').map(c => c.name);
-const HERRAMIENTAS = ['usd-kw', 'usd-km', '__medida', '__gasto'];
+const HERRAMIENTAS = ['usd-kw', 'usd-km', '__medida', '__gasto', '__rebajas'];
 async function elegirFila(page, nombre) {
   // En el celular se elige en el desplegable; en escritorio, con los botones (2026-10-10).
   const sel = page.locator('#rkElegirSel');
@@ -322,4 +322,16 @@ test('las cifras del ranking quedan alineadas en columna, con la misma cantidad 
     const dec = new Set(r.map(x => (/,(\d+)/.exec(x.txt) || ['', ''])[1].length));
     expect(dec.size, fila + ': ' + r.map(x => x.txt).join(' / ')).toBe(1);
   }
+});
+
+test('rebajas publicadas: solo precios de la misma versión de la tabla, en dólares', async ({ page }) => {
+  // 2026-10-10: el Dashing 1.5 a USD 27.500 no es una rebaja del 1.6T de la tabla (USD 38.500).
+  await page.goto('/index.html?tabla');
+  await abrirRanking(page);
+  await elegirFila(page, '__rebajas');
+  await expect(page.locator('#rkLista .rk-item').first()).toBeVisible({ timeout: 15000 });
+  const autos = await enLista(page);
+  expect(autos).not.toContain('Jetour Dashing');
+  expect(autos).not.toContain('Chery Himla');
+  for (const t of await page.locator('#rkLista .rk-valor').allTextContents()) expect(t).toMatch(/^−[\d,]+%$/);
 });

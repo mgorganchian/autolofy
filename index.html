@@ -1259,6 +1259,7 @@ if(!location.search&&!location.hash)document.documentElement.classList.add('arra
   .precio-rango{display:grid;grid-template-columns:auto 1fr;gap:4px 10px;align-items:center;font-size:.76rem;color:var(--ink)}
   .precio-rango output{font-weight:700;font-variant-numeric:tabular-nums}
   .precio-rango input[type=range]{width:100%;accent-color:var(--byd-blue)}
+  .donde-oferta-eval{margin:0 0 8px;font-weight:700;color:var(--yes)}
   .precio-fecha{display:block;font-size:.66rem;font-weight:400;color:var(--ink-3);margin-top:2px;cursor:help}
   .precio-sd{display:flex;align-items:center;gap:6px;font-size:.72rem;color:var(--ink-2);margin-top:6px;cursor:pointer}
 
@@ -2579,6 +2580,7 @@ const diffCheckbox = document.getElementById('diffOnly');
 diffCheckbox.addEventListener('change', applyFilters);
 
 function applyColumnVisibility(){
+  requestAnimationFrame(() => { if (typeof compactarThead === 'function') compactarThead(); });
   // Con table-layout:fixed el ancho se reparte por POSICIÓN de columna, no por auto:
   // una celda oculta no ocupa lugar y los autos visibles se corren a la izquierda,
   // pero cada <col> sigue sumando su ancho. Con 2 autos elegidos la tabla medía
@@ -2933,6 +2935,25 @@ const importaFabrica = i => { const m = infoMarca(i); return !m || !m.importador
 // anunciadas (Geely, Leapmotor, GAC, MG, Omoda/Jaecoo) no cuentan. Es de la marca, no del auto:
 // los autos de la tabla vienen de China.
 const fabricaMercosur = i => { const m = infoMarca(i); return (m && m.fabrica_mercosur) || null; };
+// Red oficial por marca (2026-10-10, repuestos y service): puntos de la red y talleres, en el país y por
+// provincia. Lo calcula herramientas-paginas.py a partir de concesionarios.json (no editar a mano).
+// talleres: null = la marca publica su red sin decir qué local tiene taller: no se dice "0".
+const RED_OFICIAL = /*red:inicio*/{"fecha":"2026-10-05","marcas":{"Arcfox":{"prov":{"Buenos Aires":{"puntos":30,"talleres":18},"Chaco":{"puntos":1,"talleres":0},"Chubut":{"puntos":1,"talleres":1},"Ciudad Autónoma de Buenos Aires":{"puntos":19,"talleres":10},"Corrientes":{"puntos":1,"talleres":1},"Córdoba":{"puntos":4,"talleres":4},"Entre Ríos":{"puntos":7,"talleres":4},"Formosa":{"puntos":2,"talleres":1},"Jujuy":{"puntos":1,"talleres":1},"La Pampa":{"puntos":1,"talleres":1},"Mendoza":{"puntos":1,"talleres":1},"Misiones":{"puntos":1,"talleres":1},"Neuquén":{"puntos":1,"talleres":1},"Río Negro":{"puntos":1,"talleres":1},"Salta":{"puntos":1,"talleres":0},"San Juan":{"puntos":1,"talleres":1},"San Luis":{"puntos":1,"talleres":1},"Santa Cruz":{"puntos":3,"talleres":1},"Santa Fe":{"puntos":6,"talleres":4},"Santiago del Estero":{"puntos":2,"talleres":1},"Tierra del Fuego":{"puntos":1,"talleres":1},"Tucumán":{"puntos":2,"talleres":1}},"puntos":88,"talleres":55},"BAIC":{"prov":{"Buenos Aires":{"puntos":30,"talleres":18},"Chaco":{"puntos":1,"talleres":0},"Chubut":{"puntos":1,"talleres":1},"Ciudad Autónoma de Buenos Aires":{"puntos":19,"talleres":10},"Corrientes":{"puntos":1,"talleres":1},"Córdoba":{"puntos":4,"talleres":4},"Entre Ríos":{"puntos":7,"talleres":4},"Formosa":{"puntos":2,"talleres":1},"Jujuy":{"puntos":1,"talleres":1},"La Pampa":{"puntos":1,"talleres":1},"Mendoza":{"puntos":1,"talleres":1},"Misiones":{"puntos":1,"talleres":1},"Neuquén":{"puntos":1,"talleres":1},"Río Negro":{"puntos":1,"talleres":1},"Salta":{"puntos":1,"talleres":0},"San Juan":{"puntos":1,"talleres":1},"San Luis":{"puntos":1,"talleres":1},"Santa Cruz":{"puntos":3,"talleres":1},"Santa Fe":{"puntos":6,"talleres":4},"Santiago del Estero":{"puntos":2,"talleres":1},"Tierra del Fuego":{"puntos":1,"talleres":1},"Tucumán":{"puntos":2,"talleres":1}},"puntos":88,"talleres":55},"BYD":{"prov":{"Buenos Aires":{"puntos":6,"talleres":5},"Ciudad Autónoma de Buenos Aires":{"puntos":7,"talleres":0},"Córdoba":{"puntos":2,"talleres":2},"Mendoza":{"puntos":1,"talleres":1},"Salta":{"puntos":1,"talleres":1},"Santa Fe":{"puntos":1,"talleres":1},"Tierra del Fuego":{"puntos":1,"talleres":0},"Tucumán":{"puntos":1,"talleres":1}},"puntos":20,"talleres":11},"Changan":{"prov":{"Buenos Aires":{"puntos":11,"talleres":7},"Chaco":{"puntos":2,"talleres":1},"Ciudad Autónoma de Buenos Aires":{"puntos":5,"talleres":2},"Córdoba":{"puntos":2,"talleres":2},"Mendoza":{"puntos":3,"talleres":1},"Neuquén":{"puntos":2,"talleres":1},"San Juan":{"puntos":1,"talleres":1},"Santa Fe":{"puntos":2,"talleres":1},"Tucumán":{"puntos":1,"talleres":1}},"puntos":29,"talleres":17},"Chery":{"prov":{"Buenos Aires":{"puntos":16,"talleres":null},"Catamarca":{"puntos":1,"talleres":null},"Ciudad Autónoma de Buenos Aires":{"puntos":7,"talleres":null},"Corrientes":{"puntos":1,"talleres":null},"Córdoba":{"puntos":3,"talleres":null},"Entre Ríos":{"puntos":1,"talleres":null},"Jujuy":{"puntos":1,"talleres":null},"La Pampa":{"puntos":1,"talleres":null},"La Rioja":{"puntos":1,"talleres":null},"Mendoza":{"puntos":2,"talleres":null},"Misiones":{"puntos":1,"talleres":null},"Neuquén":{"puntos":1,"talleres":null},"Salta":{"puntos":1,"talleres":null},"San Juan":{"puntos":1,"talleres":null},"San Luis":{"puntos":1,"talleres":null},"Santa Fe":{"puntos":2,"talleres":null},"Santiago del Estero":{"puntos":1,"talleres":null},"Tierra del Fuego":{"puntos":2,"talleres":null},"Tucumán":{"puntos":1,"talleres":null}},"puntos":45,"talleres":null},"DFSK":{"prov":{"Buenos Aires":{"puntos":16,"talleres":11},"Chaco":{"puntos":1,"talleres":1},"Chubut":{"puntos":2,"talleres":1},"Ciudad Autónoma de Buenos Aires":{"puntos":4,"talleres":2},"Córdoba":{"puntos":1,"talleres":1},"Entre Ríos":{"puntos":2,"talleres":1},"La Rioja":{"puntos":2,"talleres":1},"Mendoza":{"puntos":3,"talleres":2},"Misiones":{"puntos":2,"talleres":1},"Neuquén":{"puntos":2,"talleres":1},"San Juan":{"puntos":2,"talleres":1},"San Luis":{"puntos":2,"talleres":1},"Santa Fe":{"puntos":4,"talleres":2},"Tucumán":{"puntos":2,"talleres":1}},"puntos":45,"talleres":27},"Deepal":{"prov":{"Buenos Aires":{"puntos":11,"talleres":7},"Chaco":{"puntos":2,"talleres":1},"Ciudad Autónoma de Buenos Aires":{"puntos":5,"talleres":2},"Córdoba":{"puntos":2,"talleres":2},"Mendoza":{"puntos":3,"talleres":1},"Neuquén":{"puntos":2,"talleres":1},"San Juan":{"puntos":1,"talleres":1},"Santa Fe":{"puntos":2,"talleres":1},"Tucumán":{"puntos":1,"talleres":1}},"puntos":29,"talleres":17},"Dongfeng":{"prov":{"Buenos Aires":{"puntos":2,"talleres":null},"Ciudad Autónoma de Buenos Aires":{"puntos":1,"talleres":null},"Córdoba":{"puntos":1,"talleres":null},"Mendoza":{"puntos":1,"talleres":null},"Salta":{"puntos":1,"talleres":null},"Santa Fe":{"puntos":1,"talleres":null}},"puntos":7,"talleres":null},"Forthing":{"prov":{"Buenos Aires":{"puntos":7,"talleres":0},"Ciudad Autónoma de Buenos Aires":{"puntos":3,"talleres":0},"Corrientes":{"puntos":1,"talleres":0},"Entre Ríos":{"puntos":1,"talleres":1},"Mendoza":{"puntos":2,"talleres":0},"Salta":{"puntos":1,"talleres":0},"Santa Cruz":{"puntos":1,"talleres":0},"Santa Fe":{"puntos":2,"talleres":0}},"puntos":18,"talleres":1},"Foton":{"prov":{"Buenos Aires":{"puntos":11,"talleres":0},"Chaco":{"puntos":1,"talleres":0},"Chubut":{"puntos":2,"talleres":0},"Ciudad Autónoma de Buenos Aires":{"puntos":1,"talleres":0},"Córdoba":{"puntos":1,"talleres":0},"Entre Ríos":{"puntos":1,"talleres":0},"Mendoza":{"puntos":2,"talleres":0},"Misiones":{"puntos":1,"talleres":0},"Neuquén":{"puntos":1,"talleres":0},"Salta":{"puntos":1,"talleres":0},"Santa Fe":{"puntos":2,"talleres":1},"Tierra del Fuego":{"puntos":1,"talleres":0},"Tucumán":{"puntos":1,"talleres":0}},"puntos":26,"talleres":1},"GAC":{"prov":{"Buenos Aires":{"puntos":3,"talleres":0},"Chaco":{"puntos":1,"talleres":0},"Ciudad Autónoma de Buenos Aires":{"puntos":6,"talleres":1},"Corrientes":{"puntos":1,"talleres":0},"Córdoba":{"puntos":1,"talleres":0},"Mendoza":{"puntos":1,"talleres":0},"Misiones":{"puntos":1,"talleres":0},"San Luis":{"puntos":1,"talleres":0},"Santa Fe":{"puntos":3,"talleres":0},"Tucumán":{"puntos":1,"talleres":0}},"puntos":19,"talleres":1},"GWM":{"prov":{"Buenos Aires":{"puntos":16,"talleres":9},"Catamarca":{"puntos":2,"talleres":1},"Chaco":{"puntos":1,"talleres":0},"Ciudad Autónoma de Buenos Aires":{"puntos":7,"talleres":3},"Córdoba":{"puntos":3,"talleres":3},"Entre Ríos":{"puntos":2,"talleres":2},"La Rioja":{"puntos":1,"talleres":1},"Mendoza":{"puntos":2,"talleres":1},"Misiones":{"puntos":2,"talleres":1},"Neuquén":{"puntos":2,"talleres":1},"Salta":{"puntos":2,"talleres":1},"San Juan":{"puntos":1,"talleres":1},"Santa Fe":{"puntos":4,"talleres":3},"Tierra del Fuego":{"puntos":2,"talleres":2},"Tucumán":{"puntos":1,"talleres":1}},"puntos":48,"talleres":30},"Geely":{"prov":{"Buenos Aires":{"puntos":5,"talleres":4},"Chaco":{"puntos":1,"talleres":1},"Ciudad Autónoma de Buenos Aires":{"puntos":2,"talleres":1},"Córdoba":{"puntos":1,"talleres":1},"Entre Ríos":{"puntos":1,"talleres":1},"La Rioja":{"puntos":1,"talleres":1},"Mendoza":{"puntos":1,"talleres":1},"San Juan":{"puntos":1,"talleres":1},"Tucumán":{"puntos":1,"talleres":1}},"puntos":14,"talleres":12},"JAC":{"prov":{"Buenos Aires":{"puntos":4,"talleres":4},"Chubut":{"puntos":1,"talleres":1},"Ciudad Autónoma de Buenos Aires":{"puntos":3,"talleres":2},"Córdoba":{"puntos":1,"talleres":1},"Entre Ríos":{"puntos":1,"talleres":1},"La Pampa":{"puntos":1,"talleres":1},"La Rioja":{"puntos":1,"talleres":1},"Mendoza":{"puntos":1,"talleres":1},"Santa Fe":{"puntos":3,"talleres":3},"Tierra del Fuego":{"puntos":2,"talleres":1},"Tucumán":{"puntos":1,"talleres":1}},"puntos":19,"talleres":17},"JMC":{"prov":{"Buenos Aires":{"puntos":7,"talleres":1},"Ciudad Autónoma de Buenos Aires":{"puntos":1,"talleres":0},"Córdoba":{"puntos":1,"talleres":0},"Entre Ríos":{"puntos":1,"talleres":1},"La Pampa":{"puntos":1,"talleres":0},"La Rioja":{"puntos":1,"talleres":1},"Mendoza":{"puntos":2,"talleres":0},"Neuquén":{"puntos":1,"talleres":0},"San Juan":{"puntos":1,"talleres":0},"San Luis":{"puntos":1,"talleres":0},"Santa Fe":{"puntos":3,"talleres":0},"Tierra del Fuego":{"puntos":2,"talleres":1},"Tucumán":{"puntos":1,"talleres":0}},"puntos":23,"talleres":4},"JMEV":{"prov":{"Buenos Aires":{"puntos":11,"talleres":7},"Chaco":{"puntos":2,"talleres":1},"Ciudad Autónoma de Buenos Aires":{"puntos":4,"talleres":1},"Córdoba":{"puntos":2,"talleres":2},"Mendoza":{"puntos":3,"talleres":1},"Neuquén":{"puntos":2,"talleres":1},"San Juan":{"puntos":1,"talleres":1},"Santa Fe":{"puntos":3,"talleres":2},"Tucumán":{"puntos":1,"talleres":1}},"puntos":29,"talleres":17},"Jetour":{"prov":{"Buenos Aires":{"puntos":19,"talleres":13},"Catamarca":{"puntos":1,"talleres":1},"Chaco":{"puntos":1,"talleres":1},"Ciudad Autónoma de Buenos Aires":{"puntos":8,"talleres":4},"Córdoba":{"puntos":4,"talleres":3},"Entre Ríos":{"puntos":1,"talleres":1},"Jujuy":{"puntos":1,"talleres":1},"La Rioja":{"puntos":1,"talleres":1},"Mendoza":{"puntos":3,"talleres":2},"Salta":{"puntos":2,"talleres":2},"San Juan":{"puntos":1,"talleres":0},"San Luis":{"puntos":2,"talleres":1},"Santa Cruz":{"puntos":1,"talleres":1},"Santa Fe":{"puntos":6,"talleres":4},"Tierra del Fuego":{"puntos":4,"talleres":4},"Tucumán":{"puntos":2,"talleres":1}},"puntos":57,"talleres":40},"Kaiyi":{"prov":{"Buenos Aires":{"puntos":1,"talleres":1},"Ciudad Autónoma de Buenos Aires":{"puntos":1,"talleres":1},"Córdoba":{"puntos":1,"talleres":1},"Entre Ríos":{"puntos":1,"talleres":1},"Mendoza":{"puntos":1,"talleres":1},"Río Negro":{"puntos":1,"talleres":1},"Salta":{"puntos":1,"talleres":1},"Santa Fe":{"puntos":2,"talleres":1},"Tierra del Fuego":{"puntos":1,"talleres":1}},"puntos":10,"talleres":9},"Leapmotor":{"prov":{"Buenos Aires":{"puntos":11,"talleres":5},"Ciudad Autónoma de Buenos Aires":{"puntos":6,"talleres":3},"Córdoba":{"puntos":2,"talleres":1},"Mendoza":{"puntos":2,"talleres":1},"Santa Fe":{"puntos":2,"talleres":1}},"puntos":23,"talleres":11},"Lynk & Co":{"prov":{"Buenos Aires":{"puntos":7,"talleres":null},"Ciudad Autónoma de Buenos Aires":{"puntos":5,"talleres":null},"Corrientes":{"puntos":1,"talleres":null},"Córdoba":{"puntos":1,"talleres":null},"Mendoza":{"puntos":1,"talleres":null},"Santa Fe":{"puntos":1,"talleres":null}},"puntos":16,"talleres":null},"MG":{"prov":{"Buenos Aires":{"puntos":7,"talleres":5},"Catamarca":{"puntos":1,"talleres":1},"Chaco":{"puntos":1,"talleres":0},"Ciudad Autónoma de Buenos Aires":{"puntos":2,"talleres":2},"Córdoba":{"puntos":2,"talleres":1},"Salta":{"puntos":1,"talleres":1},"Santa Fe":{"puntos":1,"talleres":1}},"puntos":15,"talleres":11},"Maxus":{"prov":{"Buenos Aires":{"puntos":1,"talleres":1},"Ciudad Autónoma de Buenos Aires":{"puntos":1,"talleres":1},"Córdoba":{"puntos":1,"talleres":1},"Entre Ríos":{"puntos":1,"talleres":1},"Mendoza":{"puntos":1,"talleres":1},"Río Negro":{"puntos":1,"talleres":1},"Salta":{"puntos":1,"talleres":1},"Santa Fe":{"puntos":2,"talleres":0},"Tierra del Fuego":{"puntos":1,"talleres":1}},"puntos":10,"talleres":8},"Soueast":{"prov":{"Buenos Aires":{"puntos":5,"talleres":3},"Catamarca":{"puntos":1,"talleres":1},"Ciudad Autónoma de Buenos Aires":{"puntos":6,"talleres":2},"Córdoba":{"puntos":2,"talleres":2},"Mendoza":{"puntos":2,"talleres":1},"Tucumán":{"puntos":1,"talleres":1}},"puntos":17,"talleres":10},"smart":{"prov":{"Buenos Aires":{"puntos":6,"talleres":4},"Ciudad Autónoma de Buenos Aires":{"puntos":4,"talleres":1},"Córdoba":{"puntos":1,"talleres":1},"Mendoza":{"puntos":1,"talleres":1},"Santa Fe":{"puntos":1,"talleres":1},"Tucumán":{"puntos":1,"talleres":1}},"puntos":14,"talleres":9}}}/*red:fin*/;
+const redDe = i => ((RED_OFICIAL || {}).marcas || {})[CARS[i].brand] || null;
+function provUsuario(){
+  try { const u = JSON.parse(localStorage.getItem('concesLoc') || 'null'); if (u && u.provincia) return u.provincia; } catch (e) {}
+  try { return JSON.parse(localStorage.getItem('concesProv') || '""') || ''; } catch (e) { return ''; }
+}
+// "33 talleres oficiales (5 en Córdoba)", o "Red oficial de 45 puntos" si la marca no distingue talleres.
+function textoRed(i, corto){
+  const r = redDe(i); if (!r) return '';
+  const prov = provUsuario(), p = prov && r.prov[prov];
+  if (r.talleres != null){
+    if (corto && p) return p.talleres + (p.talleres === 1 ? ' taller' : ' talleres') + ' en tu provincia';
+    return r.talleres + (r.talleres === 1 ? ' taller oficial' : ' talleres oficiales') + (p && !corto ? ' (' + p.talleres + ' en ' + prov + ')' : '');
+  }
+  return 'Red oficial de ' + r.puntos + ' puntos' + (p && !corto ? ' (' + p.puntos + ' en ' + prov + ')' : '');
+}
 const textoFabrica = f => 'Fábrica de la marca en ' + f.planta + ', ' + f.pais + (f.opera ? ' (la opera ' + f.opera + ')' : '') +
   ', desde ' + f.desde + (f.produce ? ': ' + f.produce : '') + '.' + (f.nota ? ' ' + f.nota : '');
 const grupoDe = i => (infoMarca(i) || {}).grupo || 'Sin dato';
@@ -3605,7 +3626,7 @@ const RK_DERIVADAS = {
   'usd-km': { titulo: 'USD por km de autonomía', unidad: 'USD/km', dir: -1,
     sub: 'Solo eléctricos: precio (tope de gama) dividido la autonomía estimada a WLTP.' },
 };
-const RK_HERRAMIENTAS = { '__medida': 'A tu medida', '__gasto': 'Gasto mensual' };
+const RK_HERRAMIENTAS = { '__medida': 'A tu medida', '__gasto': 'Gasto mensual', '__rebajas': 'Rebajas publicadas' };
 const rkEsDerivada = k => k in RK_DERIVADAS;
 const rkEsHerr = k => k in RK_HERRAMIENTAS;
 const rkDir = k => rkEsDerivada(k) ? RK_DERIVADAS[k].dir : PCTL_DIR[k];
@@ -3737,7 +3758,7 @@ function rkItemHTML(r, maxN, valorHTML, extraHTML, mios){
 // Si se rankea por otra cosa que el precio, el precio va chico debajo del nombre (2026-10-10).
 // Rankeando por precio no, porque repetiría la cifra grande.
 function rkPrecioChico(i){
-  if (String(rkActual).startsWith('Precio de lista') || SIM_PRECIO[i] == null) return '';
+  if (String(rkActual).startsWith('Precio de lista') || rkActual === '__rebajas' || SIM_PRECIO[i] == null) return '';
   return '<div class="rk-orig rk-precio">USD ' + SIM_PRECIO[i].toLocaleString('es-AR') + '</div>';
 }
 // Las cifras de la lista quedan alineadas en columna (2026-10-10): la franja de aclaración tiene
@@ -3836,6 +3857,7 @@ function renderRanking(){
   document.getElementById('rkFiltros').innerHTML = rkFiltrosHTML(cand);
   const k = rkActual;
   if (k === '__medida') return rkRenderMedida(cand);
+  if (k === '__rebajas') return rkRenderRebajas(cand);
   if (k === '__gasto') return rkRenderGasto(cand);
 
   const dir = rkDir(k);
@@ -3932,6 +3954,38 @@ function rkPercentiles(k, lista){
     out.set(r.i, (peores + empates / 2) / (m - 1));
   });
   return { pct: out, na: new Set(resto.na.map(r => r.i)) };
+}
+// Rebajas publicadas (2026-10-10, como el ranking de rebajas de Autohome): el precio más bajo que
+// publican la marca o sus concesionarios para cada auto, contra su precio de lista. Solo en dólares,
+// que es la moneda de la lista: nunca se convierte. Lee concesionarios.json recién acá.
+async function rkRenderRebajas(cand){
+  document.getElementById('rkTitulo').textContent = 'Rebajas publicadas';
+  document.getElementById('rkSub').innerHTML = rkEsc('Mayor es mejor. El precio más bajo que publican la marca o sus concesionarios para la misma versión de la tabla, contra su precio de lista. Solo en dólares.');
+  document.getElementById('rkCobertura').innerHTML = ''; document.getElementById('rkGrafico').innerHTML = '';
+  const lista = document.getElementById('rkLista');
+  lista.innerHTML = '<li class="rk-vacio">Cargando las promociones…</li>';
+  const d = await cargarConces();
+  if (rkActual !== '__rebajas') return;
+  if (d.error){ lista.innerHTML = '<li class="rk-vacio">No se pudieron cargar las promociones.</li>'; return; }
+  const ok = [];
+  cand.lista.forEach(i => {
+    const slug = SLUG_AUTO[i], lp = SIM_PRECIO[i];
+    if (lp == null) return;
+    const fil = promoDelAuto(slug), marca = CARS[i].brand;
+    const promos = ((d.marcas[marca] || {}).promos || []).filter(fil).map(p => ({ p, de: 'la marca' }))
+      .concat(...(d.concesionarios || []).filter(c => c.marcas.includes(marca)).map(c => (c.promos || []).filter(fil).map(p => ({ p, de: c.nombre }))));
+    const usd = promos.filter(x => x.p.precio && x.p.precio.moneda === 'USD' && x.p.precio.monto < lp && promoComparable(x.p, i));
+    if (!usd.length) return;
+    const mejor = usd.reduce((m, x) => x.p.precio.monto < m.p.precio.monto ? x : m);
+    const pct = Math.round(1000 * (lp - mejor.p.precio.monto) / lp) / 10;
+    ok.push({ i, n: pct, v: '', precio: mejor.p.precio.monto, de: mejor.de, lp, texto: mejor.p.texto || '' });
+  });
+  rkOrdenar(ok, 1);
+  const max = ok.length ? ok[0].n : 0;
+  lista.innerHTML = ok.map(r => rkItemHTML(r, max, '−' + r.n.toLocaleString('es-AR') + '<small>%</small>',
+    '<div class="rk-orig" data-tip="' + rkEsc(r.texto) + '">USD ' + r.precio.toLocaleString('es-AR') + ' (lista USD ' + r.lp.toLocaleString('es-AR') + '), lo publica ' + rkEsc(r.de) + '</div>', cand.mios)).join('') ||
+    '<li class="rk-vacio">Ninguno de estos autos tiene un precio publicado por debajo de su lista.</li>';
+  document.getElementById('rkResto').innerHTML = '';
 }
 function rkRenderMedida(cand){
   document.getElementById('rkTitulo').textContent = 'A tu medida';
@@ -4074,9 +4128,25 @@ let rkScrollTabla = 0;
 function ajustarScrollPadding(){
   const raiz = document.documentElement.style;
   raiz.scrollPaddingBottom = vistaActual === 'elegir' ? '160px' : '';
-  raiz.scrollPaddingTop = vistaActual === 'tabla' && theadWrap.offsetHeight ? (theadWrap.offsetHeight + 8) + 'px' : '';
+  raiz.scrollPaddingTop = vistaActual === 'tabla' && theadWrap.offsetHeight ? (theadWrap.offsetHeight - fotosThead + 8) + 'px' : '';
 }
-window.addEventListener('resize', () => ajustarScrollPadding());
+// Encabezado compacto al bajar (2026-10-10, NN/g: lo fijo, lo más bajo posible): el encabezado se
+// pega más arriba, a la altura de las fotos, así al bajar las fotos se van de la pantalla y quedan
+// el nombre, la descripción y los botones. No cambia el alto de nada, así que no salta.
+let fotosThead = 0;
+function compactarThead(){
+  const th = TH_AUTO.find(t => !t.classList.contains('col-hidden'));
+  const caja = th && th.querySelector('.car-photo-box');
+  fotosThead = 0;
+  if (caja && caja.getClientRects().length){
+    const r = caja.getBoundingClientRect(), rt = th.getBoundingClientRect();
+    fotosThead = Math.max(0, Math.round(r.bottom - rt.top + parseFloat(getComputedStyle(caja).marginBottom || 0)));
+  }
+  theadWrap.style.top = fotosThead ? -fotosThead + 'px' : '';
+  ajustarScrollPadding();
+}
+window.addEventListener('resize', () => compactarThead());
+window.addEventListener('load', () => compactarThead());
 function mostrarVista(v){
   document.documentElement.classList.remove('arranca-elegir');   // de acá en más manda el script
   const rk = v === 'ranking', el = v === 'elegir', tabla = !rk && !el;
@@ -4103,7 +4173,7 @@ function mostrarVista(v){
   document.getElementById('rankingView').hidden = !rk;
   document.getElementById('elegirHoja').hidden = !el;
   document.body.classList.toggle('vista-elegir', el);
-  ajustarScrollPadding();
+  if (tabla) compactarThead(); else ajustarScrollPadding();
   if (el){
     document.getElementById('noResults').style.display = 'none';
     pintarElegir();
@@ -4820,11 +4890,20 @@ fechasDePrecio();
   if (!tr) return;
   CARS.forEach((c, i) => {
     const f = fabricaMercosur(i), td = tr.querySelector('td[data-col="' + i + '"]');
-    if (!f || !td) return;
-    const el = document.createElement('small');
-    el.className = 'precio-fecha fabrica-merc'; el.textContent = 'Fábrica en ' + f.pais;
-    el.dataset.tip = textoFabrica(f);
-    td.appendChild(el);
+    if (!td) return;
+    if (f){
+      const el = document.createElement('small');
+      el.className = 'precio-fecha fabrica-merc'; el.textContent = 'Fábrica en ' + f.pais;
+      el.dataset.tip = textoFabrica(f);
+      td.appendChild(el);
+    }
+    const red = textoRed(i);
+    if (red){
+      const el = document.createElement('small');
+      el.className = 'precio-fecha red-oficial'; el.textContent = red.replace(/ \(.*\)$/, '');
+      el.dataset.tip = red + '. Según la red que publica la marca en su sitio' + (RED_OFICIAL.fecha ? ', consultada el ' + fechaCorta(RED_OFICIAL.fecha) : '') + '.';
+      td.appendChild(el);
+    }
   });
 })();
 
@@ -4880,6 +4959,12 @@ async function abrirFicha(i){
       '<h2 id="fichaNombre">' + rkEsc(c.name) + '</h2>' +
       '<p class="ficha-chips"><span>' + icono + rkEsc(SIM_PROP_TXT[c.type] || c.type) + '</span><span>' + rkEsc(c.body) + '</span>' +
         '<span>' + rkEsc(SEGMENT_LABELS[c.size] || 'Tamaño s/d') + '</span><span class="ficha-estado ' + c.status + '">' + rkEsc(STATUS_LABELS[c.status] || c.status) + '</span></p>' +
+      // Respaldo (2026-10-10): quién lo trae, fábrica en el Mercosur y red de service, con su detalle al tocar.
+      (() => { const f = fabricaMercosur(i), red = textoRed(i), fab = importaFabrica(i);
+        const items = [fab ? '<span>Lo trae la marca</span>' : '',
+          f ? '<span data-tip="' + rkEsc(textoFabrica(f)) + '">Fábrica en ' + rkEsc(f.pais) + '</span>' : '',
+          red ? '<span data-tip="' + rkEsc(red + '. Según la red que publica la marca en su sitio.') + '">' + rkEsc(red.replace(/ \(.*\)$/, '')) + '</span>' : ''].filter(Boolean);
+        return items.length ? '<p class="ficha-chips ficha-respaldo">' + items.join('') + '</p>' : ''; })() +
       '<div class="ficha-acciones"><button type="button" class="ficha-btn primario" id="fichaVerTabla">Ver todos sus datos en la tabla</button>' +
         '<button type="button" class="ficha-btn" id="fichaIrDonde">Dónde comprarlo</button>' +
         '<button type="button" class="ficha-btn" id="fichaSumar">' + (colVisible.every(Boolean) ? 'Empezar una comparación' : (colVisible[i] ? '✓ Ya está en tu comparación' : '+ Sumar a mi comparación')) + '</button></div>' +
@@ -5256,6 +5341,36 @@ function promoHTML(p){
 }
 // La mejor oferta publicada: el precio final más bajo que alguien publica para este auto, en
 // la moneda del precio de lista (no se convierten monedas). Sin precios, el mayor descuento.
+// ¿Es buena la oferta? (2026-10-10, como CarGurus o el Target Price de What Car?): la mejor oferta
+// contra el precio de lista de la tabla y contra los demás precios publicados. Solo en la misma
+// moneda: nunca se convierte.
+// Solo se compara con la lista un precio de la MISMA versión de la tabla: la promo nombra una versión
+// cuyas palabras están todas en la de la tabla, o el modelo tiene una única versión. Un precio de
+// una versión más barata (el Dashing 1.5 contra el 1.6T de la tabla) haría parecer una rebaja que no es.
+function versionTabla(i){
+  const v = (FILA_POR_NOMBRE['Precio de lista (versión tope de gama de la tabla)'] || [])[i + 1];
+  return typeof v === 'string' && v.includes('|') ? v.split('|')[1] : '';
+}
+function promoComparable(p, i){
+  const vt = versionTabla(i).toLowerCase();
+  if (/única versión/.test(vt)) return true;
+  if (!p.version) return false;
+  const palabras = p.version.toLowerCase().match(/[a-z0-9.]+/g) || [];
+  return palabras.length > 0 && palabras.every(w => vt.includes(w));
+}
+function evaluarOferta(i, mejor, marcaPromos, conKm){
+  const lista = SIM_PRECIO[i];
+  const precios = marcaPromos.concat(...conKm.map(x => x.promos)).filter(q => q.precio && q.precio.moneda === 'USD' && promoComparable(q, i));
+  if (!precios.length || lista == null) return '';
+  const p = precios.reduce((m, q) => q.precio.monto < m.precio.monto ? q : m).precio;
+  const dif = lista - p.monto, pct = Math.round(1000 * dif / lista) / 10;
+  const partes = ['Para la versión de la tabla, el precio más bajo publicado es ' + fmtMonto(p) + ': ' +
+    (dif > 0 ? fmtMonto({ moneda: 'USD', monto: dif }) + ' menos que la lista (−' + pct.toLocaleString('es-AR') + '%)'
+      : dif < 0 ? fmtMonto({ moneda: 'USD', monto: -dif }) + ' más que la lista' : 'igual a la lista')];
+  if (precios.length > 1) partes.push('hay ' + precios.length + ' precios publicados para esta versión');
+  const txt = partes.join('; ');
+  return txt ? '<p class="donde-oferta-eval">' + concesEsc(txt.charAt(0).toUpperCase() + txt.slice(1)) + '.</p>' : '';
+}
 function mejorOferta(marcaPromos, locales){
   const cands = [];
   marcaPromos.forEach(p => cands.push({ p, red: true }));
@@ -5313,6 +5428,7 @@ async function pintarDondeVerlo(i){
       '<p class="donde-mejor-monto">' + (mejor.campo === 'precio' ? fmtMonto(ej.precio) : '−' + fmtMonto(ej.descuento)) + '</p>' +
       '<p class="ficha-nota">' + (deRed ? 'Lo publica ' + concesEsc(marca) + ' para toda su red.' : 'Lo publica ' + (mejor.todos.length === 1 ? 'un concesionario' : mejor.todos.length + ' concesionarios') + '.') +
         (precioLista && precioLista !== 's/d' ? ' Precio de lista en la tabla: ' + concesEsc(precioLista) + '.' : '') + '</p>' +
+      evaluarOferta(i, mejor, marcaPromos, conKm) +
       '<ul class="cc-promos">' + promoHTML(ej) + '</ul>' +
       (cerca ? '<p class="donde-mejor-tit">' + (miUbic && cerca.km != null ? 'El más cerca tuyo con esta oferta' : 'Dónde está esta oferta') + '</p><ul class="cc-lista compacta">' + concesTarjetaHTML(cerca.c, true, { km: cerca.km, zona: true, destacado: true, cotizar: Object.assign({ oferta: ofertaTxt(ej) }, cotBase) }) + '</ul>' +
         (miUbic ? '' : '<p class="ficha-nota">Decinos dónde estás para ver el más cercano.</p>') : '') + '</div>';
@@ -5480,8 +5596,10 @@ function elegirCalcular(r){
     const gAnos = SIM_GARANTIA[i], bAnos = c.type === 'ice' ? null : SIM_GARANTIA_BAT[i];
     // Respaldo de fábrica (2026-10-10): después del precio, de lo que más pesa. Que lo traiga la
     // casa matriz suma 1 y que la marca fabrique en el Mercosur, .6 (repuestos más cerca).
-    const merc = fabricaMercosur(i);
-    const respaldo = (fab ? 1 : 0) + (merc ? .6 : 0) + (gAnos != null ? (gAnos - 5) * .12 : -.1) + (bAnos != null ? (bAnos - 8) * .08 : 0);
+    const merc = fabricaMercosur(i), red = redDe(i);
+    // La red de service también pesa (repuestos): hasta .4 según cuántos puntos tiene la red oficial.
+    const respaldo = (fab ? 1 : 0) + (merc ? .6 : 0) + (red ? .4 * Math.min(1, red.puntos / 40) : 0) +
+      (gAnos != null ? (gAnos - 5) * .12 : -.1) + (bAnos != null ? (bAnos - 8) * .08 : 0);
     // Dentro de la franja elegida el precio no suma: elegir una franja más alta dice que querés
     // gastar eso. Sin franja ("Me da igual"), lo más barato suma un poco.
     const puntos = 3 * fit + prom + (r.presu ? 0 : .3 * (precio ? precio.p / 100 : .4)) + bonus + respaldo;
@@ -5504,6 +5622,7 @@ function elegirCalcular(r){
     if (c.type === 'ev' && r.enchufe !== 'si') resto.push('Necesita dónde cargar');
     if (fab) resto.push('Lo trae la marca');
     if (merc) resto.push('Marca con fábrica en ' + merc.pais);   // de la marca, no del auto
+    if (red && red.puntos >= 20) resto.push(textoRed(i, true));
     ps.filter(x => x[1].c >= 4).forEach(x => resto.push('Top 20% en ' + (MOTIVO_CORTO[x[0]] || rkTitulo(x[0]).toLowerCase())));
     if (bonus && esTodoterreno(i)) resto.push('Todoterreno');
     if (gAnos != null) resto.push('Garantía ' + cleanVal(FILA_POR_NOMBRE['Garantía general'][i + 1]).replace(' años o ', ' años, ').replace(/(\d+)\.000 km/, '$1 mil km').replace(/ sin límite de km$/, ', km libre'));
