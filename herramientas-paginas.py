@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
-"""Genera una página estática por auto (autos/<slug>.html), sitemap.xml y robots.txt.
+"""Genera una página estática por auto (autos/<slug>.html) con su RSS (autos/<slug>.xml), las
+comparaciones "X vs Y" (comparar/<a>-vs-<b>.html), las novedades, sitemap.xml y robots.txt.
 
     python3 herramientas-paginas.py           # escribe las páginas
     python3 herramientas-paginas.py --check   # sale con error si alguna está desactualizada
@@ -20,6 +21,7 @@ import sys
 RAIZ = os.path.dirname(os.path.abspath(__file__))
 SITIO = 'https://autoschinos-ar.vercel.app'
 DIR = os.path.join(RAIZ, 'autos')
+DIR_VS = os.path.join(RAIZ, 'comparar')
 
 TIPO = {'ev': '100% eléctrico', 'phev': 'híbrido enchufable', 'hev': 'híbrido', 'mhev': 'mild-hybrid',
         'ice': 'naftero o diésel', 'tbd': 'propulsión a confirmar'}
@@ -59,7 +61,7 @@ def precio_usd(v):
     return m.group(1).replace('.', '') if m else None
 
 
-def pagina(i, data, car, slug, credito, colores, videos):
+def pagina(i, data, car, slug, credito, colores, videos, vs=()):
     nombre = car['name']
     filas = {f[0]: f[i + 1] for cat in data for f in cat[1]}
     precio, _ = celda(filas['Precio de lista (versión tope de gama de la tabla)'])
@@ -111,6 +113,7 @@ def pagina(i, data, car, slug, credito, colores, videos):
 <meta property="og:description" content="{e(desc)}"><meta property="og:url" content="{url}">
 <meta property="og:image" content="{foto}"><meta property="og:image:width" content="900"><meta property="og:image:height" content="570">
 <meta name="twitter:card" content="summary_large_image">
+<link rel="alternate" type="application/rss+xml" title="{e(nombre)}: cambios de precio y promociones" href="/autos/{slug}.xml">
 <script type="application/ld+json">{json.dumps(ld, ensure_ascii=False)}</script>
 <style>
 :root{{--paper:#EEF1EE;--ink:#17211D;--ink2:#4B5A53;--line:#C9D4CE;--accent:#00843D}}
@@ -125,7 +128,7 @@ h2{{font-size:1.15rem;margin:24px 0 6px;border-bottom:2px solid var(--ink)}} tab
 th,td{{text-align:left;vertical-align:top;padding:5px 6px;border-bottom:1px solid var(--line);overflow-wrap:anywhere}} th{{font-weight:500;width:42%;color:var(--ink2)}}
 td small{{display:block;font-size:.75rem;color:var(--ink2)}} .colores{{list-style:none;padding:0;display:flex;flex-wrap:wrap;gap:6px}}
 .colores li{{border:1px solid var(--line);border-radius:3px;padding:2px 8px}}
-.videos{{padding-left:18px}} .videos li{{margin:4px 0}} .videos small{{display:block;color:var(--ink2)}} .nota,footer{{font-size:.8rem;color:var(--ink2)}}
+.vs{{padding-left:18px}} .vs li{{margin:3px 0}} .videos{{padding-left:18px}} .videos li{{margin:4px 0}} .videos small{{display:block;color:var(--ink2)}} .nota,footer{{font-size:.8rem;color:var(--ink2)}}
 </style></head>
 <body><main>
 <p class="sub"><a href="/">Autos chinos en Argentina</a> / {e(car['brand'])}</p>
@@ -133,6 +136,8 @@ td small{{display:block;font-size:.75rem;color:var(--ink2)}} .colores{{list-styl
 <p class="sub">{e(tipo.capitalize())}, {e(car.get('body', ''))}. {e(ESTADO.get(car['status'], ''))}. Precio de lista: {e(precio)}.</p>
 <figure><img src="/fotos/{slug}-1.jpg" alt="{e(nombre)}" width="900" height="570">{f'<figcaption>{e(credito)}</figcaption>' if credito else ''}</figure>
 <a class="cta" href="/?auto={slug}">Compararlo con otros autos</a>
+<p class="nota">Para enterarte cuando cambie su precio o salga una promoción, sumá <a href="/autos/{slug}.xml">su RSS</a> a tu lector de noticias.</p>
+{vs_html(vs)}
 {colores_html}
 {videos_html}
 {''.join(secciones)}
@@ -208,6 +213,140 @@ h2{{font-size:1.05rem;margin:2px 0}} p{{margin:2px 0}}
     return pagina_html, rss
 
 
+def vs_html(vs):
+    if not vs: return ''
+    return ('<section><h2>Comparaciones</h2><ul class="vs">' +
+            ''.join(f'<li><a href="/comparar/{u}">{H.escape(t)}</a></li>' for u, t in vs) + '</ul></section>')
+
+
+def promos_de(slug, marca, red, hoy):
+    """Promos vigentes que nombran a este auto (o a toda la gama): las de la marca y las de cada local."""
+    vale = lambda p: (slug in p['autos'] or '*' in p['autos']) and (not p.get('vigencia') or p['vigencia'] >= hoy)
+    m = red['marcas'].get(marca, {})
+    out = [(f'Promoción de {marca}', p, p.get('consultado') or m.get('promos_consultado')) for p in m.get('promos', []) if vale(p)]
+    out += [(f'Oferta de {c["nombre"]}', p, p.get('consultado')) for c in red.get('concesionarios', [])
+            if marca in c.get('marcas', []) for p in c.get('promos', []) if vale(p)]
+    return [(t, p, f) for t, p, f in out if f]
+
+
+def rss_auto(car, slug, hist, red, hoy):
+    """RSS de un auto (2026-10-11, "Seguir un auto"): sus cambios de precio de lista (misma versión) y
+    las promociones vigentes que lo nombran. Sin cuentas ni mails: el que quiere enterarse sin entrar
+    al sitio lo suma a su lector. Sale solo de datos que ya están; un auto sin novedades da un RSS vacío."""
+    nombre, e, items = car['name'], H.escape, []
+    h = hist.get(slug, [])
+    for a, b in zip(h, h[1:]):
+        if a[2] != b[2] or a[1] == b[1]: continue
+        d = b[1] - a[1]
+        items.append({'fecha': b[0], 'titulo': f"{'Bajó' if d < 0 else 'Subió'} el {nombre}: {usd(a[1])} → {usd(b[1])}",
+                      'texto': f"Precio de lista oficial de la versión {b[2]}."})
+    for t, p, f in promos_de(slug, car['brand'], red, hoy):
+        items.append({'fecha': f, 'titulo': f'{t} para el {nombre}', 'texto': p['texto'][:400]})
+    items.sort(key=lambda x: (x['fecha'], x['titulo']), reverse=True)
+    rfc = lambda f: datetime(int(f[:4]), int(f[5:7]), int(f[8:]), 12, tzinfo=timezone.utc).strftime('%a, %d %b %Y %H:%M:%S +0000')
+    return ('<?xml version="1.0" encoding="UTF-8"?>\n<rss version="2.0"><channel>\n'
+            f'<title>{e(nombre)}: precio y promociones</title><link>{SITIO}/autos/{slug}</link>'
+            f'<description>Cambios del precio de lista del {e(nombre)} y promociones vigentes de la marca y sus concesionarios.</description><language>es-ar</language>\n' +
+            ''.join(f'<item><title>{e(x["titulo"])}</title><link>{SITIO}/autos/{slug}</link>'
+                    f'<guid isPermaLink="false">{e(slug + " " + x["fecha"] + " " + x["titulo"])}</guid><pubDate>{rfc(x["fecha"])}</pubDate>'
+                    f'<description>{e(x["texto"])}</description></item>\n' for x in items) +
+            '</channel></rss>\n')
+
+
+# Comparaciones "X vs Y" (2026-10-11): Google recibe muchas búsquedas "A vs B" y el comparador
+# interactivo no se indexa. Cada auto a la venta (o en preventa) con precio en dólares se compara con
+# sus 2 rivales más cercanos: misma carrocería (SUV y crossover juntos; los todoterreno de TODOTERRENO,
+# entre ellos), y la menor suma de diferencia
+# de largo (cada 250 mm cuenta 1), de precio (cada 15% cuenta 1) y de propulsión (0,75 si no es la
+# misma familia). Un rival a más de 45 cm de largo o 35% de precio no cuenta: mejor sin par que un par
+# forzado. Las páginas no agregan datos: ordenan los de la ficha de cada uno.
+FAMILIA = {'ev': 'ev', 'phev': 'phev', 'hev': 'hev', 'mhev': 'hev', 'ice': 'ice', 'tbd': 'tbd'}
+GRUPO = {'SUV': 'suv', 'Crossover': 'suv'}
+
+
+def numero(txt):
+    m = re.match(r'(?:USD )?([\d.]+)', txt or '')
+    return float(m.group(1).replace('.', '')) if m else None
+
+
+def rivales(data, cars, slugs):
+    filas = {f[0]: f for cat in data for f in cat[1]}
+    idx = open(os.path.join(RAIZ, 'index.html'), encoding='utf-8').read()
+    todoterreno = set(re.findall(r"'([a-z0-9-]+)'", re.search(r'const TODOTERRENO = new Set\(\[(.*?)\]\)', idx).group(1)))
+    datos = []
+    for i, c in enumerate(cars):
+        if c['status'] not in ('venta', 'preventa'): continue
+        pr = celda(filas['Precio de lista (versión tope de gama de la tabla)'][i + 1])[0]
+        largo = numero(celda(filas['Longitud (mm)'][i + 1])[0])
+        if not pr.startswith('USD ') or not largo: continue
+        grupo = 'todoterreno' if slugs[i] in todoterreno else GRUPO.get(c.get('body'), c.get('body'))
+        datos.append((i, numero(pr), largo, grupo, FAMILIA.get(c['type'])))
+    pares = set()
+    for i, p, l, g, f in datos:
+        cerca = sorted(((abs(l - l2) / 250 + abs(p - p2) / (0.15 * (p + p2) / 2) + (0 if f == f2 else .75), slugs[j], j)
+                        for j, p2, l2, g2, f2 in datos if j != i and g2 == g and abs(l - l2) <= 450 and max(p, p2) <= 1.35 * min(p, p2)))
+        for _, _, j in cerca[:2]:
+            pares.add(tuple(sorted((i, j), key=lambda k: slugs[k])))
+    return sorted(pares, key=lambda ab: (slugs[ab[0]], slugs[ab[1]]))
+
+
+def pagina_vs(a, b, data, cars, slugs, creditos):
+    e = H.escape
+    A, B = cars[a], cars[b]
+    url = f'{SITIO}/comparar/{slugs[a]}-vs-{slugs[b]}'
+    titulo = f"{A['name']} vs {B['name']}: precio, medidas y equipamiento"
+    desc = (f"Comparación del {A['name']} y el {B['name']} en Argentina: precio de lista, propulsión, potencia, "
+            'autonomía, baúl, seguridad y equipamiento, según sus fichas oficiales.')
+    difs, iguales = [], 0
+    for cat, fs in data:
+        trs = []
+        for f in fs:
+            (ta, na), (tb, nb) = celda(f[a + 1]), celda(f[b + 1])
+            if ta == tb: iguales += 1; continue
+            td = lambda t, n: f'<td>{e(t)}' + (f'<small>{e(n)}</small>' if n else '') + '</td>'
+            trs.append(f'<tr><th scope="row">{e(f[0])}</th>{td(ta, na)}{td(tb, nb)}</tr>')
+        if trs: difs.append(f'<tr class="cat"><th colspan="3" scope="colgroup">{e(cat)}</th></tr>' + ''.join(trs))
+    fig = lambda k: (f'<figure><img src="/fotos/{slugs[k]}-1.jpg" alt="{e(cars[k]["name"])}" width="900" height="570">'
+                     f'<figcaption><b>{e(cars[k]["name"])}</b>' + (f'<br>{e(creditos[k])}' if creditos[k] else '') + '</figcaption></figure>')
+    return f'''<!doctype html>
+<html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>{e(titulo)}</title>
+<meta name="description" content="{e(desc)}">
+<link rel="canonical" href="{url}">
+<meta property="og:type" content="article"><meta property="og:title" content="{e(titulo)}">
+<meta property="og:description" content="{e(desc)}"><meta property="og:url" content="{url}">
+<meta property="og:image" content="{SITIO}/fotos/{slugs[a]}-1.jpg">
+<style>
+:root{{--paper:#EEF1EE;--ink:#17211D;--ink2:#4B5A53;--line:#C9D4CE;--accent:#00843D}}
+@media (prefers-color-scheme:dark){{:root{{--paper:#141B18;--ink:#E4EAE6;--ink2:#9DB3A8;--line:#2E3A35;--accent:#3FB57A}}}}
+html{{-webkit-text-size-adjust:100%;text-size-adjust:100%}} @media screen and (max-width:640px){{html{{font-size:115%}}}}
+body{{margin:0;background:var(--paper);color:var(--ink);font:1rem/1.5 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}}
+main{{max-width:880px;margin:0 auto;padding:16px}}
+a{{color:var(--accent)}} h1{{font-size:2rem;line-height:1.1;margin:8px 0 4px;text-wrap:balance}}
+.sub{{color:var(--ink2);margin:0 0 12px}} .fotos{{display:grid;grid-template-columns:1fr 1fr;gap:10px}} figure{{margin:0}}
+figure img{{width:100%;height:auto;background:#fff;border-radius:2px}} figcaption{{font-size:.75rem;color:var(--ink2)}} figcaption b{{color:var(--ink);font-size:.9rem}}
+.cta{{display:inline-block;margin:12px 0;padding:8px 14px;border-radius:4px;background:var(--accent);color:#fff;text-decoration:none;font-weight:600}}
+h2{{font-size:1.15rem;margin:24px 0 6px;border-bottom:2px solid var(--ink)}} table{{width:100%;table-layout:fixed;border-collapse:collapse;font-variant-numeric:tabular-nums}}
+th,td{{text-align:left;vertical-align:top;padding:5px 6px;border-bottom:1px solid var(--line);overflow-wrap:anywhere}} th{{font-weight:500;width:34%;color:var(--ink2)}}
+thead th{{color:var(--ink);font-weight:700}} tr.cat th{{color:var(--ink);font-weight:700;padding-top:14px}}
+td small{{display:block;font-size:.75rem;color:var(--ink2)}} .nota,footer{{font-size:.8rem;color:var(--ink2)}}
+</style></head>
+<body><main>
+<p class="sub"><a href="/">Autos chinos en Argentina</a> / Comparaciones</p>
+<h1>{e(A['name'])} vs {e(B['name'])}</h1>
+<p class="sub">Dos autos parecidos en carrocería, tamaño y precio, con los datos de sus fichas oficiales.</p>
+<div class="fotos">{fig(a)}{fig(b)}</div>
+<a class="cta" href="/?autos={slugs[a]},{slugs[b]}">Compararlos en la tabla interactiva</a>
+<h2>En qué se diferencian</h2>
+<table><thead><tr><th scope="col">Dato</th><th scope="col">{e(A['name'])}</th><th scope="col">{e(B['name'])}</th></tr></thead><tbody>{''.join(difs)}</tbody></table>
+<p class="nota">En los otros {iguales} datos de la ficha dicen lo mismo. "Sin dato" quiere decir que la fuente no lo informa, no que el auto no lo tenga.</p>
+<p>La página de cada uno: <a href="/autos/{slugs[a]}">{e(A['name'])}</a> y <a href="/autos/{slugs[b]}">{e(B['name'])}</a>.</p>
+<footer><p>Datos de la ficha técnica oficial argentina; lo que sale de otra fuente está aclarado.</p>
+<p><a href="/">Volver al comparativo</a></p></footer>
+</main></body></html>
+'''
+
+
 def red_oficial():
     d = json.load(open(os.path.join(RAIZ, 'concesionarios.json'), encoding='utf-8'))
     red = {}
@@ -230,12 +369,23 @@ def red_oficial():
 def generar():
     data, cars, slugs, creditos, colores, videos = leer()
     salida = {}
+    pares = rivales(data, cars, slugs)
+    vs_de = {}
+    for a, b in pares:
+        u = f'{slugs[a]}-vs-{slugs[b]}'
+        salida[os.path.join(DIR_VS, u + '.html')] = pagina_vs(a, b, data, cars, slugs, creditos)
+        for k, o in ((a, b), (b, a)): vs_de.setdefault(k, []).append((u, f"{cars[k]['name']} vs {cars[o]['name']}"))
+    s0 = open(os.path.join(RAIZ, 'index.html'), encoding='utf-8').read()
+    hist = json.loads(re.search(r'const HISTORIAL_PRECIOS = (\{.*?\});\n', s0).group(1))
+    red_json = json.load(open(os.path.join(RAIZ, 'concesionarios.json'), encoding='utf-8'))
+    hoy = date.today().isoformat()
     for i, (car, slug, cred) in enumerate(zip(cars, slugs, creditos)):
-        salida[os.path.join(DIR, slug + '.html')] = pagina(i, data, car, slug, cred, colores, videos)
+        salida[os.path.join(DIR, slug + '.html')] = pagina(i, data, car, slug, cred, colores, videos, vs_de.get(i, ()))
+        salida[os.path.join(DIR, slug + '.xml')] = rss_auto(car, slug, hist, red_json, hoy)
     pag_nov, rss = novedades(cars, slugs)
     salida[os.path.join(RAIZ, 'novedades.html')] = pag_nov
     salida[os.path.join(RAIZ, 'novedades.xml')] = rss
-    urls = [SITIO + '/', SITIO + '/novedades'] + [f'{SITIO}/autos/{s}' for s in slugs]
+    urls = [SITIO + '/', SITIO + '/novedades'] + [f'{SITIO}/autos/{s}' for s in slugs] + [f'{SITIO}/comparar/{slugs[a]}-vs-{slugs[b]}' for a, b in pares]
     salida[os.path.join(RAIZ, 'sitemap.xml')] = ('<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n' +
                                                  ''.join(f'  <url><loc>{u}</loc></url>\n' for u in urls) + '</urlset>\n')
     salida[os.path.join(RAIZ, 'robots.txt')] = f'User-agent: *\nAllow: /\nSitemap: {SITIO}/sitemap.xml\n'
@@ -255,13 +405,16 @@ def generar():
 
 if __name__ == '__main__':
     salida, slugs = generar()
-    sobran = sorted(set(f for f in os.listdir(DIR) if f.endswith('.html')) - {s + '.html' for s in slugs}) if os.path.isdir(DIR) else []
+    # Lo que quedó de una corrida anterior y ya no se genera (un auto que salió, un par que cambió).
+    sobran = sorted(os.path.relpath(os.path.join(d, f), RAIZ) for d in (DIR, DIR_VS) if os.path.isdir(d)
+                    for f in os.listdir(d) if f.endswith(('.html', '.xml')) and os.path.join(d, f) not in salida)
     if '--check' in sys.argv:
         viejas = [os.path.relpath(r, RAIZ) for r, t in salida.items() if not os.path.exists(r) or open(r, encoding='utf-8').read() != t]
         if viejas or sobran:
             sys.exit('desactualizadas: ' + ', '.join(viejas + sobran) + '\ncorrer: python3 herramientas-paginas.py')
         print('páginas al día'); sys.exit(0)
-    os.makedirs(DIR, exist_ok=True)
+    os.makedirs(DIR, exist_ok=True); os.makedirs(DIR_VS, exist_ok=True)
     for r, t in salida.items(): open(r, 'w', encoding='utf-8').write(t)
-    for f in sobran: os.remove(os.path.join(DIR, f))
-    print(f'{len(slugs)} páginas, sitemap.xml y robots.txt')
+    for f in sobran: os.remove(os.path.join(RAIZ, f))
+    n_vs = sum(1 for r in salida if r.startswith(DIR_VS))
+    print(f'{len(slugs)} páginas con su RSS, {n_vs} comparaciones, sitemap.xml y robots.txt')

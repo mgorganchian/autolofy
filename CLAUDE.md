@@ -300,6 +300,11 @@ sí quedan en inglés, porque no muestran la palabra. Se coló con `YES` dos vec
   La lista está por slug en `TODOTERRENO` (2026-10-10): el encabezado ya no lleva silueta (la
   reemplazó la foto) y `esTodoterreno` la buscaba ahí, así que Ayudame a elegir nunca encontraba
   ninguno. El T2 i-DM no está en la lista: se sumó después y nadie lo decidió.
+- **Seguir un auto** (2026-10-11): sin cuentas ni mails. `seguidos` (en el navegador) guarda, por
+  slug, el precio de lista en dólares y la disponibilidad de la última vez que se vio el auto; al
+  volver, `#avisoSeguidos` dice qué cambió, con "Comparar los que sigo" y "Listo". Abrir la página
+  del auto cuenta como visto. El botón "Los que sigo (N)" de la barra los compara (hasta 6). Para
+  enterarse sin entrar, el RSS de cada auto.
 - **Carga, cochera, escala y fotos lado a lado** (2026-10-10, ideas de EV Database, vehiclesizes.com
   y Autohome):
   - "Cuánto tarda en cargar" en la página de cada eléctrico o enchufable (`cargaHTML`): en casa es
@@ -495,6 +500,16 @@ sí quedan en inglés, porque no muestran la palabra. Se coló con `YES` dos vec
   comparativo (entre `<!-- autos:inicio -->` y `<!-- autos:fin -->`).
 - Existen porque la página de cada auto del comparador se arma en el navegador (`?auto=`):
   Google no la indexa y al compartirla se veía siempre la misma vista previa.
+- **RSS de cada auto** (`autos/<slug>.xml`, 2026-10-11): sus cambios de precio de lista (misma
+  versión) y las promociones vigentes que lo nombran, de la marca y de cada local. Es el "aviso" de
+  "Seguir un auto" para quien no entra al sitio. Un auto sin novedades da un RSS vacío, no se omite.
+- **Comparaciones "X vs Y"** (`comparar/<a>-vs-<b>.html`, servidas como `/comparar/a-vs-b`,
+  2026-10-11): cada auto a la venta o en preventa con precio en dólares contra sus 2 rivales más
+  cercanos (`rivales()`: misma carrocería, con SUV y crossover juntos y los `TODOTERRENO` entre
+  ellos; largo, precio y familia de propulsión; nunca a más de 45 cm de largo ni 35% de precio).
+  Muestran solo las filas donde los dos dicen distinto y linkean a la comparación interactiva. La
+  página de cada auto linkea sus comparaciones. Un par cambia si cambia un precio: el script borra
+  las que ya no van.
 - **No agregan datos ni se editan a mano.** Si cambia `index.html`, se regeneran:
   `tests/e2e/paginas.spec.js` falla si quedaron desactualizadas (corre el script con
   `--check`). La rutina semanal lo hace sola (tarea F).

@@ -514,3 +514,31 @@ test('tamaño a escala y fotos lado a lado al comparar; los todoterreno se recon
   expect(await fotos.locator('figure img').evaluateAll(l => l.every(im => im.closest('figure').querySelector('.lado-cred')))).toBe(true);
   await expect(esc).toHaveAttribute('open', '');
 });
+
+test('seguir un auto: se guarda, avisa al volver si cambió el precio o la disponibilidad, y compara los que sigo', async ({ page }) => {
+  await abrir(page, '?auto=song-pro');
+  await page.locator('#fichaSeguir').click();
+  await expect(page.locator('#fichaSeguir')).toHaveAttribute('aria-pressed', 'true');
+  await expect(page.locator('.ficha-seguir-nota a')).toHaveAttribute('href', 'autos/song-pro.xml');
+  await expect(page.locator('#seguidosBtn')).toHaveText('Los que sigo (1)');
+  // Como si la última vez el Song Pro costara más y el Tank 300 estuviera en preventa.
+  await page.evaluate(() => {
+    const s = JSON.parse(localStorage.getItem('seguidos'));
+    s['song-pro'].p += 1000; s['tank-300'] = { p: null, s: 'preventa' };
+    localStorage.setItem('seguidos', JSON.stringify(s));
+  });
+  await abrir(page);
+  const aviso = page.locator('#avisoSeguidos');
+  await expect(aviso).toBeVisible();
+  await expect(aviso.locator('li')).toHaveCount(2);
+  await expect(aviso.locator('li', { hasText: 'Song Pro' })).toContainText(/bajó de USD [\d.]+ a USD [\d.]+/);
+  await expect(aviso.locator('li', { hasText: 'Tank 300' })).toContainText('ahora está: a la venta');
+  await page.locator('#avisoComparar').click();
+  await expect(page).toHaveURL(/autos=song-pro,tank-300|autos=tank-300,song-pro/);
+  await page.locator('#avisoListo').click();
+  await expect(aviso).toBeHidden();
+  // Dejar de seguir lo saca.
+  await abrir(page, '?auto=song-pro');
+  await page.locator('#fichaSeguir').click();
+  await expect(page.locator('#seguidosBtn')).toHaveText('Los que sigo (1)');
+});
