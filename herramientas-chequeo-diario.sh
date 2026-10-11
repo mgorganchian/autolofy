@@ -222,7 +222,11 @@ misma marca). Actualizá LLAMADOS_FUENTE.c con la fecha de hoy si pudiste revisa
 
 J) SERVICE OFICIAL (SERVICE_MARCAS y SERVICE_OFICIAL): si una marca cambió los precios de su
 lista de service programado, actualizalos tal cual (moneda, IVA, vigencia) y su fecha de consulta.
-Una lista nueva solo se asigna a un auto si es del mismo modelo y versión que la tabla."
+Una lista nueva solo se asigna a un auto si es del mismo modelo y versión que la tabla.
+
+K) TASAS DEL BCRA: corré python3 herramientas-tasas.py, que actualiza las líneas de préstamo
+para 0 km que la calculadora de cuota toma del BCRA. Si falla (sin conexión, la API cambió), no
+toques nada a mano y decilo en el resumen."
 
 log "invocando a Claude…"
 PROMPT="Sos el mantenimiento automático semanal del comparativo de autos chinos. Corrés sin

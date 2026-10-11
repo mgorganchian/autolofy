@@ -427,6 +427,23 @@ sí quedan en inglés, porque no muestran la palabra. Se coló con `YES` dos vec
 - Los dos van en la página de cada auto y en `autos/<slug>.html`. La rutina los revisa (tareas I y J).
   `tests/e2e/service.spec.js` falla si una lista no tiene fuente https o es de otra marca.
 
+## Gastos para patentarlo y cuota (2026-10-11)
+
+- **Gastos para patentarlo** (plegado en la página de cada auto, `IMPUESTOS_AR`): el arancel del
+  Registro (1%, 0,8% por el Registro Único Virtual), el sellado de la provincia elegida (se guarda
+  como la de "Dónde comprarlo") y el formulario 01, **sobre el precio de lista**, como estimado. La
+  patente anual no se calcula (depende de la valuación de cada provincia): va el beneficio para
+  eléctricos e híbridos con su norma. Las lecturas dudosas de la investigación (Santa Fe, La Pampa,
+  San Luis, Neuquén, Catamarca) van en la nota de esa provincia (`sn`), a la vista. Santiago del
+  Estero no tiene sellado consolidado: "s/d". Jujuy, Chubut y Neuquén cobran distinto a eléctricos
+  e híbridos (`sev`, `shev`); un mild-hybrid paga como naftero y su patente lo aclara.
+- **¿Cuánto pagarías por mes?** (plegado): sistema francés con la **TEA máxima** que cada banco informa
+  al BCRA (`TASAS_BCRA`, entre `/*tasas:inicio*/` y `/*tasas:fin*/`, lo escribe
+  `herramientas-tasas.py`; la rutina lo corre, tarea K). Solo líneas para 0 km de bancos, en pesos o
+  UVA, informadas en los últimos 200 días; la del Banco Nación es la +Autos (el BCRA la lista como
+  personal). La página dice que es la tasa máxima y que el CFT suma seguros y gastos.
+  `tests/e2e/costos.spec.js` cubre los dos.
+
 ## Concesionarios (2026-10-05)
 
 - **`concesionarios.json`** va aparte, como las fotos: la página lo baja recién al abrir la
@@ -743,3 +760,8 @@ avisa; el 2026-09-28 la sesión venció y la pasada no corrió sin que nadie se 
 
 Como nadie revisa el PR antes de que se mergee, la prudencia reemplaza a la supervisión:
 ante la duda sobre un dato, no cargarlo. Una corrida sin cambios es un resultado válido.
+
+**El texto de las tareas (`TAREA`, `PROMPT`) va entre comillas dobles de zsh**: adentro, nada de
+comillas dobles, backticks ni `$` (usar «»). Unas comillas en la tarea de videos cortaban la cadena
+desde el 2026-10-09 y a Claude no le llegaban las tareas B a H (arreglado el 2026-10-11 antes de que
+corriera). Después de tocar el script, `zsh -n` no alcanza: evaluar el bloque y contar las tareas.
