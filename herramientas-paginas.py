@@ -284,8 +284,8 @@ def rss_auto(car, slug, hist, red, hoy):
 
 # Comparaciones "X vs Y" (2026-10-11): Google recibe muchas búsquedas "A vs B" y el comparador
 # interactivo no se indexa. Cada auto a la venta (o en preventa) con precio en dólares se compara con
-# sus 2 rivales más cercanos: misma carrocería (SUV y crossover juntos; los todoterreno de TODOTERRENO,
-# entre ellos), y la menor suma de diferencia
+# sus 2 rivales más cercanos: misma carrocería (SUV y crossover juntos; los 4x4 con reductora, entre
+# ellos), y la menor suma de diferencia
 # de largo (cada 250 mm cuenta 1), de precio (cada 15% cuenta 1) y de propulsión (0,75 si no es la
 # misma familia). Un rival a más de 45 cm de largo o 35% de precio no cuenta: mejor sin par que un par
 # forzado. Las páginas no agregan datos: ordenan los de la ficha de cada uno.
@@ -300,8 +300,9 @@ def numero(txt):
 
 def rivales(data, cars, slugs):
     filas = {f[0]: f for cat in data for f in cat[1]}
-    idx = open(os.path.join(RAIZ, 'index.html'), encoding='utf-8').read()
-    todoterreno = set(re.findall(r"'([a-z0-9-]+)'", re.search(r'const TODOTERRENO = new Set\(\[(.*?)\]\)', idx).group(1)))
+    # Todoterreno = SUV o crossover 4x4 con reductora, según la fila Tracción (como TODOTERRENO del script).
+    todoterreno = {slugs[i] for i, c in enumerate(cars) if c.get('body') in ('SUV', 'Crossover')
+                   and celda(filas['Tracción'][i + 1])[0] == '4x4 con reductora'}
     datos = []
     for i, c in enumerate(cars):
         if c['status'] not in ('venta', 'preventa'): continue
