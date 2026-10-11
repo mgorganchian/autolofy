@@ -213,7 +213,7 @@ yt-dlp solo se leen metadatos (--flat-playlist, --skip-download, --print), nunca
 ni audio. Sumá un video solo si es una prueba manejando del MISMO modelo, versión y propulsión
 que la columna (no presentaciones, salones, otra generación, otro mercado ni comparativos de
 varios autos), con id, título tal cual, fecha y duración que da YouTube. Mirá la sección
-"Reseñas en video" del CLAUDE.md antes de decidir."
+«Reseñas en video» del CLAUDE.md antes de decidir."
 
 log "invocando a Claude…"
 PROMPT="Sos el mantenimiento automático semanal del comparativo de autos chinos. Corrés sin
