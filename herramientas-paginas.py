@@ -40,8 +40,10 @@ def leer():
     creditos = [H.unescape((re.search(r'data-credito="([^"]*)"', t) or [None, ''])[1]) for t in tags]
     colores = json.loads(re.search(r'const COLORES_AR = (\{.*?\});\n', s).group(1))
     videos = json.loads(re.search(r'const VIDEOS = (\{.*?\});\n', s).group(1))
+    extra = {k: json.loads(re.search(r'const ' + k + r' = (\{.*?\});\n', s).group(1))
+             for k in ('SERVICE_MARCAS', 'SERVICE_OFICIAL', 'LLAMADOS', 'LLAMADOS_FUENTE')}
     assert len(cars) == len(slugs) == len(data[0][1][0]) - 1
-    return data, cars, slugs, creditos, colores, videos
+    return data, cars, slugs, creditos, colores, videos, extra
 
 
 def celda(v):
@@ -61,7 +63,33 @@ def precio_usd(v):
     return m.group(1).replace('.', '') if m else None
 
 
-def pagina(i, data, car, slug, credito, colores, videos, vs=()):
+def fecha_corta(f):
+    a, m, d = f.split('-'); return f'{int(d)}/{int(m)}/{a}'
+
+
+def service_llamados_html(slug, extra):
+    """Service oficial programado y llamados a revisión, lo mismo que la página del comparador."""
+    e, out = H.escape, ''
+    sv = extra['SERVICE_OFICIAL'].get(slug)
+    if sv:
+        m = extra['SERVICE_MARCAS'][sv['m']]
+        pre = 'USD ' if m['mon'] == 'USD' else '$ '
+        monto = lambda p: pre + f'{p:,}'.replace(',', '.') if isinstance(p, (int, float)) else e(str(p))
+        total = sum(x[2] for x in sv['r'] if isinstance(x[2], (int, float)))
+        filas = ''.join(f'<tr><th scope="row">{x[0]:,} km'.replace(',', '.') + (f' o {x[1]} meses' if x[1] else '') + f'</th><td>{monto(x[2])}</td></tr>' for x in sv['r'])
+        nota = ' '.join(t for t in [f"Lo publica {m.get('pub') or sv['m']} en su sitio" + (f", {m['iva']}" if m.get('iva') else '') + '.', m.get('alc'), m.get('v'), sv.get('n'),
+                                    f"Consultado el {fecha_corta(m['c'])}."] if t)
+        out += (f'<section><h2>Service oficial programado</h2><table>{filas}<tr><th scope="row">Los {len(sv["r"])} suman</th><td>{monto(total)}</td></tr></table>'
+                f'<p class="nota">{e(nota)} <a href="{e(m["f"][0])}" rel="nofollow">Fuente</a>.</p></section>')
+    ll, f = extra['LLAMADOS'].get(slug, []), extra['LLAMADOS_FUENTE']
+    fuente = f'<a href="{e(f["u"])}" rel="nofollow">registro oficial de alertas de productos</a>, consultado el {fecha_corta(f["c"])}'
+    out += ('<section><h2>Llamados a revisión</h2>' + (
+        '<ul class="vs">' + ''.join(f'<li><b>{fecha_corta(x["f"])}, {e(x["mod"])}:</b> {e(x["d"])}</li>' for x in ll) + f'</ul><p class="nota">Del {fuente}.</p>'
+        if ll else f'<p class="nota">No figura ninguno en el {fuente}.</p>') + '</section>')
+    return out
+
+
+def pagina(i, data, car, slug, credito, colores, videos, vs=(), extra=None):
     nombre = car['name']
     filas = {f[0]: f[i + 1] for cat in data for f in cat[1]}
     precio, _ = celda(filas['Precio de lista (versión tope de gama de la tabla)'])
@@ -138,6 +166,7 @@ td small{{display:block;font-size:.75rem;color:var(--ink2)}} .colores{{list-styl
 <a class="cta" href="/?auto={slug}">Compararlo con otros autos</a>
 <p class="nota">Para enterarte cuando cambie su precio o salga una promoción, sumá <a href="/autos/{slug}.xml">su RSS</a> a tu lector de noticias.</p>
 {vs_html(vs)}
+{service_llamados_html(slug, extra) if extra else ''}
 {colores_html}
 {videos_html}
 {''.join(secciones)}
@@ -367,7 +396,7 @@ def red_oficial():
 
 
 def generar():
-    data, cars, slugs, creditos, colores, videos = leer()
+    data, cars, slugs, creditos, colores, videos, extra = leer()
     salida = {}
     pares = rivales(data, cars, slugs)
     vs_de = {}
@@ -380,7 +409,7 @@ def generar():
     red_json = json.load(open(os.path.join(RAIZ, 'concesionarios.json'), encoding='utf-8'))
     hoy = date.today().isoformat()
     for i, (car, slug, cred) in enumerate(zip(cars, slugs, creditos)):
-        salida[os.path.join(DIR, slug + '.html')] = pagina(i, data, car, slug, cred, colores, videos, vs_de.get(i, ()))
+        salida[os.path.join(DIR, slug + '.html')] = pagina(i, data, car, slug, cred, colores, videos, vs_de.get(i, ()), extra)
         salida[os.path.join(DIR, slug + '.xml')] = rss_auto(car, slug, hist, red_json, hoy)
     pag_nov, rss = novedades(cars, slugs)
     salida[os.path.join(RAIZ, 'novedades.html')] = pag_nov

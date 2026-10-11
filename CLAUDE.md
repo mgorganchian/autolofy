@@ -411,6 +411,22 @@ sí quedan en inglés, porque no muestran la palabra. Se coló con `YES` dos vec
   quieto con `prefers-reduced-motion`): las respuestas elegidas también son verdes.
 - **Pedir cotización**: WhatsApp solo con número internacional; elige el contacto de la marca.
 
+## Service oficial y llamados a revisión (2026-10-11)
+
+- **Service oficial programado** (`SERVICE_MARCAS` por marca y `SERVICE_OFICIAL` por slug): la lista
+  que publica cada marca en su sitio, tal cual (moneda, IVA, qué incluye, vigencia), hasta 5 años o
+  100.000 km, con la suma. Solo si la lista es del **mismo modelo y versión** de la tabla: quedaron
+  afuera los Tiggo 7 Pro MHEV y PHEV (la lista dice "Tiggo 7 Pro Hybrid" para los dos), JAC S2 (manual
+  o CVT), JS8 Pro y T9, DFSK E5 Plus (E5 o E5P), Jetour X70 FL y T1 i-DM, Poer Super Luxury y el EV 30X
+  (sin precios). La de BYD está vencida (mayo y junio de 2026) y lo dice. **Las listas no se comparan
+  entre marcas** (GWM y Changan cobran solo mano de obra, aceite y filtros): no hay ranking ni "costo
+  total". MG publica solo el intervalo, sin precios.
+- **Llamados a revisión** (`LLAMADOS`, `LLAMADOS_FUENTE`): el registro oficial de alertas de productos
+  de Defensa del Consumidor. Un auto que no figura dice "No figura ninguno en el registro", nunca "sin
+  problemas". Al 10/10/2026 el único de la tabla es el Tiggo 4 Pro (lote de ejes traseros, junio 2024).
+- Los dos van en la página de cada auto y en `autos/<slug>.html`. La rutina los revisa (tareas I y J).
+  `tests/e2e/service.spec.js` falla si una lista no tiene fuente https o es de otra marca.
+
 ## Concesionarios (2026-10-05)
 
 - **`concesionarios.json`** va aparte, como las fotos: la página lo baja recién al abrir la
