@@ -1222,6 +1222,26 @@ if(!location.search&&!location.hash)document.documentElement.classList.add('arra
   .dif-lista ul{list-style:none;margin:4px 0 0;padding:0;display:flex;flex-direction:column;gap:2px}
   .dif-fila{color:var(--ink-2)}
   .dif-mejor{font-weight:700;color:var(--yes)}
+  .dif-mas{flex:1 1 100%;min-width:0;margin-top:10px;border-top:1px solid var(--line);padding-top:4px}
+  .dif-mas summary{cursor:pointer;font-weight:700;min-height:32px;display:flex;align-items:center}
+  .escala{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(230px,100%),1fr));gap:14px 28px;margin:6px 0;max-width:900px}
+  .esc-fila{border-bottom:1px solid var(--ink-3);align-self:end}
+  .esc-nom{display:flex;flex-wrap:wrap;justify-content:space-between;gap:0 8px;font-size:.8rem}
+  @media (max-width:640px){ .escala{grid-template-columns:repeat(2,minmax(0,1fr));gap:14px 18px} }
+  .esc-med{font-family:var(--fuente-tabla);font-variant-numeric:tabular-nums;color:var(--ink-2);white-space:nowrap}
+  .esc-sil{display:block;height:auto;fill:var(--ink-2);margin-top:4px}
+  .esc-regla{display:flex;align-items:center;gap:6px;font-size:.72rem;color:var(--ink-2);align-self:end}
+  .esc-regla i{flex:none;height:2px;background:var(--ink)}
+  .lado-vista{display:inline-flex;gap:6px;align-items:center;margin:6px 0;font-size:.8rem}
+  .lado-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:12px;margin-top:4px}
+  .lado-grid figure{margin:0}
+  .lado-grid img,.lado-sin{width:100%;aspect-ratio:900/570;object-fit:contain;background:#fff;border-radius:2px;display:block}
+  .lado-sin{display:flex;align-items:center;justify-content:center;background:var(--surface-alt);color:var(--ink-3);font-size:.72rem}
+  .lado-grid figcaption{font-size:.8rem;font-weight:600;margin-top:3px}
+  .lado-cred{display:block;font-weight:400;font-size:.66rem;color:var(--ink-3)}
+  .ficha-carga .ficha-datos{margin:8px 0}
+  .ficha-cochera{font-size:.8rem;margin:-8px 0 16px}
+  .ficha-cochera b.no{color:var(--etq-e)}
   .dif-margen{font-weight:700;font-variant-numeric:tabular-nums;background:var(--note-bg);color:var(--note-text);border-radius:4px;padding:0 4px}
   .dif-vacio{margin:0;color:var(--ink-2)}
   .mejor-sel{color:var(--opt);font-size:.68rem;margin-left:3px}
@@ -1546,6 +1566,8 @@ if(!location.search&&!location.hash)document.documentElement.classList.add('arra
     .sim-todos{font-size:0.888rem}
     .sim-vacio{font-size:0.864rem}
     .sim-btn{font-size:0.72rem}
+    .esc-regla,.lado-sin{font-size:0.864rem}
+    .lado-cred{font-size:0.792rem}
     .rk-mios{font-size:0.888rem}
     .rk-sel{font-size:0.84rem}
     .rk-sel select{font-size:0.864rem}
@@ -2531,6 +2553,9 @@ etiquetasCel();
 if (MQ_CEL.addEventListener) MQ_CEL.addEventListener('change', etiquetasCel);
 TH_AUTO.forEach((th, i) => { th.dataset.idx = i; });
 const SLUG_AUTO = TH_AUTO.map(th => { const img = th.querySelector('img.car-photo'); return img ? img.dataset.slug : ''; });
+// Los 7 todoterreno: su `body` es "SUV" pero se dibujan con la silueta b-offroad y en Ayudame a elegir
+// suman para tierra. Van por slug porque el encabezado ya no lleva silueta (la reemplazó la foto).
+const TODOTERRENO = new Set(['baic-bj60', 'baic-bj40-pro', 'baic-bj40-plus', 'baic-bj30-4x2', 'baic-bj30-4x4', 'tank-300', 'jetour-t2']);
 // La miniatura mide 300 px. Si la foto se dibuja con más píxeles que eso (columnas anchas en
 // escritorio, o pantallas de alta densidad), se cambia cuando el auto entra en pantalla: por la
 // mediana de fotos/med/ (480 px) si alcanza, y si no por la portada (900 px). En el celular la de
@@ -3701,7 +3726,7 @@ const RK_DERIVADAS = {
   'usd-km': { titulo: 'USD por km de autonomía', unidad: 'USD/km', dir: -1,
     sub: 'Solo eléctricos: precio (tope de gama) dividido la autonomía estimada a WLTP.' },
 };
-const RK_HERRAMIENTAS = { '__medida': 'A tu medida', '__gasto': 'Gasto mensual', '__rebajas': 'Rebajas publicadas' };
+const RK_HERRAMIENTAS = { '__medida': 'A tu medida', '__gasto': 'Gasto mensual', '__rebajas': 'Rebajas publicadas', '__cochera': '¿Entra en mi cochera?' };
 const rkEsDerivada = k => k in RK_DERIVADAS;
 const rkEsHerr = k => k in RK_HERRAMIENTAS;
 const rkDir = k => rkEsDerivada(k) ? RK_DERIVADAS[k].dir : PCTL_DIR[k];
@@ -3934,6 +3959,7 @@ function renderRanking(){
   if (k === '__medida') return rkRenderMedida(cand);
   if (k === '__rebajas') return rkRenderRebajas(cand);
   if (k === '__gasto') return rkRenderGasto(cand);
+  if (k === '__cochera') return rkRenderCochera(cand);
 
   const dir = rkDir(k);
   const { ok, resto } = rkClasificarFila(k, cand.lista);
@@ -4163,6 +4189,57 @@ function rkRenderGasto(cand){
     sin.map(r => '<li data-auto="' + rkEsc(CARS[r.i].name) + '" data-idx="' + r.i + '" data-tip="' + rkEsc(r.motivo) + '">' + rkEsc(CARS[r.i].name) + '</li>').join('') + '</ul></section>' : '';
 }
 
+// ¿Entra en mi cochera? (2026-10-10): las medidas libres de la cochera contra el largo, el ancho y,
+// si se carga, el alto de cada auto. Primero los que dejan más lugar; la cifra es lo que sobra en la
+// medida más justa. El ancho de las fichas casi siempre es sin espejos y el alto a veces sin barras
+// de techo: la nota lo advierte y no se suma ningún margen inventado.
+let rkCochera = { largo: '', ancho: '', alto: '' };
+try { const g = JSON.parse(localStorage.getItem('rkCochera') || 'null'); if (g) rkCochera = Object.assign(rkCochera, g); } catch (e) {}
+// Acepta metros con coma o punto ("4,80"), centímetros ("480") o milímetros ("4800").
+function medidaMm(v){
+  const n = parseFloat(String(v || '').trim().replace(',', '.'));
+  if (!(n > 0)) return null;
+  return Math.round(n >= 1000 ? n : n >= 20 ? n * 10 : n * 1000);
+}
+const COCHERA_DIMS = [['largo', 'Longitud (mm)'], ['ancho', 'Ancho (mm)'], ['alto', 'Altura (mm)']];
+const listaY = a => a.length > 1 ? a.slice(0, -1).join(', ') + ' y ' + a[a.length - 1] : a[0] || '';
+function cocheraAuto(i){
+  const dims = COCHERA_DIMS.map(([k, fila]) => ({ k, fila, lim: medidaMm(rkCochera[k]), auto: medidaDe(i, fila), v: celdaDe(fila, i) })).filter(d => d.lim);
+  if (!dims.length) return null;
+  const sin = dims.filter(d => !(d.auto > 0));
+  if (sin.length) return { tipo: 'sd', motivo: 'La ficha no tiene ' + listaY(sin.map(d => 'el ' + d.k)) + '.' };
+  dims.forEach(d => { d.cm = Math.floor((d.lim - d.auto) / 10); });
+  // La franja de origen es la de la medida que no es de la ficha argentina, si hay alguna.
+  const v = (dims.find(d => d.v.startsWith('EXT:')) || dims.find(d => d.v.startsWith('NOTE:')) || {}).v || '';
+  const falta = dims.filter(d => d.cm < 0);
+  if (falta.length) return { tipo: 'no', v, det: 'Le faltan ' + listaY(falta.map(d => -d.cm + ' cm de ' + d.k)) + '.' };
+  return { tipo: 'ok', v, n: Math.min(...dims.map(d => d.cm)), det: 'Sobran ' + listaY(dims.map(d => d.cm + ' cm de ' + d.k)) + '.' };
+}
+function rkRenderCochera(cand){
+  document.getElementById('rkTitulo').textContent = '¿Entra en mi cochera?';
+  document.getElementById('rkSub').innerHTML = rkEsc('Cargá las medidas libres de tu cochera. Primero los que dejan más lugar; la cifra es lo que sobra en la medida más justa. Ojo: las fichas miden el ancho sin espejos.');
+  const campo = (id, et, ph, val) => '<label><span>' + et + '</span><input type="text" inputmode="decimal" autocomplete="off" id="' + id + '" placeholder="' + ph + '" value="' + rkEsc(val) + '"></label>';
+  document.getElementById('rkCobertura').innerHTML = '<div class="rk-gasto">' + campo('cLargo', 'Largo (m)', 'ej. 4,80', rkCochera.largo) +
+    campo('cAncho', 'Ancho (m)', 'ej. 2,50', rkCochera.ancho) + campo('cAlto', 'Alto (m), opcional', 'portón o techo', rkCochera.alto) + '</div>';
+  document.getElementById('rkGrafico').innerHTML = '';
+  const lista = document.getElementById('rkLista'), ok = [], no = [], sd = [];
+  cand.lista.forEach(i => { const r = cocheraAuto(i); if (r) (r.tipo === 'ok' ? ok : r.tipo === 'no' ? no : sd).push(Object.assign({ i }, r)); });
+  if (!ok.length && !no.length && !sd.length){
+    lista.innerHTML = '<li class="rk-vacio">Cargá el largo y el ancho de tu cochera para ver qué autos entran.</li>';
+    document.getElementById('rkResto').innerHTML = '';
+    return;
+  }
+  rkOrdenar(ok, 1);
+  const max = ok.reduce((m, r) => Math.max(m, r.n), 0) || 1;
+  lista.innerHTML = ok.map(r => rkItemHTML(r, max, r.n.toLocaleString('es-AR') + '<small>cm</small>' + (rkMarcaHTML(r.v) || '<span class="rk-marca vacia" aria-hidden="true"></span>'),
+    '<div class="rk-orig">' + rkEsc(r.det) + '</div>', cand.mios)).join('') ||
+    '<li class="rk-vacio">Ninguno de estos autos entra con esas medidas.</li>';
+  const grupo = (id, titulo, txt, arr, tip) => arr.length ? '<section data-grupo="' + id + '"><h3>' + titulo + ' (' + arr.length + ')</h3><p>' + txt + '</p><ul>' +
+    arr.map(r => '<li data-auto="' + rkEsc(CARS[r.i].name) + '" data-idx="' + r.i + '" data-tip="' + rkEsc(tip(r)) + '">' + rkEsc(CARS[r.i].name) + '</li>').join('') + '</ul></section>' : '';
+  document.getElementById('rkResto').innerHTML = grupo('no', 'No entran', 'Tocá uno para ver cuánto le falta.', no, r => r.det) +
+    grupo('sd', 'Sin dato', 'Falta la medida en la ficha.', sd, r => r.motivo);
+}
+
 // ---- Eventos del ranking ------------------------------------------------------
 document.getElementById('rankingView').addEventListener('change', e => {
   const t = e.target;
@@ -4176,10 +4253,13 @@ document.getElementById('rankingView').addEventListener('change', e => {
   renderRanking();
 });
 document.getElementById('rankingView').addEventListener('input', e => {
-  const t = e.target, map = { gKm: 'km', gLitro: 'litro', gKwh: 'kwh', gElec: 'electrico' };
-  if (!map[t.id]) return;
-  rkGasto[map[t.id]] = t.id === 'gElec' ? Math.max(0, Math.min(100, +t.value || 0)) : t.value;
-  try { localStorage.setItem('rkGasto', JSON.stringify(rkGasto)); } catch (er) {}
+  const t = e.target, map = { gKm: 'km', gLitro: 'litro', gKwh: 'kwh', gElec: 'electrico' }, coch = { cLargo: 'largo', cAncho: 'ancho', cAlto: 'alto' };
+  if (coch[t.id]){ rkCochera[coch[t.id]] = t.value; try { localStorage.setItem('rkCochera', JSON.stringify(rkCochera)); } catch (er) {} }
+  else if (!map[t.id]) return;
+  else {
+    rkGasto[map[t.id]] = t.id === 'gElec' ? Math.max(0, Math.min(100, +t.value || 0)) : t.value;
+    try { localStorage.setItem('rkGasto', JSON.stringify(rkGasto)); } catch (er) {}
+  }
   // Re-dibuja solo la lista: rehacer los campos le sacaría el foco al que se está escribiendo.
   const foco = t.id, pos = t.selectionStart;
   renderRanking();
@@ -4545,8 +4625,115 @@ function renderDiferencias(){
       return '<li><span class="dif-fila">' + rkEsc(rkTitulo(f.nombre)) + '</span> ' +
         '<span class="dif-mejor">' + nom(m.i) + ' ' + fmt(m.n, f.nombre) + '</span> vs ' + nom(p.i) + ' ' + fmt(p.n, f.nombre) +
         ' <span class="dif-margen">' + margen(f.rel) + '</span>' + (f.est ? ' <small>(estimado WLTP)</small>' : '') + '</li>';
-    }).join('') + '</ul></div>' : '');
+    }).join('') + '</ul></div>' : '') +
+    escalaHTML(vis) + fotosLadoHTML(vis);
 }
+// Tamaño a escala (2026-10-10, como vehiclesizes.com): la silueta de cada auto estirada a su largo y
+// su alto, todos con la misma escala y una regla de 1 metro. Va plegado: no ocupa lugar si no se abre.
+// SIL_CAJA es el rectángulo que ocupa cada silueta dentro de su <symbol> de 64 × 32 (medido con
+// getBBox): el dibujo se estira a ese rectángulo y no al lienzo, para que el largo sea el del auto.
+const SIL_CAJA = { offroad: [4, 2.9, 58.1, 30.2], suv: [6, 2.6, 60, 30.6], crossover: [4, 5.6, 59, 30.2], sedan: [3, 8.3, 61.6, 29.8],
+  hatchback: [6, 8.1, 56, 30], minivan: [3.5, 3.3, 61.5, 30], pickup: [3.5, 4.4, 62, 30] };
+const siluetaDe = i => TODOTERRENO.has(SLUG_AUTO[i]) ? 'offroad'
+  : ({ SUV: 'suv', Crossover: 'crossover', 'Sedán': 'sedan', Hatchback: 'hatchback', Minivan: 'minivan', Pickup: 'pickup', Convertible: 'sedan' }[CARS[i].body] || 'suv');
+const medidaDe = (i, fila) => pctlValor(FILA_POR_NOMBRE[fila][i + 1], fila);
+const metros = mm => (mm / 1000).toLocaleString('es-AR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+// Qué desplegables del cuadro de diferencias quedaron abiertos: el cuadro se rehace con cada cambio
+// de la selección y no tienen que cerrarse solos.
+const difAbiertos = new Set();
+const difDetalle = (id, titulo, cuerpo) => '<details class="dif-mas" data-dif="' + id + '"' + (difAbiertos.has(id) ? ' open' : '') + '><summary>' + titulo + '</summary>' + cuerpo + '</details>';
+function escalaHTML(vis){
+  const med = vis.map(i => ({ i, l: medidaDe(i, 'Longitud (mm)'), h: medidaDe(i, 'Altura (mm)') })).filter(x => x.l > 0 && x.h > 0);
+  if (med.length < 2) return '';
+  const maxL = Math.max(...med.map(x => x.l));
+  const ext = med.some(x => ['Longitud (mm)', 'Altura (mm)'].some(f => String(FILA_POR_NOMBRE[f][x.i + 1]).startsWith('EXT:')));
+  return difDetalle('escala', 'Tamaño a escala', '<div class="escala">' + med.map(x => {
+    const sil = siluetaDe(x.i), [x0, y0, x1, y1] = SIL_CAJA[sil];
+    return '<div class="esc-fila"><span class="esc-nom">' + rkEsc(CARS[x.i].short) + ' <span class="esc-med">' + metros(x.l) + ' × ' + metros(x.h) + ' m</span></span>' +
+      '<svg class="esc-sil" viewBox="' + [x0, y0, x1 - x0, y1 - y0].map(n => +n.toFixed(2)).join(' ') + '" preserveAspectRatio="none" aria-hidden="true" focusable="false" ' +
+      'style="width:' + (100 * x.l / maxL).toFixed(2) + '%;aspect-ratio:' + x.l + ' / ' + x.h + '"><use href="#b-' + sil + '" width="64" height="32"/></svg></div>';
+  }).join('') + '<div class="esc-regla"><i style="width:' + (100 * 1000 / maxL).toFixed(2) + '%"></i>1 m</div></div>' +
+    '<p class="ficha-nota">Largo × alto de las fichas' + (ext ? ' (algunas son de otro mercado: ver la tabla)' : '') + '. El dibujo es el tipo de carrocería, no la forma exacta de cada auto.</p>');
+}
+// Cuánto tarda en cargar (2026-10-10, como EV Database). En casa se calcula: la batería dividida por la
+// potencia, que es el mínimo teórico (en la práctica tarda algo más por las pérdidas y porque el final
+// de la carga va más lento), y la nota lo dice. Enchufe común: 220 V × 10 A = 2,2 kW. Cargador de pared:
+// 7 kW, o lo que admita el auto si es menos. Si la ficha publica su propio tiempo, va ese y no se calcula.
+// La carga rápida nunca se calcula: va la potencia y el tiempo que publica la ficha ("30 a 80% en 20 min").
+const horasTxt = h => { const m = Math.round(h * 60 / (h >= 10 ? 30 : 10)) * (h >= 10 ? 30 : 10);
+  return (m >= 60 ? Math.floor(m / 60) + ' h' : '') + (m % 60 ? (m >= 60 ? ' ' : '') + m % 60 + ' min' : ''); };
+const celdaDe = (fila, i) => String((FILA_POR_NOMBRE[fila] || [])[i + 1] ?? '');
+function kwDe(fila, i){
+  const m = /([\d.,]+)\s*kW/.exec(cleanVal(celdaDe(fila, i)));
+  return m ? parseFloat(m[1].replace(/\.(?=\d{3})/g, '').replace(',', '.')) : null;
+}
+// "30% a 80% en 20 min", "10%→80% en ≤24 min", "18 min de 30-80%" o "0-100% en 11,5 h" en el texto de la
+// celda. Si hay más de uno ("3 h de 30-80% y 6 h de 5-100%"), va el que cubre más batería.
+function tiempoFicha(texto){
+  const t = String(texto).replace(/^(NR|NOTE|EXT|DET):/, '').replace('|', ' '), hall = [];
+  const RES = [[/(\d+)\s*%?\s*(?:a|al|→|-)\s*(\d+)\s*%\s*en\s*≤?\s*([\d,]+)\s*(min|minutos|h|hs|horas)\b/gi, 1, 2, 3, 4],
+    [/([\d,]+)\s*(min|minutos|h|hs|horas)\s*de\s*(\d+)\s*%?\s*(?:a|al|→|-)\s*(\d+)\s*%/gi, 3, 4, 1, 2]];
+  RES.forEach(([re, de, a, n, u]) => { for (const m of t.matchAll(re)) hall.push({ de: +m[de], a: +m[a], n: parseFloat(m[n].replace(',', '.')), h: !/^m/i.test(m[u]) }); });
+  if (!hall.length) return null;
+  const x = hall.reduce((m, y) => y.a - y.de > m.a - m.de ? y : m);
+  const dur = x.h && x.n < 1 ? Math.round(x.n * 60) + ' min' : x.n.toLocaleString('es-AR') + (x.h ? ' h' : ' min');
+  return x.de + ' a ' + x.a + '% en ' + dur;
+}
+// Si la persona ya cargó su cochera en el ranking, la página del auto le dice si entra.
+function cocheraFichaHTML(i){
+  const r = cocheraAuto(i);
+  if (!r || r.tipo === 'sd') return '';
+  return '<p class="ficha-cochera">' + (r.tipo === 'ok' ? '<b>Entra en tu cochera.</b> ' : '<b class="no">No entra en tu cochera.</b> ') + rkEsc(r.det) +
+    ' <button type="button" class="mini-btn" data-ir-cochera>Cambiar medidas</button></p>';
+}
+function cargaHTML(i){
+  if (!['ev', 'phev'].includes(CARS[i].type)) return '';
+  const b = rkValor(i, 'Capacidad de batería (kWh)');
+  if (b.tipo !== 'ok' || !(b.n > 0)) return '';
+  const celAC = celdaDe('Puerto de carga AC', i), celDC = celdaDe('Puerto de carga DC (rápida)', i);
+  const ac = kwDe('Puerto de carga AC', i) || kwDe('Cargador integrado (OBC)', i), dc = kwDe('Puerto de carga DC (rápida)', i);
+  const tAC = tiempoFicha(celAC), tDC = tiempoFicha(celDC);
+  const otro = [String(b.v), celAC, celDC].some(v => v.startsWith('EXT:'));
+  const filas = [['Enchufe común (10 A)', horasTxt(b.n / 2.2)]];
+  if (tAC) filas.push(['Carga lenta, según la ficha', tAC]);
+  else if (ac) filas.push(['Cargador de pared de 7 kW', horasTxt(b.n / Math.min(7, ac)) + (ac < 7 ? ' (el auto admite ' + ac.toLocaleString('es-AR') + ' kW)' : '')]);
+  if (celDC === 'NO' || /^No\b/.test(cleanVal(celDC))) filas.push(['Carga rápida', 'No tiene']);
+  else if (dc || tDC) filas.push(['Carga rápida', [dc ? 'hasta ' + dc.toLocaleString('es-AR') + ' kW' : '', tDC || ''].filter(Boolean).join(', ')]);
+  return '<section class="ficha-carga"><h3>Cuánto tarda en cargar</h3><dl class="ficha-datos">' +
+    filas.map(([a, v]) => '<div><dt>' + rkEsc(a) + '</dt><dd>' + rkEsc(v) + '</dd></div>').join('') + '</dl>' +
+    '<p class="ficha-nota">En casa, de vacía a llena con la batería de ' + b.n.toLocaleString('es-AR') + ' kWh: es el mínimo, porque en la práctica hay pérdidas y el final de la carga va más lento.' +
+    (otro ? ' Algunos datos son de otro mercado (ver la tabla).' : '') + '</p></section>';
+}
+// Fotos lado a lado (2026-10-10, como Autohome): la misma vista de cada auto elegido, con su crédito
+// (con CC BY la atribución va en cada foto).
+let vistaLado = 'tablero';
+function creditoFoto(i, k){
+  if (k > 0) return ((window.CREDITOS_POR_FOTO || {})[SLUG_AUTO[i]] || [])[k] || '';
+  const im = TH_AUTO[i].querySelector('img.car-photo'); return im && im.dataset.credito || '';
+}
+function fotosLadoGrid(vis){
+  return vis.map(i => {
+    const k = (VISTAS_POR_FOTO[SLUG_AUTO[i]] || []).indexOf(vistaLado), cred = k >= 0 ? creditoFoto(i, k) : '';
+    return '<figure>' + (k >= 0 ? '<img src="fotos/' + SLUG_AUTO[i] + '-' + (k + 1) + '.jpg" alt="' + rkEsc(CARS[i].name + ', ' + VISTA_NOMBRE[vistaLado].toLowerCase()) + '" loading="lazy" decoding="async">'
+      : '<div class="lado-sin">Sin foto de esta vista</div>') +
+      '<figcaption>' + rkEsc(CARS[i].short) + (cred ? '<small class="lado-cred">' + rkEsc(cred) + '</small>' : '') + '</figcaption></figure>';
+  }).join('');
+}
+function fotosLadoHTML(vis){
+  const vistas = Object.keys(VISTA_NOMBRE).filter(v => vis.filter(i => (VISTAS_POR_FOTO[SLUG_AUTO[i]] || []).includes(v)).length >= 2);
+  if (!vistas.length) return '';
+  if (!vistas.includes(vistaLado)) vistaLado = vistas.includes('tablero') ? 'tablero' : vistas[0];
+  return difDetalle('fotos', 'Fotos lado a lado', '<label class="lado-vista"><span>Vista</span><select id="vistaLadoSel">' +
+    vistas.map(v => '<option value="' + v + '"' + (v === vistaLado ? ' selected' : '') + '>' + rkEsc(VISTA_NOMBRE[v]) + '</option>').join('') + '</select></label>' +
+    '<div class="lado-grid">' + fotosLadoGrid(vis) + '</div>');
+}
+document.addEventListener('change', e => {
+  if (e.target.id !== 'vistaLadoSel') return;
+  vistaLado = e.target.value;
+  const g = e.target.closest('details').querySelector('.lado-grid');
+  if (g) g.innerHTML = fotosLadoGrid(CARS.map((_, i) => i).filter(i => colVisible[i]));
+});
+document.addEventListener('toggle', e => { const d = e.target.dataset && e.target.dataset.dif; if (d) (e.target.open ? difAbiertos.add(d) : difAbiertos.delete(d)); }, true);
 
 function fijarReferencia(i){
   refIdx = (refIdx === i) ? null : i;
@@ -5047,7 +5234,7 @@ async function abrirFicha(i){
     '</div></div>' +
     '<dl class="ficha-datos">' + FICHA_DATOS.filter(n => FILA_POR_NOMBRE[n] && aplica(n)).map(n =>
       '<div><dt>' + rkEsc(rkTitulo(n) + (rkUnidad(n) ? ' (' + rkUnidad(n) + ')' : '')) + '</dt><dd>' + val(n) + '</dd></div>').join('') +
-    '</dl>' +
+    '</dl>' + cocheraFichaHTML(i) +
     historialHTML(SLUG_AUTO[i]) +
     '<section class="ficha-donde" id="fichaDondeSec"><h3>Dónde comprarlo</h3><div id="fichaDonde"><p class="ficha-vacio">Cargando la red de concesionarios…</p></div></section>' +
     '<div class="ficha-cols"><section><h3>Dónde se destaca</h3>' + lista(fuertes, 'fuerte') + '</section>' +
@@ -5061,6 +5248,7 @@ async function abrirFicha(i){
         '<span><b>' + rkEsc(CARS[s.i].name) + '</b><small>' + rkEsc(simResumen(s.i, i)) + '</small></span></button>' +
         '<button type="button" class="ficha-btn" data-comparar="' + s.i + '">Comparar</button></li>';
     }).join('') + '</ul></section>' : '') +
+    cargaHTML(i) +
     coloresHTML(SLUG_AUTO[i]) +
     videosHTML(SLUG_AUTO[i]) +
     '<section class="ficha-fuentes"><h3>Fuentes oficiales</h3><p id="fichaFuentes" class="ficha-vacio">Cargando…</p></section>';
@@ -5132,6 +5320,10 @@ document.addEventListener('click', e => {
   }
   const otro = e.target.closest('.ficha-sim-auto, [data-ficha-idx]');
   if (otro){ abrirFicha(+(otro.dataset.idx || otro.dataset.fichaIdx)); return; }
+  if (e.target.closest('[data-ir-cochera]')){
+    rkActual = '__cochera'; sinHistoria(() => cerrarFicha()); irAVista('ranking');
+    const c = document.getElementById('cLargo'); if (c) c.focus(); return;
+  }
   const cmp = e.target.closest('[data-comparar]');
   if (cmp){ const i = fichaActual; compararConPaso(() => { simFijar([i, +cmp.dataset.comparar]); simRefrescarSelector(); cerrarFicha(); aplicarSeleccion(); }); ocultarTitulo(); return; }
   if (e.target.closest('#fichaVerTabla')){ const i = fichaActual; compararConPaso(() => { simFijar([i]); simRefrescarSelector(); cerrarFicha(); aplicarSeleccion(); }); ocultarTitulo(); window.scrollTo({ top: 0 }); return; }
@@ -5628,7 +5820,7 @@ function elegirPctl(nombre){
   if (!(nombre in ELEGIR_PCTL)){ const f = FILA_POR_NOMBRE[nombre]; ELEGIR_PCTL[nombre] = f ? pctlFila(f) : null; }
   const a = ELEGIR_PCTL[nombre]; return a || [];
 }
-const esTodoterreno = i => !!TH_AUTO[i].querySelector('use[href="#b-offroad"]');
+const esTodoterreno = i => TODOTERRENO.has(SLUG_AUTO[i]);
 // "Top 20% en …" de Ayudame a elegir, con pocas palabras (2026-10-10).
 const MOTIVO_CORTO = {"Potencia total del sistema (kW)":"potencia","Volumen de baúl/carga (L)":"baúl","Número de asientos":"asientos",
   "Motor a combustión — potencia (kW)":"potencia a nafta o diésel","Motor a combustión — par (N·m)":"par a nafta o diésel",
