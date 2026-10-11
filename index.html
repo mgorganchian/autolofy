@@ -488,6 +488,9 @@ if(!location.search&&!location.hash)document.documentElement.classList.add('arra
     opacity:.4;
     background:transparent;
   }
+  .faceta-n{opacity:.75;font-weight:400}
+  .faceta-ayuda{display:block;flex-basis:100%;font-size:.62rem;opacity:.8;margin-top:1px}
+  .car-chip:has(.faceta-ayuda){flex-wrap:wrap}
   .car-chip input{
     accent-color:var(--h-ink);
     width:14px;height:14px;
@@ -986,7 +989,8 @@ if(!location.search&&!location.hash)document.documentElement.classList.add('arra
   .visor-nav{display:none;position:absolute;top:50%;transform:translateY(-50%);width:44px;height:44px;border-radius:50%;border:0;background:rgba(255,255,255,.85);color:#111;font-size:1.6rem;cursor:pointer}
   .visor.multi .visor-nav{display:block}
   .visor-nav.ant{left:10px} .visor-nav.sig{right:10px}
-  .visor-puntos{display:flex;gap:6px;margin-top:8px}
+  .visor-puntos{display:none;gap:6px;margin-top:8px}   /* "3 de 9" en el pie dice lo mismo, más claro (2026-10-10) */
+  .foto-num{font-variant-numeric:tabular-nums;margin-right:4px}
   .visor-puntos i{position:relative;width:8px;height:8px;border-radius:50%;background:rgba(255,255,255,.35);cursor:pointer}
   .visor-puntos i::before{content:"";position:absolute;inset:-10px -3px}   /* zona táctil de 28 px sin agrandar el punto */
   .visor-puntos i.on{background:#fff}
@@ -1104,6 +1108,10 @@ if(!location.search&&!location.hash)document.documentElement.classList.add('arra
   .elegir-ops input:checked + span{background:var(--byd-blue);border-color:var(--byd-blue);color:var(--sobre-verde)}
   .elegir-ops input:focus-visible + span{outline:2px solid var(--link);outline-offset:1px}
   .elegir-res-tit{border-top:2px solid var(--ink);padding-top:8px}
+  .elegir-tus{margin:12px 0 0;font-size:.74rem;color:var(--ink-2)}
+  .elegir-aflojar{display:flex;flex-wrap:wrap;gap:6px;margin:4px 0 10px}
+  .elegir-flojo{color:var(--ink-2);display:none}
+  @media (min-width:900px){ .elegir-tus{display:none} .elegir-flojo{display:list-item} }
   .elegir-res{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(auto-fill,minmax(185px,1fr));gap:14px}
   /* Escritorio (2026-10-10): preguntas en una columna a la izquierda y sugerencias a la derecha, en
      tarjetas con la foto al costado, para que la primera pantalla ya muestre los autos con su
@@ -1257,6 +1265,11 @@ if(!location.search&&!location.hash)document.documentElement.classList.add('arra
 
   /* ============ Presupuesto (en el selector) ============================== */
   .precio-rango{display:grid;grid-template-columns:auto 1fr;gap:4px 10px;align-items:center;font-size:.76rem;color:var(--ink)}
+  .filtros-activos{display:flex;flex-wrap:wrap;gap:6px;margin:0 0 10px}
+  .filtro-activo{display:inline-flex;align-items:center;gap:6px;min-height:32px;padding:4px 10px;border-radius:16px;border:1px solid var(--byd-blue);
+    background:var(--yes-bg);color:var(--ink);font:inherit;font-size:.78rem;cursor:pointer}
+  .filtro-activo span{font-weight:700}
+  .precio-num{width:7.5em;font:inherit;font-weight:700;padding:2px 6px;border:1px solid var(--border-strong);border-radius:4px;background:var(--surface);color:var(--ink);font-variant-numeric:tabular-nums}
   .precio-rango output{font-weight:700;font-variant-numeric:tabular-nums}
   .precio-rango input[type=range]{width:100%;accent-color:var(--byd-blue)}
   .donde-oferta-eval{margin:0 0 8px;font-weight:700;color:var(--yes)}
@@ -1698,12 +1711,13 @@ if(!location.search&&!location.hash)document.documentElement.classList.add('arra
     </div>
 
     <div class="modal-body">
+      <p class="filtros-activos" id="filtrosActivos" hidden></p>
       <div class="filter-step" id="precioStep">
         <div class="filter-step-title">Presupuesto <span class="hint" id="precioHint"></span><span class="facet-actions"><button class="mini-btn" id="precioResetBtn" type="button">Sin límite</button></span></div>
         <div class="precio-rango">
-          <label for="precioMinIn">Desde <output id="precioMinOut" for="precioMinIn"></output></label>
+          <label for="precioMinNum">Desde USD <input type="number" inputmode="numeric" id="precioMinNum" class="precio-num" aria-label="Precio mínimo en dólares, escrito"><output id="precioMinOut" for="precioMinIn" hidden></output></label>
           <input type="range" id="precioMinIn" aria-label="Precio mínimo en dólares">
-          <label for="precioMaxIn">Hasta <output id="precioMaxOut" for="precioMaxIn"></output></label>
+          <label for="precioMaxNum">Hasta USD <input type="number" inputmode="numeric" id="precioMaxNum" class="precio-num" aria-label="Precio máximo en dólares, escrito"><output id="precioMaxOut" for="precioMaxIn" hidden></output></label>
           <input type="range" id="precioMaxIn" aria-label="Precio máximo en dólares">
         </div>
         <label class="precio-sd"><input type="checkbox" id="precioSinDato" checked> Incluir los <span id="precioSdN"></span> autos sin precio en dólares</label>
@@ -2180,6 +2194,23 @@ const ETIQUETA_CORTA = {"Patentamientos 2026 (unidades)":"Patentados 2026", "Seg
 // columna de características deja 66 px, y estos nombres se partían en cualquier sílaba. Dicen
 // lo mismo con palabras cortas; el corte (\u00ad) solo donde la palabra es compuesta o no hay
 // otra. El tooltip sigue mostrando el nombre completo. Lo aplica etiquetasCel().
+// Buscador de filas (2026-10-10, Baymard: el 54% de los sitios falla con siglas y sinónimos): sin
+// importar tildes, y con las palabras con que la gente busca cada fila.
+const sinTildesBusq = t => String(t).toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+const SINONIMOS_FILA = {
+  'Volumen de baúl/carga (L)': 'maletero cajuela capacidad litros', 'Número de asientos': 'plazas pasajeros lugares',
+  'Potencia total del sistema (kW)': 'cv hp caballos fuerza', 'Motor a combustión — potencia (kW)': 'cv hp caballos nafta diesel',
+  'Motor eléctrico — potencia máx. (kW)': 'cv hp caballos', 'Motor a combustión — par (N·m)': 'torque', 'Motor eléctrico — par máx. (N·m)': 'torque',
+  'Consumo de combustible (L/100km)': 'gasto nafta rendimiento litros', 'Autonomía eléctrica (km)': 'rango alcance bateria',
+  'Autonomía combinada (km)': 'rango alcance total', 'Capacidad de batería (kWh)': 'bateria', 'Puerto de carga DC (rápida)': 'carga rapida ccs gbt cargador',
+  'Puerto de carga AC': 'cargador enchufe tipo 2 wallbox', 'Carga portátil 3 a 7A': 'enchufe comun toma domiciliaria', 'Función descarga V2L (VTOL)': 'v2l enchufe externo',
+  'CarPlay / Android Auto': 'carplay apple android espejo celular', 'Anclajes ISO-FIX': 'isofix silla bebe sillita', 'Cámara 360°/panorámica': '360 camara',
+  'Sensores de estacionamiento': 'parking estacionar', 'Control crucero adaptativo (ACC)': 'acc crucero velocidad', 'Frenado automático de emergencia (AEB)': 'aeb frenado',
+  'Detección de punto ciego (BSD)': 'bsd punto ciego espejo', 'Asistente de mantenimiento de carril (LKA)': 'lka carril', 'Head-Up Display (HUD)': 'hud parabrisas',
+  'Techo solar/corredizo panorámico': 'sunroof techo vidrio', 'Garantía general': 'garantia anos km', 'Precio de lista (versión tope de gama de la tabla)': 'valor costo usd dolares',
+  'Seguridad en choques (NCAP)': 'ncap latin ncap estrellas choque crash', 'Medida de neumáticos': 'cubiertas ruedas llantas rodado gomas',
+  'Calefacción por bomba de calor': 'bomba de calor heat pump', 'Aire acondicionado automático': 'climatizador'
+};
 const ETIQUETA_CEL = {"Patentamientos 2026 (unidades)": "Ventas 2026", "Medida de neumáticos": "Cubiertas", "Motor a combustión — potencia (kW)": "Motor a nafta o diésel (kW)", "Motor a combustión — par (N·m)": "Par a nafta o diésel (N·m)", "Autonomía combinada (km)": "Autonomía total (km)", "Carga programada": "Carga con horario", "Sistema de calefacción/enfriamiento de batería": "Control térmico de batería", "Techo solar/corredizo panorámico": "Techo solar", "Cargador de celular inalámbrico": "Cargador sin cable", "Estuche para lentes en techo": "Porta lentes", "Apoyabrazos central trasero con portavasos": "Apoya­brazos trasero", "Suspensión delantera": "Susp. delantera", "Suspensión trasera": "Susp. trasera", "Control electrónico de estabilidad (ESC)": "Estabi­lidad (ESC)", "Sensores de estacionamiento": "Sensores para estacionar", "Ajuste asiento pasajero delantero": "Asiento del pasajero", "Sistema de cabina inteligente / multimedia propio": "Sistema multi­media", "Navegación GPS": "GPS", "Actualización remota OTA": "Actualiza por internet", "Encendido automático de faros": "Faros con sensor", "Limpiaparabrisas trasero": "Limpia­luneta", "Espejo retrovisor antideslumbrante": "Espejo que no encandila", "Aire acondicionado automático": "Aire auto­mático", "Climatización de doble zona": "Aire de 2 zonas"};
 const GLOSSARY = {"Patentamientos 2026 (unidades)":"Cuántos se patentaron 0 km en Argentina en 2026, según el registro oficial (DNRPA, inscripciones iniciales). Muestra cuánto se vende: no es una medida de calidad.", "Seguridad en choques (NCAP)":"Resultado de los choques de prueba de Latin NCAP (el que corresponde a Argentina) o, si no hay, de otro programa (Euro NCAP, C-NCAP, ANCAP), con el año. Las estrellas de programas distintos no se comparan entre sí.", 
   "Precio de lista (versión tope de gama de la tabla)": "El precio sugerido al público (0km) de la versión específica representada en esta tabla para ese modelo — la más cara/completa de su gama, indicada entre paréntesis (por ejemplo, GS en el caso del Song Pro). No incluye patentamiento, flete ni accesorios. Todas las marcas de la tabla cotizan en dólares estadounidenses.",
@@ -2472,7 +2503,7 @@ DATA.forEach((cat,ci)=>{
     const corta = ETIQUETA_CORTA[row[0]];
     tr.dataset.nombre=row[0];
     const cel = ETIQUETA_CEL[row[0]];
-    tr.dataset.search=(row[0] + (corta ? ' ' + corta : '') + (cel ? ' ' + cel.replace(/\u00ad/g, '') : '')).toLowerCase();
+    tr.dataset.search=sinTildesBusq(row[0] + (corta ? ' ' + corta : '') + (cel ? ' ' + cel.replace(/\u00ad/g, '') : '') + ' ' + (SINONIMOS_FILA[row[0]] || ''));
     const featIco = FEAT_ICONS[row[0]]
       ? '<svg class="feat-icon" viewBox="0 0 24 24" aria-hidden="true"><use href="#'+FEAT_ICONS[row[0]]+'"/></svg>'
       : '';
@@ -3023,12 +3054,18 @@ function matchesFacets(i){
 
 // Dropdown genérico para "Más filtros" (segmento, carrocería, propulsión, asientos):
 // sigue siendo una lista de checks, pero ya está oculta por defecto detrás de "Más filtros".
-function buildFacetRow(container, options, selectedSet, labelFn, onChange){
+// Cada opción dice cuántos autos tiene, y las propulsiones se explican a la vista, no solo en un
+// cartel (2026-10-10, Baymard: cantidades por opción y jerga explicada dentro del filtro).
+const PROP_AYUDA = { phev: 'se enchufa y también usa nafta', hev: 'no se enchufa: la batería se carga sola',
+  mhev: 'motor a nafta con una ayuda eléctrica chica', ev: 'solo batería: hay que enchufarlo', ice: 'sin parte eléctrica' };
+function buildFacetRow(container, options, selectedSet, labelFn, onChange, cuentaFn, ayudaFn){
   container.innerHTML = '';
   options.forEach(opt=>{
     const chip = document.createElement('label');
     chip.className = 'car-chip';
-    chip.innerHTML = '<input type="checkbox" checked data-val="'+opt+'"> '+labelFn(opt);
+    const n = cuentaFn ? cuentaFn(opt) : null, ay = ayudaFn ? ayudaFn(opt) : '';
+    chip.innerHTML = '<input type="checkbox" checked data-val="'+opt+'"> '+labelFn(opt) + (n != null ? ' <small class="faceta-n">(' + n + ')</small>' : '') +
+      (ay ? '<small class="faceta-ayuda">' + ay + '</small>' : '');
     container.appendChild(chip);
   });
   container.onchange = e=>{
@@ -3052,7 +3089,30 @@ function updateCompareCount(){
   document.getElementById('compareCount').textContent = n;
   document.getElementById('compareBtn').disabled = n===0;
   simModal();
+  pintarFiltrosActivos();
 }
+// Filtros activos como etiquetas que se quitan con ✕ (2026-10-10, Baymard: en el celular conviene
+// verlos juntos y poder sacarlos de a uno). Cada una vuelve ese filtro a "todos".
+function pintarFiltrosActivos(){
+  const box = document.getElementById('filtrosActivos');
+  if (!box) return;
+  const chips = [];
+  const faceta = (sel, todos, nombre, btn, txt) => { if (sel.size < todos.length) chips.push([btn, nombre + ': ' + txt([...sel])]); };
+  faceta(selectedBrands, BRANDS, 'Marca', 'brandAllBtn', v => v.length <= 2 ? v.join(' y ') : v.length + ' marcas');
+  faceta(selectedGrupos, GRUPOS, 'Grupo', 'grupoAllBtn', v => v.length <= 2 ? v.join(' y ') : v.length + ' grupos');
+  faceta(selectedStatus, STATUSES, 'Disponibilidad', 'statusAllBtn', v => v.map(x => STATUS_LABELS[x] || x).join(', '));
+  faceta(selectedSegments, SEGMENTS, 'Segmento', 'segmentAllBtn', v => v.join(', '));
+  faceta(selectedBodies, BODIES, 'Carrocería', 'bodyAllBtn', v => v.join(', '));
+  faceta(selectedProps, PROPS, 'Propulsión', 'propAllBtn', v => v.map(x => PROP_LABELS[x] || x).join(', '));
+  faceta(selectedSeats, SEATS, 'Asientos', 'seatsAllBtn', v => v.join(', '));
+  if (precioMin !== PRECIO_PISO || precioMax !== PRECIO_TECHO) chips.push(['precioResetBtn', 'USD ' + precioMin.toLocaleString('es-AR') + ' a ' + precioMax.toLocaleString('es-AR')]);
+  box.hidden = !chips.length;
+  box.innerHTML = chips.map(([btn, txt]) => '<button type="button" class="filtro-activo" data-reset="' + btn + '" aria-label="Quitar el filtro ' + simEsc(txt) + '">' + simEsc(txt) + ' <span aria-hidden="true">✕</span></button>').join('');
+}
+document.addEventListener('click', e => {
+  const b = e.target.closest ? e.target.closest('.filtro-activo') : null;
+  if (b){ const r = document.getElementById(b.dataset.reset); if (r) r.click(); }
+});
 
 function onFacetChange(){
   renderModelList();
@@ -3206,12 +3266,13 @@ document.getElementById('modelNoneBtn').addEventListener('click', ()=>{
 });
 
 // ---- Filtros avanzados (segmento, carrocería, propulsión, asientos): siguen como listas de checks ----
-const setAllGrupos = buildFacetRow(document.getElementById('grupoRow'), GRUPOS, selectedGrupos, g => g, onFacetChange);
-const setAllStatus = buildFacetRow(document.getElementById('statusRow'), STATUSES, selectedStatus, s=>STATUS_LABELS[s]||s, onFacetChange);
-const setAllSegments = buildFacetRow(document.getElementById('segmentRow'), SEGMENTS, selectedSegments, s=>s, onFacetChange);
-const setAllBodies = buildFacetRow(document.getElementById('bodyRow'), BODIES, selectedBodies, b=>b, onFacetChange);
-const setAllProps = buildFacetRow(document.getElementById('propRow'), PROPS, selectedProps, p=>PROP_LABELS[p]||p, onFacetChange);
-const setAllSeats = buildFacetRow(document.getElementById('seatsRow'), SEATS, selectedSeats, s=> s==='s/d' ? 'Sin dato' : (s+(s==='1'?' asiento':' asientos')), onFacetChange);
+const cuenta = f => v => CARS.filter((c, i) => f(c, i) === v).length;
+const setAllGrupos = buildFacetRow(document.getElementById('grupoRow'), GRUPOS, selectedGrupos, g => g, onFacetChange, cuenta((c, i) => grupoDe(i)));
+const setAllStatus = buildFacetRow(document.getElementById('statusRow'), STATUSES, selectedStatus, s=>STATUS_LABELS[s]||s, onFacetChange, cuenta(c => c.status));
+const setAllSegments = buildFacetRow(document.getElementById('segmentRow'), SEGMENTS, selectedSegments, s=>s, onFacetChange, cuenta(c => SEGMENT_LABELS[c.size] || 'Sin dato'));
+const setAllBodies = buildFacetRow(document.getElementById('bodyRow'), BODIES, selectedBodies, b=>b, onFacetChange, cuenta(c => c.body));
+const setAllProps = buildFacetRow(document.getElementById('propRow'), PROPS, selectedProps, p=>PROP_LABELS[p]||p, onFacetChange, cuenta(c => c.type), p => PROP_AYUDA[p] || '');
+const setAllSeats = buildFacetRow(document.getElementById('seatsRow'), SEATS, selectedSeats, s=> s==='s/d' ? 'Sin dato' : (s+(s==='1'?' asiento':' asientos')), onFacetChange, cuenta((c, i) => seatOfCar[i]));
 
 // ---- Presupuesto ----
 const precioMinIn = document.getElementById('precioMinIn');
@@ -3222,6 +3283,11 @@ const usd = n => 'USD ' + n.toLocaleString('es-AR');
 document.getElementById('precioSdN').textContent = SIM_PRECIO.filter(p => p == null).length;
 function precioSync(){
   precioMinIn.value = precioMin; precioMaxIn.value = precioMax; precioSdIn.checked = precioSinDato;
+  // Los campos para escribir el precio (2026-10-10, Baymard: más de la mitad confunde la barra de
+  // dos extremos). No se pisan mientras alguien escribe.
+  const mn = document.getElementById('precioMinNum'), mx = document.getElementById('precioMaxNum');
+  if (mn && document.activeElement !== mn) mn.value = precioMin;
+  if (mx && document.activeElement !== mx) mx.value = precioMax;
   document.getElementById('precioMinOut').textContent = usd(precioMin);
   document.getElementById('precioMaxOut').textContent = usd(precioMax);
   const libre = precioMin === PRECIO_PISO && precioMax === PRECIO_TECHO;
@@ -3237,6 +3303,15 @@ function precioCambio(e){
 }
 precioMinIn.addEventListener('input', precioCambio);
 precioMaxIn.addEventListener('input', precioCambio);
+['precioMinNum', 'precioMaxNum'].forEach(id => document.getElementById(id).addEventListener('change', e => {
+  const v = Math.round(+e.target.value || 0);
+  let lo = id === 'precioMinNum' ? v : precioMin, hi = id === 'precioMaxNum' ? v : precioMax;
+  lo = Math.max(PRECIO_PISO, Math.min(lo, PRECIO_TECHO)); hi = Math.max(PRECIO_PISO, Math.min(hi, PRECIO_TECHO));
+  if (lo > hi){ if (id === 'precioMinNum') hi = lo; else lo = hi; }
+  precioMin = lo; precioMax = hi; precioSinDato = precioSdIn.checked;
+  e.target.value = id === 'precioMinNum' ? lo : hi;
+  precioSync(); renderModelList();
+}));
 precioSdIn.addEventListener('change', precioCambio);
 document.getElementById('precioResetBtn').addEventListener('click', () => {
   precioMin = PRECIO_PISO; precioMax = PRECIO_TECHO; precioSinDato = true;
@@ -4214,7 +4289,7 @@ document.getElementById('legendToggleBtn').addEventListener('click', ()=>{
 });
 
 function applyFilters(){
-  const q = searchInput.value.trim().toLowerCase();
+  const q = sinTildesBusq(searchInput.value.trim());
   const diffOnly = diffCheckbox.checked;
   const visibleColIdx = colVisible.map((v,i)=>v?i:null).filter(i=>i!==null);
   let visibleCount = 0;
@@ -4707,6 +4782,7 @@ function visorMostrar(k){
   img.onerror = () => { if (th) img.src = th.src; };
   const cred = creditoDe(vSlug, vIdx) || (vIdx === 0 && th ? th.dataset.credito || '' : '');
   pieDeFoto(visor.querySelector('.visor-pie'), vSlug, vIdx, cred);
+  if (vFotos.length > 1) visor.querySelector('.visor-pie').insertAdjacentHTML('afterbegin', '<b class="foto-num">' + (vIdx + 1) + ' de ' + vFotos.length + '</b> ');
   visor.querySelectorAll('.visor-puntos i').forEach((d, n) => d.classList.toggle('on', n === vIdx));
   if (vFotos.length > 1){ const pre = new Image(); pre.src = vFotos[(vIdx + 1) % vFotos.length]; }
 }
@@ -5514,7 +5590,8 @@ const ELEGIR_PREG = [
 const ELEGIR_ANCHO = window.matchMedia('(min-width: 900px)');
 const elegirN = () => ELEGIR_ANCHO.matches ? 5 : 4;
 ELEGIR_ANCHO.addEventListener('change', () => { const h = document.getElementById('elegirHoja'); if (h && !h.hidden) pintarElegir(); });
-let elegirResp = { presu: '32001-35500', plazas: '5', uso: 'mixto', enchufe: 'nose', carro: '' };
+// Sin presupuesto elegido de entrada (2026-10-10): lo que viene marcado se lee como recomendación.
+let elegirResp = { presu: '', plazas: '5', uso: 'mixto', enchufe: 'nose', carro: '' };
 try { const g = JSON.parse(localStorage.getItem('elegir') || 'null'); if (g) elegirResp = Object.assign(elegirResp, g); } catch (e) {}
 // Respuestas guardadas con opciones que ya no existen (topes o franjas anteriores, "suv"): se reinician.
 const elegirVale = (k, v) => ELEGIR_PREG.find(q => q.k === k).ops.some(o => o[0] === v);
@@ -5627,7 +5704,10 @@ function elegirCalcular(r){
     if (bonus && esTodoterreno(i)) resto.push('Todoterreno');
     if (gAnos != null) resto.push('Garantía ' + cleanVal(FILA_POR_NOMBRE['Garantía general'][i + 1]).replace(' años o ', ' años, ').replace(/(\d+)\.000 km/, '$1 mil km').replace(/ sin límite de km$/, ', km libre'));
     if (SIM_ASIENTOS[i] != null && SIM_ASIENTOS[i] !== plazas && !(plazas >= 6 && SIM_ASIENTOS[i] === 7)) resto.push(SIM_ASIENTOS[i] + ' asientos');
-    return { i, puntos, motivos: motivos.concat(resto).filter(Boolean).slice(0, 4) };
+    // Lo que se resigna (2026-10-10, Pu y Chen 2007: decir qué se pierde da más confianza): las filas
+    // que importan para el uso elegido donde el auto queda en el 20% más bajo. Solo en la computadora.
+    const flojo = ps.filter(x => x[1].c === 0).map(x => MOTIVO_CORTO[x[0]] || rkTitulo(x[0]).toLowerCase());
+    return { i, puntos, motivos: motivos.concat(resto).filter(Boolean).slice(0, 4), flojo };
   }).sort((a, b) => b.puntos - a.puntos);
   return { top: res.slice(0, elegirN()), todos: res.map(x => x.i), total: res.length, sinPrecio: sinPrecioIdx.length, sinPrecioIdx };
 }
@@ -5643,19 +5723,20 @@ function pintarElegir(cambio){
       '<button type="button" class="mini-btn" id="elegirTabla">Ver la tabla</button></p>' +
     '<div class="elegir-cuerpo"><div class="elegir-preg">' + ELEGIR_PREG.map(q => '<fieldset><legend>' + q.t + '</legend><div class="elegir-ops">' +
       q.ops.map(([v, t]) => '<label><input type="radio" name="el-' + q.k + '" value="' + v + '"' + (r[q.k] === v ? ' checked' : '') + '><span>' + t + '</span></label>').join('') + '</div></fieldset>').join('') + '</div>' +
-    '<div class="elegir-resultados"><h3 class="elegir-res-tit" id="elegirResTit">' + (out.top.length ? 'Te sugerimos' : 'Ningún auto a la venta cumple todo eso') + '</h3>' +
+    '<div class="elegir-resultados">' + elegirResumenHTML(r) + '<h3 class="elegir-res-tit" id="elegirResTit">' + (out.top.length ? 'Te sugerimos' : 'Ningún auto a la venta cumple todo eso') + '</h3>' +
     (out.top.length ? '<ol class="elegir-res">' + out.top.map(x => {
       const im = TH_AUTO[x.i].querySelector('img.car-photo');
       const n = listaDeFotos(SLUG_AUTO[x.i]).length;
       return '<li><b>' + rkEsc(CARS[x.i].name) + '</b><span class="minicar" data-mini-slug="' + SLUG_AUTO[x.i] + '" data-k="0">' +
         '<button type="button" class="elegir-foto" data-visor-slug="' + SLUG_AUTO[x.i] + '" aria-label="Ver ' + (n > 1 ? 'las ' + n + ' fotos' : 'la foto') + ' del ' + rkEsc(CARS[x.i].name) + '">' +
         '<img src="' + portadaDe(im) + '" alt="">' + (n > 1 ? '<span class="elegir-nfotos">' + n + ' fotos</span>' : '') + '</button>' + miniFlechas(SLUG_AUTO[x.i]) + '</span>' +
-        '<ul>' + x.motivos.map(m => '<li>' + rkEsc(m) + '</li>').join('') + '</ul>' +
+        '<ul>' + x.motivos.map(m => '<li>' + rkEsc(m) + '</li>').join('') +
+          (x.flojo && x.flojo.length ? '<li class="elegir-flojo">Flojo en ' + rkEsc(x.flojo.slice(0, 2).join(' y ')) + '</li>' : '') + '</ul>' +
         '<button type="button" class="mini-btn" data-elegir-ficha="' + x.i + '">Ver ficha</button></li>';
     }).join('') + '</ol>' +
       // Cuántos cumplen ya lo dice la barra: acá solo los que quedaron afuera por no tener precio.
       (out.sinPrecio ? '<p class="elegir-acc"><span class="ficha-nota">' + out.sinPrecio + ' auto' + (out.sinPrecio === 1 ? '' : 's') + ' más cumple' + (out.sinPrecio === 1 ? '' : 'n') + ' lo demás pero no publica' + (out.sinPrecio === 1 ? '' : 'n') + ' precio en dólares.</span></p>' : '')
-      : '<p class="ficha-nota">Probá con otro presupuesto o con otro tipo de auto.' + (out.sinPrecio ? ' Hay ' + out.sinPrecio + ' autos sin precio en dólares que no se pueden filtrar por presupuesto.' : '') + '</p>' +
+      : elegirAflojarHTML(r) + (out.sinPrecio ? '<p class="ficha-nota">Hay ' + out.sinPrecio + ' autos sin precio en dólares que no se pueden filtrar por presupuesto.</p>' : '') +
         '') + '</div></div>';   // cierra .elegir-resultados y .elegir-cuerpo
   // Barra al pie del panel (2026-10-09): en el celular la lista queda debajo de las preguntas,
   // fuera de la pantalla, y parecía que tocar una opción no cambiaba nada. La barra muestra
@@ -5680,6 +5761,29 @@ function pintarElegir(cambio){
   hoja.dataset.todos = out.todos.join(',');
   hoja.dataset.sinprecio = out.sinPrecioIdx.join(',');
 }
+// "Tus respuestas" arriba de los sugeridos, con "Cambiar" (2026-10-10, GOV.UK: resumir y dejar cambiar
+// sin perder lo demás). En el celular las preguntas quedan arriba y la lista abajo; en la computadora
+// están al lado, así que ahí no hace falta.
+function elegirResumenHTML(r){
+  const txt = q => { const o = q.ops.find(([v]) => v === r[q.k]); return o ? o[1] : ''; };
+  const partes = [];
+  const presu = ELEGIR_PREG.find(q => q.k === 'presu'), carro = ELEGIR_PREG.find(q => q.k === 'carro'), uso = ELEGIR_PREG.find(q => q.k === 'uso');
+  if (r.presu) partes.push('USD ' + txt(presu).replace(/^Hasta /, 'hasta ').replace(/^Más de /, 'más de '));
+  partes.push(r.plazas === '6' ? '6 o 7 plazas' : r.plazas === '4' ? 'hasta 4 plazas' : '5 plazas');
+  if (uso) partes.push(txt(uso).toLowerCase());
+  if (r.carro && carro) partes.push(txt(carro));
+  if (r.enchufe === 'si') partes.push('con dónde cargar');
+  return '<p class="elegir-tus">Para ' + rkEsc(partes.join(', ')) + '. <button type="button" class="mini-btn" id="elegirCambiar">Cambiar</button></p>';
+}
+// Cero resultados: qué respuesta aflojar, con cuántos autos daría (GOV.UK: decir cómo salir).
+function elegirAflojarHTML(r){
+  const pruebas = [['presu', '', 'cualquier presupuesto'], ['carro', '', 'cualquier tipo de auto'], ['plazas', '5', '5 plazas'], ['uso', 'mixto', 'ciudad y ruta']]
+    .filter(([k, v]) => r[k] !== v)
+    .map(([k, v, t]) => { const o = elegirCalcular(Object.assign({}, r, { [k]: v })); return [k, v, t, o.total]; })
+    .filter(x => x[3] > 0);
+  return '<p class="ficha-nota">' + (pruebas.length ? 'Probá con:' : 'Probá con otro presupuesto o con otro tipo de auto.') + '</p>' +
+    (pruebas.length ? '<p class="elegir-aflojar">' + pruebas.map(([k, v, t, n]) => '<button type="button" class="ficha-btn" data-aflojar="' + k + '" data-valor="' + v + '">' + rkEsc(t) + ' (' + n + ')</button>').join('') + '</p>' : '');
+}
 const elegirHoja = document.getElementById('elegirHoja');
 elegirHoja.addEventListener('change', e => {
   const m = /^el-(\w+)$/.exec(e.target.name || ''); if (!m) return;
@@ -5691,6 +5795,13 @@ elegirHoja.addEventListener('change', e => {
 });
 elegirHoja.addEventListener('click', e => {
   if (e.target.closest('#elegirTabla')) return irAVista('tabla');
+  if (e.target.closest('#elegirCambiar')){ const f = elegirHoja.querySelector('.elegir-preg'); if (f) f.scrollIntoView({ behavior: suave(), block: 'start' }); return; }
+  const af = e.target.closest('[data-aflojar]');
+  if (af){
+    elegirResp[af.dataset.aflojar] = af.dataset.valor;
+    try { localStorage.setItem('elegir', JSON.stringify(elegirResp)); } catch (er) {}
+    pintarElegir(true); return;
+  }
   const f = e.target.closest('[data-elegir-ficha]');
   if (f){ abrirFicha(+f.dataset.elegirFicha); return; }
   if (e.target.closest('#elegirVer')){ document.getElementById('elegirResTit').scrollIntoView({ behavior: suave(), block: 'start' }); return; }

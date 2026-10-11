@@ -412,3 +412,35 @@ test('encabezado compacto: al bajar, las fotos se van y el encabezado fijo ocupa
   expect(r.visible).toBeLessThan(r.alto * 0.65);
   await expect(page.locator('#theadTable th:not(.feat-col):not(.col-hidden) .th-nombre').first()).toBeInViewport();
 });
+
+test('mejoras de UX: buscador con sinónimos, precio escrito con filtro quitable y cantidades por opción', async ({ page }) => {
+  // 2026-10-10 (Baymard): siglas y sinónimos en el buscador, precio con campos y filtros activos con ✕.
+  await page.goto('/index.html?tabla');
+  await expect(page.locator(FILAS_DATOS)).toHaveCount(N_FILAS);
+  await page.fill('#search', 'maletero');
+  await expect(page.locator(`${FILAS_DATOS}:not(.hidden)`)).toHaveCount(1);
+  await page.fill('#search', 'autonomia');   // sin tilde
+  expect(await page.locator(`${FILAS_DATOS}:not(.hidden)`).count()).toBeGreaterThan(0);
+  await page.fill('#search', '');
+  await page.click('#openModalBtn');
+  expect(await page.locator('#propRow .faceta-n').count()).toBeGreaterThan(0);
+  await expect(page.locator('#propRow .faceta-ayuda').first()).not.toBeEmpty();
+  await page.fill('#precioMaxNum', '30000');
+  await page.locator('#precioMaxNum').blur();
+  await expect(page.locator('.filtro-activo')).toHaveCount(1);
+  await page.locator('.filtro-activo').click();
+  await expect(page.locator('.filtro-activo')).toHaveCount(0);
+});
+
+test('ayudame a elegir: sin presupuesto preelegido, resumen con "Cambiar" y, si no hay autos, qué aflojar', async ({ page }) => {
+  await page.goto('/index.html');
+  await expect(page.locator('input[name="el-presu"][value=""]')).toBeChecked();
+  await page.locator('label:has(input[name="el-presu"][value="0-28500"])').click();
+  await page.locator('label:has(input[name="el-carro"][value="pickup"])').click();
+  await expect(page.locator('[data-aflojar]').first()).toBeVisible();
+  await page.locator('[data-aflojar="presu"]').click();
+  await expect(page.locator('.elegir-res > li').first()).toBeVisible();
+  // El visor dice "3 de 9" en vez de puntitos.
+  await page.locator('.elegir-foto').first().click();
+  await expect(page.locator('#visorFotos .foto-num')).toHaveText(/^1 de \d+$/);
+});
