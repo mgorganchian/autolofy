@@ -261,6 +261,12 @@ sí quedan en inglés, porque no muestran la palabra. Se coló con `YES` dos vec
   puntero por encima. Zonas táctiles de 24 px como mínimo (flechitas 44). Los destellos son 3 y no
   sin fin (WCAG 2.2.2). `scroll-padding` para que lo fijo no tape el foco. `<main>` y "Saltar al
   contenido". En la computadora la base es 112,5% (el 90% del texto quedaba debajo de 14 px).
+- **Mejoras de UX** (2026-10-10, revisión con NN/g, Baymard y GOV.UK): Ayudame a elegir sin presupuesto
+  preelegido (lo marcado se lee como recomendación), resumen "Para … Cambiar" arriba de los sugeridos
+  en el celular, "Flojo en …" en la computadora y, sin resultados, botones con qué aflojar y cuántos
+  autos daría. Filtros del panel con la cantidad por opción y la propulsión explicada a la vista
+  (`PROP_AYUDA`), precio con campos para escribir y filtros activos con ✕ (`pintarFiltrosActivos`).
+  El buscador no distingue tildes y entiende sinónimos (`SINONIMOS_FILA`). El visor dice "3 de 9".
 - **Red de service y ofertas** (2026-10-10): `RED_OFICIAL` (lo escribe `herramientas-paginas.py` desde
   `concesionarios.json`, entre `/*red:inicio*/` y `/*red:fin*/`) da puntos de la red y talleres por marca
   y provincia; una marca cuya red no distingue el taller lleva `talleres: null` y se dice "red de N
