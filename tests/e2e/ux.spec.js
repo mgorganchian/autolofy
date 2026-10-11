@@ -371,7 +371,8 @@ test.describe('grupos automotrices', () => {
     // Cada marca de la tabla está en algún grupo, una sola vez.
     const marcas = await page.locator('#gruposHoja .grupo-marca-cab b').allTextContents();
     expect(new Set(marcas).size).toBe(marcas.length);
-    await page.keyboard.press('Escape');
+    // Es una vista de la página (2026-10-11): se sale con las pestañas o con Atrás, no con Esc.
+    await page.click('#vistaTabla');
     await expect(page.locator('#gruposVista')).toBeHidden();
   });
 

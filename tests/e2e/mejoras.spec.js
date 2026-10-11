@@ -590,3 +590,33 @@ test('sugerencias: la página del auto abre el formulario precargado con el auto
   await expect(a).toHaveAttribute('target', '_blank');
   await expect(page.locator('footer a.sugerencias')).toHaveCount(1);
 });
+
+test('Grupos y Concesionarios son vistas de la página: sin ventana, sin desborde y con su URL', async ({ page }) => {
+  await abrir(page);
+  for (const [btn, sec, q, titulo] of [['#gruposBtn', '#gruposVista', 'grupos', 'Grupos automotrices'], ['#concesBtn', '#concesVista', 'concesionarios', 'Concesionarios']]){
+    await page.locator(btn).click();
+    await expect(page.locator(sec)).toBeVisible();
+    await expect(page.locator(btn)).toHaveAttribute('aria-pressed', 'true');
+    await expect(page.locator(sec + ' h2')).toHaveText(titulo);
+    await expect(page).toHaveURL(new RegExp('vista=' + q));
+    // Dentro de <main>, en el flujo de la página (no fija encima), y la página no se desborda.
+    expect(await page.evaluate(s => { const el = document.querySelector(s); return !!el.closest('main') && getComputedStyle(el).position !== 'fixed'; }, sec)).toBe(true);
+    expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1)).toBe(true);
+    await page.reload();
+    await expect(page.locator(sec)).toBeVisible();
+    await page.locator('#vistaTabla').click();
+    await expect(page.locator(sec)).toBeHidden();
+  }
+});
+
+test('ranking: un auto no lanzado dice "No lanzado" y el cartel no se monta sobre el precio', async ({ page }) => {
+  await abrir(page);
+  await page.locator('#vistaRanking').click();
+  const sel = page.locator('#rkElegirSel');
+  if (await sel.isVisible()) await sel.selectOption('Precio de lista (versión tope de gama de la tabla)');
+  await page.locator('#rkTodos').check().catch(() => {});
+  const it = page.locator('#rkLista .rk-item', { has: page.locator('.rk-estado', { hasText: 'No lanzado' }) }).first();
+  await expect(it).toBeVisible();
+  const r = await it.evaluate(li => { const e = li.querySelector('.rk-estado').getBoundingClientRect(), v = li.querySelector('.rk-valor').getBoundingClientRect(); return { e: e.right, v: v.left }; });
+  expect(r.e).toBeLessThanOrEqual(r.v + 1);
+});
