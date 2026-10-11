@@ -64,3 +64,23 @@ test('comparaciones "X vs Y": están en el sitemap, muestran las diferencias y l
     await expect(page.locator(`ul.vs a[href="/comparar/${a}-vs-${b}"]`)).toHaveCount(1);
   }
 });
+
+test('"Quién hace esto": existe, está en el sitemap y el pie del comparativo la linkea', async ({ page }, info) => {
+  test.skip(info.project.name !== 'escritorio', 'no depende del viewport');
+  const fs = require('fs');
+  expect(fs.readFileSync(path.join(RAIZ, 'sitemap.xml'), 'utf8')).toContain('/quien-hace-esto<');
+  await page.goto('/quien-hace-esto.html');
+  await expect(page.locator('h1')).toHaveText('Quién hace esto');
+  await expect(page.locator('main')).toContainText('No tengo ninguna relación comercial');
+  await page.goto('/index.html?tabla');
+  await expect(page.locator('footer a[href="/quien-hace-esto"]')).toHaveCount(1);
+});
+
+test('la página dice que no hay publicidad ni seguimiento: que siga siendo cierto', ({ }, info) => {
+  test.skip(info.project.name !== 'escritorio', 'no depende del viewport');
+  // Si se suma algo de esto, hay que cambiar "Privacidad" en herramientas-paginas.py (quien()).
+  const fs = require('fs');
+  const html = fs.readFileSync(path.join(RAIZ, 'index.html'), 'utf8');
+  for (const t of ['googletagmanager', 'google-analytics', 'gtag(', 'adsbygoogle', '_vercel/insights', 'speed-insights', 'plausible.io', 'clarity.ms', 'hotjar', 'fbq(', 'umami'])
+    expect(html.includes(t), t).toBe(false);
+});

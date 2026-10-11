@@ -547,6 +547,11 @@ sí quedan en inglés, porque no muestran la palabra. Se coló con `YES` dos vec
   Muestran solo las filas donde los dos dicen distinto y linkean a la comparación interactiva. La
   página de cada auto linkea sus comparaciones. Un par cambia si cambia un precio: el script borra
   las que ya no van.
+- **Quién hace esto** (`/quien-hace-esto`, 2026-10-11, lo arma `quien()`): en primera persona, como lo
+  contó el dueño: lo hace un particular sin relación comercial con marcas ni concesionarios, porque
+  tiene un BYD Song Pro GS y quiere que otros evalúen los chinos con datos (y lo dice para que se
+  tenga en cuenta). **Solo afirma lo que es cierto**: si se suma publicidad o algo que mida visitas,
+  hay que cambiar "Privacidad"; `paginas.spec.js` falla si aparece un script de seguimiento conocido.
 - **No agregan datos ni se editan a mano.** Si cambia `index.html`, se regeneran:
   `tests/e2e/paginas.spec.js` falla si quedaron desactualizadas (corre el script con
   `--check`). La rutina semanal lo hace sola (tarea F).
