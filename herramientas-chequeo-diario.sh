@@ -191,8 +191,10 @@ colores de un auto que hoy no los tiene, cargalos tal como los escribe la marca,
 URL de la fuente. Nunca de otro mercado.
 
 F) PÁGINAS POR AUTO: si cambiaste index.html, corré python3 herramientas-paginas.py antes
-de la suite. Regenera autos/*.html, sitemap.xml y la lista del pie; el test
-paginas.spec.js falla si quedaron desactualizadas. Nunca las edites a mano.
+de la suite. Regenera autos/*.html, el RSS de cada auto (autos/*.xml), las comparaciones
+comparar/*.html, sitemap.xml y la lista del pie; el test paginas.spec.js falla si quedaron
+desactualizadas. Commiteá también los archivos nuevos o borrados de autos/ y comparar/ (un par
+de rivales cambia si cambia un precio). Nunca las edites a mano.
 
 G) PROMOCIONES DE CONCESIONARIOS (concesionarios.json: marcas[m].promos y
 concesionarios[i].promos): sacá las que vencieron (vigencia anterior a hoy) y las que la

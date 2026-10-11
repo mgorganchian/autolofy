@@ -26,3 +26,41 @@ test('la página de un auto tiene título, descripción, foto, datos estructurad
   await expect(page.locator('a.cta')).toHaveAttribute('href', '/?auto=chery-tiggo-7-pro-phev');
   expect(await page.locator('figure img').evaluate(i => i.complete && i.naturalWidth > 0)).toBe(true);
 });
+
+test('cada auto tiene su RSS válido, y su página lo anuncia', async ({ page }, info) => {
+  test.skip(info.project.name !== 'escritorio', 'no depende del viewport');
+  const fs = require('fs');
+  const autos = fs.readdirSync(path.join(RAIZ, 'autos'));
+  expect(autos.filter(f => f.endsWith('.xml')).length).toBe(autos.filter(f => f.endsWith('.html')).length);
+  const rss = fs.readFileSync(path.join(RAIZ, 'autos/song-pro.xml'), 'utf8');
+  expect(rss).toMatch(/^<\?xml version="1.0" encoding="UTF-8"\?>\n<rss version="2.0"><channel>/);
+  await page.goto('/autos/song-pro.html');
+  await expect(page.locator('link[rel="alternate"][type="application/rss+xml"]')).toHaveAttribute('href', '/autos/song-pro.xml');
+  const ok = await page.evaluate(async () => {
+    const t = await (await fetch('/autos/song-pro.xml')).text();
+    const x = new DOMParser().parseFromString(t, 'application/xml');
+    return !x.querySelector('parsererror') && x.querySelectorAll('channel > title').length === 1;
+  });
+  expect(ok).toBe(true);
+});
+
+test('comparaciones "X vs Y": están en el sitemap, muestran las diferencias y las enlazan las páginas de los dos autos', async ({ page }, info) => {
+  test.skip(info.project.name !== 'escritorio', 'no depende del viewport');
+  const fs = require('fs');
+  const urls = [...fs.readFileSync(path.join(RAIZ, 'sitemap.xml'), 'utf8').matchAll(/\/comparar\/([a-z0-9-]+)-vs-([a-z0-9-]+)</g)];
+  expect(urls.length).toBeGreaterThan(50);
+  const [, a, b] = urls.find(u => u[1] === 'baic-bj40-pro' && u[2] === 'tank-300') || urls[0];
+  await page.goto(`/comparar/${a}-vs-${b}.html`);
+  await expect(page.locator('h1')).toContainText(' vs ');
+  await expect(page.locator('link[rel="canonical"]')).toHaveAttribute('href', `https://autoschinos-ar.vercel.app/comparar/${a}-vs-${b}`);
+  await expect(page.locator('a.cta')).toHaveAttribute('href', `/?autos=${a},${b}`);
+  expect(await page.locator('tbody tr:not(.cat)').count()).toBeGreaterThan(10);
+  // Solo filas distintas: en ninguna los dos autos dicen lo mismo.
+  const iguales = await page.locator('tbody tr:not(.cat)').evaluateAll(trs => trs.filter(tr => {
+    const td = tr.querySelectorAll('td'); return td[0].firstChild.textContent === td[1].firstChild.textContent; }).length);
+  expect(iguales).toBe(0);
+  for (const s of [a, b]){
+    await page.goto(`/autos/${s}.html`);
+    await expect(page.locator(`ul.vs a[href="/comparar/${a}-vs-${b}"]`)).toHaveCount(1);
+  }
+});
