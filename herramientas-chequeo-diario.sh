@@ -213,7 +213,16 @@ yt-dlp solo se leen metadatos (--flat-playlist, --skip-download, --print), nunca
 ni audio. Sumá un video solo si es una prueba manejando del MISMO modelo, versión y propulsión
 que la columna (no presentaciones, salones, otra generación, otro mercado ni comparativos de
 varios autos), con id, título tal cual, fecha y duración que da YouTube. Mirá la sección
-«Reseñas en video» del CLAUDE.md antes de decidir."
+«Reseñas en video» del CLAUDE.md antes de decidir.
+
+I) LLAMADOS A REVISIÓN (LLAMADOS y LLAMADOS_FUENTE, en el script): revisá el registro oficial
+de alertas de productos de Defensa del Consumidor (la URL de LLAMADOS_FUENTE) y sumá los
+llamados nuevos de las marcas de la tabla, solo si nombran el modelo de la tabla (no otro de la
+misma marca). Actualizá LLAMADOS_FUENTE.c con la fecha de hoy si pudiste revisarlo entero.
+
+J) SERVICE OFICIAL (SERVICE_MARCAS y SERVICE_OFICIAL): si una marca cambió los precios de su
+lista de service programado, actualizalos tal cual (moneda, IVA, vigencia) y su fecha de consulta.
+Una lista nueva solo se asigna a un auto si es del mismo modelo y versión que la tabla."
 
 log "invocando a Claude…"
 PROMPT="Sos el mantenimiento automático semanal del comparativo de autos chinos. Corrés sin

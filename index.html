@@ -1242,6 +1242,13 @@ if(!location.search&&!location.hash)document.documentElement.classList.add('arra
   .ficha-carga .ficha-datos{margin:8px 0}
   .ficha-cochera{font-size:.8rem;margin:-8px 0 16px}
   .ficha-seguir-nota{font-size:.72rem;color:var(--ink-2);margin:0}
+  .ficha-tabla{border-collapse:collapse;margin:6px 0;min-width:min(100%,320px);font-family:var(--fuente-tabla);font-size:.86rem}
+  .ficha-tabla th,.ficha-tabla td{padding:4px 10px 4px 0;border-bottom:1px solid var(--line);text-align:left;font-weight:400}
+  .ficha-tabla thead th{color:var(--ink-2);font-size:.76rem}
+  .ficha-tabla tfoot th,.ficha-tabla tfoot td{font-weight:700;border-bottom:0}
+  .ficha-tabla .num{text-align:right;padding-right:0}
+  .ficha-llam{margin:4px 0;padding-left:18px;font-size:.86rem}
+  .ficha-service a,.ficha-llamados a{color:var(--link)}
   #barrasSelLbl[hidden]{display:none}
   #fichaSeguir[aria-pressed="true"]{background:var(--chip-bg)}
   .aviso-seguidos{margin:10px 16px;padding:10px 14px;border:1px solid var(--line);border-left:4px solid var(--byd-blue);border-radius:6px;background:var(--surface);font-size:.86rem}
@@ -4739,6 +4746,36 @@ function tiempoFicha(texto){
   return x.de + ' a ' + x.a + '% en ' + dur;
 }
 // Si la persona ya cargó su cochera en el ranking, la página del auto le dice si entra.
+// Service oficial programado (2026-10-11): lo que publica cada marca en su sitio, tal cual (moneda,
+// IVA, qué incluye, vigencia). Solo si la lista es del mismo auto y versión de la tabla: una lista que
+// no distingue versiones que la tabla separa (Tiggo 7 Pro MHEV y PHEV figuran los dos como "Tiggo 7 Pro
+// Hybrid") no se asigna. Hasta 5 años o 100.000 km. Las listas no son comparables entre marcas (unas
+// cobran solo mano de obra y filtros), así que no hay ranking ni "costo total".
+const SERVICE_MARCAS = {"BYD":{"f":["https://www.byd.com/ar/service-guide"],"c":"2026-10-10","mon":"USD","iva":"con IVA","v":"Es la lista para el 1/5 al 30/6/2026: la última que publicó BYD, ya vencida.","alc":"Precio sugerido en los concesionarios oficiales; no incluye el filtro de habitáculo."},"GWM":{"f":["https://gwm.com.ar/postventa/mantenimiento"],"c":"2026-10-10","mon":"ARS","iva":"con IVA","v":null,"alc":"Solo mano de obra, aceite de motor, arandela y filtros. Precio sugerido: cada concesionario fija el suyo y rige el vigente al llegar al taller."},"Chery":{"f":["https://chery.com.ar/posventa/"],"c":"2026-10-10","mon":"USD","iva":"con IVA","v":null,"alc":"Se paga en pesos al tipo de cambio vendedor del Banco Nación. La marca no publica cada cuántos meses."},"DFSK":{"f":["https://dfsk.ar/wp-content/uploads/2026/08/Planes-de-mantenimiento-programados-DFSK-agosto-2026-CE-1.pdf","https://dfsk.ar/posventa/"],"c":"2026-10-10","mon":"ARS","iva":"con IVA","v":"Desde el 17/8/2026.","alc":"Precio sugerido. El de 5.000 km figura sin importe."},"Jetour":{"f":["https://famly.com.ar/mantenimiento","https://jetour.com.ar/postventa/"],"c":"2026-10-10","mon":"$","iva":"con IVA, según los legales del sitio","v":null,"pub":"Famly, el importador,","alc":"Publica «$» sin aclarar la moneda y no dice cada cuántos meses."},"Leapmotor":{"f":["https://www.leapmotor.com.ar/postventa/mantenimientos-programados.html"],"c":"2026-10-10","mon":"ARS","iva":null,"v":null,"alc":"No dice si incluye IVA."},"Changan":{"f":["https://changan.com.ar/postventa/mantenimiento"],"c":"2026-10-10","mon":"ARS","iva":"con IVA","v":null,"alc":"Solo mano de obra, aceite, arandela y filtros. Precio sugerido: rige el vigente al llegar al taller."},"JAC":{"f":["https://jacargentina.com.ar/wp-content/uploads/2026/06/Planes-de-mantenimiento-programados-Junio-2026-1.pdf","https://jacargentina.com.ar/posventa/"],"c":"2026-10-10","mon":"ARS","iva":"con IVA","v":"Desde el 1/7/2026.","alc":"Precio sugerido. El de 5.000 km figura sin importe."}};
+const SERVICE_OFICIAL = {"haval-jolion-hev":{"m":"GWM","r":[[10000,12,335000],[20000,24,520000],[30000,36,335000],[40000,48,520000],[50000,60,335000]]},"haval-jolion-pro-hev":{"m":"GWM","r":[[10000,12,335000],[20000,24,520000],[30000,36,335000],[40000,48,520000],[50000,60,335000]]},"haval-h6-4wd":{"m":"GWM","r":[[10000,12,375000],[20000,24,530000],[30000,36,375000],[40000,48,530000],[50000,60,375000]],"n":"La lista dice «Haval H6», sin versión."},"haval-h6-gt":{"m":"GWM","r":[[10000,12,375000],[20000,24,530000],[30000,36,375000],[40000,48,530000],[50000,60,375000]]},"haval-h6-hev":{"m":"GWM","r":[[10000,12,380000],[20000,24,640000],[30000,36,380000],[40000,48,640000],[50000,60,380000]]},"tank-300":{"m":"GWM","r":[[10000,12,630000],[20000,24,490000],[30000,36,630000],[40000,48,490000],[50000,60,630000]]},"ora-03":{"m":"GWM","r":[[10000,12,210000],[20000,24,265000],[30000,36,210000],[40000,48,265000],[50000,60,210000]]},"chery-tiggo-2-pro-max":{"m":"Chery","r":[[10000,null,213],[20000,null,256],[30000,null,265],[40000,null,553],[50000,null,290],[60000,null,292]]},"chery-tiggo-4-hybrid":{"m":"Chery","r":[[10000,null,205],[20000,null,302],[30000,null,205],[40000,null,591],[50000,null,312],[60000,null,302]]},"chery-tiggo-8-pro":{"m":"Chery","r":[[10000,null,218],[20000,null,291],[30000,null,218],[40000,null,367],[50000,null,342],[60000,null,588]]},"chery-arrizo-8":{"m":"Chery","r":[[10000,null,224],[20000,null,297],[30000,null,239],[40000,null,570],[50000,null,376],[60000,null,311]],"n":"La lista lo llama «Arrizo 8 CSH» (el híbrido enchufable)."},"dfsk-glory-500":{"m":"DFSK","r":[[10000,12,348970],[20000,24,348970],[30000,36,348970],[40000,48,1268720],[50000,60,348970]]},"dfsk-glory-580":{"m":"DFSK","r":[[10000,12,364282],[20000,24,403921],[30000,36,364282],[40000,48,1224538],[50000,60,364282]]},"dfsk-glory-600":{"m":"DFSK","r":[[10000,12,441357],[20000,24,441357],[30000,36,624116],[40000,48,911335],[50000,60,441357]]},"jetour-dashing":{"m":"Jetour","r":[[5000,null,"Sin cargo"],[10000,null,471769],[20000,null,566237],[30000,null,557649],[40000,null,995065],[50000,null,471769],[60000,null,557649]]},"jetour-t1":{"m":"Jetour","r":[[5000,null,"Sin cargo"],[10000,null,539105],[20000,null,624986],[30000,null,624986],[40000,null,1244611],[50000,null,539105],[60000,null,539105]]},"jetour-t2":{"m":"Jetour","r":[[5000,null,"Sin cargo"],[10000,null,539105],[20000,null,624986],[30000,null,624986],[40000,null,1324335],[50000,null,539105],[60000,null,539105]]},"jetour-x50":{"m":"Jetour","r":[[5000,null,"Sin cargo"],[10000,null,461126],[20000,null,496613],[30000,null,496613],[40000,null,1005005],[50000,null,461126],[60000,null,496613]]},"jetour-x70-plus":{"m":"Jetour","r":[[5000,null,"Sin cargo"],[10000,null,471769],[20000,null,566237],[30000,null,557649],[40000,null,995065],[50000,null,471769],[60000,null,557649]]},"leapmotor-b10":{"m":"Leapmotor","r":[[20000,12,401000],[40000,24,704000],[60000,36,401000],[80000,48,704000],[100000,60,1803000]],"n":"La lista lo llama «B10 Ultra-Híbrido»."},"leapmotor-c10":{"m":"Leapmotor","r":[[20000,12,483000],[40000,24,884000],[60000,36,483000],[80000,48,884000],[100000,60,1975000]],"n":"La lista lo llama «C10 Ultra-Híbrido»."},"changan-cs55-plus":{"m":"Changan","r":[[10000,12,415000],[20000,24,550000],[30000,36,470000],[40000,48,550000],[50000,60,415000]]},"changan-eado-plus-phev":{"m":"Changan","r":[[10000,12,415000],[20000,24,550000],[30000,36,520000],[40000,48,550000],[50000,60,415000]]},"jac-js4":{"m":"JAC","r":[[10000,12,280170],[20000,24,361121],[30000,36,337996],[40000,48,456810],[50000,60,299446]]},"jac-js6-phev":{"m":"JAC","r":[[10000,12,268518],[20000,24,349770],[30000,36,326344],[40000,48,991972],[50000,60,287794]]},"jac-t8":{"m":"JAC","r":[[10000,12,531407],[20000,24,622441],[30000,36,531407],[40000,48,656008],[50000,60,531407]]},"dolphin-mini":{"m":"BYD","r":[[20000,12,92],[40000,24,174],[60000,36,126],[80000,48,221],[100000,60,126]]},"yuan-pro":{"m":"BYD","r":[[20000,12,106],[40000,24,190],[60000,36,132],[80000,48,239],[100000,60,132]]},"song-pro":{"m":"BYD","r":[[12000,12,204],[24000,24,300],[36000,36,261],[48000,48,390],[60000,60,261]]},"atto-2-dm-i":{"m":"BYD","r":[[12000,12,203],[24000,24,294],[36000,36,252],[48000,48,390],[60000,60,252]]},"byd-shark":{"m":"BYD","r":[[12000,12,260],[24000,24,331],[36000,36,344],[48000,48,450],[60000,60,310]]}};
+// Llamados a revisión (2026-10-11): el registro oficial de alertas de productos de Defensa del
+// Consumidor. Que un auto no figure dice eso del registro, no que el auto no tenga problemas.
+const LLAMADOS = {"chery-tiggo-4-pro":[{"f":"2024-06-27","mod":"Tiggo 4 FL y Tiggo 4 Pro","d":"Un lote de ejes traseros puede tener defectos de soldadura entre el eje y el muñón que lo une al bastidor, que podrían desprenderse. Afecta a las unidades de ese lote, no a todas."}]};
+const LLAMADOS_FUENTE = {"u":"https://www.argentina.gob.ar/produccion/defensadelconsumidor/alertas-de-productos","c":"2026-10-10"};
+function serviceHTML(i){
+  const sv = SERVICE_OFICIAL[SLUG_AUTO[i]];
+  if (!sv) return '';
+  const m = SERVICE_MARCAS[sv.m], pre = m.mon === 'USD' ? 'USD ' : '$ ';
+  const monto = p => typeof p === 'number' ? pre + p.toLocaleString('es-AR') : rkEsc(p);
+  const total = sv.r.reduce((t, x) => t + (typeof x[2] === 'number' ? x[2] : 0), 0);
+  return '<section class="ficha-service"><h3>Service oficial programado</h3><table class="ficha-tabla"><thead><tr><th scope="col">Service</th><th scope="col" class="num">Precio</th></tr></thead><tbody>' +
+    sv.r.map(x => '<tr><td>' + x[0].toLocaleString('es-AR') + ' km' + (x[1] ? ' o ' + x[1] + ' meses' : '') + '</td><td class="num">' + monto(x[2]) + '</td></tr>').join('') +
+    '</tbody><tfoot><tr><th scope="row">Los ' + sv.r.length + ' suman</th><td class="num">' + monto(total) + '</td></tr></tfoot></table>' +
+    '<p class="ficha-nota">Lo publica ' + rkEsc(m.pub || sv.m) + ' en su sitio' + (m.iva ? ', ' + rkEsc(m.iva) : '') + '. ' + rkEsc(m.alc) + (m.v ? ' ' + rkEsc(m.v) : '') + (sv.n ? ' ' + rkEsc(sv.n) : '') +
+    ' Consultado el ' + fechaCorta(m.c) + ': <a href="' + rkEsc(m.f[0]) + '" target="_blank" rel="noopener">fuente</a>.</p></section>';
+}
+function llamadosHTML(i){
+  const l = LLAMADOS[SLUG_AUTO[i]] || [], f = LLAMADOS_FUENTE;
+  const fuente = ' <a href="' + rkEsc(f.u) + '" target="_blank" rel="noopener">Registro oficial de alertas de productos</a>, consultado el ' + fechaCorta(f.c) + '.';
+  return '<section class="ficha-llamados"><h3>Llamados a revisión</h3>' + (l.length
+    ? '<ul class="ficha-llam">' + l.map(x => '<li><b>' + fechaCorta(x.f) + ', ' + rkEsc(x.mod) + ':</b> ' + rkEsc(x.d) + '</li>').join('') + '</ul><p class="ficha-nota">' + fuente.trim() + '</p>'
+    : '<p class="ficha-nota">No figura ninguno en el' + fuente.replace('>Registro', '>registro') + '</p>') + '</section>';
+}
 function cocheraFichaHTML(i){
   const r = cocheraAuto(i);
   if (!r || r.tipo === 'sd') return '';
@@ -5370,6 +5407,8 @@ async function abrirFicha(i){
         '<button type="button" class="ficha-btn" data-comparar="' + s.i + '">Comparar</button></li>';
     }).join('') + '</ul></section>' : '') +
     cargaHTML(i) +
+    serviceHTML(i) +
+    llamadosHTML(i) +
     coloresHTML(SLUG_AUTO[i]) +
     videosHTML(SLUG_AUTO[i]) +
     '<section class="ficha-fuentes"><h3>Fuentes oficiales</h3><p id="fichaFuentes" class="ficha-vacio">Cargando…</p></section>';
