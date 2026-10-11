@@ -171,7 +171,7 @@ td small{{display:block;font-size:.75rem;color:var(--ink2)}} .colores{{list-styl
 {videos_html}
 {''.join(secciones)}
 <footer><p>Datos de la ficha técnica oficial argentina; lo que sale de otra fuente está aclarado. "Sin dato" quiere decir que la fuente no lo informa, no que el auto no lo tenga.</p>
-<p><a href="/">Volver al comparativo</a></p></footer>
+<p><a href="/">Volver al comparativo</a>. <a href="/quien-hace-esto">Quién hace esto</a>.</p></footer>
 </main></body></html>
 '''
 
@@ -371,7 +371,44 @@ td small{{display:block;font-size:.75rem;color:var(--ink2)}} .nota,footer{{font-
 <p class="nota">En los otros {iguales} datos de la ficha dicen lo mismo. "Sin dato" quiere decir que la fuente no lo informa, no que el auto no lo tenga.</p>
 <p>La página de cada uno: <a href="/autos/{slugs[a]}">{e(A['name'])}</a> y <a href="/autos/{slugs[b]}">{e(B['name'])}</a>.</p>
 <footer><p>Datos de la ficha técnica oficial argentina; lo que sale de otra fuente está aclarado.</p>
-<p><a href="/">Volver al comparativo</a></p></footer>
+<p><a href="/">Volver al comparativo</a>. <a href="/quien-hace-esto">Quién hace esto</a>.</p></footer>
+</main></body></html>
+'''
+
+
+def quien():
+    """Quién hace esto (2026-10-11): quién está detrás, su relación con las marcas (ninguna) y cómo se
+    arman los datos. En primera persona, como lo contó el dueño del sitio. Solo afirma lo que es cierto
+    del sitio: si se suma publicidad o algo que mida visitas, hay que cambiar "Privacidad"."""
+    return f'''<!doctype html>
+<html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Quién hace el comparativo de autos chinos en Argentina</title>
+<meta name="description" content="Un comparativo hecho por un particular, sin relación comercial con marcas ni concesionarios: por qué existe y cómo se arman los datos.">
+<link rel="canonical" href="{SITIO}/quien-hace-esto">
+<style>
+:root{{--paper:#EEF1EE;--ink:#17211D;--ink2:#4B5A53;--line:#C9D4CE;--accent:#00843D}}
+@media (prefers-color-scheme:dark){{:root{{--paper:#141B18;--ink:#E4EAE6;--ink2:#9DB3A8;--line:#2E3A35;--accent:#3FB57A}}}}
+html{{-webkit-text-size-adjust:100%;text-size-adjust:100%}} @media screen and (max-width:640px){{html{{font-size:115%}}}}
+body{{margin:0;background:var(--paper);color:var(--ink);font:1rem/1.6 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}}
+main{{max-width:680px;margin:0 auto;padding:16px}} a{{color:var(--accent)}} h1{{font-size:2rem;line-height:1.1;margin:8px 0 12px;text-wrap:balance}}
+h2{{font-size:1.15rem;margin:24px 0 6px;border-bottom:2px solid var(--ink)}} .sub{{color:var(--ink2);margin:0 0 12px}} ul{{padding-left:20px}} li{{margin:4px 0}}
+</style></head><body><main>
+<p class="sub"><a href="/">Autos chinos en Argentina</a> / Quién hace esto</p>
+<h1>Quién hace esto</h1>
+<p>Hago este comparativo por mi cuenta. <b>No tengo ninguna relación comercial</b> con marcas, importadores ni concesionarios: nadie paga por aparecer ni por cómo aparece, y el sitio no tiene publicidad.</p>
+<h2>Por qué</h2>
+<p>Tengo un BYD Song Pro GS. Después de usarlo descubrí cuánto auto dan los chinos por lo que cuestan, y sentí la necesidad de ayudar a difundirlo para que otros los evalúen con datos antes de comprar.</p>
+<p>Lo cuento también para que lo tengas en cuenta: el Song Pro está en la tabla con las mismas reglas que todos.</p>
+<h2>Cómo se arman los datos</h2>
+<ul>
+<li>Salen de la ficha técnica oficial argentina de cada auto. Lo que viene de otro mercado o de la prensa está marcado, con su fuente.</li>
+<li>Si la ficha no informa algo, dice «s/d»: nunca se completa a ojo ni por parecido con otro auto.</li>
+<li>Los precios son los de la lista oficial de cada marca, con su fecha; si una marca no la publica, se aclara de dónde sale. Las promociones, solo del sitio de la marca o del concesionario.</li>
+<li>Cada semana se revisan las fichas, los precios y las promociones.</li>
+</ul>
+<h2>Privacidad</h2>
+<p>El sitio no tiene publicidad ni programas que sigan lo que hacés, y no pide registrarte. Lo que guardás (los autos que seguís, tu provincia, tu cochera) queda en tu navegador.</p>
+<p><a href="/">Volver al comparativo</a></p>
 </main></body></html>
 '''
 
@@ -414,7 +451,8 @@ def generar():
     pag_nov, rss = novedades(cars, slugs)
     salida[os.path.join(RAIZ, 'novedades.html')] = pag_nov
     salida[os.path.join(RAIZ, 'novedades.xml')] = rss
-    urls = [SITIO + '/', SITIO + '/novedades'] + [f'{SITIO}/autos/{s}' for s in slugs] + [f'{SITIO}/comparar/{slugs[a]}-vs-{slugs[b]}' for a, b in pares]
+    salida[os.path.join(RAIZ, 'quien-hace-esto.html')] = quien()
+    urls = [SITIO + '/', SITIO + '/novedades', SITIO + '/quien-hace-esto'] + [f'{SITIO}/autos/{s}' for s in slugs] + [f'{SITIO}/comparar/{slugs[a]}-vs-{slugs[b]}' for a, b in pares]
     salida[os.path.join(RAIZ, 'sitemap.xml')] = ('<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n' +
                                                  ''.join(f'  <url><loc>{u}</loc></url>\n' for u in urls) + '</urlset>\n')
     salida[os.path.join(RAIZ, 'robots.txt')] = f'User-agent: *\nAllow: /\nSitemap: {SITIO}/sitemap.xml\n'
