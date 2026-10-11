@@ -559,3 +559,26 @@ test('barras contra los de su tamaño: el percentil sale del segmento y se recue
   await abrir(page, '?autos=song-pro,tank-300');
   await expect(page.locator('#barrasSelLbl')).toBeHidden();
 });
+
+test('tracción: valores normalizados, todoterreno = SUV 4x4 con reductora, y se puede filtrar', async ({ page }) => {
+  await abrir(page);
+  const r = await page.evaluate(() => ({
+    vals: [...new Set(TRACCION)],
+    todo: [...TODOTERRENO].sort(),
+    esperado: SLUG_AUTO.filter((s, i) => TRACCION[i] === '4x4 con reductora' && ['SUV', 'Crossover'].includes(CARS[i].body)).sort(),
+    reductora: TRACCION.filter(t => t === '4x4 con reductora').length,
+  }));
+  r.vals.forEach(v => expect(['Delantera', 'Trasera', '4x2', '4x4', '4x4 con reductora', 'Sin dato']).toContain(v));
+  expect(r.todo).toEqual(r.esperado);
+  expect(r.todo.length).toBeGreaterThan(0);
+  // "Que diga 4x4 no alcanza": cada reductora tiene la marcha baja en su texto o en su explicación.
+  const celdas = await page.evaluate(() => FILA_TRACCION.slice(1).filter(c => cleanVal(c) === '4x4 con reductora'));
+  celdas.forEach(c => { if (c !== '4x4 con reductora') expect(c, c).toMatch(/4L|4 ?Lo|reductora|baja|LOW/i); });
+  // Filtro del panel: solo "4x4 con reductora".
+  await page.locator('#openModalBtn').click();
+  const adv = page.locator('.advanced-toggle');
+  if (await adv.count() && await adv.first().isVisible()) await adv.first().click();
+  await page.locator('#tracNoneBtn').click();
+  await page.locator('#tracRow input[data-val="4x4 con reductora"]').check();
+  await expect(page.locator('#compareCount')).toHaveText(String(r.reductora));
+});

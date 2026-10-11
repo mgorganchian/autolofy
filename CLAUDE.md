@@ -38,7 +38,7 @@ Con `N = CARS.length`:
 2. **`<th>`** en el `<thead>`, en el mismo índice — con su silueta de carrocería y su
    ícono de propulsión.
 3. **`<col class="col-data">`** en los **DOS** `<colgroup>` (`#theadTable` y `#mainTable`).
-4. **Cada una de las 100 filas de `DATA`**, en la posición correcta.
+4. **Cada una de las 101 filas de `DATA`**, en la posición correcta.
 5. **`colspan="N+1"`** de las filas de categoría — está hardcodeado.
 
 Además hay 3 conteos en texto: `#headerSubtitle`, `#summaryText` y el comentario arriba
@@ -85,7 +85,7 @@ se coló dos veces.
 **Trampas al medir:** `grep '<th'` también matchea `<thead>`; `grep 'col-data'` también
 cuenta las 2 definiciones del `<style>`.
 
-**Verificación cruzada:** renderizar de verdad y contar 100 filas en 14 categorías, con
+**Verificación cruzada:** renderizar de verdad y contar 101 filas en 14 categorías, con
 cero errores de consola. Con el script roto la tabla queda en **0 filas** y el archivo
 igual "parece" bien.
 
@@ -299,11 +299,19 @@ sí quedan en inglés, porque no muestran la palabra. Se coló con `YES` dos vec
 - **Impresión**: imprime lo que se ve, siempre en claro. Como el encabezado vive en otra
   `<table>`, `beforeprint` lo copia como `<thead>` de la tabla principal para que se
   repita en cada hoja.
-- Los **7 todoterreno** (BJ40 ×2, BJ60, BJ30 ×2, Tank 300, Jetour T2) usan la silueta
-  `b-offroad` pero su campo `body` **sigue siendo `"SUV"`**: cambia el dibujo, no el filtro.
-  La lista está por slug en `TODOTERRENO` (2026-10-10): el encabezado ya no lleva silueta (la
-  reemplazó la foto) y `esTodoterreno` la buscaba ahí, así que Ayudame a elegir nunca encontraba
-  ninguno. El T2 i-DM no está en la lista: se sumó después y nadie lo decidió.
+- **Tracción y todoterreno** (2026-10-11, pedido del usuario): la fila **Tracción** (después de Tipo
+  de propulsión) dice `Delantera`, `Trasera`, `4x4` (las cuatro ruedas sin reductora informada),
+  `4x4 con reductora` (marcha baja explícita en la fuente: "4L", "reductora", "Low") o `4x2` (la
+  fuente no dice qué eje). **Que diga "4x4" o "4WD" no alcanza para poner reductora.** Un
+  **todoterreno es un 4x4 con reductora**, no un auto con forma de todoterreno: de esa fila salen
+  `TODOTERRENO` (los SUV y crossover con reductora, que se dibujan con la silueta `b-offroad`; su
+  `body` sigue siendo "SUV"), el puntaje de "tierra" en Ayudame a elegir (`esTodoterreno`, pickups
+  incluidas) y el grupo de las comparaciones "X vs Y". Hasta el 2026-10-10 eran 7 elegidos por la
+  forma, y entre ellos estaba el BJ30 4x2. Con la fila (cargada el 2026-10-11 de fichas y sitios
+  oficiales; 33 EXT de otro mercado o prensa, 2 s/d), los SUV todoterreno son BJ60, BJ40 Pro, Tank 300 y
+  Jetour G700, más 9 pickups con reductora; el BJ40 Plus, los BJ30 y el Jetour T2 quedaron en `4x4`
+  porque ninguna fuente oficial nombra la reductora, y el T2 i-DM es de tracción delantera. Hay filtro
+  por tracción en el panel (`selectedTracs`).
 - **Seguir un auto** (2026-10-11): sin cuentas ni mails. `seguidos` (en el navegador) guarda, por
   slug, el precio de lista en dólares y la disponibilidad de la última vez que se vio el auto; al
   volver, `#avisoSeguidos` dice qué cambió, con "Comparar los que sigo" y "Listo". Abrir la página
@@ -542,7 +550,7 @@ sí quedan en inglés, porque no muestran la palabra. Se coló con `YES` dos vec
   "Seguir un auto" para quien no entra al sitio. Un auto sin novedades da un RSS vacío, no se omite.
 - **Comparaciones "X vs Y"** (`comparar/<a>-vs-<b>.html`, servidas como `/comparar/a-vs-b`,
   2026-10-11): cada auto a la venta o en preventa con precio en dólares contra sus 2 rivales más
-  cercanos (`rivales()`: misma carrocería, con SUV y crossover juntos y los `TODOTERRENO` entre
+  cercanos (`rivales()`: misma carrocería, con SUV y crossover juntos y los 4x4 con reductora entre
   ellos; largo, precio y familia de propulsión; nunca a más de 45 cm de largo ni 35% de precio).
   Muestran solo las filas donde los dos dicen distinto y linkean a la comparación interactiva. La
   página de cada auto linkea sus comparaciones. Un par cambia si cambia un precio: el script borra
