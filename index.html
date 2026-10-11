@@ -1242,6 +1242,7 @@ if(!location.search&&!location.hash)document.documentElement.classList.add('arra
   .ficha-carga .ficha-datos{margin:8px 0}
   .ficha-cochera{font-size:.8rem;margin:-8px 0 16px}
   .ficha-seguir-nota{font-size:.72rem;color:var(--ink-2);margin:0}
+  #barrasSelLbl[hidden]{display:none}
   #fichaSeguir[aria-pressed="true"]{background:var(--chip-bg)}
   .aviso-seguidos{margin:10px 16px;padding:10px 14px;border:1px solid var(--line);border-left:4px solid var(--byd-blue);border-radius:6px;background:var(--surface);font-size:.86rem}
   .aviso-seguidos p{margin:0} .aviso-seguidos ul{margin:4px 0 8px;padding-left:18px}
@@ -1699,6 +1700,9 @@ if(!location.search&&!location.hash)document.documentElement.classList.add('arra
       <label class="orden-sel"><span class="sr">Ordenar autos</span>
         <select id="ordenSel"><option value="" title="Largo, ancho y alto: el más grande primero">Por tamaño</option></select>
       </label>
+      <label class="orden-sel" id="barrasSelLbl"><span class="sr">Contra quiénes se miden las barras</span>
+        <select id="barrasSel"><option value="">Barras contra todos</option><option value="seg">Barras contra los de su tamaño</option></select>
+      </label>
       <button class="legend-toggle" id="plegarTodoBtn" type="button">Plegar todo</button>
     </span>
     <span class="herr-gral">
@@ -1728,7 +1732,7 @@ if(!location.search&&!location.hash)document.documentElement.classList.add('arra
   <span><span class="banda banda-note"></span> Franja gris azulada: dato con una aclaración (otra unidad, otro ciclo)</span>
   <span><span class="banda banda-nd"></span> Rayado: la ficha no lo informa</span>
   <span>Tocá cualquier celda con franja para ver de dónde sale.</span>
-  <span><span class="pct leyenda" aria-hidden="true"><i style="width:75%;background-size:133.3% 100%;--z:55.6%"></i></span> Cómo queda contra los demás autos en esa fila: el tramo fuerte termina en su puntaje: más a la derecha y más verde, mejor; corto y rojo al principio, de los peores. Al comparar 2 o más autos, la barra se mide contra los elegidos. Solo en las filas donde "mejor" tiene una dirección clara.</span>
+  <span><span class="pct leyenda" aria-hidden="true"><i style="width:75%;background-size:133.3% 100%;--z:55.6%"></i></span> Cómo queda contra los demás autos en esa fila: el tramo fuerte termina en su puntaje: más a la derecha y más verde, mejor; corto y rojo al principio, de los peores. Al comparar 2 o más autos, la barra se mide contra los elegidos. Con "Barras contra los de su tamaño", el puntaje es entre los autos del mismo segmento. Solo en las filas donde "mejor" tiene una dirección clara.</span>
 </div>
 
 <section class="dif" id="difBox" aria-label="Mayores diferencias" hidden></section>
@@ -2500,12 +2504,12 @@ function barraZona(w){
   var desde = Math.max(0, w - 25);
   return (desde / w * 100).toFixed(1);
 }
-function pctlHTML(d){
+function pctlHTML(d, que){
   if(!d) return "";
   // Barra rojo → amarillo → verde: el largo es el percentil (mínimo 4% para que se vea) y
   // el gradiente mide todo el ancho (background-size inverso), así la punta toma su color.
   // n0..n4 queda como clase: la usan los tests y dice el quintil.
-  var w = Math.max(4, d.p), t = 'Mejor que el '+d.p+'% de los '+d.n+' autos con este dato';
+  var w = Math.max(4, d.p), t = 'Mejor que el '+d.p+'% de los '+d.n+' autos '+(que ? que+' ' : '')+'con este dato';
   return '<span class="pct n'+d.c+'" role="img" title="'+t+'" aria-label="'+t+'" data-g="'+w+'" data-t="'+t+'"><i style="width:'+w+
          '%;background-size:'+(10000/w).toFixed(1)+'% 100%;--z:'+barraZona(w)+'%"></i></span>';
 }
@@ -4523,6 +4527,51 @@ function marcarReferencia(){
 // recalibra (mezcla ciclos). Un auto sin cifra comparable en esa fila esconde su barra mientras
 // dura la comparación. Al volver a todos, cada barra vuelve a su valor general (data-g).
 let barrasRecalibradas = false;
+// Barras contra los de su tamaño (2026-10-11): el percentil de cada auto entre los de su mismo
+// segmento (`size`), así un auto chico no queda rojo en baúl por no tener el de uno grande. La misma
+// cuenta que pctlFila (rango medio) dentro del segmento; con menos de 5 autos del segmento con el
+// dato no hay barra (un percentil entre 3 no dice nada), y sin segmento (nd) tampoco. Cambia solo la
+// vista general: al comparar 2 o más autos las barras se miden contra el mejor de los elegidos, y
+// el desplegable se esconde.
+const PCTL_MIN_SEG = 5;
+const SEG_PLURAL = { xl: 'muy grandes', big: 'grandes', mid: 'medianos', compact: 'compactos', mini: 'chicos' };
+function pctlFilaSeg(row){
+  const dir = PCTL_DIR[row[0]];
+  if (!dir) return null;
+  const vals = row.slice(1).map(v => pctlValor(v, row[0]));
+  return vals.map((x, i) => {
+    const seg = CARS[i].size;
+    if (x === null || !SEG_PLURAL[seg]) return null;
+    const con = vals.filter((y, j) => y !== null && CARS[j].size === seg);
+    if (con.length < PCTL_MIN_SEG) return null;
+    let peores = 0, iguales = 0;
+    con.forEach(y => { if (y === x) iguales++; else if (dir > 0 ? y < x : y > x) peores++; });
+    const p = (peores + iguales / 2) / con.length;
+    return { c: p >= .8 ? 4 : p >= .6 ? 3 : p >= .4 ? 2 : p >= .2 ? 1 : 0, p: Math.round(p * 100), n: con.length, seg };
+  });
+}
+let barrasSeg = false;
+try { barrasSeg = localStorage.getItem('barrasSeg') === '1'; } catch (e) {}
+function aplicarBarras(){
+  document.getElementById('barrasSel').value = barrasSeg ? 'seg' : '';
+  document.querySelectorAll('#mainTable tr[data-nombre]').forEach(tr => {
+    const f = FILA_POR_NOMBRE[tr.dataset.nombre];
+    if (!f || !PCTL_DIR[f[0]]) return;
+    const d = barrasSeg ? pctlFilaSeg(f) : pctlFila(f);
+    tr.querySelectorAll('td[data-col]').forEach(td => {
+      const x = d && d[+td.dataset.col], el = td.querySelector('.pct:not([data-nueva])');
+      const html = x ? pctlHTML(x, x.seg ? SEG_PLURAL[x.seg] : '') : '';
+      if (el){ if (html) el.outerHTML = html; else el.remove(); }
+      else if (html) td.insertAdjacentHTML('beforeend', html);
+    });
+  });
+  renderDiferencias();   // con una comparación las recalibra; si no, cada barra queda en su data-g
+}
+document.getElementById('barrasSel').addEventListener('change', e => {
+  barrasSeg = e.target.value === 'seg';
+  try { localStorage.setItem('barrasSeg', barrasSeg ? '1' : '0'); } catch (er) {}
+  aplicarBarras();
+});
 function barraAncho(el, w){
   const i = el.querySelector('i');
   i.style.width = w.toFixed(1) + '%'; i.style.backgroundSize = (10000 / w).toFixed(1) + '% 100%';
@@ -4530,6 +4579,7 @@ function barraAncho(el, w){
 }
 function recalibrarBarras(vis){
   const comparar = vis.length >= 2 && vis.length < CARS.length;
+  document.getElementById('barrasSelLbl').hidden = comparar;
   const aplicar = () => {
     document.querySelectorAll('#mainTable tr.cmp-fila').forEach(tr => tr.classList.remove('cmp-fila'));
     document.querySelectorAll('#mainTable .pct').forEach(el => {
@@ -6082,7 +6132,7 @@ ordenarColumnas();          // el orden por dimensiones, desde la carga
 historiaModo = 'off';
 urlCargar();
 actualizarResumen();
-renderDiferencias();
+if (barrasSeg) aplicarBarras(); else renderDiferencias();
 // La portada empieza en "Ayudame a elegir" (pedido del 2026-10-09). Un link con parámetros
 // (?autos=, ?auto=, ?ref=…) abre lo que pide, y ?tabla abre la tabla directo (lo usan los tests).
 if (!location.search && !location.hash) mostrarVista('elegir');
