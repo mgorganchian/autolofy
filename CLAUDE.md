@@ -168,6 +168,10 @@ sí quedan en inglés, porque no muestran la palabra. Se coló con `YES` dos vec
   propósito**: poner el indicador ahí afirmaría que un auto más largo es mejor, y
   eso no es un dato. Las filas de equipamiento Sí/No tampoco. Al agregar una fila
   nueva, el indicador **no** aparece salvo que se la sume a `PCTL_DIR`.
+  **Barras contra los de su tamaño** (2026-10-11, desplegable `#barrasSel`, guardado en el
+  navegador): el mismo percentil pero entre los autos del mismo `size` (`pctlFilaSeg`); con menos de
+  5 autos del segmento con el dato no hay barra, y sin segmento tampoco. Solo en la vista con los 124:
+  con cualquier subconjunto las barras ya se recalibran y el desplegable se esconde.
   Tres vetos que se ganaron a golpes, en `pctlValor()`: `No aplica (100% eléctrico)`
   traía un **100** que rankeaba a nueve eléctricos como los de peor consumo; el baúl
   de las pickups viene en **kg y mm**, no en litros; y hay celdas en **HP** dentro de

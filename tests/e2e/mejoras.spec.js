@@ -542,3 +542,20 @@ test('seguir un auto: se guarda, avisa al volver si cambió el precio o la dispo
   await page.locator('#fichaSeguir').click();
   await expect(page.locator('#seguidosBtn')).toHaveText('Los que sigo (1)');
 });
+
+test('barras contra los de su tamaño: el percentil sale del segmento y se recuerda; al comparar no se ofrece', async ({ page }) => {
+  await abrir(page);
+  const barra = sl => page.evaluate(s => { const i = SLUG_AUTO.indexOf(s);
+      const e = document.querySelector('#mainTable tr[data-nombre="Volumen de baúl/carga (L)"] td[data-col="' + i + '"] .pct'); return e && e.title; }, sl);
+  expect(await barra('song-pro')).toMatch(/^Mejor que el \d+% de los \d+ autos con este dato$/);
+  await page.locator('#barrasSel').selectOption('seg');
+  expect(await barra('song-pro')).toMatch(/^Mejor que el \d+% de los \d+ autos grandes con este dato$/);
+  // Un segmento con menos de 5 autos con el dato no tiene barra (los chicos con baúl).
+  const chicos = await page.evaluate(() => CARS.filter((c, i) => c.size === 'mini' && pctlValor(FILA_POR_NOMBRE['Volumen de baúl/carga (L)'][i + 1], 'Volumen de baúl/carga (L)') !== null).length);
+  if (chicos < 5) expect(await barra('dolphin-mini')).toBeNull();
+  await page.reload();
+  await expect(page.locator('#barrasSel')).toHaveValue('seg');
+  expect(await barra('song-pro')).toMatch(/autos grandes con este dato$/);
+  await abrir(page, '?autos=song-pro,tank-300');
+  await expect(page.locator('#barrasSelLbl')).toBeHidden();
+});
