@@ -583,10 +583,10 @@ test('tracción: valores normalizados, todoterreno = SUV 4x4 con reductora, y se
   await expect(page.locator('#compareCount')).toHaveText(String(r.reductora));
 });
 
-test('¿Dato mal?: la página del auto abre el formulario precargado con el auto, y el pie también lo linkea', async ({ page }) => {
+test('sugerencias: la página del auto abre el formulario precargado con el auto, y el pie también lo linkea', async ({ page }) => {
   await abrir(page, '?auto=song-pro');
-  const a = page.locator('.ficha-fuentes a.dato-mal');
+  const a = page.locator('.ficha-fuentes a.sugerencias');
   await expect(a).toHaveAttribute('href', /^https:\/\/docs\.google\.com\/forms\/d\/e\/[\w-]+\/viewform\?usp=pp_url&entry\.1360569446=Song%20Pro$/);
   await expect(a).toHaveAttribute('target', '_blank');
-  await expect(page.locator('footer a.dato-mal')).toHaveCount(1);
+  await expect(page.locator('footer a.sugerencias')).toHaveCount(1);
 });
