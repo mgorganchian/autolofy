@@ -183,6 +183,12 @@ td small{{display:block;font-size:.75rem;color:var(--ink2)}} .colores{{list-styl
 MESES = ['enero', 'febrero', 'marzo', 'abril', 'mayo', 'junio', 'julio', 'agosto', 'septiembre', 'octubre', 'noviembre', 'diciembre']
 fecha_larga = lambda f: f'{int(f[8:])} de {MESES[int(f[5:7]) - 1]} de {f[:4]}'
 usd = lambda n: 'USD ' + f'{n:,}'.replace(',', '.')
+# Un cambio de precio de menos del 1% no se informa nunca, ni como baja ni como suba (pedido del
+# usuario, 2026-10-18: «Bajó el CS55 Plus: USD 32.000 → USD 31.990» no es una novedad). Vale para
+# Novedades, el RSS de cada auto (cambios de lista y promos con precio) y, en index.html, para
+# Seguir un auto, el historial del precio, las rebajas y Dónde comprarlo (cambioChico).
+CAMBIO_MIN = 0.01
+cambio_chico = lambda antes, ahora: abs(ahora - antes) < CAMBIO_MIN * antes
 
 
 def novedades(cars, slugs):
@@ -195,7 +201,7 @@ def novedades(cars, slugs):
     items = []
     for sl, h in hist.items():
         for a, b in zip(h, h[1:]):
-            if a[2] != b[2] or a[1] == b[1]: continue
+            if a[2] != b[2] or cambio_chico(a[1], b[1]): continue
             d = b[1] - a[1]
             items.append({'fecha': b[0], 'titulo': f"{'Bajó' if d < 0 else 'Subió'} el {nombre.get(sl, sl)}: {usd(a[1])} → {usd(b[1])}",
                           'texto': f"Precio de lista oficial de la versión {b[2]}, {'menos' if d < 0 else 'más'} {usd(abs(d))} que en la lista anterior.",
@@ -262,18 +268,20 @@ def promos_de(slug, marca, red, hoy):
     return [(t, p, f) for t, p, f in out if f]
 
 
-def rss_auto(car, slug, hist, red, hoy):
+def rss_auto(car, slug, hist, red, hoy, lista=None):
     """RSS de un auto (2026-10-11, "Seguir un auto"): sus cambios de precio de lista (misma versión) y
     las promociones vigentes que lo nombran. Sin cuentas ni mails: el que quiere enterarse sin entrar
     al sitio lo suma a su lector. Sale solo de datos que ya están; un auto sin novedades da un RSS vacío."""
     nombre, e, items = car['name'], H.escape, []
     h = hist.get(slug, [])
     for a, b in zip(h, h[1:]):
-        if a[2] != b[2] or a[1] == b[1]: continue
+        if a[2] != b[2] or cambio_chico(a[1], b[1]): continue
         d = b[1] - a[1]
         items.append({'fecha': b[0], 'titulo': f"{'Bajó' if d < 0 else 'Subió'} el {nombre}: {usd(a[1])} → {usd(b[1])}",
                       'texto': f"Precio de lista oficial de la versión {b[2]}."})
     for t, p, f in promos_de(slug, car['brand'], red, hoy):
+        pr = p.get('precio')
+        if lista and pr and pr.get('moneda') == 'USD' and cambio_chico(lista, pr['monto']): continue   # a menos del 1% de la lista
         items.append({'fecha': f, 'titulo': f'{t} para el {nombre}', 'texto': p['texto'][:400]})
     items.sort(key=lambda x: (x['fecha'], x['titulo']), reverse=True)
     rfc = lambda f: datetime(int(f[:4]), int(f[5:7]), int(f[8:]), 12, tzinfo=timezone.utc).strftime('%a, %d %b %Y %H:%M:%S +0000')
@@ -454,7 +462,8 @@ def generar():
     hoy = date.today().isoformat()
     for i, (car, slug, cred) in enumerate(zip(cars, slugs, creditos)):
         salida[os.path.join(DIR, slug + '.html')] = pagina(i, data, car, slug, cred, colores, videos, vs_de.get(i, ()), extra)
-        salida[os.path.join(DIR, slug + '.xml')] = rss_auto(car, slug, hist, red_json, hoy)
+        lp = precio_usd(celda(data[0][1][0][i + 1])[0])
+        salida[os.path.join(DIR, slug + '.xml')] = rss_auto(car, slug, hist, red_json, hoy, int(lp) if lp else None)
     pag_nov, rss = novedades(cars, slugs)
     salida[os.path.join(RAIZ, 'novedades.html')] = pag_nov
     salida[os.path.join(RAIZ, 'novedades.xml')] = rss

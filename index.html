@@ -429,6 +429,11 @@ if(!location.search&&!location.hash)document.documentElement.classList.add('arra
     border-top:1px solid var(--line);
     line-height:1.5;
   }
+  /* Notas del pie plegadas (2026-10-18, pedido del usuario: la página queda más limpia). */
+  .pie-notas{margin:8px 0 12px}
+  .pie-notas > summary{cursor:pointer;display:inline-flex;align-items:center;min-height:24px;font-weight:600;color:var(--ink)}
+  .pie-notas > summary:focus-visible{outline:2px solid var(--ink);outline-offset:2px}
+  .pie-notas-txt{margin-top:8px}
   .val-det{border-bottom:1px dotted var(--nd);cursor:help}
   .feat-label{
     border-bottom:1px dotted var(--nd);
@@ -2029,6 +2034,8 @@ if(!location.search&&!location.hash)document.documentElement.classList.add('arra
 <!-- autos:inicio (lo escribe herramientas-paginas.py) -->
 <nav class="todos-autos" aria-label="Página de cada auto"><h2>La página de cada auto</h2><ul><li><a href="/autos/arcfox-koala-s">Arcfox Koala S</a></li><li><a href="/autos/arcfox-s5">Arcfox S5</a></li><li><a href="/autos/arcfox-t1">Arcfox T1</a></li><li><a href="/autos/arcfox-t5">Arcfox T5</a></li><li><a href="/autos/arcfox-v9">Arcfox V9</a></li><li><a href="/autos/atto-2-dm-i">Atto 2 DM-i</a></li><li><a href="/autos/baic-bj30-4x2">BAIC BJ30 4x2</a></li><li><a href="/autos/baic-bj30-4x4">BAIC BJ30 4x4</a></li><li><a href="/autos/baic-bj40-plus">BAIC BJ40 Plus</a></li><li><a href="/autos/baic-bj40-pro">BAIC BJ40 Pro</a></li><li><a href="/autos/baic-bj60">BAIC BJ60</a></li><li><a href="/autos/baic-eu5">BAIC EU5</a></li><li><a href="/autos/baic-u5-plus">BAIC U5 Plus</a></li><li><a href="/autos/baic-x35">BAIC X35</a></li><li><a href="/autos/baic-x55-ii">BAIC X55 II</a></li><li><a href="/autos/baic-x55-ii-hybrid">BAIC X55 II Hybrid</a></li><li><a href="/autos/baic-x55-plus">BAIC X55 Plus</a></li><li><a href="/autos/byd-sealion-7">BYD Sealion 7</a></li><li><a href="/autos/byd-shark">BYD Shark</a></li><li><a href="/autos/changan-cs55-plus">Changan CS55 Plus</a></li><li><a href="/autos/changan-eado-plus-phev">Changan Eado Plus PHEV</a></li><li><a href="/autos/chery-arrizo-8">Chery Arrizo 8</a></li><li><a href="/autos/chery-himla">Chery Himla</a></li><li><a href="/autos/chery-tiggo-2-pro-max">Chery Tiggo 2 Pro Max</a></li><li><a href="/autos/chery-tiggo-4-hybrid">Chery Tiggo 4 Hybrid</a></li><li><a href="/autos/chery-tiggo-4-pro">Chery Tiggo 4 Pro</a></li><li><a href="/autos/chery-tiggo-7-pro-mhev">Chery Tiggo 7 Pro MHEV</a></li><li><a href="/autos/chery-tiggo-7-pro-phev">Chery Tiggo 7 Pro PHEV</a></li><li><a href="/autos/chery-tiggo-8-pro">Chery Tiggo 8 Pro</a></li><li><a href="/autos/deepal-s05">Deepal S05</a></li><li><a href="/autos/dfsk-e5-plus">DFSK E5 Plus</a></li><li><a href="/autos/dfsk-glory-500">DFSK Glory 500</a></li><li><a href="/autos/dfsk-glory-580">DFSK Glory 580</a></li><li><a href="/autos/dfsk-glory-600">DFSK Glory 600</a></li><li><a href="/autos/dolphin-mini">Dolphin Mini</a></li><li><a href="/autos/dongfeng-box">Dongfeng Box</a></li><li><a href="/autos/dongfeng-huge">Dongfeng Huge</a></li><li><a href="/autos/dongfeng-mage">Dongfeng Mage</a></li><li><a href="/autos/forthing-friday-reev">Forthing Friday REEV</a></li><li><a href="/autos/forthing-s7-reev">Forthing S7 REEV</a></li><li><a href="/autos/forthing-t5-evo">Forthing T5 EVO</a></li><li><a href="/autos/forthing-t5-hev">Forthing T5 HEV</a></li><li><a href="/autos/forthing-u-tour">Forthing U-Tour</a></li><li><a href="/autos/forthing-v9">Forthing V9</a></li><li><a href="/autos/foton-tunland-g7">Foton Tunland G7</a></li><li><a href="/autos/foton-tunland-v7">Foton Tunland V7</a></li><li><a href="/autos/foton-tunland-v9">Foton Tunland V9</a></li><li><a href="/autos/gac-aion-es">GAC Aion ES</a></li><li><a href="/autos/gac-aion-ut">GAC Aion UT</a></li><li><a href="/autos/gac-aion-v">GAC Aion V</a></li><li><a href="/autos/gac-emkoo-hev">GAC Emkoo HEV</a></li><li><a href="/autos/gac-empow">GAC Empow</a></li><li><a href="/autos/gac-gs3-emzoom">GAC GS3 Emzoom</a></li><li><a href="/autos/gac-gs8">GAC GS8</a></li><li><a href="/autos/gac-s7">GAC S7</a></li><li><a href="/autos/geely-ex5">Geely EX5</a></li><li><a href="/autos/geely-icon">Geely Icon</a></li><li><a href="/autos/haval-h6-4wd">Haval H6 4WD</a></li><li><a href="/autos/haval-h6-gt">Haval H6 GT</a></li><li><a href="/autos/haval-h6-hev">Haval H6 Pro HEV</a></li><li><a href="/autos/haval-h7-4wd">Haval H7 4WD</a></li><li><a href="/autos/haval-h7-hev">Haval H7 HEV</a></li><li><a href="/autos/haval-jolion-hev">Haval Jolion HEV</a></li><li><a href="/autos/haval-jolion-pro-hev">Haval Jolion Pro HEV</a></li><li><a href="/autos/jac-ev-30x">JAC EV 30X</a></li><li><a href="/autos/jac-js4">JAC JS4</a></li><li><a href="/autos/jac-js6-phev">JAC JS6 PHEV</a></li><li><a href="/autos/jac-js8-pro">JAC JS8 Pro</a></li><li><a href="/autos/jac-s2">JAC S2</a></li><li><a href="/autos/jac-t8">JAC T8</a></li><li><a href="/autos/jac-t9">JAC T9</a></li><li><a href="/autos/jaecoo-7">Jaecoo 7</a></li><li><a href="/autos/jetour-dashing">Jetour Dashing</a></li><li><a href="/autos/jetour-g700">Jetour G700</a></li><li><a href="/autos/jetour-t1">Jetour T1</a></li><li><a href="/autos/jetour-t1-i-dm">Jetour T1 i-DM</a></li><li><a href="/autos/jetour-t2">Jetour T2</a></li><li><a href="/autos/jetour-t2-i-dm">Jetour T2 i-DM</a></li><li><a href="/autos/jetour-x50">Jetour X50</a></li><li><a href="/autos/jetour-x70">Jetour X70</a></li><li><a href="/autos/jetour-x70-plus">Jetour X70 Plus</a></li><li><a href="/autos/jmc-grand-avenue">JMC Grand Avenue</a></li><li><a href="/autos/jmc-grand-avenue-pro">JMC Grand Avenue Pro</a></li><li><a href="/autos/jmev-easy-3">JMEV Easy 3</a></li><li><a href="/autos/kaiyi-x3">Kaiyi X3</a></li><li><a href="/autos/kaiyi-x3-pro">Kaiyi X3 Pro</a></li><li><a href="/autos/kaiyi-x7">Kaiyi X7</a></li><li><a href="/autos/kaiyi-x7-hybrid">Kaiyi X7 Hybrid</a></li><li><a href="/autos/leapmotor-b03x">Leapmotor B03X</a></li><li><a href="/autos/leapmotor-b10">Leapmotor B10</a></li><li><a href="/autos/leapmotor-c10">Leapmotor C10</a></li><li><a href="/autos/lynk-co-01">Lynk &amp; Co 01</a></li><li><a href="/autos/lynk-co-06">Lynk &amp; Co 06</a></li><li><a href="/autos/lynk-co-08">Lynk &amp; Co 08</a></li><li><a href="/autos/lynk-co-900">Lynk &amp; Co 900</a></li><li><a href="/autos/maxus-d90">Maxus D90</a></li><li><a href="/autos/maxus-eterron">Maxus eTerron</a></li><li><a href="/autos/maxus-t60">Maxus T60</a></li><li><a href="/autos/maxus-t60-max">Maxus T60 Max</a></li><li><a href="/autos/mg-3">MG 3</a></li><li><a href="/autos/mg-3-hev">MG 3 HEV</a></li><li><a href="/autos/mg-cyberster">MG Cyberster</a></li><li><a href="/autos/mg-hs-hev">MG HS HEV</a></li><li><a href="/autos/mg-zs">MG ZS</a></li><li><a href="/autos/mg-zs-hev">MG ZS HEV</a></li><li><a href="/autos/omoda-c5">Omoda 5</a></li><li><a href="/autos/omoda-7">Omoda 7</a></li><li><a href="/autos/omoda-e5">Omoda E5</a></li><li><a href="/autos/ora-03">Ora 03</a></li><li><a href="/autos/gwm-ora-5-hev">Ora 5 HEV</a></li><li><a href="/autos/poer-4wd">Poer 4WD</a></li><li><a href="/autos/rely-r8">Rely R8</a></li><li><a href="/autos/seal-5-dm-i">Seal 5 DM-i</a></li><li><a href="/autos/seal-u-dm-i">Seal U DM-i</a></li><li><a href="/autos/skywell-be11">Skywell ET5</a></li><li><a href="/autos/smart-1">smart #1</a></li><li><a href="/autos/smart-3">smart #3</a></li><li><a href="/autos/song-pro">Song Pro</a></li><li><a href="/autos/soueast-s06">Soueast S06</a></li><li><a href="/autos/stelato-s9">Stelato S9</a></li><li><a href="/autos/swm-g03f">SWM G03F</a></li><li><a href="/autos/swm-g03f-edi">SWM G03F EDi</a></li><li><a href="/autos/tank-300">Tank 300</a></li><li><a href="/autos/yuan-pro">Yuan Pro</a></li></ul></nav>
 <!-- autos:fin -->
+<details class="pie-notas"><summary>Notas sobre los datos</summary>
+<div class="pie-notas-txt">
   <strong>🆕 BYD Sealion 7 — todavía no lanzado en Argentina:</strong> BYD lo exhibió en su evento de lanzamiento (octubre 2025) y su director de ventas confirmó en noviembre 2025 que "vamos a contar con ellos en un futuro cercano", pero a agosto de 2026 no hay fecha de venta ni ficha técnica ni precio para el mercado argentino. Por eso está representado con la ficha de la versión tope de gama del mercado europeo (Excellence AWD, 530 CV/390kW, doble motor, 91,3 kWh) — todo marcado en naranja 🔶 con la aclaración correspondiente. Cuando BYD confirme el lanzamiento local, avisame para actualizar con la ficha y el precio reales de Argentina.
   <br><br>
   <strong>Frunk (baúl delantero):</strong> el Sealion 7 tiene, además del baúl trasero de 520L, un pequeño compartimiento de carga de 58L bajo el capó — algo que ningún otro auto de esta tabla tiene, al no llevar motor a combustión adelante.
@@ -2059,8 +2066,9 @@ if(!location.search&&!location.hash)document.documentElement.classList.add('arra
   <strong>"s/d" (sin dato):</strong> el ítem no figura en la ficha/fuente de ese modelo. Si es gris con tooltip "no investigado", fue una decisión de alcance (podés pedirme que profundice en un modelo puntual); si no tiene tooltip, es porque genuinamente no se encontró el dato en ningún lado.
   <br><br>
   ⚠️ En la ficha de Yuan Pro las filas de potencia/par de "motor de combustión interna" (130 kW / 290 N·m) contradicen la naturaleza 100% eléctrica del auto indicada en la portada del mismo PDF — es un error de plantilla (copiado de una ficha PHEV). El valor de 130 kW está confirmado por pruebas independientes para esta misma batería (45.12 kWh), por lo que se mantiene marcado con *.
-  <br><br>
-  Fecha de consulta: <span id="fechaConsulta">5 de octubre de 2026</span> (última verificación de las fichas técnicas oficiales). Cada precio dice la fecha de su lista.
+</div>
+</details>
+    Fecha de consulta: <span id="fechaConsulta">5 de octubre de 2026</span> (última verificación de las fichas técnicas oficiales). Cada precio dice la fecha de su lista.
 </footer>
 
 <script>
@@ -2777,6 +2785,9 @@ function simColumna(nombre){
   const f = DATA.flatMap(cat => cat[1]).find(r => r[0] === nombre);
   return CARS.map((_, i) => f ? pctlValor(f[i + 1], nombre) : null);
 }
+// Un cambio de precio de menos del 1% no se informa (2026-10-18, pedido del usuario): ni en Seguir un
+// auto, ni como titular del historial, ni como rebaja. Lo mismo hace herramientas-paginas.py en el RSS.
+const CAMBIO_MIN = 0.01, cambioChico = (antes, ahora) => Math.abs(ahora - antes) < CAMBIO_MIN * antes;
 const SIM_PRECIO = simColumna('Precio de lista (versión tope de gama de la tabla)');
 const SIM_ASIENTOS = simColumna('Número de asientos');
 const SIM_AUTONOMIA = simColumna('Autonomía eléctrica (km)');
@@ -4116,7 +4127,7 @@ function rkPercentiles(k, lista){
 // que es la moneda de la lista: nunca se convierte. Lee concesionarios.json recién acá.
 async function rkRenderRebajas(cand){
   document.getElementById('rkTitulo').textContent = 'Rebajas publicadas';
-  document.getElementById('rkSub').innerHTML = rkEsc('Mayor es mejor. El precio más bajo que publican la marca o sus concesionarios para la misma versión de la tabla, contra su precio de lista. Solo en dólares.');
+  document.getElementById('rkSub').innerHTML = rkEsc('Mayor es mejor. El precio más bajo que publican la marca o sus concesionarios para la misma versión de la tabla, contra su precio de lista. Solo en dólares y desde 1% de rebaja.');
   document.getElementById('rkCobertura').innerHTML = ''; document.getElementById('rkGrafico').innerHTML = '';
   const lista = document.getElementById('rkLista');
   lista.innerHTML = '<li class="rk-vacio">Cargando las promociones…</li>';
@@ -4130,7 +4141,7 @@ async function rkRenderRebajas(cand){
     const fil = promoDelAuto(slug), marca = CARS[i].brand;
     const promos = ((d.marcas[marca] || {}).promos || []).filter(fil).map(p => ({ p, de: 'la marca' }))
       .concat(...(d.concesionarios || []).filter(c => c.marcas.includes(marca)).map(c => (c.promos || []).filter(fil).map(p => ({ p, de: c.nombre }))));
-    const usd = promos.filter(x => x.p.precio && x.p.precio.moneda === 'USD' && x.p.precio.monto < lp && promoComparable(x.p, i));
+    const usd = promos.filter(x => x.p.precio && x.p.precio.moneda === 'USD' && x.p.precio.monto < lp && !cambioChico(lp, x.p.precio.monto) && promoComparable(x.p, i));
     if (!usd.length) return;
     const mejor = usd.reduce((m, x) => x.p.precio.monto < m.p.precio.monto ? x : m);
     const pct = Math.round(1000 * (lp - mejor.p.precio.monto) / lp) / 10;
@@ -4140,7 +4151,7 @@ async function rkRenderRebajas(cand){
   const max = ok.length ? ok[0].n : 0;
   lista.innerHTML = ok.map(r => rkItemHTML(r, max, '−' + r.n.toLocaleString('es-AR') + '<small>%</small>',
     '<div class="rk-orig" data-tip="' + rkEsc(r.texto) + '">USD ' + r.precio.toLocaleString('es-AR') + ' (lista USD ' + r.lp.toLocaleString('es-AR') + '), lo publica ' + rkEsc(r.de) + '</div>', cand.mios)).join('') ||
-    '<li class="rk-vacio">Ninguno de estos autos tiene un precio publicado por debajo de su lista.</li>';
+    '<li class="rk-vacio">Ninguno de estos autos tiene un precio publicado al menos 1% por debajo de su lista.</li>';
   document.getElementById('rkResto').innerHTML = '';
 }
 function rkRenderMedida(cand){
@@ -5277,7 +5288,7 @@ function cambiosSeguidos(){
   const usd = n => 'USD ' + n.toLocaleString('es-AR');
   return idxSeguidos().map(i => {
     const antes = seguidos[SLUG_AUTO[i]] || {}, ahora = estadoSeguido(i), txt = [];
-    if (antes.p != null && ahora.p != null && antes.p !== ahora.p) txt.push((ahora.p < antes.p ? 'bajó' : 'subió') + ' de ' + usd(antes.p) + ' a ' + usd(ahora.p));
+    if (antes.p != null && ahora.p != null && !cambioChico(antes.p, ahora.p)) txt.push((ahora.p < antes.p ? 'bajó' : 'subió') + ' de ' + usd(antes.p) + ' a ' + usd(ahora.p));
     else if (antes.p == null && ahora.p != null) txt.push('ya tiene precio: ' + usd(ahora.p));
     if (antes.s && antes.s !== ahora.s) txt.push('ahora está: ' + (STATUS_LABELS[ahora.s] || ahora.s).toLowerCase());
     return txt.length ? { i, txt: txt.join(', ') } : null;
@@ -5334,7 +5345,7 @@ function historialHTML(slug){
   serie.forEach((x, k) => { path += (k ? 'H' + X(x[0]).toFixed(1) + 'V' : 'M' + X(x[0]).toFixed(1) + ' ') + Y(x[1]).toFixed(1); });
   path += 'H' + (W - 6);
   return '<section class="ficha-hist"><h3>Historial del precio</h3>' +
-    '<p class="ficha-hist-res ' + (d < 0 ? 'baja' : 'sube') + '">' + (d < 0 ? 'Bajó ' : 'Subió ') + usd(Math.abs(d)) + ' (' + (d > 0 ? '+' : '') + pct + '%) desde el ' + fecha(serie[0][0]) + '</p>' +
+    (cambioChico(serie[0][1], ult[1]) ? '' : '<p class="ficha-hist-res ' + (d < 0 ? 'baja' : 'sube') + '">' + (d < 0 ? 'Bajó ' : 'Subió ') + usd(Math.abs(d)) + ' (' + (d > 0 ? '+' : '') + pct + '%) desde el ' + fecha(serie[0][0]) + '</p>') +
     '<svg class="ficha-hist-svg" viewBox="0 0 ' + W + ' ' + Hh + '" role="img" aria-label="Precio de lista: ' + serie.map(x => usd(x[1]) + ' el ' + fecha(x[0])).join(', ') + '"><path d="' + path + '"/>' +
       serie.map(x => '<circle cx="' + X(x[0]).toFixed(1) + '" cy="' + Y(x[1]).toFixed(1) + '" r="3"><title>' + usd(x[1]) + ', ' + fecha(x[0]) + '</title></circle>').join('') + '</svg>' +
     '<ol class="ficha-hist-lista">' + serie.map(x => '<li><span>' + fecha(x[0]) + '</span><b>' + usd(x[1]) + '</b><a href="' + rkEsc(x[3]) + '" target="_blank" rel="noopener">fuente</a></li>').join('') + '</ol>' +
@@ -5889,7 +5900,8 @@ function evaluarOferta(i, mejor, marcaPromos, conKm){
   const p = precios.reduce((m, q) => q.precio.monto < m.precio.monto ? q : m).precio;
   const dif = lista - p.monto, pct = Math.round(1000 * dif / lista) / 10;
   const partes = ['Para la versión de la tabla, el precio más bajo publicado es ' + fmtMonto(p) + ': ' +
-    (dif > 0 ? fmtMonto({ moneda: 'USD', monto: dif }) + ' menos que la lista (−' + pct.toLocaleString('es-AR') + '%)'
+    (dif !== 0 && cambioChico(lista, p.monto) ? 'prácticamente igual a la lista (menos de 1% de diferencia)'
+      : dif > 0 ? fmtMonto({ moneda: 'USD', monto: dif }) + ' menos que la lista (−' + pct.toLocaleString('es-AR') + '%)'
       : dif < 0 ? fmtMonto({ moneda: 'USD', monto: -dif }) + ' más que la lista' : 'igual a la lista')];
   if (precios.length > 1) partes.push('hay ' + precios.length + ' precios publicados para esta versión');
   const txt = partes.join('; ');

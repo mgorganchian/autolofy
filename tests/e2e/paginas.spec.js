@@ -27,6 +27,26 @@ test('la página de un auto tiene título, descripción, foto, datos estructurad
   expect(await page.locator('figure img').evaluate(i => i.complete && i.naturalWidth > 0)).toBe(true);
 });
 
+// Un cambio de precio de menos del 1% no se informa nunca (2026-10-18, pedido del usuario): ni como
+// baja ni como suba de la lista, ni como oferta a menos del 1% de la lista.
+test('el RSS y Novedades no informan cambios de precio de menos del 1%', async ({}, info) => {
+  test.skip(info.project.name !== 'escritorio', 'no depende del viewport');
+  const fs = require('fs');
+  const archivos = fs.readdirSync(path.join(RAIZ, 'autos')).filter(f => f.endsWith('.xml')).map(f => path.join(RAIZ, 'autos', f))
+    .concat([path.join(RAIZ, 'novedades.xml'), path.join(RAIZ, 'novedades.html')]);
+  const num = t => +t.replace(/\./g, '');
+  const chicos = [];
+  for (const f of archivos) {
+    const t = fs.readFileSync(f, 'utf8');
+    for (const m of t.matchAll(/(?:Bajó|Subió) el [^:<]+: USD ([\d.]+) → USD ([\d.]+)/g)) {
+      const a = num(m[1]), b = num(m[2]);
+      if (Math.abs(b - a) < 0.01 * a) chicos.push(path.basename(f) + ': ' + m[0]);
+    }
+  }
+  expect(chicos).toEqual([]);
+  expect(fs.readFileSync(path.join(RAIZ, 'autos/changan-cs55-plus.xml'), 'utf8')).not.toContain('USD 32.000 → USD 31.990');
+});
+
 test('cada auto tiene su RSS válido, y su página lo anuncia', async ({ page }, info) => {
   test.skip(info.project.name !== 'escritorio', 'no depende del viewport');
   const fs = require('fs');

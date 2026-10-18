@@ -515,6 +515,33 @@ test('tamaño a escala y fotos lado a lado al comparar; los todoterreno se recon
   await expect(esc).toHaveAttribute('open', '');
 });
 
+test('seguir un auto no avisa cambios de precio de menos del 1%, y el historial no los titula', async ({ page }) => {
+  await abrir(page, '?auto=song-pro');
+  await page.locator('#fichaSeguir').click();
+  await page.evaluate(() => {
+    const s = JSON.parse(localStorage.getItem('seguidos'));
+    s['song-pro'].p += 100;   // USD 100 sobre unos USD 37.000: menos del 1%
+    localStorage.setItem('seguidos', JSON.stringify(s));
+  });
+  await abrir(page);
+  await expect(page.locator('#avisoSeguidos')).toBeHidden();
+  // El CS55 Plus pasó de USD 32.000 a USD 31.990: la lista queda en el historial, sin titular de baja.
+  await abrir(page, '?auto=changan-cs55-plus');
+  const hist = page.locator('.ficha-hist');
+  await expect(hist.locator('.ficha-hist-lista li')).toHaveCount(2);
+  await expect(hist.locator('.ficha-hist-res')).toHaveCount(0);
+});
+
+test('las notas del pie están plegadas y la fecha de consulta queda a la vista', async ({ page }) => {
+  await abrir(page);
+  const notas = page.locator('footer details.pie-notas');
+  await expect(notas).not.toHaveAttribute('open', '');
+  await expect(notas.locator('.pie-notas-txt')).toBeHidden();
+  await expect(page.locator('#fechaConsulta')).toBeVisible();
+  await notas.locator('summary').click();
+  await expect(notas.locator('.pie-notas-txt')).toBeVisible();
+});
+
 test('seguir un auto: se guarda, avisa al volver si cambió el precio o la disponibilidad, y compara los que sigo', async ({ page }) => {
   await abrir(page, '?auto=song-pro');
   await page.locator('#fichaSeguir').click();
