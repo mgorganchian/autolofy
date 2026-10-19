@@ -382,6 +382,14 @@ sí quedan en inglés, porque no muestran la palabra. Se coló con `YES` dos vec
   la misma versión; una corrección reemplaza la última entrada. Lo escribe la rutina (tarea D).
 - **Novedades** (`/novedades` y `/novedades.xml`): las arma `herramientas-paginas.py` con el
   historial, las promos vigentes y `novedades.json` (solo hitos del sitio). No editar a mano.
+- **Un cambio de precio de menos del 1% no se informa nunca** (pedido del usuario, 2026-10-18: «Bajó el
+  CS55 Plus: USD 32.000 → USD 31.990» no es una novedad): ni como baja ni como suba. `CAMBIO_MIN` en
+  `herramientas-paginas.py` (Novedades y RSS: cambios de lista y promos con precio a menos del 1% de la
+  lista, incluidas las publicadas al precio de lista exacto) y `cambioChico` en `index.html` (Seguir un
+  auto, titular del historial, Rebajas publicadas y Dónde comprarlo). El historial guarda igual cada
+  lista oficial: lo que no se hace es anunciarla. `paginas.spec.js` y `mejoras.spec.js` lo cubren.
+- **Las notas del pie van plegadas** en «Notas sobre los datos» (`details.pie-notas`, 2026-10-18, pedido
+  del usuario: la página queda más limpia). La Fecha de consulta queda afuera, a la vista.
 - **Grupos y Concesionarios también son vistas de la página** (2026-10-11, pedido del usuario), no
   ventanas encima: en el iPhone, como ventanas, la página de atrás se arrastraba y el final quedaba
   bajo la barra del navegador (`max-height: 94vh`). `mostrarVista('grupos'|'conces')`, sus botones
