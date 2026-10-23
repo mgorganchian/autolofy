@@ -798,3 +798,22 @@ ante la duda sobre un dato, no cargarlo. Una corrida sin cambios es un resultado
 comillas dobles, backticks ni `$` (usar «»). Unas comillas en la tarea de videos cortaban la cadena
 desde el 2026-10-09 y a Claude no le llegaban las tareas B a H (arreglado el 2026-10-11 antes de que
 corriera). Después de tocar el script, `zsh -n` no alcanza: evaluar el bloque y contar las tareas.
+
+---
+
+## Agent skills
+
+Configuración para las skills de Matt Pocock (`mattpocock/skills`), armada con
+`/setup-matt-pocock-skills` el 2026-10-23.
+
+### Issue tracker
+
+Los issues viven en GitHub Issues de `mgorganchian/autoschinos` y se manejan con `gh`. See `docs/agents/issue-tracker.md`.
+
+### Triage labels
+
+Las cinco etiquetas por defecto (`needs-triage`, `needs-info`, `ready-for-agent`, `ready-for-human`, `wontfix`). See `docs/agents/triage-labels.md`.
+
+### Domain docs
+
+Single-context: un `GLOSSARY.md` y `docs/adr/` en la raíz, que se crean recién cuando hacen falta. See `docs/agents/domain.md`.
