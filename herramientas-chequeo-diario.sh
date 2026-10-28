@@ -31,7 +31,7 @@ case "${1:-}" in
 esac
 REPO="/Users/mgorganchian/Projects/autoschinos"
 LOG="$REPO/.chequeo-diario.log"
-SITIO="https://autoschinos-ar.vercel.app/"
+SITIO="https://autolofy.vercel.app/"
 UA='autoschinos-comparativo/1.0 (https://github.com/mgorganchian/autoschinos)'
 CLAUDE="$(command -v claude || echo /Users/mgorganchian/.nvm/versions/node/v24.14.0/bin/claude)"
 

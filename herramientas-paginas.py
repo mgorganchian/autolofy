@@ -20,7 +20,7 @@ import re
 import sys
 
 RAIZ = os.path.dirname(os.path.abspath(__file__))
-SITIO = 'https://autoschinos-ar.vercel.app'
+SITIO = 'https://autolofy.vercel.app'
 # El formulario de sugerencias (el mismo que FORM_SUGERENCIAS del script; entry.1360569446 = Auto).
 FORM_SUGERENCIAS = 'https://docs.google.com/forms/d/e/1FAIpQLSdytJoPO5w4I-AjJiVyj_wwnPmWQFWs9k3sfjOMgyMXEkgKyQ/viewform'
 DIR = os.path.join(RAIZ, 'autos')
