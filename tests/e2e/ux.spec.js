@@ -476,3 +476,26 @@ test('celular apaisado: con pocos autos las columnas llenan la pantalla, con tod
   const todos = await anchos();
   expect(Math.round(todos[1])).toBe(144);
 });
+
+test('girar el celular de vertical a apaisado y de vuelta deja los mismos anchos y el mismo encabezado', async ({ page }) => {
+  // Pedido del usuario (2026-10-28): al volver a vertical la tabla no recuperaba los anchos de antes.
+  const medir = () => page.evaluate(() => ({
+    anchos: [...document.querySelectorAll('#mainTable tbody tr:not(.cat-row)')[0].querySelectorAll('td:not(.col-hidden)')]
+      .map(td => Math.round(td.getBoundingClientRect().width)),
+    encabezado: [...document.querySelectorAll('#theadTable th:not(.col-hidden)')].map(th => Math.round(th.getBoundingClientRect().width)),
+    top: document.getElementById('theadWrap').style.top,
+  }));
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.goto('/index.html?autos=baic-x55-ii-hybrid,ford-territory-hibrida');
+  await page.waitForTimeout(800);
+  const vertical = await medir();
+  expect(vertical.anchos).toEqual(vertical.encabezado);
+  await page.setViewportSize({ width: 844, height: 390 });
+  await page.waitForTimeout(800);
+  const apaisado = await medir();
+  expect(apaisado.anchos).toEqual(apaisado.encabezado);
+  expect(apaisado.anchos.reduce((a, b) => a + b, 0)).toBeGreaterThan(844 - 16);
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.waitForTimeout(800);
+  expect(await medir()).toEqual(vertical);
+});

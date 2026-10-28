@@ -155,6 +155,8 @@ sí quedan en inglés, porque no muestran la palabra. Se coló con `YES` dos vec
   En el **celular apaisado** (alto ≤ 500 px), con 4 autos o menos las columnas se estiran hasta
   llenar la pantalla (`pocos-autos` y `--k-vis`, que pone `applyColumnVisibility`; pedido del
   2026-10-28: con 2 autos quedaba media pantalla en blanco). Con 5 o más, el ancho de siempre.
+  Al girar, `reacomodarAlGirar` vuelve a medir el ancho de las tablas y el encabezado compacto
+  cuando Safari terminó de acomodar la página (a los 60, 300 y 700 ms): avisa el giro antes.
 - **Nombres cortos de características** (`ETIQUETA_CORTA`): la columna muestra el corto y
   el tooltip, el nombre completo más la explicación de `GLOSSARY`. **El nombre de `DATA`
   sigue siendo la clave de todo**: el código busca filas por `tr.dataset.nombre`, nunca
