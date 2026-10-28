@@ -1,6 +1,11 @@
 # autoschinos — reglas del proyecto
 
-Comparativo de **124 autos** chinos/electrificados vendidos (o por llegar) en Argentina.
+Comparativo de **133 autos** chinos/electrificados vendidos (o por llegar) en Argentina.
+Desde el 2026-10-28 también entran autos de marcas no chinas (decisión de Mati y Sebastián del
+27/10: los 0 km principales, los eléctricos y los híbridos); los primeros fueron los 9 rivales
+híbridos del BAIC X55 II Hybrid (Ford, Chevrolet, Toyota, Lexus, Nissan, Renault, Subaru y
+Hyundai). Sus marcas entran sin red de concesionarios cargada (`aviso` en `concesionarios.json`),
+y casi todas publican el precio en pesos: no se convierte.
 Todo vive en un único `index.html` autocontenido: sin CSS, JS ni imágenes externas.
 Ese principio es deliberado — **no agregar dependencias externas ni partir el
 archivo.** Las únicas excepciones, servidas junto a la página y bajadas cuando hacen
@@ -170,7 +175,7 @@ sí quedan en inglés, porque no muestran la palabra. Se coló con `YES` dos vec
   nueva, el indicador **no** aparece salvo que se la sume a `PCTL_DIR`.
   **Barras contra los de su tamaño** (2026-10-11, desplegable `#barrasSel`, guardado en el
   navegador): el mismo percentil pero entre los autos del mismo `size` (`pctlFilaSeg`); con menos de
-  5 autos del segmento con el dato no hay barra, y sin segmento tampoco. Solo en la vista con los 124:
+  5 autos del segmento con el dato no hay barra, y sin segmento tampoco. Solo en la vista con todos los autos:
   con cualquier subconjunto las barras ya se recalibran y el desplegable se esconde.
   Tres vetos que se ganaron a golpes, en `pctlValor()`: `No aplica (100% eléctrico)`
   traía un **100** que rankeaba a nueve eléctricos como los de peor consumo; el baúl

@@ -67,7 +67,9 @@ POR_CORRIDA = 14     # candidatas por auto y por corrida: después se elige una 
 # OJO: SWM Tiger EDi es la versión electrificada; el G03F de la tabla es naftero.
 ALIAS = {'Skywell BE11': 'Skyworth EV6', 'Omoda C5': 'Omoda 5', 'Ora 03': 'GWM Ora 03',
          'Tank 300': 'GWM Tank 300', 'Maxus eTerron': 'Maxus eTerron 9',
-         'SWM G03F': 'SWM Tiger', 'SWM G03F EDi': 'SWM Tiger EDi'}   # SWM Tiger = G03F (mismo auto, nombre chino; ver fichas-fuentes.tsv)
+         'SWM G03F': 'SWM Tiger', 'SWM G03F EDi': 'SWM Tiger EDi',
+         'Toyota Corolla Cross SEG HEV': 'Toyota Corolla Cross Hybrid',
+         'Toyota Yaris Cross SEG HEV': 'Toyota Yaris Cross Hybrid'}   # SWM Tiger = G03F (mismo auto, nombre chino; ver fichas-fuentes.tsv)
 INTERIOR = re.compile(r'interior|dashboard|cockpit|innenraum|cabin|interieur', re.I)
 # Detalles que no sirven como foto del auto.
 DETALLE = re.compile(r'\bengine\b|motor bay|badge|emblem|logo|wheel detail|taillight|headlamp|'
