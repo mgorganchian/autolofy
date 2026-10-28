@@ -279,7 +279,7 @@ test('respaldo de fábrica: la fábrica en el Mercosur tiene fuente, se ve en la
   await page.goto('/index.html?tabla');
   await expect(page.locator(FILAS_DATOS)).toHaveCount(N_FILAS);
   const fabs = await page.evaluate(() => Object.entries(MARCAS_INFO).filter(([, m]) => m.fabrica_mercosur).map(([k, m]) => [k, m.fabrica_mercosur]));
-  expect(fabs.map(([k]) => k).sort()).toEqual(['BYD', 'Changan', 'Chery', 'Chevrolet', 'Ford', 'Haval', 'Hyundai', 'Nissan', 'Ora', 'Poer', 'Renault', 'Tank']);
+  expect(fabs.map(([k]) => k).sort()).toEqual(['BYD', 'Changan', 'Chery', 'Chevrolet', 'Ford', 'Haval', 'Hyundai', 'Nissan', 'Ora', 'Poer', 'Renault', 'Tank', 'Toyota']);
   for (const [k, f] of fabs){
     expect(f.fuentes.length, k).toBeGreaterThan(0);
     for (const u of f.fuentes) expect(u, k).toMatch(/^https:\/\//);
