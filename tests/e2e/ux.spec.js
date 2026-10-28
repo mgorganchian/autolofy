@@ -458,3 +458,21 @@ test('la página nunca es más ancha que la pantalla (la tabla scrollea adentro)
   const r = await page.evaluate(() => ({ doc: document.documentElement.scrollWidth, vw: innerWidth }));
   expect(r.doc).toBeLessThanOrEqual(r.vw);
 });
+
+test('celular apaisado: con pocos autos las columnas llenan la pantalla, con todos no cambian', async ({ page }) => {
+  // Pedido del usuario (2026-10-28): al girar el celular con 2 autos, las columnas seguían en
+  // un sexto de la pantalla y quedaba media pantalla en blanco.
+  await page.setViewportSize({ width: 844, height: 390 });
+  await page.goto('/index.html?autos=baic-x55-ii-hybrid,ford-territory-hibrida');
+  const anchos = () => page.evaluate(() => {
+    const fila = document.querySelector('#mainTable tbody tr:not(.cat-row)');
+    return [...fila.querySelectorAll('td:not(.col-hidden)')].map(td => td.getBoundingClientRect().width);
+  });
+  const dos = await anchos();
+  expect(dos).toHaveLength(3);
+  expect(dos.reduce((a, b) => a + b, 0)).toBeGreaterThan(844 - 16);
+  expect(dos.reduce((a, b) => a + b, 0)).toBeLessThanOrEqual(844);
+  await page.goto('/index.html?tabla');
+  const todos = await anchos();
+  expect(Math.round(todos[1])).toBe(144);
+});

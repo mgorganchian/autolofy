@@ -152,6 +152,9 @@ sí quedan en inglés, porque no muestran la palabra. Se coló con `YES` dos vec
   cada columna mide un sexto del ancho, y nunca menos de 144 px. La miniatura embebida
   mide 300 px; cuando la foto se dibuja con más píxeles, el script la cambia por la
   portada de `fotos/` (900 px) al entrar en pantalla.
+  En el **celular apaisado** (alto ≤ 500 px), con 4 autos o menos las columnas se estiran hasta
+  llenar la pantalla (`pocos-autos` y `--k-vis`, que pone `applyColumnVisibility`; pedido del
+  2026-10-28: con 2 autos quedaba media pantalla en blanco). Con 5 o más, el ancho de siempre.
 - **Nombres cortos de características** (`ETIQUETA_CORTA`): la columna muestra el corto y
   el tooltip, el nombre completo más la explicación de `GLOSSARY`. **El nombre de `DATA`
   sigue siendo la clave de todo**: el código busca filas por `tr.dataset.nombre`, nunca
