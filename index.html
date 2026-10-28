@@ -4391,6 +4391,26 @@ function compactarThead(){
 }
 window.addEventListener('resize', () => compactarThead());
 window.addEventListener('load', () => compactarThead());
+// Al girar el celular (2026-10-28, pedido del usuario): Safari avisa el giro antes de terminar de
+// reacomodar la página, así que lo que se mide en ese momento (el alto de las fotos, que en apaisado
+// están ocultas, y el ancho de la tabla en vw) queda con los valores de la otra orientación. Se vuelve
+// a medir cuando la página ya se acomodó: se rehace el ancho de las dos tablas (forzando que el
+// navegador lo recalcule) y la compactación del encabezado, sin perder el scroll horizontal.
+function reacomodarAlGirar(){
+  for (const t of [document.getElementById('theadTable'), document.getElementById('mainTable')]){
+    const w = t.style.width;
+    t.style.width = '';
+    void t.offsetWidth;
+    t.style.width = w;
+  }
+  const sl = tbodyWrap.scrollLeft;
+  compactarThead();
+  theadWrap.scrollLeft = tbodyWrap.scrollLeft = sl;
+}
+function alGirar(){ [60, 300, 700].forEach(ms => setTimeout(reacomodarAlGirar, ms)); }
+const MQ_VERTICAL = window.matchMedia('(orientation: portrait)');
+if (MQ_VERTICAL.addEventListener) MQ_VERTICAL.addEventListener('change', alGirar);
+window.addEventListener('orientationchange', alGirar);
 function mostrarVista(v){
   document.documentElement.classList.remove('arranca-elegir');   // de acá en más manda el script
   const rk = v === 'ranking', el = v === 'elegir', gr = v === 'grupos', cc = v === 'conces', tabla = !rk && !el && !gr && !cc;
