@@ -13,7 +13,7 @@
 <meta property="og:site_name" content="Autos chinos en Argentina">
 <meta property="og:title" content="Comparativo de autos chinos en Argentina">
 <meta property="og:description" content="Más de 100 autos con sus fichas técnicas oficiales: precio, potencia, autonomía, consumo, garantía y ranking.">
-<meta property="og:image" content="https://autoschinos-ar.vercel.app/og.jpg">
+<meta property="og:image" content="https://autolofy.vercel.app/og.jpg">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
 <meta name="twitter:card" content="summary_large_image">
@@ -5996,7 +5996,7 @@ async function pintarDondeVerlo(i){
   const orden = (a, b) => (a.km == null) - (b.km == null) || (a.km - b.km) || PROV_ORDEN(a.c.provincia, b.c.provincia) || PROV_ORDEN(a.c.nombre, b.c.nombre);
   const visibles = conKm.filter(x => miUbic || !prov || x.c.provincia === prov).sort(orden);
   const mejor = mejorOferta(marcaPromos, conKm.filter(x => x.promos.length));
-  const cotBase = { auto: CARS[i].name, marca, link: 'https://autoschinos-ar.vercel.app/autos/' + slug };
+  const cotBase = { auto: CARS[i].name, marca, link: 'https://autolofy.vercel.app/autos/' + slug };
   const ofertaTxt = p => p ? (PROMO_TIPO[p.tipo] || 'Promoción') + ' ' + (p.precio ? fmtMonto(p.precio) : p.descuento ? '−' + fmtMonto(p.descuento) : '') : '';
   let ofertaHTML = '';
   if (mejor){

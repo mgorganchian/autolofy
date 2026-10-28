@@ -17,7 +17,7 @@ test('la página de un auto tiene título, descripción, foto, datos estructurad
   await page.goto('/autos/chery-tiggo-7-pro-phev.html');
   await expect(page).toHaveTitle(/^Chery Tiggo 7 Pro PHEV: precio, ficha técnica/);
   await expect(page.locator('meta[name="description"]')).toHaveAttribute('content', /híbrido enchufable/);
-  await expect(page.locator('link[rel="canonical"]')).toHaveAttribute('href', 'https://autoschinos-ar.vercel.app/autos/chery-tiggo-7-pro-phev');
+  await expect(page.locator('link[rel="canonical"]')).toHaveAttribute('href', 'https://autolofy.vercel.app/autos/chery-tiggo-7-pro-phev');
   const ld = JSON.parse(await page.locator('script[type="application/ld+json"]').textContent());
   expect(ld['@type']).toBe('Car');
   expect(ld.brand.name).toBe('Chery');
@@ -72,7 +72,7 @@ test('comparaciones "X vs Y": están en el sitemap, muestran las diferencias y l
   const [, a, b] = urls.find(u => u[1] === 'baic-bj40-pro' && u[2] === 'tank-300') || urls[0];
   await page.goto(`/comparar/${a}-vs-${b}.html`);
   await expect(page.locator('h1')).toContainText(' vs ');
-  await expect(page.locator('link[rel="canonical"]')).toHaveAttribute('href', `https://autoschinos-ar.vercel.app/comparar/${a}-vs-${b}`);
+  await expect(page.locator('link[rel="canonical"]')).toHaveAttribute('href', `https://autolofy.vercel.app/comparar/${a}-vs-${b}`);
   await expect(page.locator('a.cta')).toHaveAttribute('href', `/?autos=${a},${b}`);
   expect(await page.locator('tbody tr:not(.cat)').count()).toBeGreaterThan(10);
   // Solo filas distintas: en ninguna los dos autos dicen lo mismo.

@@ -754,7 +754,7 @@ suspensión, multimedia, luces y climatización, que las notas nunca publican.
 
 ## Deploy
 
-El sitio vive en **Vercel**: `https://autoschinos-ar.vercel.app/`, y publica solo con
+El sitio vive en **Vercel**: `https://autolofy.vercel.app/`, y publica solo con
 cada push a `main`, en segundos. Netlify quedó atrás — el `netlify.toml` sigue en el
 repo pero no cumple ninguna función.
 
