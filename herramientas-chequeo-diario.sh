@@ -265,6 +265,10 @@ Terminá con un resumen de tres líneas de lo que hiciste."
 
 ANTES=$(git rev-parse HEAD)
 SALIDA=$(mktemp)
+# Pasó el 2026-10-26: con una búsqueda de fotos en segundo plano, claude -p cortó la
+# pasada a los 600 segundos («Background tasks still running after 600s») y salió con
+# código 0, dejando cambios sin commitear. Con 0 espera a que terminen.
+export CLAUDE_CODE_PRINT_BG_WAIT_CEILING_MS=0
 "$CLAUDE" -p "$PROMPT" \
   --allowed-tools Bash Read Write Edit Glob Grep WebFetch WebSearch \
   > "$SALIDA" 2>&1
@@ -279,8 +283,15 @@ if (( COD != 0 )); then
   else
     avisar "Claude terminó con error $COD y la actualización semanal quedó incompleta. Mirá .chequeo-diario.log"
   fi
+elif grep -q 'Background tasks still running' "$SALIDA"; then
+  avisar "Claude se cortó por tareas en segundo plano y la actualización semanal quedó incompleta. Mirá .chequeo-diario.log"
 fi
 rm -f "$SALIDA"
+# Lo que Claude no commiteó no se publica: avisar siempre, no solo cuando las fichas
+# están al día (el 2026-10-26 quedaron precios sin commitear y nadie se enteró).
+if [[ -n "$(git status --porcelain)" ]]; then
+  avisar "Claude dejó cambios sin commitear en la rama $RAMA: no se publican. Revisar a mano."
+fi
 
 # ---------- 3. la fecha de consulta ----------
 # Se actualiza solo si es cierta: todas las fichas se pudieron verificar, y las que
@@ -294,7 +305,7 @@ HOY=""
 if (( ! FICHAS_AL_DIA )); then
   log "no actualizo la fecha de consulta: hay fichas sin verificar"
 elif [[ -n "$(git status --porcelain)" ]]; then
-  avisar "Quedaron cambios sin commitear después de la actualización: no toqué la fecha. Revisar a mano."
+  log "quedaron cambios sin commitear: no toco la fecha de consulta"
 else
   HOY=$(python3 -c 'import datetime as d; t=d.date.today(); m="enero febrero marzo abril mayo junio julio agosto septiembre octubre noviembre diciembre".split(); print(f"{t.day} de {m[t.month-1]} de {t.year}")')
   if python3 - "$HOY" <<'PY'

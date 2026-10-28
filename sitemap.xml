@@ -135,10 +135,12 @@
   <url><loc>https://autoschinos-ar.vercel.app/comparar/arcfox-t5-vs-haval-h6-4wd</loc></url>
   <url><loc>https://autoschinos-ar.vercel.app/comparar/atto-2-dm-i-vs-lynk-co-06</loc></url>
   <url><loc>https://autoschinos-ar.vercel.app/comparar/atto-2-dm-i-vs-soueast-s06</loc></url>
+  <url><loc>https://autoschinos-ar.vercel.app/comparar/baic-bj30-4x2-vs-baic-x55-ii-hybrid</loc></url>
   <url><loc>https://autoschinos-ar.vercel.app/comparar/baic-bj30-4x2-vs-dongfeng-huge</loc></url>
   <url><loc>https://autoschinos-ar.vercel.app/comparar/baic-bj30-4x2-vs-haval-h6-hev</loc></url>
   <url><loc>https://autoschinos-ar.vercel.app/comparar/baic-bj30-4x2-vs-haval-h7-hev</loc></url>
   <url><loc>https://autoschinos-ar.vercel.app/comparar/baic-bj30-4x4-vs-baic-x55-plus</loc></url>
+  <url><loc>https://autoschinos-ar.vercel.app/comparar/baic-bj30-4x4-vs-chery-tiggo-8-pro</loc></url>
   <url><loc>https://autoschinos-ar.vercel.app/comparar/baic-bj30-4x4-vs-forthing-u-tour</loc></url>
   <url><loc>https://autoschinos-ar.vercel.app/comparar/baic-bj40-plus-vs-jetour-t2</loc></url>
   <url><loc>https://autoschinos-ar.vercel.app/comparar/baic-bj40-plus-vs-jetour-t2-i-dm</loc></url>
@@ -155,8 +157,6 @@
   <url><loc>https://autoschinos-ar.vercel.app/comparar/baic-x55-ii-vs-forthing-t5-evo</loc></url>
   <url><loc>https://autoschinos-ar.vercel.app/comparar/baic-x55-ii-vs-gac-gs3-emzoom</loc></url>
   <url><loc>https://autoschinos-ar.vercel.app/comparar/baic-x55-ii-vs-jetour-dashing</loc></url>
-  <url><loc>https://autoschinos-ar.vercel.app/comparar/baic-x55-ii-vs-kaiyi-x7</loc></url>
-  <url><loc>https://autoschinos-ar.vercel.app/comparar/baic-x55-ii-hybrid-vs-forthing-t5-hev</loc></url>
   <url><loc>https://autoschinos-ar.vercel.app/comparar/baic-x55-ii-hybrid-vs-haval-h6-hev</loc></url>
   <url><loc>https://autoschinos-ar.vercel.app/comparar/baic-x55-plus-vs-chery-tiggo-8-pro</loc></url>
   <url><loc>https://autoschinos-ar.vercel.app/comparar/baic-x55-plus-vs-haval-h6-4wd</loc></url>
@@ -184,11 +184,11 @@
   <url><loc>https://autoschinos-ar.vercel.app/comparar/chery-tiggo-7-pro-mhev-vs-gwm-ora-5-hev</loc></url>
   <url><loc>https://autoschinos-ar.vercel.app/comparar/chery-tiggo-7-pro-mhev-vs-mg-zs-hev</loc></url>
   <url><loc>https://autoschinos-ar.vercel.app/comparar/chery-tiggo-7-pro-phev-vs-forthing-friday-reev</loc></url>
+  <url><loc>https://autoschinos-ar.vercel.app/comparar/chery-tiggo-7-pro-phev-vs-jac-js6-phev</loc></url>
   <url><loc>https://autoschinos-ar.vercel.app/comparar/chery-tiggo-7-pro-phev-vs-lynk-co-01</loc></url>
   <url><loc>https://autoschinos-ar.vercel.app/comparar/chery-tiggo-8-pro-vs-haval-h6-4wd</loc></url>
   <url><loc>https://autoschinos-ar.vercel.app/comparar/chery-tiggo-8-pro-vs-jetour-t1</loc></url>
   <url><loc>https://autoschinos-ar.vercel.app/comparar/deepal-s05-vs-forthing-friday-reev</loc></url>
-  <url><loc>https://autoschinos-ar.vercel.app/comparar/deepal-s05-vs-geely-ex5</loc></url>
   <url><loc>https://autoschinos-ar.vercel.app/comparar/deepal-s05-vs-soueast-s06</loc></url>
   <url><loc>https://autoschinos-ar.vercel.app/comparar/dfsk-e5-plus-vs-kaiyi-x7-hybrid</loc></url>
   <url><loc>https://autoschinos-ar.vercel.app/comparar/dfsk-e5-plus-vs-leapmotor-c10</loc></url>
@@ -205,17 +205,18 @@
   <url><loc>https://autoschinos-ar.vercel.app/comparar/dongfeng-huge-vs-gac-emkoo-hev</loc></url>
   <url><loc>https://autoschinos-ar.vercel.app/comparar/dongfeng-mage-vs-gac-emkoo-hev</loc></url>
   <url><loc>https://autoschinos-ar.vercel.app/comparar/dongfeng-mage-vs-gwm-ora-5-hev</loc></url>
-  <url><loc>https://autoschinos-ar.vercel.app/comparar/forthing-friday-reev-vs-jac-js6-phev</loc></url>
+  <url><loc>https://autoschinos-ar.vercel.app/comparar/forthing-friday-reev-vs-geely-ex5</loc></url>
   <url><loc>https://autoschinos-ar.vercel.app/comparar/forthing-friday-reev-vs-soueast-s06</loc></url>
+  <url><loc>https://autoschinos-ar.vercel.app/comparar/forthing-t5-evo-vs-gac-gs3-emzoom</loc></url>
   <url><loc>https://autoschinos-ar.vercel.app/comparar/forthing-t5-evo-vs-jetour-dashing</loc></url>
-  <url><loc>https://autoschinos-ar.vercel.app/comparar/forthing-t5-evo-vs-jetour-x70</loc></url>
+  <url><loc>https://autoschinos-ar.vercel.app/comparar/forthing-t5-hev-vs-gac-emkoo-hev</loc></url>
   <url><loc>https://autoschinos-ar.vercel.app/comparar/forthing-t5-hev-vs-haval-h6-hev</loc></url>
+  <url><loc>https://autoschinos-ar.vercel.app/comparar/forthing-t5-hev-vs-haval-jolion-pro-hev</loc></url>
   <url><loc>https://autoschinos-ar.vercel.app/comparar/forthing-u-tour-vs-haval-h7-hev</loc></url>
   <url><loc>https://autoschinos-ar.vercel.app/comparar/gac-aion-es-vs-gac-empow</loc></url>
   <url><loc>https://autoschinos-ar.vercel.app/comparar/gac-aion-ut-vs-ora-03</loc></url>
   <url><loc>https://autoschinos-ar.vercel.app/comparar/gac-aion-v-vs-geely-ex5</loc></url>
   <url><loc>https://autoschinos-ar.vercel.app/comparar/gac-emkoo-hev-vs-haval-h6-hev</loc></url>
-  <url><loc>https://autoschinos-ar.vercel.app/comparar/gac-gs3-emzoom-vs-jetour-dashing</loc></url>
   <url><loc>https://autoschinos-ar.vercel.app/comparar/gac-gs8-vs-jetour-t2</loc></url>
   <url><loc>https://autoschinos-ar.vercel.app/comparar/gac-gs8-vs-maxus-d90</loc></url>
   <url><loc>https://autoschinos-ar.vercel.app/comparar/gwm-ora-5-hev-vs-haval-jolion-pro-hev</loc></url>
@@ -223,8 +224,8 @@
   <url><loc>https://autoschinos-ar.vercel.app/comparar/haval-h6-4wd-vs-jetour-dashing</loc></url>
   <url><loc>https://autoschinos-ar.vercel.app/comparar/haval-h6-4wd-vs-kaiyi-x7</loc></url>
   <url><loc>https://autoschinos-ar.vercel.app/comparar/haval-h7-4wd-vs-jac-js8-pro</loc></url>
+  <url><loc>https://autoschinos-ar.vercel.app/comparar/haval-h7-4wd-vs-jetour-x70</loc></url>
   <url><loc>https://autoschinos-ar.vercel.app/comparar/haval-h7-4wd-vs-jetour-x70-plus</loc></url>
-  <url><loc>https://autoschinos-ar.vercel.app/comparar/haval-jolion-pro-hev-vs-mg-zs-hev</loc></url>
   <url><loc>https://autoschinos-ar.vercel.app/comparar/jac-ev-30x-vs-ora-03</loc></url>
   <url><loc>https://autoschinos-ar.vercel.app/comparar/jac-js4-vs-jetour-x50</loc></url>
   <url><loc>https://autoschinos-ar.vercel.app/comparar/jac-js6-phev-vs-lynk-co-01</loc></url>
