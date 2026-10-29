@@ -1,6 +1,6 @@
 # Autolofy — reglas del proyecto
 
-Autolofy (https://autolofy.vercel.app) compara **206 autos** 0 km vendidos (o por llegar) en Argentina.
+Autolofy (https://autolofy.vercel.app) compara **207 autos** 0 km vendidos (o por llegar) en Argentina.
 Empezó con los chinos y electrificados; el nombre cambió el 2026-10-28 (repo `mgorganchian/autolofy`,
 proyectos de Vercel `autolofy` y `autolofy-plan`).
 Desde el 2026-10-28 también entran autos de marcas no chinas (decisión de Mati y Sebastián del
@@ -16,8 +16,8 @@ El 2026-10-29 (pedido de Mati) se sumaron **73 de los 100 modelos más patentado
 - La fila Patentamientos 2026 cuenta las inscripciones de esa versión y dice el total del modelo y su puesto.
 - La caja de una pickup en litros se escribe «Caja de carga de N L» y no se rankea contra los baúles (`PCTL_VETO`).
 - Portadas: la foto oficial de la marca y, cuando el sitio bloquea las descargas (Ford, Peugeot, Toyota) o no hay
-  foto de esa versión, Wikimedia Commons. **Faltan 4** sin ninguna foto válida de la versión argentina, que no se
-  cargaron todavía: Bronco Sport Badlands, Peugeot 2008 GT, RAV4 PHEV XSE y T-Cross Extreme.
+  foto de esa versión, Wikimedia Commons. **Faltan 3** sin ninguna foto válida de la versión argentina, que no se
+  cargaron todavía: Bronco Sport Badlands, RAV4 PHEV XSE y T-Cross Extreme (el 2008 GT entró el 2026-10-29).
 Todo vive en un único `index.html` autocontenido: sin CSS, JS ni imágenes externas.
 Ese principio es deliberado — **no agregar dependencias externas ni partir el
 archivo.** Las únicas excepciones, servidas junto a la página y bajadas cuando hacen
@@ -55,7 +55,7 @@ Con `N = CARS.length`:
 2. **`<th>`** en el `<thead>`, en el mismo índice — con su silueta de carrocería y su
    ícono de propulsión.
 3. **`<col class="col-data">`** en los **DOS** `<colgroup>` (`#theadTable` y `#mainTable`).
-4. **Cada una de las 101 filas de `DATA`**, en la posición correcta.
+4. **Cada una de las 104 filas de `DATA`**, en la posición correcta.
 5. **`colspan="N+1"`** de las filas de categoría — está hardcodeado.
 
 Además hay 3 conteos en texto: `#headerSubtitle`, `#summaryText` y el comentario arriba
@@ -102,7 +102,7 @@ se coló dos veces.
 **Trampas al medir:** `grep '<th'` también matchea `<thead>`; `grep 'col-data'` también
 cuenta las 2 definiciones del `<style>`.
 
-**Verificación cruzada:** renderizar de verdad y contar 101 filas en 14 categorías, con
+**Verificación cruzada:** renderizar de verdad y contar 104 filas en 14 categorías, con
 cero errores de consola. Con el script roto la tabla queda en **0 filas** y el archivo
 igual "parece" bien.
 
@@ -184,7 +184,7 @@ sí quedan en inglés, porque no muestran la palabra. Se coló con `YES` dos vec
   valor/mejor). Al volver a todos, regresa a `data-g`. La barra se marca en un tramo de un
   cuarto de la escala que termina en el puntaje, con la opacidad subiendo del 45% al 100% hasta la
   mitad del tramo y plena en la otra mitad (2026-10-10), y lo de atrás queda al 15% (`barraZona`, máscara
-  `--z`): los tramos miden igual y cambian de lugar y color. Pedido del 2026-10-09. Va **solo en las 17 filas
+  `--z`): los tramos miden igual y cambian de lugar y color. Pedido del 2026-10-09. Va **solo en las 21 filas
   donde "mejor" tiene una dirección objetiva** (`PCTL_DIR` en el script). Las
   dimensiones (Longitud, Ancho, Altura, Distancia entre ejes) **no lo llevan a
   propósito**: poner el indicador ahí afirmaría que un auto más largo es mejor, y
@@ -392,9 +392,14 @@ sí quedan en inglés, porque no muestran la palabra. Se coló con `YES` dos vec
 
 ## Patentamientos, choques, historial y novedades (2026-10-08)
 
-- **Patentamientos 2026 (unidades)** (fila de Precio): inscripciones iniciales del registro
-  oficial (DNRPA, datos.jus.gob.ar), contrastadas con ACARA en el detalle. Si el registro junta
-  dos autos de la tabla, los dos llevan la misma cifra en NOTE; nunca se reparte. No es ranking.
+- **Patentamientos 2026, 2025, 2024 y 2023 (unidades)** (filas de Precio): inscripciones iniciales del
+  registro oficial (DNRPA, datos.jus.gob.ar). Si el registro junta dos autos de la tabla, los dos llevan
+  la misma cifra en NOTE; nunca se reparte. Desde el 2026-10-29 (pedido del usuario) **son ranking de
+  ventas**: están en `PCTL_DIR` (más es más vendido) y la vista Ranking dice arriba cuántos 0 km se
+  patentaron ese año en Argentina (`VENTAS_AR`: autos, SUV, rurales y pickups, sin furgones ni
+  camiones). Los años anteriores cuentan las **mismas denominaciones del registro** que la fila de
+  2026; si en un año no hay ninguna, va NR («pudo no venderse o inscribirse con otro nombre»), nunca 0.
+  Al sumar un auto, sus cuatro años se cargan con el script de la tarea (o se dejan NR con el motivo).
 - **Seguridad en choques (NCAP)** (primera de Seguridad pasiva): Latin NCAP va en texto plano;
   Euro NCAP, ANCAP, C-NCAP o ASEAN como EXT con año. Solo si el ensayo es del mismo modelo,
   generación y versión vendida acá (o se aclara la variante): ensayos de una versión anterior o
