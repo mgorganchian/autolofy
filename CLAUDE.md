@@ -1,6 +1,6 @@
 # Autolofy — reglas del proyecto
 
-Autolofy (https://autolofy.vercel.app) compara **207 autos** 0 km vendidos (o por llegar) en Argentina.
+Autolofy (https://autolofy.vercel.app) compara **223 autos** 0 km vendidos (o por llegar) en Argentina.
 Empezó con los chinos y electrificados; el nombre cambió el 2026-10-28 (repo `mgorganchian/autolofy`,
 proyectos de Vercel `autolofy` y `autolofy-plan`).
 Desde el 2026-10-28 también entran autos de marcas no chinas (decisión de Mati y Sebastián del
@@ -67,7 +67,7 @@ de `CARS`.
 |---|---|
 | `type` | `ice` `hev` `mhev` `phev` `ev` `tbd` |
 | `size` | `xl` `big` `mid` `compact` `mini` `nd` |
-| `body` | `SUV` `Crossover` `Sedán` `Hatchback` `Minivan` `Pickup` `Convertible` |
+| `body` | `SUV` `Crossover` `Sedán` `Hatchback` `Minivan` `Pickup` `Convertible` `Coupé` (desde el 2026-10-29; se dibuja con la silueta del sedán, como el convertible) |
 | `status` | `venta` `preventa` `nolanzado` `discontinuado` |
 
 **`size` (segmento) se asigna por el largo**, con los umbrales anotados arriba de `CARS`
