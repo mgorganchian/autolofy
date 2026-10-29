@@ -8,7 +8,7 @@
 # misma URL contra sí misma.
 #
 # Formato: auto <TAB> archivo_local <TAB> url <TAB> sha256_verificado <TAB> fecha
-# El archivo local vive en ~/Downloads/autoschinos-fichas/ (ahí llega el MCP de PDF).
+# El archivo local vive en ~/Downloads/autolofy-fichas/ (ahí llega el MCP de PDF).
 #
 # Para chequear cambios:
 #   while IFS=$'\t' read -r auto f u h fecha; do

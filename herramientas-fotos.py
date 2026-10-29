@@ -48,7 +48,7 @@ DESCARTADAS = os.path.join(RAIZ, 'fotos-descartadas.tsv')
 PORTADAS = os.path.join(RAIZ, 'fichas-fuentes.tsv')
 CAND = os.path.join(RAIZ, '.fotos-candidatas')      # está en .gitignore
 SWIFT = os.path.join(RAIZ, 'herramientas-recortar-fotos.swift')
-UA = 'autoschinos-comparativo/1.0 (https://github.com/mgorganchian/autoschinos)'
+UA = 'autolofy-comparativo/1.0 (https://github.com/mgorganchian/autolofy)'
 
 # Una foto por vista, en este orden en el carrusel (la portada queda siempre primera).
 VISTAS = [('tres-cuartos-delantero', 'Tres cuartos delantero'), ('frente', 'Frente'),

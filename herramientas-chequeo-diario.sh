@@ -1,7 +1,7 @@
 #!/bin/zsh
-# Actualización SEMANAL del comparativo autoschinos (los lunes, 09:15).
+# Actualización SEMANAL del comparativo Autolofy (los lunes, 09:15).
 #
-# El nombre dice "diario" porque así nació; el launchd (ar.autoschinos.chequeo.plist) lo
+# El nombre dice "diario" porque así nació; el launchd (ar.autolofy.chequeo.plist) lo
 # llama por este nombre.
 #
 # Corre LOCAL (launchd), no en la nube, por tres razones concretas:
@@ -20,7 +20,7 @@
 #   Si Claude no puede autenticarse o termina con error, avisa con una notificación
 #   de macOS: corriendo una vez por semana, una falla muda son dos semanas perdidas.
 #
-# Instalación:  launchctl load ~/Library/LaunchAgents/ar.autoschinos.chequeo.plist
+# Instalación:  launchctl load ~/Library/LaunchAgents/ar.autolofy.chequeo.plist
 # A mano:       ./herramientas-chequeo-diario.sh --ahora
 #               NO es una prueba: commitea a main y publica igual que una corrida real.
 
@@ -29,10 +29,10 @@ case "${1:-}" in
   ""|--ahora) ;;          # --ahora se acepta por compatibilidad: toda corrida es completa
   *)          print -u2 "uso: $0 [--ahora]"; exit 2 ;;
 esac
-REPO="/Users/mgorganchian/Projects/autoschinos"
+REPO="/Users/mgorganchian/Projects/autolofy"
 LOG="$REPO/.chequeo-diario.log"
 SITIO="https://autolofy.vercel.app/"
-UA='autoschinos-comparativo/1.0 (https://github.com/mgorganchian/autoschinos)'
+UA='autolofy-comparativo/1.0 (https://github.com/mgorganchian/autolofy)'
 CLAUDE="$(command -v claude || echo /Users/mgorganchian/.nvm/versions/node/v24.14.0/bin/claude)"
 
 log(){ print -r -- "[$(date '+%Y-%m-%d %H:%M:%S')] $*" >> "$LOG"; }
@@ -40,7 +40,7 @@ log(){ print -r -- "[$(date '+%Y-%m-%d %H:%M:%S')] $*" >> "$LOG"; }
 # se rompió. Los mensajes no llevan comillas porque van dentro de un AppleScript.
 avisar(){
   log "ALERTA: $1"
-  osascript -e "display notification \"$1\" with title \"autoschinos\" sound name \"Basso\"" 2>/dev/null
+  osascript -e "display notification \"$1\" with title \"Autolofy\" sound name \"Basso\"" 2>/dev/null
 }
 
 cd "$REPO" || { log "FATAL: no pude entrar a $REPO"; exit 1; }
@@ -229,7 +229,7 @@ para 0 km que la calculadora de cuota toma del BCRA. Si falla (sin conexión, la
 toques nada a mano y decilo en el resumen."
 
 log "invocando a Claude…"
-PROMPT="Sos el mantenimiento automático semanal del comparativo de autos chinos. Corrés sin
+PROMPT="Sos el mantenimiento automático semanal de Autolofy, el comparativo de autos 0 km. Corrés sin
 supervisión, así que la prudencia vale más que la cobertura.
 
 Hacé las tareas en este orden:

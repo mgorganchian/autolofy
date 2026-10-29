@@ -1,6 +1,8 @@
-# autoschinos — reglas del proyecto
+# Autolofy — reglas del proyecto
 
-Comparativo de **133 autos** chinos/electrificados vendidos (o por llegar) en Argentina.
+Autolofy (https://autolofy.vercel.app) compara **133 autos** 0 km vendidos (o por llegar) en Argentina.
+Empezó con los chinos y electrificados; el nombre cambió el 2026-10-28 (repo `mgorganchian/autolofy`,
+proyectos de Vercel `autolofy` y `autolofy-plan`).
 Desde el 2026-10-28 también entran autos de marcas no chinas (decisión de Mati y Sebastián del
 27/10: los 0 km principales, los eléctricos y los híbridos); los primeros fueron los 9 rivales
 híbridos del BAIC X55 II Hybrid (Ford, Chevrolet, Toyota, Lexus, Nissan, Renault, Subaru y
@@ -14,7 +16,7 @@ falta: `fotos/` (con `fotos/mini/`, las miniaturas del encabezado), `logos/`, `o
 `sitemap.xml` y `robots.txt` son páginas generadas para Google (ver "Páginas por auto").
 
 El contexto largo (el *porqué* de cada decisión, orden de columnas, estado del research,
-metodología de búsqueda de fichas) está en **`CONTEXTO_PROYECTO_AUTOSCHINOS.md`**.
+metodología de búsqueda de fichas) está en **`CONTEXTO_PROYECTO_AUTOLOFY.md`**.
 Este archivo es solo lo que hay que tener presente **siempre**.
 
 > Este repo es **público**. Nada de tokens, cuentas ni rutas personales en archivos
@@ -818,7 +820,7 @@ Configuración para las skills de Matt Pocock (`mattpocock/skills`), armada con
 
 ### Issue tracker
 
-Los issues viven en GitHub Issues de `mgorganchian/autoschinos` y se manejan con `gh`. See `docs/agents/issue-tracker.md`.
+Los issues viven en GitHub Issues de `mgorganchian/autolofy` y se manejan con `gh`. See `docs/agents/issue-tracker.md`.
 
 ### Triage labels
 

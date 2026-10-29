@@ -5,7 +5,7 @@ const path = require('path');
 const { test, expect } = require('@playwright/test');
 const { leerIndex, vigilarErrores, FILAS_DATOS, N_FILAS } = require('./helpers');
 
-const RAIZ = process.env.AUTOSCHINOS_RAIZ || path.resolve(__dirname, '../..');
+const RAIZ = process.env.AUTOLOFY_RAIZ || path.resolve(__dirname, '../..');
 const { html } = leerIndex();
 const HIST = JSON.parse(/const HISTORIAL_PRECIOS = (\{.*?\});\n/.exec(html)[1]);
 

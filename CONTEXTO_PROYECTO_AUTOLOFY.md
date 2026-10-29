@@ -1,4 +1,4 @@
-# Contexto completo: Comparativo de autos chinos/electrificados en Argentina
+# Contexto completo: Autolofy, comparativo de autos 0 km en Argentina (empezó con los chinos y electrificados)
 
 Documento para pasarle a Claude Code (corriendo local en la Mac de Mati) y que pueda seguir el proyecto sin perder las decisiones tomadas en sesiones anteriores. No es solo un resumen de qué falta — incluye el **por qué** de las decisiones de diseño, para que no se reviertan por accidente al seguir trabajando.
 
@@ -11,8 +11,8 @@ Documento para pasarle a Claude Code (corriendo local en la Mac de Mati) y que p
 ## 1. Qué es esto y dónde vive
 
 - Archivo HTML autocontenido (sin dependencias externas, todo inline) que compara **49 autos** **[corregido: eran 47]** chinos/electrificados disponibles (o por llegar) en Argentina, en una tabla de **92 filas** de características agrupadas en **14 categorías**.
-- **Repo**: github.com/mgorganchian/autoschinos (branch `main`, archivo `index.html` en la **raíz del repo, sin carpeta**).
-- **Deploy**: **https://autoschinos.netlify.app/** **[corregido]**, conectado por GitHub → cada push a `main` dispara un redeploy.
+- **Repo**: github.com/mgorganchian/autolofy (branch `main`, archivo `index.html` en la **raíz del repo, sin carpeta**).
+- **Deploy**: **https://autolofy.vercel.app/** (Vercel, proyecto `autolofy`), conectado por GitHub → cada merge a `main` dispara un redeploy.
 - **Acceso de escritura**: se hace con un token fine-grained con scope **solo a este repo**, en la cuenta personal (no la organización de trabajo). Hay otro token, de solo lectura y de otro proyecto — **no tocar, no confundir, no reusar**. Los nombres concretos están en `CONTEXTO_LOCAL_PRIVADO.md`, que está en `.gitignore` porque **este repo es público**.
 
 ### Por qué el archivo está en la raíz y no en una carpeta
@@ -27,7 +27,7 @@ La CLI no está instalada y no hace falta. El sitio publicado pesa **exactamente
 ```bash
 # tamaño del index.html de un commit + 536 = tamaño esperado en vivo
 expr $(git cat-file -s $(git rev-parse <commit>:index.html)) + 536
-curl -s -H 'Cache-Control: no-cache' "https://autoschinos.netlify.app/?cb=$RANDOM" | wc -c
+curl -s -H 'Cache-Control: no-cache' "https://autolofy.vercel.app/?cb=$RANDOM" | wc -c
 ```
 
 Mejor todavía: buscar un marcador de contenido del cambio (`grep -q 'Leapmotor C10'`). El `<meta name="netlify-deploy">` **no** trae ID de deploy, solo un link de marketing, así que desde afuera no se puede leer el estado del build.
@@ -326,7 +326,7 @@ Longitud/Ancho/Alto/Distancia entre ejes → Volumen de baúl → Número de asi
 
 ## 9. Entorno en la máquina local
 
-El repo de `autoschinos` tiene que tener su **propio `.git` independiente**: la carpeta padre es un repo Git de otro proyecto. Verificar con `git rev-parse --show-toplevel`, que debe devolver la carpeta de `autoschinos`. Si devuelve la carpeta padre, **avisar antes de commitear**, no asumir.
+El repo de Autolofy tiene que tener su **propio `.git` independiente**: la carpeta padre es un repo Git de otro proyecto. Verificar con `git rev-parse --show-toplevel`, que debe devolver la carpeta del proyecto (`~/Projects/autolofy`). Si devuelve la carpeta padre, **avisar antes de commitear**, no asumir.
 
 Hay otros proyectos sin relación en la misma máquina — no tocar. El detalle está en `CONTEXTO_LOCAL_PRIVADO.md` (fuera de Git).
 

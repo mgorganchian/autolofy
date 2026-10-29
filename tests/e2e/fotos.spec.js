@@ -8,7 +8,7 @@ const path = require('path');
 const { test, expect } = require('@playwright/test');
 const { html } = require('./helpers').leerIndex();
 
-const RAIZ = process.env.AUTOSCHINOS_RAIZ || path.resolve(__dirname, '../..');
+const RAIZ = process.env.AUTOLOFY_RAIZ || path.resolve(__dirname, '../..');
 const leerMapa = nombre => JSON.parse(new RegExp(`const ${nombre}\\s*=\\s*(\\{[\\s\\S]*?\\});`).exec(html)[1]);
 const FOTOS_POR_AUTO = leerMapa('FOTOS_POR_AUTO');
 const CREDITOS_POR_FOTO = leerMapa('CREDITOS_POR_FOTO');

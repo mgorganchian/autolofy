@@ -100,7 +100,7 @@ def pagina(i, data, car, slug, credito, colores, videos, vs=(), extra=None):
     tipo = TIPO.get(car['type'], '')
     desc_partes = [f'{nombre}: {tipo}', car.get('body', ''), ESTADO.get(car['status'], '')]
     if precio != 'Sin dato': desc_partes.append(f'precio {precio}')
-    desc = ', '.join(p for p in desc_partes if p) + '. Ficha técnica oficial, equipamiento, colores y comparación con otros autos chinos en Argentina.'
+    desc = ', '.join(p for p in desc_partes if p) + '. Ficha técnica oficial, equipamiento, colores y comparación con otros autos 0 km en Argentina.'
     titulo = f'{nombre}: precio, ficha técnica y equipamiento en Argentina'
     url = f'{SITIO}/autos/{slug}'
     foto = f'{SITIO}/fotos/{slug}-1.jpg'
@@ -162,7 +162,7 @@ td small{{display:block;font-size:.75rem;color:var(--ink2)}} .colores{{list-styl
 .vs{{padding-left:18px}} .vs li{{margin:3px 0}} .videos{{padding-left:18px}} .videos li{{margin:4px 0}} .videos small{{display:block;color:var(--ink2)}} .nota,footer{{font-size:.8rem;color:var(--ink2)}}
 </style></head>
 <body><main>
-<p class="sub"><a href="/">Autos chinos en Argentina</a> / {e(car['brand'])}</p>
+<p class="sub"><a href="/">Autolofy</a> / {e(car['brand'])}</p>
 <h1>{e(nombre)}</h1>
 <p class="sub">{e(tipo.capitalize())}, {e(car.get('body', ''))}. {e(ESTADO.get(car['status'], ''))}. Precio de lista: {e(precio)}.</p>
 <figure><img src="/fotos/{slug}-1.jpg" alt="{e(nombre)}" width="900" height="570">{f'<figcaption>{e(credito)}</figcaption>' if credito else ''}</figure>
@@ -221,8 +221,8 @@ def novedades(cars, slugs):
     e = H.escape
     pagina_html = f'''<!doctype html>
 <html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Novedades: precios, promociones y autos chinos nuevos en Argentina</title>
-<meta name="description" content="Bajas y subas de precio de lista, promociones vigentes de cada marca y autos nuevos en el comparativo de autos chinos en Argentina.">
+<title>Novedades de Autolofy: precios, promociones y autos nuevos</title>
+<meta name="description" content="Bajas y subas de precio de lista, promociones vigentes de cada marca y autos nuevos en Autolofy, el comparativo de autos 0 km en Argentina.">
 <link rel="canonical" href="{SITIO}/novedades">
 <link rel="alternate" type="application/rss+xml" title="Novedades" href="/novedades.xml">
 <style>
@@ -235,7 +235,7 @@ main{{max-width:760px;margin:0 auto;padding:16px}} a{{color:var(--accent)}} h1{{
 li{{border-bottom:1px solid var(--line);padding:10px 0}} time{{font-size:.8rem;color:var(--ink2)}}
 h2{{font-size:1.05rem;margin:2px 0}} p{{margin:2px 0}}
 </style></head><body><main>
-<p class="sub"><a href="/">Autos chinos en Argentina</a> / Novedades</p>
+<p class="sub"><a href="/">Autolofy</a> / Novedades</p>
 <h1>Novedades</h1>
 <p class="sub">Cambios de precio de lista, promociones vigentes y lo nuevo del comparativo. También por <a href="/novedades.xml">RSS</a>.</p>
 <ol>{''.join(f'<li><time datetime="{x["fecha"]}">{fecha_larga(x["fecha"])}</time><h2><a href="{e(x["link"])}">{e(x["titulo"])}</a></h2><p>{e(x["texto"])}</p></li>' for x in items)}</ol>
@@ -243,7 +243,7 @@ h2{{font-size:1.05rem;margin:2px 0}} p{{margin:2px 0}}
 '''
     rfc = lambda f: datetime(int(f[:4]), int(f[5:7]), int(f[8:]), 12, tzinfo=timezone.utc).strftime('%a, %d %b %Y %H:%M:%S +0000')
     rss = ('<?xml version="1.0" encoding="UTF-8"?>\n<rss version="2.0"><channel>\n'
-           f'<title>Autos chinos en Argentina: novedades</title><link>{SITIO}/novedades</link>'
+           f'<title>Autolofy: novedades</title><link>{SITIO}/novedades</link>'
            '<description>Cambios de precio de lista, promociones vigentes y autos nuevos.</description><language>es-ar</language>\n' +
            ''.join(f'<item><title>{e(x["titulo"])}</title><link>{SITIO}{e(x["link"])}</link>'
                    f'<guid isPermaLink="false">{e(x["fecha"] + " " + x["titulo"])}</guid><pubDate>{rfc(x["fecha"])}</pubDate>'
@@ -374,7 +374,7 @@ thead th{{color:var(--ink);font-weight:700}} tr.cat th{{color:var(--ink);font-we
 td small{{display:block;font-size:.75rem;color:var(--ink2)}} .nota,footer{{font-size:.8rem;color:var(--ink2)}}
 </style></head>
 <body><main>
-<p class="sub"><a href="/">Autos chinos en Argentina</a> / Comparaciones</p>
+<p class="sub"><a href="/">Autolofy</a> / Comparaciones</p>
 <h1>{e(A['name'])} vs {e(B['name'])}</h1>
 <p class="sub">Dos autos parecidos en carrocería, tamaño y precio, con los datos de sus fichas oficiales.</p>
 <div class="fotos">{fig(a)}{fig(b)}</div>
@@ -395,7 +395,7 @@ def quien():
     del sitio: si se suma publicidad o algo que mida visitas, hay que cambiar "Privacidad"."""
     return f'''<!doctype html>
 <html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Quién hace el comparativo de autos chinos en Argentina</title>
+<title>Quién hace Autolofy</title>
 <meta name="description" content="Un comparativo hecho por un particular, sin relación comercial con marcas ni concesionarios: por qué existe y cómo se arman los datos.">
 <link rel="canonical" href="{SITIO}/quien-hace-esto">
 <style>
@@ -406,7 +406,7 @@ body{{margin:0;background:var(--paper);color:var(--ink);font:1rem/1.6 system-ui,
 main{{max-width:680px;margin:0 auto;padding:16px}} a{{color:var(--accent)}} h1{{font-size:2rem;line-height:1.1;margin:8px 0 12px;text-wrap:balance}}
 h2{{font-size:1.15rem;margin:24px 0 6px;border-bottom:2px solid var(--ink)}} .sub{{color:var(--ink2);margin:0 0 12px}} ul{{padding-left:20px}} li{{margin:4px 0}}
 </style></head><body><main>
-<p class="sub"><a href="/">Autos chinos en Argentina</a> / Quién hace esto</p>
+<p class="sub"><a href="/">Autolofy</a> / Quién hace esto</p>
 <h1>Quién hace esto</h1>
 <p>Hago este comparativo por mi cuenta. <b>No tengo ninguna relación comercial</b> con marcas, importadores ni concesionarios: nadie paga por aparecer ni por cómo aparece, y el sitio no tiene publicidad.</p>
 <h2>Por qué</h2>
