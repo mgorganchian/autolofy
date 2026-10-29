@@ -1,6 +1,6 @@
 # Autolofy — reglas del proyecto
 
-Autolofy (https://autolofy.vercel.app) compara **133 autos** 0 km vendidos (o por llegar) en Argentina.
+Autolofy (https://autolofy.vercel.app) compara **206 autos** 0 km vendidos (o por llegar) en Argentina.
 Empezó con los chinos y electrificados; el nombre cambió el 2026-10-28 (repo `mgorganchian/autolofy`,
 proyectos de Vercel `autolofy` y `autolofy-plan`).
 Desde el 2026-10-28 también entran autos de marcas no chinas (decisión de Mati y Sebastián del
@@ -8,6 +8,16 @@ Desde el 2026-10-28 también entran autos de marcas no chinas (decisión de Mati
 híbridos del BAIC X55 II Hybrid (Ford, Chevrolet, Toyota, Lexus, Nissan, Renault, Subaru y
 Hyundai). Sus marcas entran sin red de concesionarios cargada (`aviso` en `concesionarios.json`),
 y casi todas publican el precio en pesos: no se convierte.
+El 2026-10-29 (pedido de Mati) se sumaron **73 de los 100 modelos más patentados de 2026** que faltaban
+(inscripciones iniciales de la DNRPA de enero a septiembre, sin furgones ni camiones; 23 ya estaban). Criterios:
+- Una versión por modelo: la más cara que publica la marca en su lista de octubre, salvo una versión que la marca vende
+  como modelo o marca aparte (Ranger Raptor, Pulse y Fastback Abarth) o que no tiene ficha argentina (X1 xDrive25e,
+  AMG GLC 63): entonces, la más cara con ficha argentina, y la celda de precio lo aclara.
+- La fila Patentamientos 2026 cuenta las inscripciones de esa versión y dice el total del modelo y su puesto.
+- La caja de una pickup en litros se escribe «Caja de carga de N L» y no se rankea contra los baúles (`PCTL_VETO`).
+- Portadas: la foto oficial de la marca y, cuando el sitio bloquea las descargas (Ford, Peugeot, Toyota) o no hay
+  foto de esa versión, Wikimedia Commons. **Faltan 4** sin ninguna foto válida de la versión argentina, que no se
+  cargaron todavía: Bronco Sport Badlands, Peugeot 2008 GT, RAV4 PHEV XSE y T-Cross Extreme.
 Todo vive en un único `index.html` autocontenido: sin CSS, JS ni imágenes externas.
 Ese principio es deliberado — **no agregar dependencias externas ni partir el
 archivo.** Las únicas excepciones, servidas junto a la página y bajadas cuando hacen
