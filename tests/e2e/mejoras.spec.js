@@ -28,12 +28,13 @@ test('ayudame a elegir: la franja de precio es piso y techo, y con enchufe en ca
   // 5 en escritorio y 4 en el celular (pedido del 2026-10-09).
   const N = page.viewportSize().width >= 900 ? 5 : 4;
   await expect(res).toHaveCount(N);
-  for (const t of await res.locator('ul').allTextContents()){
-    const m = /USD ([\d.]+)/.exec(t);
-    expect(m, t).toBeTruthy();
-    const usd = Number(m[1].replace(/\./g, ''));
-    expect(usd).toBeGreaterThanOrEqual(35501);
-    expect(usd).toBeLessThanOrEqual(38500);
+  // El precio que cuenta es PRECIO_CMP: el de dólares o la lista en pesos pasada a dólares (issue #60).
+  const precios = await page.evaluate(() => PRECIO_CMP);
+  for (const li of await res.all()){
+    const t = await li.locator('ul').textContent();
+    const usd = precios[+(await li.locator('[data-elegir-ficha]').getAttribute('data-elegir-ficha'))];
+    expect(usd, t).toBeGreaterThanOrEqual(35501);
+    expect(usd, t).toBeLessThanOrEqual(38500);
     expect(t).toMatch(/enchufable|eléctrico/i);
   }
   // La barra al pie cambia con cada respuesta (en el celular la lista queda fuera de la pantalla).
@@ -436,7 +437,8 @@ test('ayudame a elegir: sin presupuesto preelegido, resumen con "Cambiar" y, si 
   await page.goto('/index.html');
   await expect(page.locator('input[name="el-presu"][value=""]')).toBeChecked();
   await page.locator('label:has(input[name="el-presu"][value="0-28500"])').click();
-  await page.locator('label:has(input[name="el-carro"][value="pickup"])').click();
+  // Desde el 2026-10-29 las pickups en pesos entran en «Hasta USD 28.500» (issue #60): un SUV grande no.
+  await page.locator('label:has(input[name="el-carro"][value="suv-grande"])').click();
   await expect(page.locator('[data-aflojar]').first()).toBeVisible();
   await page.locator('[data-aflojar="presu"]').click();
   await expect(page.locator('.elegir-res > li').first()).toBeVisible();
@@ -646,4 +648,31 @@ test('ranking: un auto no lanzado dice "No lanzado" y el cartel no se monta sobr
   await expect(it).toBeVisible();
   const r = await it.evaluate(li => { const e = li.querySelector('.rk-estado').getBoundingClientRect(), v = li.querySelector('.rk-valor').getBoundingClientRect(); return { e: e.right, v: v.left }; });
   expect(r.e).toBeLessThanOrEqual(r.v + 1);
+});
+
+test('precios en pesos: la lista en pesos entra en las franjas y los de dólares se ven también en pesos', async ({ page }) => {
+  // Issue #60 (2026-10-29, decisión de Mati): dólar BNA vendedor para pasar de una moneda a la otra.
+  await abrir(page);
+  const d = await page.evaluate(() => {
+    const i = CARS.findIndex(c => /Cronos/.test(c.name));
+    // La franja de Ayudame a elegir que contiene su precio pasado a dólares.
+    const op = ELEGIR_PREG.find(q => q.k === 'presu').ops.find(([v]) => { if (!v) return false; const [a, b] = v.split('-').map(x => x === '' ? Infinity : +x); return PRECIO_CMP[i] >= a && PRECIO_CMP[i] <= b; });
+    const r = elegirCalcular({ presu: op[0], plazas: '5', uso: 'mixto', enchufe: 'nose', carro: 'auto' });
+    return { i, usd: SIM_PRECIO[i], pesos: SIM_PESOS[i], cmp: PRECIO_CMP[i], venta: DOLAR_BNA.venta, entra: r.todos.includes(i), op: op[2] };
+  });
+  expect(d.usd).toBeNull();
+  expect(d.pesos).toBe(45270000);
+  expect(d.cmp).toBe(Math.round(45270000 / d.venta));
+  expect(d.entra).toBe(true);
+  expect(d.op).toMatch(/^\$ [\d,]+ M a \$ [\d,]+ M$/);
+  // En la tabla, el precio en dólares lleva debajo su equivalente en pesos; el de pesos, no.
+  const fila = page.locator('#mainTable tr[data-nombre="Precio de lista (versión tope de gama de la tabla)"]');
+  const usdIdx = await page.evaluate(() => SIM_PRECIO.findIndex(p => p != null));
+  await expect(fila.locator(`td[data-col="${usdIdx}"] .precio-pesos`)).toHaveText(/^≈ \$ [\d,]+ M$/);
+  await expect(fila.locator(`td[data-col="${d.i}"] .precio-pesos`)).toHaveCount(0);
+  // Los autos sin ningún precio publicado son los únicos que quedan sin cifra para filtrar.
+  const sinCifra = await page.evaluate(() => PRECIO_CMP.filter(p => p == null).length);
+  await page.click('#openModalBtn');
+  await expect(page.locator('#precioSdN')).toHaveText(String(sinCifra));
+  await expect(page.locator('#precioPesos')).toContainText('dólar BNA vendedor');
 });
