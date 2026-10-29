@@ -1,6 +1,6 @@
 # Autolofy — reglas del proyecto
 
-Autolofy (https://autolofy.vercel.app) compara **223 autos** 0 km vendidos (o por llegar) en Argentina.
+Autolofy (https://autolofy.vercel.app) compara **238 autos** 0 km vendidos (o por llegar) en Argentina.
 Empezó con los chinos y electrificados; el nombre cambió el 2026-10-28 (repo `mgorganchian/autolofy`,
 proyectos de Vercel `autolofy` y `autolofy-plan`).
 Desde el 2026-10-28 también entran autos de marcas no chinas (decisión de Mati y Sebastián del
