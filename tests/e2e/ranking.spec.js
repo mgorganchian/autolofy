@@ -24,7 +24,7 @@ async function abrirRanking(page, { todos = false } = {}) {
   if (todos) await page.locator('#rkTodos').check();
 }
 const A_LA_VENTA = CARS.filter(c => c.status === 'venta').map(c => c.name);
-const HERRAMIENTAS = ['usd-kw', 'usd-km', '__medida', '__gasto', '__rebajas', '__cochera'];
+const HERRAMIENTAS = ['usd-kw', 'usd-km', '__medida', '__gasto', '__rebajas', '__cochera', '__marcas', '__grupos'];
 async function elegirFila(page, nombre) {
   // En el celular se elige en el desplegable; en escritorio, con los botones (2026-10-10).
   const sel = page.locator('#rkElegirSel');
@@ -334,4 +334,27 @@ test('rebajas publicadas: solo precios de la misma versión de la tabla, en dól
   expect(autos).not.toContain('Jetour Dashing');
   expect(autos).not.toContain('Chery Himla');
   for (const t of await page.locator('#rkLista .rk-valor').allTextContents()) expect(t).toMatch(/^−[\d,]+%$/);
+});
+
+// Ventas por marca y por grupo (2026-10-29): todo el mercado, de la DNRPA. El grupo sale de MARCAS_INFO
+// y una marca sin entrada no se asigna a ningún grupo: va aparte, con su cifra.
+test('ventas por marca y por grupo: ordenadas, por año, y sin inventar grupos', async ({ page }) => {
+  await abrirRanking(page);
+  await elegirFila(page, '__marcas');
+  const vals = () => page.locator('#rkLista .rk-mercado .rk-valor').evaluateAll(ls => ls.map(l => Number(l.firstChild.textContent.replace(/\./g, ''))));
+  const m26 = await vals();
+  expect(m26.length).toBeGreaterThan(20);
+  expect(m26).toEqual([...m26].sort((a, b) => b - a));
+  await page.locator('#rkSub [data-anio="2024"]').click();
+  await expect(page.locator('#rkTitulo')).toHaveText('Ventas por marca 2024');
+  await elegirFila(page, '__grupos');
+  const { suma, total, sueltas } = await page.evaluate(() => {
+    const filas = VENTAS_MARCAS['2024'];
+    const conGrupo = filas.filter(([m]) => (MARCAS_INFO[m] || MARCAS_INFO[GRUPO_ALIAS[m]] || {}).grupo);
+    return { suma: conGrupo.reduce((s, [, n]) => s + n, 0), total: filas.reduce((s, [, n]) => s + n, 0), sueltas: filas.length - conGrupo.length };
+  });
+  const g = await vals();
+  expect(g.reduce((s, n) => s + n, 0)).toBe(suma);
+  expect(suma).toBeLessThanOrEqual(total);
+  if (sueltas) await expect(page.locator('#rkResto')).toContainText('Sin grupo cargado');
 });
