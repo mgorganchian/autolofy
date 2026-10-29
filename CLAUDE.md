@@ -400,6 +400,11 @@ sí quedan en inglés, porque no muestran la palabra. Se coló con `YES` dos vec
   camiones). Los años anteriores cuentan las **mismas denominaciones del registro** que la fila de
   2026; si en un año no hay ninguna, va NR («pudo no venderse o inscribirse con otro nombre»), nunca 0.
   Al sumar un auto, sus cuatro años se cargan con el script de la tarea (o se dejan NR con el motivo).
+- **Ventas por marca y por grupo** (vista Ranking, grupo «Del mercado», 2026-10-29, pedido del usuario): todo el
+  mercado, estén o no los autos en la tabla (`VENTAS_MARCAS`, DNRPA, mismo recorte que `VENTAS_AR`), con botones
+  por año y la participación. El grupo de cada marca es el de `MARCAS_INFO` (más `GRUPO_ALIAS` para los nombres
+  de empresa con que el registro inscribe algunos autos: «Great Wall», «Dfac Dongfeng»); una marca sin entrada
+  **no se asigna a ningún grupo**: va aparte, con su cifra. Al sumar una marca con su `MARCAS_INFO`, entra sola.
 - **Seguridad en choques (NCAP)** (primera de Seguridad pasiva): Latin NCAP va en texto plano;
   Euro NCAP, ANCAP, C-NCAP o ASEAN como EXT con año. Solo si el ensayo es del mismo modelo,
   generación y versión vendida acá (o se aclara la variante): ensayos de una versión anterior o

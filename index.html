@@ -850,6 +850,10 @@ if(!location.search&&!location.hash)document.documentElement.classList.add('arra
   .rk-pos{font-weight:700;font-size:.95rem;text-align:center;color:var(--accent-ink);font-variant-numeric:tabular-nums}
   .rk-foto{width:64px;height:40px;object-fit:contain;background:#fff;border-radius:6px;display:block}
   .rk-cuerpo{min-width:0}
+  .rk-anios{display:flex;flex-wrap:wrap;gap:6px;margin:0 0 8px}
+  .rk-mercado .rk-logo{width:64px;height:40px;display:flex;align-items:center;justify-content:center}
+  .rk-mercado .rk-logo img{max-width:100%;max-height:100%}
+  .rk-mercado .rk-valor small{display:block;font-weight:400}
   .rk-nombre{font-size:.8rem;font-weight:600;display:flex;flex-wrap:wrap;align-items:center;gap:2px 6px;min-width:0}
   .rk-nombre span{min-width:0}
   .rk-nombre .prop-icon{flex-shrink:0}
@@ -3895,6 +3899,9 @@ function rkEsc(s){ return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').r
 // Autos 0 km patentados en Argentina por año (autos, SUV, rurales y pickups; sin furgones ni camiones):
 // inscripciones iniciales de la DNRPA, https://datos.jus.gob.ar/dataset/inscripciones-iniciales-de-autos. La vista Ranking lo muestra arriba de cada lista de ventas.
 const VENTAS_AR = {"Patentamientos 2026 (unidades)": {"total": 383633, "periodo": "enero a septiembre de 2026"}, "Patentamientos 2025 (unidades)": {"total": 543777, "periodo": "todo 2025"}, "Patentamientos 2024 (unidades)": {"total": 365397, "periodo": "todo 2024"}, "Patentamientos 2023 (unidades)": {"total": 390660, "periodo": "todo 2023"}};
+// Autos 0 km patentados por marca y por año (mismo recorte que VENTAS_AR). El grupo de cada marca sale de
+// MARCAS_INFO: una marca sin entrada no se asigna a ningún grupo.
+const VENTAS_MARCAS = {"2026":[["Toyota",59779],["Volkswagen",53823],["Fiat",45570],["Ford",39195],["Chevrolet",35678],["Peugeot",24586],["Renault",23169],["Citroën",12781],["BYD",12260],["Jeep",10756],["Nissan",10138],["BAIC",7583],["Chery",5030],["Hyundai",4916],["Honda",4643],["RAM",4561],["Haval",3760],["MG",2842],["Mercedes-Benz",2810],["BMW",2750],["Kia",2575],["Audi",2523],["Jetour",1590],["Changan",1457],["Foton",1164],["Suzuki",943],["JAC",806],["DFSK",683],["Subaru",499],["MINI",357],["Mitsubishi",318],["Leapmotor",312],["GAC",309],["JMEV",275],["Lynk & Co",255],["Arcfox",252],["Lexus",237],["Dfac Dongfeng",219],["Great Wall",205],["DS",199],["Porsche",198],["Shineray",188],["Forthing",186],["Volvo",181],["KYC",178],["JMC",137],["Dongfeng",129],["Kaiyi",119],["Zanella",101],["Geely",92],["Land Rover",79],["Maxus",59],["Alfa Romeo",31],["Ferrari",22],["Dodge",15],["Isuzu",15],["Rely",13],["smart",6],["Jaguar",5],["Bentley",4],["Karry",4],["GMC",4],["Lotus",4],["Chrysler",4],["DOMY",4],["Skywell",3],["Tesla",3],["Pontiac",3],["Maserati",3],["Xiaomi",3],["Cadillac",3],["Acura",3],["Lancia",3],["SEAT",2],["Mclaren",2],["Lincoln",2],["Aston Martin",2],["Deepal",1],["Exeed",1],["Maextro",1],["Triumph",1],["Dacia",1],["Delage",1],["Rover",1],["Rolls Royce",1],["Mazda",1],["NSU",1],["Hummer",1],["Dodge Brothers",1],["Datsun",1],["Mercury",1],["OPEL",1]],"2025":[["Toyota",94633],["Volkswagen",94503],["Fiat",69606],["Ford",48199],["Renault",47054],["Chevrolet",46411],["Peugeot",45232],["Jeep",22015],["Citroën",20442],["Nissan",15300],["Hyundai",5362],["RAM",5256],["BAIC",4581],["Honda",3569],["Kia",2858],["Haval",2630],["Audi",2591],["BMW",2499],["Mercedes-Benz",2275],["Chery",949],["Foton",795],["JAC",785],["BYD",670],["DS",668],["DFSK",630],["Subaru",506],["Jetour",428],["Mitsubishi",418],["Volvo",332],["KYC",321],["Lexus",298],["MINI",279],["MG",277],["Suzuki",272],["Shineray",244],["Zanella",190],["Alfa Romeo",134],["Great Wall",119],["Porsche",104],["Dfac Dongfeng",61],["JMC",49],["Land Rover",45],["Kaiyi",36],["Changan",34],["Ferrari",16],["GAC",9],["Dodge",6],["FAW",5],["Maserati",5],["Acura",5],["DOMY",5],["Aston Martin",4],["Lotus",3],["Lincoln",3],["Isuzu",3],["Cadillac",3],["Chrysler",3],["Skywell",3],["Jaguar",3],["Mazda",3],["Arcfox",2],["Agrale",2],["SEAT",2],["Tesla",2],["Willys",2],["Sin Especificacion",2],["Bentley",2],["Rover",2],["Lamborghini",1],["Desoto",1],["Riley",1],["Pontiac",1],["Volskwagen",1],["Dodge Brothers",1],["Mercury",1],["Austin Healey",1],["GMC",1],["Mclaren",1],["Plymouth",1],["Maxus",1],["Ika Bergantin",1],["Buick",1],["JMEV",1],["Edsel",1],["Hummer",1],["Ssangyong",1],["Austin Mini",1],["Nsu Prinz",1],["Humpobile",1],["Humber",1]],"2024":[["Toyota",82850],["Volkswagen",64505],["Fiat",44489],["Ford",34406],["Peugeot",34156],["Renault",27511],["Chevrolet",23644],["Jeep",12935],["Nissan",12844],["Citroën",11704],["RAM",3744],["Honda",2393],["Audi",1365],["Mercedes-Benz",1277],["BMW",1200],["BAIC",776],["Hyundai",751],["Kia",562],["Chery",561],["DS",528],["Foton",416],["Subaru",307],["Haval",280],["DFSK",269],["Volvo",250],["Zanella",239],["KYC",221],["Shineray",213],["MINI",150],["JAC",125],["Lexus",122],["Mitsubishi",93],["Great Wall",80],["Alfa Romeo",79],["Jetour",70],["Suzuki",63],["Changan",48],["Porsche",44],["FAW",42],["Land Rover",22],["Dodge",12],["Ferrari",8],["Skywell",5],["Maserati",3],["Hummer",3],["Aston Martin",2],["Mazda",2],["smart",2],["Ssangyong",2],["Borgward",2],["Rover",1],["Vauxhall Victor",1],["Pontiac",1],["Riley",1],["Bentley",1],["NASH",1],["Kaiyi",1],["Acura",1],["Lancia",1],["Desoto",1],["Brilliance",1],["Chrysler",1],["GMC",1],["Mercury",1],["Sin Especificacion",1],["Soueast",1],["LADA",1],["OPEL",1],["Isuzu",1],["Lifan",1],["Lamborghini",1],["Lotus",1]],"2023":[["Toyota",91398],["Volkswagen",56651],["Fiat",54841],["Renault",38216],["Peugeot",38068],["Ford",35391],["Chevrolet",30661],["Nissan",19493],["Jeep",8970],["Citroën",7922],["Audi",1158],["Honda",1082],["Mercedes-Benz",943],["BMW",934],["DS",626],["Hyundai",477],["Chery",451],["Foton",403],["Kia",371],["Lexus",300],["RAM",259],["BAIC",227],["Shineray",199],["Volvo",177],["KYC",153],["Zanella",144],["Haval",139],["Changan",129],["MINI",126],["Great Wall",123],["Mitsubishi",121],["Subaru",106],["Alfa Romeo",77],["DFSK",63],["Jetour",60],["JAC",39],["Suzuki",34],["Porsche",31],["FAW",30],["Land Rover",16],["Dodge",5],["OPEL",4],["Jaguar",4],["Mazda",4],["Cadillac",3],["Ferrari",2],["Rover",2],["Jensen",2],["Lotus",2],["Morris Mini Cooper",1],["Chrysler",1],["Geely",1],["Skywell",1],["NASH",1],["Dongfeng",1],["smart",1],["Plymouth",1],["Infiniti",1],["Soueast",1],["Lasalle",1],["Hummer",1],["Lamborghini",1],["Rugby",1],["Graham Paige",1],["Pontiac",1],["Austin",1],["Morris",1],["Ika Rambler",1],["Buick",1],["Isuzu",1],["Oltcit",1],["No Posee",1]]};
 const RK_APARTE = {
   'Consumo de combustible (L/100km)': {
     tipos: ['phev'], clave: 'enchufables', titulo: 'Híbridos enchufables',
@@ -3971,11 +3978,13 @@ const RK_DERIVADAS = {
   'usd-km': { titulo: 'USD por km de autonomía', unidad: 'USD/km', dir: -1,
     sub: 'Solo eléctricos: precio (tope de gama) dividido la autonomía estimada a WLTP.' },
 };
+const RK_MERCADO = { '__marcas': 'Ventas por marca', '__grupos': 'Ventas por grupo' };
+let rkAnioMercado = '2026';
 const RK_HERRAMIENTAS = { '__medida': 'A tu medida', '__gasto': 'Gasto mensual', '__rebajas': 'Rebajas publicadas', '__cochera': '¿Entra en mi cochera?' };
 const rkEsDerivada = k => k in RK_DERIVADAS;
 const rkEsHerr = k => k in RK_HERRAMIENTAS;
 const rkDir = k => rkEsDerivada(k) ? RK_DERIVADAS[k].dir : PCTL_DIR[k];
-const rkTitulo = k => rkEsDerivada(k) ? RK_DERIVADAS[k].titulo : RK_HERRAMIENTAS[k] || rkEtiqueta(k);
+const rkTitulo = k => rkEsDerivada(k) ? RK_DERIVADAS[k].titulo : RK_HERRAMIENTAS[k] || RK_MERCADO[k] || rkEtiqueta(k);
 const rkUnidadDe = k => rkEsDerivada(k) ? RK_DERIVADAS[k].unidad : rkUnidad(k);
 const RK_CLAVES = [...RK_FILAS.map(f => f[0]), ...Object.keys(RK_DERIVADAS)];
 
@@ -4057,10 +4066,12 @@ function rkChips(){
       '<optgroup label="Según lo que buscás">' + Object.entries(RK_HERRAMIENTAS).map(([k, t]) => op(k, t)).join('') + '</optgroup>' +
       '<optgroup label="Por un dato">' + RK_FILAS.map(f => op(f[0], rkEtiqueta(f[0]))).join('') + '</optgroup>' +
       '<optgroup label="Por una cuenta">' + Object.entries(RK_DERIVADAS).map(([k, d]) => op(k, d.titulo)).join('') + '</optgroup>' +
+      '<optgroup label="Del mercado">' + Object.entries(RK_MERCADO).map(([k, t]) => op(k, t)).join('') + '</optgroup>' +
     '</select></label>' +
     Object.entries(RK_HERRAMIENTAS).map(([k, t]) => chip(k, t, ' rk-chip-herr')).join('') +
     RK_FILAS.map(f => chip(f[0], rkEtiqueta(f[0]))).join('') +
-    Object.entries(RK_DERIVADAS).map(([k, d]) => chip(k, d.titulo, ' rk-chip-deriv')).join('');
+    Object.entries(RK_DERIVADAS).map(([k, d]) => chip(k, d.titulo, ' rk-chip-deriv')).join('') +
+    Object.entries(RK_MERCADO).map(([k, t]) => chip(k, t, ' rk-chip-deriv')).join('');
 }
 
 function rkFiltrosHTML(cand){
@@ -4206,6 +4217,7 @@ function renderRanking(){
   const k = rkActual;
   if (k === '__medida') return rkRenderMedida(cand);
   if (k === '__rebajas') return rkRenderRebajas(cand);
+  if (RK_MERCADO[k]) return rkRenderMercado(k);
   if (k === '__gasto') return rkRenderGasto(cand);
   if (k === '__cochera') return rkRenderCochera(cand);
 
@@ -4242,6 +4254,49 @@ function renderRanking(){
   document.getElementById('rkResto').innerHTML = rkRestoHTML(resto, k);
 }
 
+// ---- Ventas por marca y por grupo (2026-10-29, pedido del usuario) -------------
+// Todo el mercado, no solo los autos de la tabla: sale de VENTAS_MARCAS (DNRPA). El grupo es el de
+// MARCAS_INFO; las marcas sin entrada van aparte, sin asignarles grupo.
+// El registro inscribe con el nombre de la empresa algunos autos de marcas que sí están en MARCAS_INFO.
+const GRUPO_ALIAS = { 'Great Wall': 'Haval', 'Dfac Dongfeng': 'Dongfeng' };
+function rkMercadoFilas(k, anio){
+  const marcas = VENTAS_MARCAS[anio] || [];
+  if (k === '__marcas') return { filas: marcas.map(([m, n]) => ({ nombre: m, n, logo: LOGO_MARCA[m], sub: (MARCAS_INFO[m] || MARCAS_INFO[GRUPO_ALIAS[m]] || {}).grupo || '' })), sueltas: [] };
+  const g = {}, sueltas = [];
+  marcas.forEach(([m, n]) => {
+    const info = MARCAS_INFO[m] || MARCAS_INFO[GRUPO_ALIAS[m]];
+    if (!info || !info.grupo){ sueltas.push([m, n]); return; }
+    (g[info.grupo] = g[info.grupo] || { nombre: info.grupo, n: 0, marcas: [], logo: LOGO_GRUPO[info.grupo] }).n += n;
+    g[info.grupo].marcas.push(m);
+  });
+  const filas = Object.values(g).map(x => ({ ...x, sub: x.marcas.join(', ') })).sort((a, b) => b.n - a.n);
+  return { filas, sueltas };
+}
+function rkRenderMercado(k){
+  const anio = rkAnioMercado, tot = VENTAS_AR['Patentamientos ' + anio + ' (unidades)'];
+  document.getElementById('rkTitulo').textContent = RK_MERCADO[k] + ' ' + anio;
+  document.getElementById('rkSub').innerHTML = '<div class="rk-anios" role="group" aria-label="Año">' +
+    Object.keys(VENTAS_MARCAS).sort().reverse().map(a => '<button type="button" class="cat-btn' + (a === anio ? ' active' : '') + '" aria-pressed="' + (a === anio) + '" data-anio="' + a + '">' + (a === '2026' ? '2026 (ene–sep)' : a) + '</button>').join('') + '</div>' +
+    rkEsc('Del más vendido al menos vendido: todos los 0 km patentados en Argentina, estén o no en la tabla (DNRPA; autos, SUV, rurales y pickups). En ' + tot.periodo + ' fueron ' + tot.total.toLocaleString('es-AR') + '.' +
+      (k === '__grupos' ? ' El grupo de cada marca es el que figura en la vista Grupos.' : ''));
+  document.getElementById('rkCobertura').innerHTML = ''; document.getElementById('rkGrafico').innerHTML = ''; document.getElementById('rkFiltros').innerHTML = '';
+  const { filas, sueltas } = rkMercadoFilas(k, anio);
+  const max = filas.length ? filas[0].n : 1;
+  document.getElementById('rkLista').innerHTML = filas.map((r, j) =>
+    '<li class="rk-item rk-mercado"><span class="rk-pos">' + (j + 1) + '</span>' + (r.logo ? logoHTML(r.logo, 'rk-logo', r.nombre) : '<span></span>') +
+    '<div class="rk-cuerpo"><div class="rk-nombre"><span>' + rkEsc(r.nombre) + '</span></div>' +
+    '<div class="rk-barra" aria-hidden="true"><i style="width:' + Math.max(2, 100 * r.n / max).toFixed(1) + '%"></i></div>' +
+    (r.sub ? '<div class="rk-orig">' + rkEsc(r.sub) + '</div>' : '') + '</div>' +
+    '<div class="rk-valor">' + r.n.toLocaleString('es-AR') + '<small>' + (100 * r.n / tot.total).toLocaleString('es-AR', { maximumFractionDigits: 1 }) + '%</small></div></li>').join('');
+  document.getElementById('rkResto').innerHTML = sueltas.length ? '<p class="rk-nota">Sin grupo cargado (marcas que todavía no están en la tabla): ' +
+    rkEsc(sueltas.map(([m, n]) => m + ' ' + n.toLocaleString('es-AR')).join(', ')) + '.</p>' : '';
+}
+document.getElementById('rkSub').addEventListener('click', e => {
+  const b = e.target.closest('[data-anio]');
+  if (!b) return;
+  rkAnioMercado = b.dataset.anio;
+  renderRanking();
+});
 // ---- Ficha de puestos de un auto (al tocarlo) ------------------------------
 function rkPuestoDe(i, k, lista){
   const { ok, resto } = rkClasificarFila(k, lista);
