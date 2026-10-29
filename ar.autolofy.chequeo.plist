@@ -2,12 +2,12 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
-  <key>Label</key><string>ar.autoschinos.chequeo</string>
+  <key>Label</key><string>ar.autolofy.chequeo</string>
   <key>ProgramArguments</key>
   <array>
     <string>/bin/zsh</string>
     <string>-lc</string>
-    <string>/Users/mgorganchian/Projects/autoschinos/herramientas-chequeo-diario.sh</string>
+    <string>/Users/mgorganchian/Projects/autolofy/herramientas-chequeo-diario.sh</string>
   </array>
   <!-- Una vez por semana: los lunes (Weekday 1) a las 09:15 hora local. Si la Mac
        está dormida a esa hora, launchd la corre apenas se despierta; si está
@@ -16,7 +16,7 @@
   <key>StartCalendarInterval</key>
   <dict><key>Weekday</key><integer>1</integer><key>Hour</key><integer>9</integer><key>Minute</key><integer>15</integer></dict>
   <key>RunAtLoad</key><false/>
-  <key>StandardOutPath</key><string>/Users/mgorganchian/Projects/autoschinos/.chequeo-salida.log</string>
-  <key>StandardErrorPath</key><string>/Users/mgorganchian/Projects/autoschinos/.chequeo-error.log</string>
+  <key>StandardOutPath</key><string>/Users/mgorganchian/Projects/autolofy/.chequeo-salida.log</string>
+  <key>StandardErrorPath</key><string>/Users/mgorganchian/Projects/autolofy/.chequeo-error.log</string>
 </dict>
 </plist>

@@ -3,7 +3,7 @@
 const fs = require('fs');
 const path = require('path');
 
-const RAIZ = process.env.AUTOSCHINOS_RAIZ || path.resolve(__dirname, '../..');
+const RAIZ = process.env.AUTOLOFY_RAIZ || path.resolve(__dirname, '../..');
 const INDEX = path.join(RAIZ, 'index.html');
 
 function leerIndex() {

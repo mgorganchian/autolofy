@@ -31,7 +31,7 @@ NOMBRES = {'BANCO BBVA ARGENTINA S.A.': 'BBVA', 'BANCO SANTANDER ARGENTINA S.A.'
 
 
 def bajar(tipo):
-    req = urllib.request.Request(API + tipo, headers={'User-Agent': 'autoschinos (comparativo; herramientas-tasas.py)'})
+    req = urllib.request.Request(API + tipo, headers={'User-Agent': 'autolofy (comparativo; herramientas-tasas.py)'})
     with urllib.request.urlopen(req, timeout=60) as r:
         return json.load(r)['results']
 

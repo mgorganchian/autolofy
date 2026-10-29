@@ -5,7 +5,7 @@ const path = require('path');
 const { execFileSync } = require('child_process');
 const { test, expect } = require('@playwright/test');
 
-const RAIZ = process.env.AUTOSCHINOS_RAIZ || path.resolve(__dirname, '../..');
+const RAIZ = process.env.AUTOLOFY_RAIZ || path.resolve(__dirname, '../..');
 
 test('las páginas por auto están al día con index.html', ({ }, info) => {
   test.skip(info.project.name !== 'escritorio', 'no depende del viewport');

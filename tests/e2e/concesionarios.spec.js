@@ -8,7 +8,7 @@ const path = require('path');
 const { test, expect } = require('@playwright/test');
 const { leerIndex, vigilarErrores, FILAS_DATOS, N_FILAS } = require('./helpers');
 
-const RAIZ = process.env.AUTOSCHINOS_RAIZ || path.resolve(__dirname, '../..');
+const RAIZ = process.env.AUTOLOFY_RAIZ || path.resolve(__dirname, '../..');
 const RED = JSON.parse(fs.readFileSync(path.join(RAIZ, 'concesionarios.json'), 'utf8'));
 const { CARS } = leerIndex();
 const MARCAS = [...new Set(CARS.map(c => c.brand))];

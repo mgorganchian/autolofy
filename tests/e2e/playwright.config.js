@@ -7,7 +7,7 @@
 const path = require('path');
 const { defineConfig } = require('@playwright/test');
 
-const RAIZ = process.env.AUTOSCHINOS_RAIZ || path.resolve(__dirname, '../..');
+const RAIZ = process.env.AUTOLOFY_RAIZ || path.resolve(__dirname, '../..');
 const PUERTO = 4173;
 
 module.exports = defineConfig({
