@@ -52,12 +52,12 @@ test('cada auto tiene su RSS válido, y su página lo anuncia', async ({ page },
   const fs = require('fs');
   const autos = fs.readdirSync(path.join(RAIZ, 'autos'));
   expect(autos.filter(f => f.endsWith('.xml')).length).toBe(autos.filter(f => f.endsWith('.html')).length);
-  const rss = fs.readFileSync(path.join(RAIZ, 'autos/song-pro.xml'), 'utf8');
+  const rss = fs.readFileSync(path.join(RAIZ, 'autos/byd-song-pro.xml'), 'utf8');
   expect(rss).toMatch(/^<\?xml version="1.0" encoding="UTF-8"\?>\n<rss version="2.0"><channel>/);
-  await page.goto('/autos/song-pro.html');
-  await expect(page.locator('link[rel="alternate"][type="application/rss+xml"]')).toHaveAttribute('href', '/autos/song-pro.xml');
+  await page.goto('/autos/byd-song-pro.html');
+  await expect(page.locator('link[rel="alternate"][type="application/rss+xml"]')).toHaveAttribute('href', '/autos/byd-song-pro.xml');
   const ok = await page.evaluate(async () => {
-    const t = await (await fetch('/autos/song-pro.xml')).text();
+    const t = await (await fetch('/autos/byd-song-pro.xml')).text();
     const x = new DOMParser().parseFromString(t, 'application/xml');
     return !x.querySelector('parsererror') && x.querySelectorAll('channel > title').length === 1;
   });
@@ -69,7 +69,7 @@ test('comparaciones "X vs Y": están en el sitemap, muestran las diferencias y l
   const fs = require('fs');
   const urls = [...fs.readFileSync(path.join(RAIZ, 'sitemap.xml'), 'utf8').matchAll(/\/comparar\/([a-z0-9-]+)-vs-([a-z0-9-]+)</g)];
   expect(urls.length).toBeGreaterThan(50);
-  const [, a, b] = urls.find(u => u[1] === 'baic-bj40-pro' && u[2] === 'tank-300') || urls[0];
+  const [, a, b] = urls.find(u => u[1] === 'baic-bj40-pro' && u[2] === 'gwm-tank-300') || urls[0];
   await page.goto(`/comparar/${a}-vs-${b}.html`);
   await expect(page.locator('h1')).toContainText(' vs ');
   await expect(page.locator('link[rel="canonical"]')).toHaveAttribute('href', `https://autolofy.vercel.app/comparar/${a}-vs-${b}`);

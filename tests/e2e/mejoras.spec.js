@@ -160,7 +160,7 @@ test('el visor agranda la foto y recorre las demás, desde Ayudame a elegir y de
   await expect(visor.locator('.visor-nombre')).not.toBeEmpty();
   await page.keyboard.press('Escape');
   await expect(visor).toBeHidden();
-  await page.goto('/index.html?auto=tank-300');
+  await page.goto('/index.html?auto=gwm-tank-300');
   await page.locator('#fichaImg').click();
   await expect(visor).toBeVisible();
   await expect(visor.locator('.visor-nombre')).toContainText('Tank 300');
@@ -177,9 +177,9 @@ test('el visor agranda la foto y recorre las demás, desde Ayudame a elegir y de
 test('las flechitas de las miniaturas cambian la foto en el lugar, y al agrandarla arranca en esa', async ({ page }) => {
   // Pedido del 2026-10-09: en todos los lugares con fotos, sin abrir nada al tocar la flecha.
   const segunda = /tank-300-2\.jpg$/;
-  await page.goto('/index.html?autos=tank-300,byd-shark');
+  await page.goto('/index.html?autos=gwm-tank-300,byd-shark');
   await expect(page.locator(FILAS_DATOS)).toHaveCount(N_FILAS);
-  const caja = page.locator('#theadTable .minicar[data-mini-slug="tank-300"]');
+  const caja = page.locator('#theadTable .minicar[data-mini-slug="gwm-tank-300"]');
   await caja.locator('.mini-nav.sig').click();
   await expect(caja.locator('img')).toHaveAttribute('src', segunda);
   await expect(page.locator('#fotoZoom')).toBeHidden();
@@ -193,7 +193,7 @@ test('las flechitas de las miniaturas cambian la foto en el lugar, y al agrandar
   await page.click('#openModalBtn');
   await page.click('#modelDropdownBtn');
   await page.fill('#modelBuscar', 'tank 300');
-  const tarjeta = page.locator('#modelList .mcard').filter({ has: page.locator('[data-mini-slug="tank-300"]') });
+  const tarjeta = page.locator('#modelList .mcard').filter({ has: page.locator('[data-mini-slug="gwm-tank-300"]') });
   const tildado = await tarjeta.locator('input').isChecked();
   await tarjeta.locator('.mini-nav.sig').click();
   await expect(tarjeta.locator('img')).toHaveAttribute('src', segunda);
@@ -201,12 +201,12 @@ test('las flechitas de las miniaturas cambian la foto en el lugar, y al agrandar
 
   // En la página del auto, la flecha de un parecido no abre su página.
   if (page.viewportSize().width >= 768){
-    await page.goto('/index.html?auto=tank-300');
+    await page.goto('/index.html?auto=gwm-tank-300');
     const parecido = page.locator('.ficha-sim .minicar:has(.mini-nav)').first();
     await parecido.hover();
     await parecido.locator('.mini-nav.sig').click();
     await expect(parecido.locator('img')).toHaveAttribute('src', /-2\.jpg$/);
-    expect(page.url()).toContain('auto=tank-300');
+    expect(page.url()).toContain('auto=gwm-tank-300');
   }
 
   // En Ayudame a elegir, el visor arranca en la foto que muestra la miniatura.
@@ -221,7 +221,7 @@ test('las flechitas de las miniaturas cambian la foto en el lugar, y al agrandar
 test('cada lugar con fotos de autos trae sus flechitas', async ({ page }) => {
   await page.goto('/index.html?tabla');
   await expect(page.locator(FILAS_DATOS)).toHaveCount(N_FILAS);
-  await expect(page.locator('#theadTable .minicar[data-mini-slug="tank-300"] .mini-nav')).toHaveCount(2);
+  await expect(page.locator('#theadTable .minicar[data-mini-slug="gwm-tank-300"] .mini-nav')).toHaveCount(2);
   await page.click('#vistaRanking');
   const rk = page.locator('#rkLista .rk-item .minicar:has(.mini-nav)').first();
   if (!page.viewportSize() || page.viewportSize().width < 768){
@@ -308,7 +308,7 @@ test('ayudame a elegir: cada sugerido tiene a lo sumo 4 renglones y en el celula
 test('tema claro: el encabezado, el de la tabla y las categorías son claros, y "Elegir autos" destella en verde', async ({ page }) => {
   // Pedido del 2026-10-10: nada oscuro arriba en el tema claro, con contraste fácil de leer.
   await page.emulateMedia({ colorScheme: 'light' });
-  await page.goto('/index.html?autos=tank-300,byd-shark');
+  await page.goto('/index.html?autos=gwm-tank-300,byd-shark');
   await expect(page.locator(FILAS_DATOS)).toHaveCount(N_FILAS);
   const claros = await page.evaluate(() => ['header', '#theadWrap', '#theadTable thead th', '#mainTable tr.cat-row td'].map(sel => {
     const [r, g, b] = getComputedStyle(document.querySelector(sel)).backgroundColor.match(/[\d.]+/g).map(Number);
@@ -406,7 +406,7 @@ test('botón Atrás: cierra el visor de fotos y el panel "Elegir autos"', async 
 
 test('encabezado compacto: al bajar, las fotos se van y el encabezado fijo ocupa la mitad', async ({ page }) => {
   // Pedido del 2026-10-10 (NN/g: lo fijo, lo más bajo posible). Sin cambiar alturas: no salta.
-  await page.goto('/index.html?autos=tank-300,byd-shark,jac-t9');
+  await page.goto('/index.html?autos=gwm-tank-300,byd-shark,jac-t9');
   await expect(page.locator(FILAS_DATOS)).toHaveCount(N_FILAS);
   await page.evaluate(() => window.scrollTo(0, 1500));
   const r = await page.locator('#theadWrap').evaluate(t => { const b = t.getBoundingClientRect(); return { visible: b.bottom, alto: b.height }; });
@@ -449,7 +449,7 @@ test('ayudame a elegir: sin presupuesto preelegido, resumen con "Cambiar" y, si 
 
 test('cuánto tarda en cargar: estimado en casa, y el tiempo de la ficha cuando lo publica', async ({ page }) => {
   // 2026-10-10: el Seal U (18,3 kWh, 6,6 kW, sin carga rápida) tiene todo en la ficha.
-  await abrir(page, '?auto=seal-u-dm-i');
+  await abrir(page, '?auto=byd-seal-u-dm-i');
   const s = page.locator('.ficha-carga');
   await expect(s.locator('dt')).toHaveText(['Enchufe común (10 A)', 'Cargador de pared de 7 kW', 'Carga rápida']);
   await expect(s.locator('dd')).toHaveText(['8 h 20 min', '2 h 50 min (el auto admite 6,6 kW)', 'No tiene']);
@@ -458,7 +458,7 @@ test('cuánto tarda en cargar: estimado en casa, y el tiempo de la ficha cuando 
   await abrir(page, '?auto=leapmotor-c10');
   await expect(page.locator('.ficha-carga dd').nth(1)).toHaveText('5 a 100% en 6 h');
   // Un naftero no tiene la sección.
-  await abrir(page, '?auto=tank-300');
+  await abrir(page, '?auto=gwm-tank-300');
   await expect(page.locator('.ficha-carga')).toHaveCount(0);
 });
 
@@ -483,7 +483,7 @@ test('¿entra en mi cochera?: entran, no entran y sin dato; la página del auto 
   await expect(page.locator('#rkLista .rk-item .rk-orig').first()).toHaveText(/^Sobran \d+ cm de largo y \d+ cm de ancho\.$/);
   // El Tank 300 (4.760 mm) no entra en 4,6 m: le faltan 16 cm.
   await expect(page.locator('#rkResto [data-grupo="no"] li[data-auto="Tank 300"]')).toHaveAttribute('data-tip', 'Le faltan 16 cm de largo.');
-  await abrir(page, '?auto=tank-300');
+  await abrir(page, '?auto=gwm-tank-300');
   await expect(page.locator('.ficha-cochera')).toContainText('No entra en tu cochera. Le faltan 16 cm de largo.');
   await page.locator('.ficha-cochera [data-ir-cochera]').click();
   await expect(page.locator('#rkTitulo')).toHaveText('¿Entra en mi cochera?');
@@ -491,7 +491,7 @@ test('¿entra en mi cochera?: entran, no entran y sin dato; la página del auto 
 });
 
 test('tamaño a escala y fotos lado a lado al comparar; los todoterreno se reconocen', async ({ page }) => {
-  await abrir(page, '?autos=song-pro,byd-sealion-7,baic-bj40-pro,tank-300');
+  await abrir(page, '?autos=byd-song-pro,byd-sealion-7,baic-bj40-pro,gwm-tank-300');
   const esc = page.locator('#difBox details[data-dif="escala"]');
   await esc.locator('summary').click();
   await expect(esc.locator('.esc-fila')).toHaveCount(4);
@@ -518,11 +518,11 @@ test('tamaño a escala y fotos lado a lado al comparar; los todoterreno se recon
 });
 
 test('seguir un auto no avisa cambios de precio de menos del 1%, y el historial no los titula', async ({ page }) => {
-  await abrir(page, '?auto=song-pro');
+  await abrir(page, '?auto=byd-song-pro');
   await page.locator('#fichaSeguir').click();
   await page.evaluate(() => {
     const s = JSON.parse(localStorage.getItem('seguidos'));
-    s['song-pro'].p += 100;   // USD 100 sobre unos USD 37.000: menos del 1%
+    s['byd-song-pro'].p += 100;   // USD 100 sobre unos USD 37.000: menos del 1%
     localStorage.setItem('seguidos', JSON.stringify(s));
   });
   await abrir(page);
@@ -545,15 +545,15 @@ test('las notas del pie están plegadas y la fecha de consulta queda a la vista'
 });
 
 test('seguir un auto: se guarda, avisa al volver si cambió el precio o la disponibilidad, y compara los que sigo', async ({ page }) => {
-  await abrir(page, '?auto=song-pro');
+  await abrir(page, '?auto=byd-song-pro');
   await page.locator('#fichaSeguir').click();
   await expect(page.locator('#fichaSeguir')).toHaveAttribute('aria-pressed', 'true');
-  await expect(page.locator('.ficha-seguir-nota a')).toHaveAttribute('href', 'autos/song-pro.xml');
+  await expect(page.locator('.ficha-seguir-nota a')).toHaveAttribute('href', 'autos/byd-song-pro.xml');
   await expect(page.locator('#seguidosBtn')).toHaveText('Los que sigo (1)');
   // Como si la última vez el Song Pro costara más y el Tank 300 estuviera en preventa.
   await page.evaluate(() => {
     const s = JSON.parse(localStorage.getItem('seguidos'));
-    s['song-pro'].p += 1000; s['tank-300'] = { p: null, s: 'preventa' };
+    s['byd-song-pro'].p += 1000; s['gwm-tank-300'] = { p: null, s: 'preventa' };
     localStorage.setItem('seguidos', JSON.stringify(s));
   });
   await abrir(page);
@@ -563,11 +563,11 @@ test('seguir un auto: se guarda, avisa al volver si cambió el precio o la dispo
   await expect(aviso.locator('li', { hasText: 'Song Pro' })).toContainText(/bajó de USD [\d.]+ a USD [\d.]+/);
   await expect(aviso.locator('li', { hasText: 'Tank 300' })).toContainText('ahora está: a la venta');
   await page.locator('#avisoComparar').click();
-  await expect(page).toHaveURL(/autos=song-pro,tank-300|autos=tank-300,song-pro/);
+  await expect(page).toHaveURL(/autos=byd-song-pro,gwm-tank-300|autos=gwm-tank-300,byd-song-pro/);
   await page.locator('#avisoListo').click();
   await expect(aviso).toBeHidden();
   // Dejar de seguir lo saca.
-  await abrir(page, '?auto=song-pro');
+  await abrir(page, '?auto=byd-song-pro');
   await page.locator('#fichaSeguir').click();
   await expect(page.locator('#seguidosBtn')).toHaveText('Los que sigo (1)');
 });
@@ -576,16 +576,16 @@ test('barras contra los de su tamaño: el percentil sale del segmento y se recue
   await abrir(page);
   const barra = sl => page.evaluate(s => { const i = SLUG_AUTO.indexOf(s);
       const e = document.querySelector('#mainTable tr[data-nombre="Volumen de baúl/carga (L)"] td[data-col="' + i + '"] .pct'); return e && e.title; }, sl);
-  expect(await barra('song-pro')).toMatch(/^Mejor que el \d+% de los \d+ autos con este dato$/);
+  expect(await barra('byd-song-pro')).toMatch(/^Mejor que el \d+% de los \d+ autos con este dato$/);
   await page.locator('#barrasSel').selectOption('seg');
-  expect(await barra('song-pro')).toMatch(/^Mejor que el \d+% de los \d+ autos grandes con este dato$/);
+  expect(await barra('byd-song-pro')).toMatch(/^Mejor que el \d+% de los \d+ autos grandes con este dato$/);
   // Un segmento con menos de 5 autos con el dato no tiene barra (los chicos con baúl).
   const chicos = await page.evaluate(() => CARS.filter((c, i) => c.size === 'mini' && pctlValor(FILA_POR_NOMBRE['Volumen de baúl/carga (L)'][i + 1], 'Volumen de baúl/carga (L)') !== null).length);
-  if (chicos < 5) expect(await barra('dolphin-mini')).toBeNull();
+  if (chicos < 5) expect(await barra('byd-dolphin-mini')).toBeNull();
   await page.reload();
   await expect(page.locator('#barrasSel')).toHaveValue('seg');
-  expect(await barra('song-pro')).toMatch(/autos grandes con este dato$/);
-  await abrir(page, '?autos=song-pro,tank-300');
+  expect(await barra('byd-song-pro')).toMatch(/autos grandes con este dato$/);
+  await abrir(page, '?autos=byd-song-pro,gwm-tank-300');
   await expect(page.locator('#barrasSelLbl')).toBeHidden();
 });
 
@@ -613,7 +613,7 @@ test('tracción: valores normalizados, todoterreno = SUV 4x4 con reductora, y se
 });
 
 test('sugerencias: la página del auto abre el formulario precargado con el auto, y el pie también lo linkea', async ({ page }) => {
-  await abrir(page, '?auto=song-pro');
+  await abrir(page, '?auto=byd-song-pro');
   const a = page.locator('.ficha-fuentes a.sugerencias');
   await expect(a).toHaveAttribute('href', /^https:\/\/docs\.google\.com\/forms\/d\/e\/[\w-]+\/viewform\?usp=pp_url&entry\.1360569446=Song%20Pro$/);
   await expect(a).toHaveAttribute('target', '_blank');
@@ -704,4 +704,18 @@ test('ayudame a elegir: las opciones de uso, enchufe, asientos y presupuesto exp
   await expect(page.locator('input[name="el-presu"][value="0-28000"] + span')).toHaveAttribute('data-tip', /dólar BNA vendedor/);
   await page.locator('input[name="el-uso"][value="tierra"] + span').hover();
   await expect(page.locator('#tooltipBox')).toContainText('reductora');
+});
+
+test('cada dirección empieza con la marca, y los links con un slug viejo siguen andando', async ({ page }) => {
+  // Issue #73 (2026-10-30, pedido de Mati): siempre marca-modelo, por ejemplo byd-song-pro.
+  await abrir(page);
+  const mal = await page.evaluate(() => {
+    const norm = s => s.normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase().replace(/&/g, '').trim().replace(/\s+/g, '-');
+    return CARS.map((c, i) => [norm(c.brand), SLUG_AUTO[i]]).filter(([m, s]) => !s.startsWith(m + '-')).map(x => x.join(' → '));
+  });
+  expect(mal).toEqual([]);
+  await page.goto('/index.html?auto=song-pro');
+  await expect(page.locator('#fichaNombre')).toContainText('Song Pro');
+  await page.goto('/index.html?autos=song-pro,tank-300');
+  await expect(page).toHaveURL(/autos=byd-song-pro,gwm-tank-300|autos=gwm-tank-300,byd-song-pro/);
 });

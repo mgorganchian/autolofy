@@ -44,10 +44,10 @@ test.describe('en la página del auto', () => {
   test.afterEach(() => expect(errores).toEqual([]));
 
   test('service con su total y su fuente; llamados con el registro', async ({ page }) => {
-    await page.goto('/index.html?auto=tank-300');
+    await page.goto('/index.html?auto=gwm-tank-300');
     const sv = page.locator('.ficha-service');
-    await expect(sv.locator('tbody tr')).toHaveCount(OFICIAL['tank-300'].r.length);
-    const suma = OFICIAL['tank-300'].r.reduce((t, x) => t + x[2], 0);
+    await expect(sv.locator('tbody tr')).toHaveCount(OFICIAL['gwm-tank-300'].r.length);
+    const suma = OFICIAL['gwm-tank-300'].r.reduce((t, x) => t + x[2], 0);
     await expect(sv.locator('tfoot td')).toHaveText('$ ' + suma.toLocaleString('es-AR'));
     await expect(sv.locator('a')).toHaveAttribute('href', MARCAS.GWM.f[0]);
     await expect(page.locator('.ficha-llamados')).toContainText('No figura ninguno en el registro oficial');
