@@ -6480,6 +6480,27 @@ const ELEGIR_USO = {
   tierra: { ev: .3, phev: .65, hev: .6, mhev: .85, ice: .95 },
   carga:  { ev: .5, phev: .6, hev: .6, mhev: .8, ice: .95 },
 };
+// Carteles de las opciones de Ayudame a elegir (2026-10-30, pedido de Mati): qué hace cada respuesta, tal
+// como lo calculan ELEGIR_USO, ELEGIR_FILAS y los bonus de elegirCalcular. Si cambia el cálculo, cambian acá.
+const ELEGIR_TIP = {
+  uso: {
+    ciudad: 'Suman más los eléctricos, enchufables e híbridos, y los de menor consumo.',
+    mixto: 'Suman más los enchufables, híbridos y eléctricos, y los de menor consumo y más potencia.',
+    ruta: 'Suman más los de más potencia, velocidad máxima y menor consumo. Los eléctricos suman menos.',
+    tierra: 'Suman más las pickups y los SUV con reductora; los 4x4 sin reductora, la mitad. También pesan la potencia y que sea a nafta o diésel.',
+    carga: 'Suman más las pickups, y los de más baúl o caja de carga y más potencia. Los eléctricos e híbridos suman menos.',
+  },
+  enchufe: {
+    si: 'Van primero los eléctricos y los enchufables.',
+    no: 'Van primero los híbridos; un eléctrico casi no suma.',
+    nose: 'Los enchufables e híbridos suman parejo; un eléctrico, algo menos.',
+  },
+  plazas: {
+    4: 'Entran los de 4 asientos o más, y los que no informan cuántos tienen.',
+    5: 'Entran los de 5 asientos o más, y los que no informan cuántos tienen.',
+    6: 'Solo los que informan 6 o 7 asientos. Además suma el baúl.',
+  },
+};
 const elegirFit = (tipo, r) => (ELEGIR_ENCHUFE[r.enchufe][tipo] ?? .5) * (ELEGIR_USO[r.uso][tipo] ?? .5);
 const ELEGIR_FILAS = {
   ciudad: ['Consumo de combustible (L/100km)'],
@@ -6593,7 +6614,8 @@ function pintarElegir(cambio){
     '<p class="ficha-nota">5 preguntas y te sugerimos ' + elegirN() + ' autos. ' +
       '<button type="button" class="mini-btn" id="elegirTabla">Ver la tabla</button></p>' +
     '<div class="elegir-cuerpo"><div class="elegir-preg">' + ELEGIR_PREG.map(q => '<fieldset><legend>' + q.t + '</legend><div class="elegir-ops">' +
-      q.ops.map(([v, t, pesos]) => '<label><input type="radio" name="el-' + q.k + '" value="' + v + '"' + (r[q.k] === v ? ' checked' : '') + '><span>' + t +
+      q.ops.map(([v, t, pesos]) => '<label><input type="radio" name="el-' + q.k + '" value="' + v + '"' + (r[q.k] === v ? ' checked' : '') + '><span' +
+        ((ELEGIR_TIP[q.k] || {})[v] ? ' data-tip="' + ELEGIR_TIP[q.k][v] + '"' : q.k === 'presu' && v ? ' data-tip="Los autos con la lista en pesos entran por su precio pasado a dólares al ' + DOLAR_TXT + '."' : '') + '>' + t +
         (pesos ? '<small class="precio-pesos">' + pesos + '</small>' : '') + '</span></label>').join('') + '</div></fieldset>').join('') + '</div>' +
     '<div class="elegir-resultados">' + elegirResumenHTML(r) + '<h3 class="elegir-res-tit" id="elegirResTit">' + (out.top.length ? 'Te sugerimos' : 'Ningún auto a la venta cumple todo eso') + '</h3>' +
     (out.top.length ? '<ol class="elegir-res">' + out.top.map(x => {

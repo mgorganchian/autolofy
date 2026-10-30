@@ -694,3 +694,14 @@ test('dólar al día: la página usa la cotización de /api/dolar y, si no llega
   await abrir(page);
   expect(await page.evaluate(() => DOLAR_BNA.venta)).toBe(sin.embebida.venta);
 });
+
+test('ayudame a elegir: las opciones de uso, enchufe, asientos y presupuesto explican qué hacen', async ({ page }) => {
+  // 2026-10-30, pedido de Mati: un cartel en cada opción, con lo que hace el cálculo.
+  await abrir(page);
+  await page.locator('#vistaElegir').click();
+  for (const k of ['uso', 'enchufe', 'plazas'])
+    for (const s of await page.locator(`input[name="el-${k}"] + span`).all()) await expect(s).toHaveAttribute('data-tip', /\S/);
+  await expect(page.locator('input[name="el-presu"][value="0-28000"] + span')).toHaveAttribute('data-tip', /dólar BNA vendedor/);
+  await page.locator('input[name="el-uso"][value="tierra"] + span').hover();
+  await expect(page.locator('#tooltipBox')).toContainText('reductora');
+});
