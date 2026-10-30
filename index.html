@@ -2757,7 +2757,7 @@ function pctlValor(v, nombre){
 // pesos. Es la única conversión de moneda del sitio: la celda sigue diciendo el precio como lo publica
 // la marca, y el ranking por precio sigue sin mezclar monedas (PCTL_VETO).
 // La cotización es la de billetes que publica el Banco Nación: se cambia junto con su fecha.
-/*dolar:inicio*/const DOLAR_BNA = { venta: 1560, fecha: '2026-10-28', fuente: 'https://www.bna.com.ar/Personas' };/*dolar:fin*/
+/*dolar:inicio*/const DOLAR_BNA = { venta: 1560, fecha: '2026-10-29', fuente: 'https://www.bna.com.ar/Personas' };/*dolar:fin*/
 const DOLAR_TXT = 'dólar BNA vendedor del ' + DOLAR_BNA.fecha.split('-').reverse().join('/') + ' ($ ' + DOLAR_BNA.venta.toLocaleString('es-AR') + ')';
 const aPesos = usd => Math.round(usd * DOLAR_BNA.venta);
 // En millones, para que entre en una opción o en una tarjeta: "$ 44,5 M". Los formateadores se arman una

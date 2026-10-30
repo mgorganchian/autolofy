@@ -257,7 +257,11 @@ sí quedan en inglés, porque no muestran la palabra. Se coló con `YES` dos vec
   sitio**: la celda sigue diciendo el precio como lo publica la marca (el de dólares lleva debajo
   «≈ $ N M»), el ranking por precio no mezcla monedas (`PCTL_VETO`) y las promos siguen sin convertir.
   La cotización va en `DOLAR_BNA`, entre `/*dolar:inicio*/` y `/*dolar:fin*/`, con su fecha y fuente:
-  se cambia a mano, junto con la fecha, hasta que la rutina la actualice.
+  la actualiza sola `.github/workflows/dolar.yml` (pedido de Mati, 2026-10-29), que corre los días hábiles
+  a las 10:20, 12:20, 15:20 y 17:20 (el banco abre a las 10 y la última actualización suele ser a las 17)
+  con `herramientas-dolar.py`: lee la tabla «Billetes» de bna.com.ar y, si la cotización cambió, abre el PR
+  `dolar-bna` con auto-merge y larga el e2e con `workflow_dispatch` (un PR del GITHUB_TOKEN no dispara
+  `pull_request`). Si la página del banco no trae la tabla, falla sin tocar nada: no hay otra fuente.
 - **Letra en el celular** (2026-10-10, pedido del usuario: con presbicia no se leía): hasta
   640 px de ancho la base es `html{font-size:130%}` (con 115% los datos quedaban en 15 px y no
   alcanzó; con 130% van en 17 px y casi nada baja de 15). El título grande del encabezado no sube.

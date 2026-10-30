@@ -6,6 +6,8 @@ on:
   pull_request:
   push:
     branches: [main]
+  # La tarea del dólar (dolar.yml) la larga a mano: su PR lo abre el GITHUB_TOKEN y no dispara pull_request.
+  workflow_dispatch:
 
 jobs:
   e2e:
