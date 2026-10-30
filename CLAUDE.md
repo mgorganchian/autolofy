@@ -250,8 +250,9 @@ sí quedan en inglés, porque no muestran la palabra. Se coló con `YES` dos vec
   La referencia marca ▲/▼ **solo en las filas de `PCTL_DIR`** y con `pctlValor()`,
   igual que las barras de percentil; los enchufables no se comparan en consumo (`RK_APARTE`).
 - **La comparación vive en la URL**: `?autos=slug,slug&ref=slug&orden=clave` (los slugs
-  son los de las fotos). Si se renombra un slug, los links viejos a ese auto dejan de
-  incluirlo: no renombrar slugs sin necesidad.
+  son los de las fotos). **Todo slug es marca-modelo** (`byd-song-pro`, `gwm-haval-h6-4wd`; issue #73,
+  2026-10-30): un auto nuevo arranca con su marca. Si se renombra un slug, va a `SLUG_VIEJO` (los links y los
+  seguidos viejos siguen andando) y a los `redirects` de `vercel.json`; no renombrar slugs sin necesidad.
 - **Presupuesto** en el selector: rango en USD sobre `PRECIO_CMP`, con su equivalente en pesos a la
   vista. Los autos sin ningún precio publicado entran por defecto (tilde aparte): no esconder un auto
   porque falte el dato.

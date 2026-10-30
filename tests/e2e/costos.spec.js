@@ -35,8 +35,8 @@ test.describe('en la página del auto', () => {
   test.afterEach(() => expect(errores).toEqual([]));
 
   test('gastos para patentarlo: Registro 1% y el sellado de la provincia elegida, que se recuerda', async ({ page }) => {
-    await page.goto('/index.html?auto=song-pro');
-    const lp = await page.evaluate(() => SIM_PRECIO[SLUG_AUTO.indexOf('song-pro')]);
+    await page.goto('/index.html?auto=byd-song-pro');
+    const lp = await page.evaluate(() => SIM_PRECIO[SLUG_AUTO.indexOf('byd-song-pro')]);
     await page.locator('#fichaPatentar summary').click();
     await expect(page.locator('#patCuerpo')).toContainText('Elegí tu provincia');
     await page.locator('#patProv').selectOption('Ciudad Autónoma de Buenos Aires');
@@ -46,12 +46,12 @@ test.describe('en la página del auto', () => {
     // Jujuy cobra menos sellado a los híbridos (1,5% en vez de 2%).
     await page.locator('#patProv').selectOption('Jujuy');
     await expect(page.locator('#patCuerpo tfoot td')).toHaveText(usd(lp * .025));
-    await page.goto('/index.html?auto=song-pro');
+    await page.goto('/index.html?auto=byd-song-pro');
     await expect(page.locator('#patProv')).toHaveValue('Jujuy');
   });
 
   test('cuota: sistema francés con la TEA de la línea elegida', async ({ page }) => {
-    await page.goto('/index.html?auto=song-pro');
+    await page.goto('/index.html?auto=byd-song-pro');
     await page.locator('#fichaCuota summary').click();
     await expect(page.locator('#cuRes')).toContainText('Escribí cuánto');
     await page.locator('#cuMonto').fill('20000000');

@@ -33,5 +33,247 @@
       ]
     }
   ],
-  "cleanUrls": true
+  "cleanUrls": true,
+  "redirects": [
+    {
+      "source": "/autos/seal-5-dm-i",
+      "destination": "/autos/byd-seal-5-dm-i",
+      "permanent": true
+    },
+    {
+      "source": "/autos/seal-5-dm-i.xml",
+      "destination": "/autos/byd-seal-5-dm-i.xml",
+      "permanent": true
+    },
+    {
+      "source": "/comparar/(.*-vs-)?seal-5-dm-i(-vs-.*)?",
+      "destination": "/autos/byd-seal-5-dm-i",
+      "permanent": true
+    },
+    {
+      "source": "/autos/seal-u-dm-i",
+      "destination": "/autos/byd-seal-u-dm-i",
+      "permanent": true
+    },
+    {
+      "source": "/autos/seal-u-dm-i.xml",
+      "destination": "/autos/byd-seal-u-dm-i.xml",
+      "permanent": true
+    },
+    {
+      "source": "/comparar/(.*-vs-)?seal-u-dm-i(-vs-.*)?",
+      "destination": "/autos/byd-seal-u-dm-i",
+      "permanent": true
+    },
+    {
+      "source": "/autos/song-pro",
+      "destination": "/autos/byd-song-pro",
+      "permanent": true
+    },
+    {
+      "source": "/autos/song-pro.xml",
+      "destination": "/autos/byd-song-pro.xml",
+      "permanent": true
+    },
+    {
+      "source": "/comparar/(.*-vs-)?song-pro(-vs-.*)?",
+      "destination": "/autos/byd-song-pro",
+      "permanent": true
+    },
+    {
+      "source": "/autos/atto-2-dm-i",
+      "destination": "/autos/byd-atto-2-dm-i",
+      "permanent": true
+    },
+    {
+      "source": "/autos/atto-2-dm-i.xml",
+      "destination": "/autos/byd-atto-2-dm-i.xml",
+      "permanent": true
+    },
+    {
+      "source": "/comparar/(.*-vs-)?atto-2-dm-i(-vs-.*)?",
+      "destination": "/autos/byd-atto-2-dm-i",
+      "permanent": true
+    },
+    {
+      "source": "/autos/yuan-pro",
+      "destination": "/autos/byd-yuan-pro",
+      "permanent": true
+    },
+    {
+      "source": "/autos/yuan-pro.xml",
+      "destination": "/autos/byd-yuan-pro.xml",
+      "permanent": true
+    },
+    {
+      "source": "/comparar/(.*-vs-)?yuan-pro(-vs-.*)?",
+      "destination": "/autos/byd-yuan-pro",
+      "permanent": true
+    },
+    {
+      "source": "/autos/dolphin-mini",
+      "destination": "/autos/byd-dolphin-mini",
+      "permanent": true
+    },
+    {
+      "source": "/autos/dolphin-mini.xml",
+      "destination": "/autos/byd-dolphin-mini.xml",
+      "permanent": true
+    },
+    {
+      "source": "/comparar/(.*-vs-)?dolphin-mini(-vs-.*)?",
+      "destination": "/autos/byd-dolphin-mini",
+      "permanent": true
+    },
+    {
+      "source": "/autos/haval-h6-hev",
+      "destination": "/autos/gwm-haval-h6-pro-hev",
+      "permanent": true
+    },
+    {
+      "source": "/autos/haval-h6-hev.xml",
+      "destination": "/autos/gwm-haval-h6-pro-hev.xml",
+      "permanent": true
+    },
+    {
+      "source": "/comparar/(.*-vs-)?haval-h6-hev(-vs-.*)?",
+      "destination": "/autos/gwm-haval-h6-pro-hev",
+      "permanent": true
+    },
+    {
+      "source": "/autos/poer-4wd",
+      "destination": "/autos/gwm-poer-4wd",
+      "permanent": true
+    },
+    {
+      "source": "/autos/poer-4wd.xml",
+      "destination": "/autos/gwm-poer-4wd.xml",
+      "permanent": true
+    },
+    {
+      "source": "/comparar/(.*-vs-)?poer-4wd(-vs-.*)?",
+      "destination": "/autos/gwm-poer-4wd",
+      "permanent": true
+    },
+    {
+      "source": "/autos/tank-300",
+      "destination": "/autos/gwm-tank-300",
+      "permanent": true
+    },
+    {
+      "source": "/autos/tank-300.xml",
+      "destination": "/autos/gwm-tank-300.xml",
+      "permanent": true
+    },
+    {
+      "source": "/comparar/(.*-vs-)?tank-300(-vs-.*)?",
+      "destination": "/autos/gwm-tank-300",
+      "permanent": true
+    },
+    {
+      "source": "/autos/ora-03",
+      "destination": "/autos/gwm-ora-03",
+      "permanent": true
+    },
+    {
+      "source": "/autos/ora-03.xml",
+      "destination": "/autos/gwm-ora-03.xml",
+      "permanent": true
+    },
+    {
+      "source": "/comparar/(.*-vs-)?ora-03(-vs-.*)?",
+      "destination": "/autos/gwm-ora-03",
+      "permanent": true
+    },
+    {
+      "source": "/autos/haval-h7-4wd",
+      "destination": "/autos/gwm-haval-h7-4wd",
+      "permanent": true
+    },
+    {
+      "source": "/autos/haval-h7-4wd.xml",
+      "destination": "/autos/gwm-haval-h7-4wd.xml",
+      "permanent": true
+    },
+    {
+      "source": "/comparar/(.*-vs-)?haval-h7-4wd(-vs-.*)?",
+      "destination": "/autos/gwm-haval-h7-4wd",
+      "permanent": true
+    },
+    {
+      "source": "/autos/haval-h7-hev",
+      "destination": "/autos/gwm-haval-h7-hev",
+      "permanent": true
+    },
+    {
+      "source": "/autos/haval-h7-hev.xml",
+      "destination": "/autos/gwm-haval-h7-hev.xml",
+      "permanent": true
+    },
+    {
+      "source": "/comparar/(.*-vs-)?haval-h7-hev(-vs-.*)?",
+      "destination": "/autos/gwm-haval-h7-hev",
+      "permanent": true
+    },
+    {
+      "source": "/autos/haval-jolion-pro-hev",
+      "destination": "/autos/gwm-haval-jolion-pro-hev",
+      "permanent": true
+    },
+    {
+      "source": "/autos/haval-jolion-pro-hev.xml",
+      "destination": "/autos/gwm-haval-jolion-pro-hev.xml",
+      "permanent": true
+    },
+    {
+      "source": "/comparar/(.*-vs-)?haval-jolion-pro-hev(-vs-.*)?",
+      "destination": "/autos/gwm-haval-jolion-pro-hev",
+      "permanent": true
+    },
+    {
+      "source": "/autos/haval-h6-4wd",
+      "destination": "/autos/gwm-haval-h6-4wd",
+      "permanent": true
+    },
+    {
+      "source": "/autos/haval-h6-4wd.xml",
+      "destination": "/autos/gwm-haval-h6-4wd.xml",
+      "permanent": true
+    },
+    {
+      "source": "/comparar/(.*-vs-)?haval-h6-4wd(-vs-.*)?",
+      "destination": "/autos/gwm-haval-h6-4wd",
+      "permanent": true
+    },
+    {
+      "source": "/autos/haval-h6-gt",
+      "destination": "/autos/gwm-haval-h6-gt",
+      "permanent": true
+    },
+    {
+      "source": "/autos/haval-h6-gt.xml",
+      "destination": "/autos/gwm-haval-h6-gt.xml",
+      "permanent": true
+    },
+    {
+      "source": "/comparar/(.*-vs-)?haval-h6-gt(-vs-.*)?",
+      "destination": "/autos/gwm-haval-h6-gt",
+      "permanent": true
+    },
+    {
+      "source": "/autos/haval-jolion-hev",
+      "destination": "/autos/gwm-haval-jolion-hev",
+      "permanent": true
+    },
+    {
+      "source": "/autos/haval-jolion-hev.xml",
+      "destination": "/autos/gwm-haval-jolion-hev.xml",
+      "permanent": true
+    },
+    {
+      "source": "/comparar/(.*-vs-)?haval-jolion-hev(-vs-.*)?",
+      "destination": "/autos/gwm-haval-jolion-hev",
+      "permanent": true
+    }
+  ]
 }
