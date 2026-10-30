@@ -241,6 +241,23 @@
   <url><loc>https://autolofy.vercel.app/autos/kia-sportage-x-line</loc></url>
   <url><loc>https://autolofy.vercel.app/autos/peugeot-408-gt</loc></url>
   <url><loc>https://autolofy.vercel.app/autos/ram-1500-laramie-night-edition</loc></url>
+  <url><loc>https://autolofy.vercel.app/autos/porsche-911-turbo-s-cabriolet</loc></url>
+  <url><loc>https://autolofy.vercel.app/autos/porsche-cayenne-turbo-gt</loc></url>
+  <url><loc>https://autolofy.vercel.app/autos/porsche-macan-gts</loc></url>
+  <url><loc>https://autolofy.vercel.app/autos/subaru-wrx-performance-es</loc></url>
+  <url><loc>https://autolofy.vercel.app/autos/subaru-impreza-limited-es</loc></url>
+  <url><loc>https://autolofy.vercel.app/autos/peugeot-5008-gt</loc></url>
+  <url><loc>https://autolofy.vercel.app/autos/citroen-c5-aircross-max</loc></url>
+  <url><loc>https://autolofy.vercel.app/autos/kia-k4-sedan-gt-line</loc></url>
+  <url><loc>https://autolofy.vercel.app/autos/hyundai-santa-fe-2-5-t-gdi-4wd</loc></url>
+  <url><loc>https://autolofy.vercel.app/autos/honda-civic-advanced-hybrid</loc></url>
+  <url><loc>https://autolofy.vercel.app/autos/lexus-nx-450h-plus</loc></url>
+  <url><loc>https://autolofy.vercel.app/autos/bmw-m2-coupe</loc></url>
+  <url><loc>https://autolofy.vercel.app/autos/bmw-x6-xdrive40i-m-sport-pro</loc></url>
+  <url><loc>https://autolofy.vercel.app/autos/volkswagen-t-cross-highline</loc></url>
+  <url><loc>https://autolofy.vercel.app/autos/mercedes-benz-gle-450-4matic</loc></url>
+  <url><loc>https://autolofy.vercel.app/autos/renault-sandero-intens-1-6</loc></url>
+  <url><loc>https://autolofy.vercel.app/autos/kia-tasman-x-pro-2-5-tgdi</loc></url>
   <url><loc>https://autolofy.vercel.app/comparar/arcfox-s5-vs-forthing-s7-reev</loc></url>
   <url><loc>https://autolofy.vercel.app/comparar/arcfox-s5-vs-gac-aion-es</loc></url>
   <url><loc>https://autolofy.vercel.app/comparar/arcfox-t1-vs-chery-tiggo-4-pro</loc></url>
@@ -277,7 +294,11 @@
   <url><loc>https://autolofy.vercel.app/comparar/bmw-m340i-xdrive-vs-gac-s7</loc></url>
   <url><loc>https://autolofy.vercel.app/comparar/bmw-x1-sdrive18i-efficient-vs-jetour-t1</loc></url>
   <url><loc>https://autolofy.vercel.app/comparar/bmw-x1-sdrive18i-efficient-vs-subaru-crosstrek-hybrid</loc></url>
+  <url><loc>https://autolofy.vercel.app/comparar/bmw-x3-m50-xdrive-vs-bmw-x6-xdrive40i-m-sport-pro</loc></url>
+  <url><loc>https://autolofy.vercel.app/comparar/bmw-x3-m50-xdrive-vs-lexus-nx-450h-plus</loc></url>
+  <url><loc>https://autolofy.vercel.app/comparar/bmw-x6-xdrive40i-m-sport-pro-vs-lynk-co-900</loc></url>
   <url><loc>https://autolofy.vercel.app/comparar/byd-shark-vs-foton-tunland-v9</loc></url>
+  <url><loc>https://autolofy.vercel.app/comparar/byd-shark-vs-kia-tasman-x-pro-2-5-tgdi</loc></url>
   <url><loc>https://autolofy.vercel.app/comparar/byd-shark-vs-maxus-eterron</loc></url>
   <url><loc>https://autolofy.vercel.app/comparar/byd-shark-vs-mitsubishi-l200</loc></url>
   <url><loc>https://autolofy.vercel.app/comparar/changan-cs55-plus-vs-leapmotor-b10</loc></url>
@@ -285,7 +306,7 @@
   <url><loc>https://autolofy.vercel.app/comparar/changan-eado-plus-phev-vs-chery-arrizo-8</loc></url>
   <url><loc>https://autolofy.vercel.app/comparar/changan-eado-plus-phev-vs-seal-5-dm-i</loc></url>
   <url><loc>https://autolofy.vercel.app/comparar/chery-arrizo-8-vs-forthing-s7-reev</loc></url>
-  <url><loc>https://autolofy.vercel.app/comparar/chery-arrizo-8-vs-gac-empow</loc></url>
+  <url><loc>https://autolofy.vercel.app/comparar/chery-arrizo-8-vs-kia-k4-sedan-gt-line</loc></url>
   <url><loc>https://autolofy.vercel.app/comparar/chery-arrizo-8-vs-seal-5-dm-i</loc></url>
   <url><loc>https://autolofy.vercel.app/comparar/chery-himla-vs-maxus-t60-max</loc></url>
   <url><loc>https://autolofy.vercel.app/comparar/chery-himla-vs-mitsubishi-l200</loc></url>
@@ -324,6 +345,7 @@
   <url><loc>https://autolofy.vercel.app/comparar/ds-7-plug-in-hybrid-awd-vs-jetour-t2-i-dm</loc></url>
   <url><loc>https://autolofy.vercel.app/comparar/forthing-friday-reev-vs-geely-ex5</loc></url>
   <url><loc>https://autolofy.vercel.app/comparar/forthing-friday-reev-vs-soueast-s06</loc></url>
+  <url><loc>https://autolofy.vercel.app/comparar/forthing-s7-reev-vs-honda-civic-advanced-hybrid</loc></url>
   <url><loc>https://autolofy.vercel.app/comparar/forthing-t5-evo-vs-gac-gs3-emzoom</loc></url>
   <url><loc>https://autolofy.vercel.app/comparar/forthing-t5-evo-vs-jetour-dashing</loc></url>
   <url><loc>https://autolofy.vercel.app/comparar/forthing-t5-hev-vs-gac-emkoo-hev</loc></url>
@@ -335,9 +357,11 @@
   <url><loc>https://autolofy.vercel.app/comparar/gac-aion-ut-vs-ora-03</loc></url>
   <url><loc>https://autolofy.vercel.app/comparar/gac-aion-v-vs-geely-ex5</loc></url>
   <url><loc>https://autolofy.vercel.app/comparar/gac-emkoo-hev-vs-haval-h6-hev</loc></url>
+  <url><loc>https://autolofy.vercel.app/comparar/gac-empow-vs-kia-k4-sedan-gt-line</loc></url>
   <url><loc>https://autolofy.vercel.app/comparar/gac-gs3-emzoom-vs-kia-seltos-lx</loc></url>
   <url><loc>https://autolofy.vercel.app/comparar/gac-gs8-vs-jetour-t2</loc></url>
   <url><loc>https://autolofy.vercel.app/comparar/gac-gs8-vs-maxus-d90</loc></url>
+  <url><loc>https://autolofy.vercel.app/comparar/gac-s7-vs-subaru-wrx-performance-es</loc></url>
   <url><loc>https://autolofy.vercel.app/comparar/geely-icon-vs-kia-seltos-lx</loc></url>
   <url><loc>https://autolofy.vercel.app/comparar/gwm-ora-5-hev-vs-haval-jolion-pro-hev</loc></url>
   <url><loc>https://autolofy.vercel.app/comparar/gwm-ora-5-hev-vs-mg-zs-hev</loc></url>
@@ -346,8 +370,11 @@
   <url><loc>https://autolofy.vercel.app/comparar/haval-h7-4wd-vs-jac-js8-pro</loc></url>
   <url><loc>https://autolofy.vercel.app/comparar/haval-h7-4wd-vs-jetour-x70</loc></url>
   <url><loc>https://autolofy.vercel.app/comparar/haval-h7-4wd-vs-jetour-x70-plus</loc></url>
+  <url><loc>https://autolofy.vercel.app/comparar/honda-civic-advanced-hybrid-vs-subaru-wrx-performance-es</loc></url>
+  <url><loc>https://autolofy.vercel.app/comparar/honda-cr-v-advanced-hybrid-vs-lexus-nx-450h-plus</loc></url>
   <url><loc>https://autolofy.vercel.app/comparar/honda-cr-v-advanced-hybrid-vs-subaru-forester-hybrid</loc></url>
   <url><loc>https://autolofy.vercel.app/comparar/jac-ev-30x-vs-ora-03</loc></url>
+  <url><loc>https://autolofy.vercel.app/comparar/jac-ev-30x-vs-subaru-impreza-limited-es</loc></url>
   <url><loc>https://autolofy.vercel.app/comparar/jac-js4-vs-jetour-x50</loc></url>
   <url><loc>https://autolofy.vercel.app/comparar/jac-js6-phev-vs-lynk-co-01</loc></url>
   <url><loc>https://autolofy.vercel.app/comparar/jac-js8-pro-vs-jetour-x70-plus</loc></url>
@@ -375,6 +402,7 @@
   <url><loc>https://autolofy.vercel.app/comparar/kaiyi-x3-pro-vs-mg-zs</loc></url>
   <url><loc>https://autolofy.vercel.app/comparar/kia-sportage-x-line-vs-mitsubishi-outlander</loc></url>
   <url><loc>https://autolofy.vercel.app/comparar/kia-sportage-x-line-vs-subaru-forester-hybrid</loc></url>
+  <url><loc>https://autolofy.vercel.app/comparar/kia-tasman-x-pro-2-5-tgdi-vs-maxus-eterron</loc></url>
   <url><loc>https://autolofy.vercel.app/comparar/leapmotor-b10-vs-lynk-co-06</loc></url>
   <url><loc>https://autolofy.vercel.app/comparar/leapmotor-b10-vs-soueast-s06</loc></url>
   <url><loc>https://autolofy.vercel.app/comparar/leapmotor-c10-vs-song-pro</loc></url>
@@ -389,5 +417,6 @@
   <url><loc>https://autolofy.vercel.app/comparar/mini-countryman-s-all4-favoured-vs-smart-1</loc></url>
   <url><loc>https://autolofy.vercel.app/comparar/mini-countryman-s-all4-favoured-vs-smart-3</loc></url>
   <url><loc>https://autolofy.vercel.app/comparar/mitsubishi-outlander-vs-seal-u-dm-i</loc></url>
+  <url><loc>https://autolofy.vercel.app/comparar/ora-03-vs-subaru-impreza-limited-es</loc></url>
   <url><loc>https://autolofy.vercel.app/comparar/smart-1-vs-smart-3</loc></url>
 </urlset>
