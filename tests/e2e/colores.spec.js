@@ -32,3 +32,25 @@ test('la página del auto muestra sus colores con la fuente, o el motivo si no h
   await page.goto('/index.html?auto=' + sin);
   await expect(page.locator('.ficha-colores')).toContainText(COLORES[sin].n);
 });
+
+test('cada muestra de color tiene un código válido y su fuente https, una por nombre', () => {
+  // Issue #72 (2026-10-30): la muestra sale del código o del chip que publica la marca, nunca del nombre.
+  for (const [slug, e] of Object.entries(COLORES)) {
+    if (!e.m) continue;
+    expect(e.m.length, slug).toBe(e.c.length);
+    for (const m of e.m) {
+      if (m === null) continue;
+      expect(m[0], slug).toMatch(/^#[0-9a-f]{6}$/);
+      expect(m[1], slug).toMatch(/^https:\/\/\S+$/);
+    }
+  }
+});
+
+test('la página del auto dibuja la muestra al lado de cada color que la tiene', async ({ page }) => {
+  const slug = 'byd-song-pro', e = COLORES[slug];
+  await page.goto('/index.html?auto=' + slug);
+  await expect(page.locator(FILAS_DATOS)).toHaveCount(N_FILAS);
+  await expect(page.locator('.ficha-colores .muestra-color')).toHaveCount(e.m.filter(Boolean).length);
+  const fondo = await page.locator('.ficha-colores .muestra-color').first().evaluate(el => el.style.background);
+  expect(fondo).toBeTruthy();
+});

@@ -116,7 +116,8 @@ def pagina(i, data, car, slug, credito, colores, videos, vs=(), extra=None):
     col = colores.get(slug) or {}
     colores_html = ''
     if col.get('c'):
-        colores_html = ('<section><h2>Colores en Argentina</h2><ul class="colores">' + ''.join(f'<li>{e(c)}</li>' for c in col['c']) +
+        colores_html = ('<section><h2>Colores en Argentina</h2><ul class="colores">' + ''.join('<li>' + (f'<span class="muestra" style="background:{m[0]}" title="Muestra del color tomada de {e(m[1])}"></span>' if m else '') + f'{e(c)}</li>'
+                                  for c, m in zip(col['c'], col.get('m') or [None] * len(col['c']))) +
                         f'</ul><p class="nota">{e(col.get("n", ""))} Fuente: <a href="{e(col["f"])}" rel="nofollow">{e(col.get("d", "oficial"))}</a>.</p></section>')
     videos_html = ''
     if videos.get(slug):
@@ -159,6 +160,7 @@ h2{{font-size:1.15rem;margin:24px 0 6px;border-bottom:2px solid var(--ink)}} tab
 th,td{{text-align:left;vertical-align:top;padding:5px 6px;border-bottom:1px solid var(--line);overflow-wrap:anywhere}} th{{font-weight:500;width:42%;color:var(--ink2)}}
 td small{{display:block;font-size:.75rem;color:var(--ink2)}} .colores{{list-style:none;padding:0;display:flex;flex-wrap:wrap;gap:6px}}
 .colores li{{border:1px solid var(--line);border-radius:3px;padding:2px 8px}}
+.muestra{{display:inline-block;width:.9em;height:.9em;border-radius:50%;border:1px solid var(--line);vertical-align:-.1em;margin-right:5px}}
 .vs{{padding-left:18px}} .vs li{{margin:3px 0}} .videos{{padding-left:18px}} .videos li{{margin:4px 0}} .videos small{{display:block;color:var(--ink2)}} .nota,footer{{font-size:.8rem;color:var(--ink2)}}
 </style></head>
 <body><main>
