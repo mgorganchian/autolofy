@@ -676,3 +676,21 @@ test('precios en pesos: la lista en pesos entra en las franjas y los de dólares
   await expect(page.locator('#precioSdN')).toHaveText(String(sinCifra));
   await expect(page.locator('#precioPesos')).toContainText('dólar BNA vendedor');
 });
+
+test('dólar al día: la página usa la cotización de /api/dolar y, si no llega, la embebida', async ({ page }) => {
+  // 2026-10-30, pedido de Mati: la cotización del día la trae api/dolar.js al cargar, sin PRs diarios.
+  // El servidor de la suite responde sin cotización, como cuando el BNA no contesta.
+  await abrir(page);
+  const sin = await page.evaluate(() => ({ usada: DOLAR_BNA, embebida: DOLAR_BNA_EMBEBIDO }));
+  expect(sin.usada).toEqual(sin.embebida);
+  // Con la función respondiendo, manda la cotización del día.
+  await page.route('**/api/dolar', r => r.fulfill({ contentType: 'application/javascript', body: 'window.DOLAR_VIVO={"venta":1777,"fecha":"2026-10-30","fuente":"https://www.bna.com.ar/Personas"};' }));
+  await abrir(page);
+  expect(await page.evaluate(() => DOLAR_BNA)).toEqual({ venta: 1777, fecha: '2026-10-30', fuente: 'https://www.bna.com.ar/Personas' });
+  await page.click('#openModalBtn');
+  await expect(page.locator('#precioPesos')).toContainText('30/10/2026');
+  // Una cifra que no es razonable no se usa.
+  await page.route('**/api/dolar', r => r.fulfill({ contentType: 'application/javascript', body: 'window.DOLAR_VIVO={"venta":3,"fecha":"2026-10-30"};' }));
+  await abrir(page);
+  expect(await page.evaluate(() => DOLAR_BNA.venta)).toBe(sin.embebida.venta);
+});
