@@ -23,7 +23,8 @@ Todo vive en un único `index.html` autocontenido: sin CSS, JS ni imágenes exte
 Ese principio es deliberado — **no agregar dependencias externas ni partir el
 archivo.** Las únicas excepciones, servidas junto a la página y bajadas cuando hacen
 falta: `fotos/` (con `fotos/mini/`, las miniaturas del encabezado), `logos/`, `og.jpg`,
-`fichas-fuentes.tsv`, `logos-fuentes.tsv` y `concesionarios.json`. Aparte, `autos/*.html`,
+`fichas-fuentes.tsv`, `logos-fuentes.tsv`, `concesionarios.json` y `/api/dolar` (la cotización del
+día, del mismo sitio; ver "Precios en pesos y dólar BNA"). Aparte, `autos/*.html`,
 `sitemap.xml` y `robots.txt` son páginas generadas para Google (ver "Páginas por auto").
 
 El contexto largo (el *porqué* de cada decisión, orden de columnas, estado del research,
@@ -257,11 +258,13 @@ sí quedan en inglés, porque no muestran la palabra. Se coló con `YES` dos vec
   sitio**: la celda sigue diciendo el precio como lo publica la marca (el de dólares lleva debajo
   «≈ $ N M»), el ranking por precio no mezcla monedas (`PCTL_VETO`) y las promos siguen sin convertir.
   La cotización va en `DOLAR_BNA`, entre `/*dolar:inicio*/` y `/*dolar:fin*/`, con su fecha y fuente:
-  la actualiza sola `.github/workflows/dolar.yml` (pedido de Mati, 2026-10-29), que corre los días hábiles
-  a las 10:20, 12:20, 15:20 y 17:20 (el banco abre a las 10 y la última actualización suele ser a las 17)
-  con `herramientas-dolar.py`: lee la tabla «Billetes» de bna.com.ar y, si la cotización cambió, abre el PR
-  `dolar-bna` con auto-merge y larga el e2e con `workflow_dispatch` (un PR del GITHUB_TOKEN no dispara
-  `pull_request`). Si la página del banco no trae la tabla, falla sin tocar nada: no hay otra fuente.
+  la del día la trae la página al cargar (2026-10-30, pedido de Mati: sin PRs diarios): `api/dolar.js`, una función
+  de Vercel, lee la tabla «Billetes» de bna.com.ar (el banco no permite leerla desde otra página: sin CORS) y
+  devuelve `window.DOLAR_VIVO`; `index.html` la carga con `<script src="/api/dolar">` justo antes del script
+  principal, porque todo lo que depende del dólar se calcula al cargar. Vercel la guarda 30 minutos. Si no llega
+  o la cifra no es razonable, se usa `DOLAR_BNA_EMBEBIDO` (el bloque entre `/*dolar:inicio*/` y `/*dolar:fin*/`),
+  que `herramientas-dolar.py` pone al día. El servidor de la suite responde `/api/dolar` sin cotización, así los
+  tests usan la embebida; `mejoras.spec.js` cubre los dos casos.
 - **Letra en el celular** (2026-10-10, pedido del usuario: con presbicia no se leía): hasta
   640 px de ancho la base es `html{font-size:130%}` (con 115% los datos quedaban en 15 px y no
   alcanzó; con 130% van en 17 px y casi nada baja de 15). El título grande del encabezado no sube.
