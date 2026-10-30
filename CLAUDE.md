@@ -80,6 +80,12 @@ agregar un auto con largo cargado, su segmento sale de ahí, no "a ojo". `nd` so
 no hay largo. Sumar ancho y distancia entre ejes se probó y clasificaba peor (13 de 27
 contra 24 de 27). Dos autos clasificados antes no siguen la regla (los dos BJ30) y están
 listados como excepción en `tests/e2e/invariantes.spec.js`.
+**SUV y crossover van con los segmentos del mercado** (2026-10-30, pedido de Mati, como los usan la
+prensa y la industria): chico (B) < 4400 mm ≤ compacto (C) < 4700 ≤ grande (D), y muy grande con la
+misma regla de 4825 mm y 6+ asientos; un SUV ya no es "mediano". Ayudame a elegir los ofrece con la
+letra: «SUV chico (B)», «SUV compacto (C)» y «SUV mediano o grande (D)». Los demás tipos de auto
+siguen con los umbrales de arriba, porque en ellos el largo no separa los segmentos (un sedán B como
+el Virtus mide 4,56 m).
 
 ---
 
@@ -457,7 +463,7 @@ sí quedan en inglés, porque no muestran la palabra. Se coló con `YES` dos vec
   con las demás fotos (flechas, teclado o deslizar), su vista y su crédito por foto. Ayudame a
   elegir sugiere 5 autos en escritorio y 4 en el celular (`elegirN()`).
 - **Ayudame a elegir** (franjas de precio y tipos de auto elegidos para que cada opción tenga
-  una cantidad pareja de autos: SUV partidos por tamaño; desde el 2026-10-30, 7 franjas de precio de 30 a 33 autos
+  una cantidad pareja de autos: SUV partidos por segmento B, C y D; desde el 2026-10-30, 7 franjas de precio de 30 a 33 autos
   cada una, pedido de Mati: hasta 28.000, 32.000, 35.500, 39.800, 52.500, 66.000 y más; sugiere 5 o 4, `elegirN()`; la barra al pie muestra las sugerencias y se ilumina
   con cada respuesta, porque en el celular la lista queda fuera de la pantalla): filtros duros (franja de precio, plazas, tipo) y puntos por propulsión,
   percentiles y respaldo. El presupuesto es una **franja** ("35.001 a 45.000"), no un tope:
