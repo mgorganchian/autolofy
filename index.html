@@ -6439,11 +6439,12 @@ document.addEventListener('click', e => {
 const ELEGIR_PREG = [
   // Franjas, no topes (pedido del 2026-10-09): elegir una más alta dice que querés gastar más
   // que en la anterior. Cortes elegidos para que cada franja tenga una cantidad pareja de autos
-  // a la venta (16 a 19 de los 104 con precio en dólares, octubre 2026); revisarlos si cambia mucho.
+  // a la venta: 7 franjas de 30 a 33 autos de los 219 con precio (pedido de Mati, 2026-10-30, con los
+  // de lista en pesos al dólar BNA); revisarlos si cambia mucho.
     // Sin "USD" en cada opción (2026-10-10, menos renglones): lo dice la pregunta.
   // En las dos monedas desde el 2026-10-29 (issue #60): el corte va en dólares y debajo, en pesos al BNA
   // vendedor; los autos con la lista en pesos entran por PRECIO_CMP.
-  { k: 'presu', t: '¿Cuánto querés gastar?', ops: [['0-28500', 'Hasta USD 28.500'], ['28501-32000', 'USD 28.501 a 32.000'], ['32001-35500', 'USD 32.001 a 35.500'], ['35501-38500', 'USD 35.501 a 38.500'], ['38501-48000', 'USD 38.501 a 48.000'], ['48001-', 'Más de USD 48.000'], ['', 'Me da igual']]
+  { k: 'presu', t: '¿Cuánto querés gastar?', ops: [['0-28000', 'Hasta USD 28.000'], ['28001-32000', 'USD 28.001 a 32.000'], ['32001-35500', 'USD 32.001 a 35.500'], ['35501-39800', 'USD 35.501 a 39.800'], ['39801-52500', 'USD 39.801 a 52.500'], ['52501-66000', 'USD 52.501 a 66.000'], ['66001-', 'Más de USD 66.000'], ['', 'Me da igual']]
     .map(([v, t]) => { if (!v) return [v, t]; const [a, b] = v.split('-').map(x => x === '' ? null : +x);
       return [v, t, a === 0 ? 'Hasta ' + pesosCorto(aPesos(b)) : b == null ? 'Más de ' + pesosCorto(aPesos(a)) : pesosCorto(aPesos(a)) + ' a ' + pesosCorto(aPesos(b))]; }) },
   { k: 'plazas', t: '¿Cuántos viajan seguido?', ops: [['4', 'Hasta 4'], ['5', '5'], ['6', '6 o 7']] },

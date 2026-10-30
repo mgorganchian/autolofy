@@ -22,7 +22,7 @@ test('ayudame a elegir: la franja de precio es piso y techo, y con enchufe en ca
   // no sugiere híbridos comunes.
   await abrir(page);
   await page.locator('#vistaElegir').click();
-  await page.locator('label:has(input[name="el-presu"][value="35501-38500"])').click();
+  await page.locator('label:has(input[name="el-presu"][value="35501-39800"])').click();
   await page.locator('label:has(input[name="el-enchufe"][value="si"])').click();
   const res = page.locator('.elegir-res > li');
   // 5 en escritorio y 4 en el celular (pedido del 2026-10-09).
@@ -34,7 +34,7 @@ test('ayudame a elegir: la franja de precio es piso y techo, y con enchufe en ca
     const t = await li.locator('ul').textContent();
     const usd = precios[+(await li.locator('[data-elegir-ficha]').getAttribute('data-elegir-ficha'))];
     expect(usd, t).toBeGreaterThanOrEqual(35501);
-    expect(usd, t).toBeLessThanOrEqual(38500);
+    expect(usd, t).toBeLessThanOrEqual(39800);
     expect(t).toMatch(/enchufable|eléctrico/i);
   }
   // La barra al pie cambia con cada respuesta (en el celular la lista queda fuera de la pantalla).
@@ -436,8 +436,8 @@ test('mejoras de UX: buscador con sinónimos, precio escrito con filtro quitable
 test('ayudame a elegir: sin presupuesto preelegido, resumen con "Cambiar" y, si no hay autos, qué aflojar', async ({ page }) => {
   await page.goto('/index.html');
   await expect(page.locator('input[name="el-presu"][value=""]')).toBeChecked();
-  await page.locator('label:has(input[name="el-presu"][value="0-28500"])').click();
-  // Desde el 2026-10-29 las pickups en pesos entran en «Hasta USD 28.500» (issue #60): un SUV grande no.
+  await page.locator('label:has(input[name="el-presu"][value="0-28000"])').click();
+  // Desde el 2026-10-29 las pickups en pesos entran en «Hasta USD 28.000» (issue #60): un SUV grande no.
   await page.locator('label:has(input[name="el-carro"][value="suv-d"])').click();
   await expect(page.locator('[data-aflojar]').first()).toBeVisible();
   await page.locator('[data-aflojar="presu"]').click();
