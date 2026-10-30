@@ -581,6 +581,12 @@ sí quedan en inglés, porque no muestran la palabra. Se coló con `YES` dos vec
 - Si la ficha y la web oficial no coinciden, va **la más reciente** (casi siempre la web) y
   `n` dice en qué difiere la otra. Si se contradicen sin forma de saber cuál vale (Kaiyi
   X3/X3 Pro/X7), `c` queda en null con el motivo.
+- **Muestra de cada color** (issue #72, 2026-10-30, pedido de Mati): `m`, alineado con `c`, lleva por color
+  `[hex, url]` o `null`. El hex sale del código que publica la marca (configurador, sitio) o del centro del chip
+  que dibuja al lado del nombre; **nunca del nombre ni de una foto del auto**. Queda en `null` si el nombre del
+  sitio no es el mismo de la lista (un «Rojo» genérico no es «Bloodstone Red»), si sale de otro modelo, o si el
+  chip tiene brillo y el centro no es el color. El 2026-10-30 quedaron 548 de 749 con muestra; Audi, Citroën,
+  Renault, Arcfox y Forthing no publican una usable.
 - 81 de 124 autos tienen colores; los demás no los publican con nombre (BAIC dibuja muestras
   sin nombre, MG solo tiene códigos internos, los no lanzados no tienen página).
   `tests/e2e/colores.spec.js` falla si una lista no tiene fuente https.
