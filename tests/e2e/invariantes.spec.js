@@ -79,7 +79,10 @@ test.describe('invariantes del index.html', () => {
     return m ? Number(m[0]) : null;
   };
   // Muy grande (xl): 4825 mm o más Y (6+ asientos o pickup). Decisión del usuario, 2026-10-04.
-  const SEGMENTO = (l, i) => l < 4150 ? 'mini' : l < 4515 ? 'compact' : l < 4714 ? 'mid'
+  // SUV y crossover (2026-10-30, pedido de Mati): segmentos del mercado, B < 4400 ≤ C < 4700 ≤ D.
+  const esSuv = i => ['SUV', 'Crossover'].includes(CARS[i].body);
+  const SEGMENTO = (l, i) => esSuv(i) ? (l < 4400 ? 'mini' : l < 4700 ? 'compact' : (l >= 4825 && (asientosDe(i) || 0) >= 6) ? 'xl' : 'big')
+    : l < 4150 ? 'mini' : l < 4515 ? 'compact' : l < 4714 ? 'mid'
     : (l >= 4825 && ((asientosDe(i) || 0) >= 6 || CARS[i].body === 'Pickup')) ? 'xl' : 'big';
   // Clasificados antes de la regla con otro criterio; queda a decisión del usuario.
   const EXCEPCIONES = ['BAIC BJ30 4x2', 'BAIC BJ30 4x4'];

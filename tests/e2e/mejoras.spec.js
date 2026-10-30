@@ -438,7 +438,7 @@ test('ayudame a elegir: sin presupuesto preelegido, resumen con "Cambiar" y, si 
   await expect(page.locator('input[name="el-presu"][value=""]')).toBeChecked();
   await page.locator('label:has(input[name="el-presu"][value="0-28500"])').click();
   // Desde el 2026-10-29 las pickups en pesos entran en «Hasta USD 28.500» (issue #60): un SUV grande no.
-  await page.locator('label:has(input[name="el-carro"][value="suv-grande"])').click();
+  await page.locator('label:has(input[name="el-carro"][value="suv-d"])').click();
   await expect(page.locator('[data-aflojar]').first()).toBeVisible();
   await page.locator('[data-aflojar="presu"]').click();
   await expect(page.locator('.elegir-res > li').first()).toBeVisible();
