@@ -304,7 +304,8 @@ test('el precio va chico debajo del nombre solo si se rankea por otra cosa', asy
   await elegirFila(page, 'Precio de lista (versión tope de gama de la tabla)');
   await expect(page.locator('#rkLista .rk-precio')).toHaveCount(0);
   await elegirFila(page, 'Potencia total del sistema (kW)');
-  await expect(page.locator('#rkLista .rk-precio').first()).toHaveText(/^USD [\d.]+$/);
+  // En las dos monedas desde el 2026-10-29 (issue #60): el de dólares, con su equivalente en pesos.
+  await expect(page.locator('#rkLista .rk-precio').first()).toHaveText(/^(USD [\d.]+ \(\$ [\d,]+ M\)|\$ [\d,]+ M)$/);
 });
 
 test('las cifras del ranking quedan alineadas en columna, con la misma cantidad de decimales', async ({ page }) => {

@@ -63,7 +63,8 @@ test.describe('link compartible', () => {
 test.describe('presupuesto', () => {
   test('el tope deja solo los autos que entran, y los sin precio según el tilde', async ({ page }) => {
     await abrir(page);
-    const precios = await page.evaluate(() => SIM_PRECIO);
+    // PRECIO_CMP: el precio en dólares o la lista en pesos pasada a dólares al BNA (issue #60).
+    const precios = await page.evaluate(() => PRECIO_CMP);
     await page.click('#openModalBtn');
     await page.locator('#precioMaxIn').fill('30000');
     const entran = precios.filter(p => p != null && p <= 30000).length;

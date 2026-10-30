@@ -7,7 +7,8 @@ Desde el 2026-10-28 también entran autos de marcas no chinas (decisión de Mati
 27/10: los 0 km principales, los eléctricos y los híbridos); los primeros fueron los 9 rivales
 híbridos del BAIC X55 II Hybrid (Ford, Chevrolet, Toyota, Lexus, Nissan, Renault, Subaru y
 Hyundai). Sus marcas entran sin red de concesionarios cargada (`aviso` en `concesionarios.json`),
-y casi todas publican el precio en pesos: no se convierte.
+y casi todas publican el precio en pesos: la celda lo dice en pesos, como lo publica la marca (ver
+"Precios en pesos y dólar BNA" para cómo entran en los filtros).
 El 2026-10-29 (pedido de Mati) se sumaron **73 de los 100 modelos más patentados de 2026** que faltaban
 (inscripciones iniciales de la DNRPA de enero a septiembre, sin furgones ni camiones; 23 ya estaban). Criterios:
 - Una versión por modelo: la más cara que publica la marca en su lista de octubre, salvo una versión que la marca vende
@@ -244,8 +245,23 @@ sí quedan en inglés, porque no muestran la palabra. Se coló con `YES` dos vec
 - **La comparación vive en la URL**: `?autos=slug,slug&ref=slug&orden=clave` (los slugs
   son los de las fotos). Si se renombra un slug, los links viejos a ese auto dejan de
   incluirlo: no renombrar slugs sin necesidad.
-- **Presupuesto** en el selector: rango en USD sobre `SIM_PRECIO`. Los autos sin precio
-  en dólares entran por defecto (tilde aparte): no esconder un auto porque falte el dato.
+- **Presupuesto** en el selector: rango en USD sobre `PRECIO_CMP`, con su equivalente en pesos a la
+  vista. Los autos sin ningún precio publicado entran por defecto (tilde aparte): no esconder un auto
+  porque falte el dato.
+- **Precios en pesos y dólar BNA** (2026-10-29, decisión de Mati en el issue #60): cada precio en
+  dólares también se muestra en pesos al **dólar BNA vendedor** (billetes del Banco Nación), y cada
+  filtro y botón de precio se dice en las dos monedas: Presupuesto, tope del Ranking, franjas de
+  Ayudame a elegir y el criterio Precio de Similares. Para comparar, la lista en pesos pasa a dólares a
+  la misma cotización (`PRECIO_CMP`; `SIM_PESOS` es la lista en pesos, solo si el valor visible es esa
+  cifra: un s/d que nombra pesos en la explicación no cuenta). Es **la única conversión de moneda del
+  sitio**: la celda sigue diciendo el precio como lo publica la marca (el de dólares lleva debajo
+  «≈ $ N M»), el ranking por precio no mezcla monedas (`PCTL_VETO`) y las promos siguen sin convertir.
+  La cotización va en `DOLAR_BNA`, entre `/*dolar:inicio*/` y `/*dolar:fin*/`, con su fecha y fuente:
+  la actualiza sola `.github/workflows/dolar.yml` (pedido de Mati, 2026-10-29), que corre los días hábiles
+  a las 10:20, 12:20, 15:20 y 17:20 (el banco abre a las 10 y la última actualización suele ser a las 17)
+  con `herramientas-dolar.py`: lee la tabla «Billetes» de bna.com.ar y, si la cotización cambió, abre el PR
+  `dolar-bna` con auto-merge y larga el e2e con `workflow_dispatch` (un PR del GITHUB_TOKEN no dispara
+  `pull_request`). Si la página del banco no trae la tabla, falla sin tocar nada: no hay otra fuente.
 - **Letra en el celular** (2026-10-10, pedido del usuario: con presbicia no se leía): hasta
   640 px de ancho la base es `html{font-size:130%}` (con 115% los datos quedaban en 15 px y no
   alcanzó; con 130% van en 17 px y casi nada baja de 15). El título grande del encabezado no sube.
