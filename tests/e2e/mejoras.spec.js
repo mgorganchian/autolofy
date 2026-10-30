@@ -578,13 +578,13 @@ test('barras contra los de su tamaño: el percentil sale del segmento y se recue
       const e = document.querySelector('#mainTable tr[data-nombre="Volumen de baúl/carga (L)"] td[data-col="' + i + '"] .pct'); return e && e.title; }, sl);
   expect(await barra('byd-song-pro')).toMatch(/^Mejor que el \d+% de los \d+ autos con este dato$/);
   await page.locator('#barrasSel').selectOption('seg');
-  expect(await barra('byd-song-pro')).toMatch(/^Mejor que el \d+% de los \d+ autos grandes con este dato$/);
-  // Un segmento con menos de 5 autos con el dato no tiene barra (los chicos con baúl).
+  expect(await barra('byd-song-pro')).toMatch(/^Mejor que el \d+% de los \d+ autos medianos o grandes \(D\) con este dato$/);
+  // Un segmento con menos de 5 autos con el dato no tiene barra (los urbanos con baúl).
   const chicos = await page.evaluate(() => CARS.filter((c, i) => c.size === 'mini' && pctlValor(FILA_POR_NOMBRE['Volumen de baúl/carga (L)'][i + 1], 'Volumen de baúl/carga (L)') !== null).length);
-  if (chicos < 5) expect(await barra('byd-dolphin-mini')).toBeNull();
+  if (chicos < 5) expect(await barra('fiat-mobi-trekking')).toBeNull();
   await page.reload();
   await expect(page.locator('#barrasSel')).toHaveValue('seg');
-  expect(await barra('byd-song-pro')).toMatch(/autos grandes con este dato$/);
+  expect(await barra('byd-song-pro')).toMatch(/autos medianos o grandes \(D\) con este dato$/);
   await abrir(page, '?autos=byd-song-pro,gwm-tank-300');
   await expect(page.locator('#barrasSelLbl')).toBeHidden();
 });

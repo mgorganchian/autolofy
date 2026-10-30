@@ -80,12 +80,15 @@ agregar un auto con largo cargado, su segmento sale de ahí, no "a ojo". `nd` so
 no hay largo. Sumar ancho y distancia entre ejes se probó y clasificaba peor (13 de 27
 contra 24 de 27). Dos autos clasificados antes no siguen la regla (los dos BJ30) y están
 listados como excepción en `tests/e2e/invariantes.spec.js`.
-**SUV y crossover van con los segmentos del mercado** (2026-10-30, pedido de Mati, como los usan la
-prensa y la industria): chico (B) < 4400 mm ≤ compacto (C) < 4700 ≤ grande (D), y muy grande con la
-misma regla de 4825 mm y 6+ asientos; un SUV ya no es "mediano". Ayudame a elegir los ofrece con la
-letra: «SUV chico (B)», «SUV compacto (C)» y «SUV mediano o grande (D)». Los demás tipos de auto
-siguen con los umbrales de arriba, porque en ellos el largo no separa los segmentos (un sedán B como
-el Virtus mide 4,56 m).
+**Letras del mercado** (2026-10-30, pedido de Mati, como las usan la prensa y la industria): `mini` = urbano
+(A), `compact` = chico (B), `mid` = compacto (C), `big` = mediano o grande (D), `xl` = muy grande; las etiquetas
+llevan la letra. **SUV y crossover, por largo:** B < 4400 mm ≤ C < 4700 ≤ D (los BJ30 van como C).
+**Hatchback y sedán, por distancia entre ejes**, que sigue a la cabina (el largo engaña: un sedán B como el
+Virtus mide 4,56 m porque suma el baúl): hatchback A < 2450 ≤ B < 2600 ≤ C, y B si mide menos de 4200 de
+largo (los eléctricos chicos tienen ejes largos); sedán B < 2660 ≤ C < 2800 ≤ D (el K4 y el M340i miden lo
+mismo de largo, pero 2720 y 2851 entre ejes). Pickups, minivans, coupés y descapotables siguen con los
+umbrales de largo de arriba. Ayudame a elegir ofrece «SUV chico (B)», «SUV compacto (C)» y «SUV mediano o
+grande (D)».
 
 ---
 

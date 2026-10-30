@@ -72,6 +72,12 @@ test.describe('invariantes del index.html', () => {
     const m = /\d+/.exec(v.replace(/^(NOTE|EXT|DET):/, '').split('|')[0]);
     return m ? Number(m[0]) : null;
   };
+  const ejesDe = i => {
+    const v = filas.find(f => f[0] === 'Distancia entre ejes (mm)')[i + 1];
+    if (/^NR:|^ND$/.test(v)) return null;
+    const m = /\d+/.exec(v.replace(/^(NOTE|EXT|DET):/, '').split('|')[0]);
+    return m ? Number(m[0]) : null;
+  };
   const asientosDe = i => {
     const v = filas.find(f => f[0] === 'Número de asientos')[i + 1];
     if (/^NR:|^ND$/.test(v)) return null;
@@ -79,9 +85,13 @@ test.describe('invariantes del index.html', () => {
     return m ? Number(m[0]) : null;
   };
   // Muy grande (xl): 4825 mm o más Y (6+ asientos o pickup). Decisión del usuario, 2026-10-04.
-  // SUV y crossover (2026-10-30, pedido de Mati): segmentos del mercado, B < 4400 ≤ C < 4700 ≤ D.
+  // Letras del mercado (2026-10-30, pedido de Mati): mini = A, compact = B, mid = C, big = D.
+  // SUV y crossover por largo: B < 4400 ≤ C < 4700 ≤ D. Hatchback por distancia entre ejes: A < 2450 ≤ B < 2600 ≤ C
+  // (y B si mide menos de 4200 de largo: los eléctricos chicos tienen ejes largos). Sedán: B < 2660 ≤ C < 2800 ≤ D.
   const esSuv = i => ['SUV', 'Crossover'].includes(CARS[i].body);
-  const SEGMENTO = (l, i) => esSuv(i) ? (l < 4400 ? 'mini' : l < 4700 ? 'compact' : (l >= 4825 && (asientosDe(i) || 0) >= 6) ? 'xl' : 'big')
+  const SEGMENTO = (l, i) => esSuv(i) ? (l < 4400 ? 'compact' : l < 4700 ? 'mid' : (l >= 4825 && (asientosDe(i) || 0) >= 6) ? 'xl' : 'big')
+    : CARS[i].body === 'Hatchback' && ejesDe(i) ? (ejesDe(i) < 2450 ? 'mini' : (ejesDe(i) < 2600 || l < 4200) ? 'compact' : 'mid')
+    : CARS[i].body === 'Sedán' && ejesDe(i) ? (ejesDe(i) < 2660 ? 'compact' : ejesDe(i) < 2800 ? 'mid' : 'big')
     : l < 4150 ? 'mini' : l < 4515 ? 'compact' : l < 4714 ? 'mid'
     : (l >= 4825 && ((asientosDe(i) || 0) >= 6 || CARS[i].body === 'Pickup')) ? 'xl' : 'big';
   // Clasificados antes de la regla con otro criterio; queda a decisión del usuario.
