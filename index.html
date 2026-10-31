@@ -1121,10 +1121,11 @@ if(!location.search&&!location.hash)document.documentElement.classList.add('arra
   .elegir-preg fieldset{border:0;border-top:1px solid var(--line);margin:0;padding:6px 0 0}
   .elegir-preg legend{font-family:var(--fuente-tabla);font-weight:700;font-size:.82rem;padding:0;margin-bottom:4px}
   .colores .muestra-color{display:inline-block;width:.9em;height:.9em;border-radius:50%;border:1px solid var(--border-strong);vertical-align:-.1em;margin-right:5px}
-  .elegir-ops{display:flex;flex-wrap:wrap;gap:5px}
-  .elegir-ops label{cursor:pointer}
+  .elegir-ops{display:grid;grid-template-columns:repeat(auto-fill,minmax(7.5rem,1fr));gap:5px}
+  /* Botones del mismo tamaño en cada pregunta (2026-10-30, pedido de Mati): grilla de columnas iguales. */
+  .elegir-ops label{cursor:pointer;display:flex}
   .elegir-ops input{position:absolute;opacity:0;pointer-events:none}
-  .elegir-ops span{display:inline-block;border:1px solid var(--border-strong);border-radius:3px;padding:3px 9px;font-size:.76rem}
+  .elegir-ops span{display:flex;flex-direction:column;justify-content:center;flex:1;text-align:center;border:1px solid var(--border-strong);border-radius:3px;padding:4px 6px;font-size:.76rem}
   .elegir-ops input:checked + span{background:var(--byd-blue);border-color:var(--byd-blue);color:var(--sobre-verde)}
   .elegir-ops input:checked + span .precio-pesos{color:inherit}
   .elegir-ops input:focus-visible + span{outline:2px solid var(--link);outline-offset:1px}
@@ -1132,6 +1133,10 @@ if(!location.search&&!location.hash)document.documentElement.classList.add('arra
   .elegir-tus{margin:12px 0 0;font-size:.74rem;color:var(--ink-2)}
   .elegir-aflojar{display:flex;flex-wrap:wrap;gap:6px;margin:4px 0 10px}
   .elegir-flojo{color:var(--ink-2);display:none}
+  .elegir-casi{color:var(--ink);font-weight:600;list-style:'≈ '}
+  .elegir-porque{display:inline-grid;place-items:center;min-width:24px;min-height:24px;margin-left:2px;border:1px solid var(--border-strong);border-radius:50%;
+    font-family:var(--fuente-tabla);font-size:.7rem;font-weight:600;color:var(--ink-2);cursor:help;vertical-align:middle;line-height:1}
+  .elegir-porque:focus-visible{outline:2px solid var(--link);outline-offset:1px}
   @media (min-width:900px){ .elegir-tus{display:none} .elegir-flojo{display:list-item} }
   .elegir-res{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(auto-fill,minmax(185px,1fr));gap:14px}
   /* Escritorio (2026-10-10): preguntas en una columna a la izquierda y sugerencias a la derecha, en
@@ -6512,6 +6517,15 @@ const ELEGIR_TIP = {
     no: 'Van primero los híbridos; un eléctrico casi no suma.',
     nose: 'Los enchufables e híbridos suman parejo; un eléctrico, algo menos.',
   },
+  // Los largos son los de SEG_LETRA y CARS (B < 4,40 m ≤ C < 4,70 m ≤ D).
+  carro: {
+    '': 'Entran todos los tipos de auto.',
+    'suv-b': 'SUV y crossovers de menos de 4,40 m de largo.',
+    'suv-c': 'SUV y crossovers de 4,40 a 4,70 m de largo.',
+    'suv-d': 'SUV y crossovers de 4,70 m de largo o más.',
+    auto: 'Sedanes y hatchbacks, y también los coupés y descapotables.',
+    pickup: 'Pickups con caja de carga.',
+  },
   plazas: {
     4: 'Entran los de 4 asientos o más, y los que no informan cuántos tienen.',
     5: 'Entran los de 5 asientos o más, y los que no informan cuántos tienen.',
@@ -6540,29 +6554,75 @@ const MOTIVO_CORTO = {"Potencia total del sistema (kW)":"potencia","Volumen de b
   "Aceleración 0-100 km/h (s)":"aceleración","Velocidad máxima (km/h)":"velocidad máxima","Consumo de combustible (L/100km)":"consumo",
   "Autonomía eléctrica (km)":"autonomía eléctrica","Autonomía combinada (km)":"autonomía total","Capacidad de batería (kWh)":"batería",
   "Cantidad de parlantes":"parlantes","Garantía general":"garantía","Garantía de la batería de alto voltaje":"garantía de batería"};
-function elegirCalcular(r){
-  const [pMin, pMax] = r.presu ? r.presu.split('-').map(x => x === '' ? null : +x) : [null, null];
-  const tope = r.presu ? true : null, plazas = +r.plazas;
-  const sinPrecioIdx = [];
-  const cands = CARS.map((c, i) => i).filter(i => {
-    const c = CARS[i];
-    if (c.status !== 'venta') return false;
-    const esSuv = ['SUV', 'Crossover'].includes(c.body);
-    // Segmentos de SUV del mercado (2026-10-30, pedido de Mati): B < 4,40 m ≤ C < 4,70 m ≤ D. Ver CARS.
-    if (r.carro === 'suv-b' && !(esSuv && c.size === 'compact')) return false;
-    if (r.carro === 'suv-c' && !(esSuv && c.size === 'mid')) return false;
-    if (r.carro === 'suv-d' && !(esSuv && ['big', 'xl'].includes(c.size))) return false;
-    if (r.carro === 'auto' && !['Sedán', 'Hatchback'].includes(c.body)) return false;
-    if (r.carro === 'pickup' && c.body !== 'Pickup') return false;
-    const as = SIM_ASIENTOS[i];
-    if (plazas >= 6 ? !(as >= 6) : (as != null && as < plazas)) return false;
-    if (tope != null){
-      const p = PRECIO_CMP[i];
-      if (p == null){ sinPrecioIdx.push(i); return false; }
-      if ((pMin != null && p < pMin) || (pMax != null && p > pMax)) return false;
+// Cómo se aparta un auto de lo pedido (2026-10-30, pedido de Mati: a veces sugería uno solo). 0 = cumple
+// todo; {d, txt} = falla en una sola cosa y por poco ("casi"): el precio hasta un 15% fuera de la franja,
+// el SUV del segmento de al lado o un asiento menos; null = no va. Sin precio con franja elegida: 'sinprecio'.
+const ELEGIR_CASI_PRECIO = .15;
+const SEG_LETRA = { compact: 'B', mid: 'C', big: 'D', xl: 'D' };
+function elegirDesvio(i, r){
+  const c = CARS[i];
+  if (c.status !== 'venta') return null;
+  const fallas = [];
+  const esSuv = ['SUV', 'Crossover'].includes(c.body);
+  // Segmentos de SUV del mercado (2026-10-30, pedido de Mati): B < 4,40 m ≤ C < 4,70 m ≤ D. Ver CARS.
+  const pedido = { 'suv-b': 'B', 'suv-c': 'C', 'suv-d': 'D' }[r.carro];
+  if (pedido){
+    const l = esSuv ? SEG_LETRA[c.size] : null;
+    if (l !== pedido){
+      if (!l || Math.abs('BCD'.indexOf(l) - 'BCD'.indexOf(pedido)) !== 1) return null;
+      fallas.push({ d: .12, txt: 'Otro tamaño de SUV (' + l + ')' });
     }
-    return true;
+  }
+  // Coupés y descapotables van con los sedanes y hatchbacks (2026-10-30, pedido de Mati).
+  if (r.carro === 'auto' && !['Sedán', 'Hatchback', 'Coupé', 'Convertible'].includes(c.body)) return null;
+  if (r.carro === 'pickup' && c.body !== 'Pickup') return null;
+  const plazas = +r.plazas, as = SIM_ASIENTOS[i];
+  if (plazas >= 6 ? !(as >= 6) : (as != null && as < plazas)){
+    if (as == null || as < (plazas >= 6 ? 5 : plazas - 1)) return null;
+    fallas.push({ d: .15, txt: 'Tiene ' + as + ' asientos' });
+  }
+  if (r.presu){
+    const [pMin, pMax] = r.presu.split('-').map(x => x === '' ? null : +x);
+    const p = PRECIO_CMP[i];
+    if (p == null) return fallas.length ? null : 'sinprecio';
+    const arriba = pMax != null && p > pMax, abajo = pMin != null && p < pMin;
+    if (arriba || abajo){
+      const dif = arriba ? p - pMax : pMin - p, d = dif / (arriba ? pMax : pMin);
+      if (d > ELEGIR_CASI_PRECIO) return null;
+      fallas.push({ d, txt: 'USD ' + (Math.round(dif / 100) * 100).toLocaleString('es-AR') + (arriba ? ' sobre' : ' bajo') + ' tu franja' });
+    }
+  }
+  return !fallas.length ? 0 : fallas.length === 1 ? fallas[0] : null;
+}
+// Equipamiento por dólar (2026-10-30): la parte de las filas de equipamiento con ✓ entre las que tienen
+// dato (un auto con la ficha a medio cargar no queda último por eso), sobre el precio. Pesa poco y solo
+// dentro de una franja, donde el precio ya no suma.
+const ELEGIR_EQUIPO_CATS = ['Seguridad pasiva', 'Asistencias a la conducción (ADAS)', 'Interior', 'Asientos', 'Multimedia', 'Luces', 'Vidrios y espejos', 'Aire acondicionado'];
+let ELEGIR_EQUIPO = null;
+function elegirEquipo(i){
+  if (!ELEGIR_EQUIPO){
+    const filas = DATA.filter(cat => ELEGIR_EQUIPO_CATS.includes(cat[0])).flatMap(cat => cat[1]);
+    ELEGIR_EQUIPO = CARS.map((c, j) => {
+      let si = 0, no = 0;
+      filas.forEach(f => { const v = cleanVal(f[j + 1] || ''); if (v === 'YES' || /^Sí\b/.test(v)) si++; else if (v === 'NO' || /^No\b/.test(v)) no++; });
+      return si + no >= 20 ? si / (si + no) : null;
+    });
+  }
+  return ELEGIR_EQUIPO[i];
+}
+function elegirCalcular(r){
+  const plazas = +r.plazas;
+  const sinPrecioIdx = [], desvio = {};
+  const cands = CARS.map((c, i) => i).filter(i => {
+    const d = elegirDesvio(i, r);
+    if (d === 'sinprecio'){ sinPrecioIdx.push(i); return false; }
+    if (d == null) return false;
+    desvio[i] = d; return true;
   });
+  // El equipamiento por dólar se compara entre los que cumplen.
+  const porDolar = cands.filter(i => desvio[i] === 0 && elegirEquipo(i) != null && PRECIO_CMP[i]).map(i => [i, elegirEquipo(i) / PRECIO_CMP[i]]);
+  const pctDolar = {};
+  porDolar.forEach(([i, v]) => { pctDolar[i] = porDolar.filter(x => x[1] < v).length / Math.max(1, porDolar.length - 1); });
   const filas = ELEGIR_FILAS[r.uso].concat(plazas >= 6 ? ['Volumen de baúl/carga (L)'] : []);
   const res = cands.map(i => {
     const c = CARS[i], fit = elegirFit(c.type, r);
@@ -6581,11 +6641,18 @@ function elegirCalcular(r){
     // casa matriz suma 1 y que la marca fabrique en el Mercosur, .6 (repuestos más cerca).
     const merc = fabricaMercosur(i), red = redDe(i);
     // La red de service también pesa (repuestos): hasta .4 según cuántos puntos tiene la red oficial.
-    const respaldo = (fab ? 1 : 0) + (merc ? .6 : 0) + (red ? .4 * Math.min(1, red.puntos / 40) : 0) +
+    // Desde el 2026-10-30 (pedido de Mati) el respaldo suma como mucho 1: antes llegaba a 2,5 y podía pesar
+    // más que el uso. Los percentiles de las filas del uso pasan a pesar 1,5.
+    const respaldoBruto = (fab ? 1 : 0) + (merc ? .6 : 0) + (red ? .4 * Math.min(1, red.puntos / 40) : 0) +
       (gAnos != null ? (gAnos - 5) * .12 : -.1) + (bAnos != null ? (bAnos - 8) * .08 : 0);
+    const respaldo = Math.max(-.2, Math.min(1, respaldoBruto / 2.5));
     // Dentro de la franja elegida el precio no suma: elegir una franja más alta dice que querés
-    // gastar eso. Sin franja ("Me da igual"), lo más barato suma un poco.
-    const puntos = 3 * fit + prom + (r.presu ? 0 : .3 * (precio ? precio.p / 100 : .4)) + bonus + respaldo;
+    // gastar eso. Sin franja ("Me da igual"), lo más barato suma un poco. En la franja, suma el
+    // equipamiento por dólar.
+    const pPrecio = r.presu ? 0 : .3 * (precio ? precio.p / 100 : .4);
+    const pEquipo = r.presu && pctDolar[i] != null ? .4 * pctDolar[i] : 0;
+    const parte = { fit: 3 * fit, uso: 1.5 * prom, respaldo, bonus, precio: pPrecio, equipo: pEquipo };
+    const puntos = parte.fit + parte.uso + parte.respaldo + parte.bonus + parte.precio + parte.equipo;
     // Motivos cortos (2026-10-09: que entren las 4 tarjetas): precio y propulsión en una línea, y
     // nada que repita lo que ya se respondió (la franja, o las plazas si son las pedidas).
     const motivos = [];
@@ -6607,6 +6674,7 @@ function elegirCalcular(r){
     motivos.push([caract(true, true), caract(false, true), caract(false, false)].find(t => t.length <= 26) || caract(false, false));
     const resto = [];
     if (c.type === 'ev' && r.enchufe !== 'si') resto.push('Necesita dónde cargar');
+    if (pctDolar[i] != null && pctDolar[i] >= .8) resto.push('Muy equipado por su precio');
     if (fab) resto.push('Lo trae la marca');
     if (merc) resto.push('Marca con fábrica en ' + merc.pais);   // de la marca, no del auto
     if (red && red.puntos >= 20) resto.push(textoRed(i, true));
@@ -6617,9 +6685,26 @@ function elegirCalcular(r){
     // Lo que se resigna (2026-10-10, Pu y Chen 2007: decir qué se pierde da más confianza): las filas
     // que importan para el uso elegido donde el auto queda en el 20% más bajo. Solo en la computadora.
     const flojo = ps.filter(x => x[1].c === 0).map(x => MOTIVO_CORTO[x[0]] || rkTitulo(x[0]).toLowerCase());
-    return { i, puntos, motivos: motivos.concat(resto).filter(Boolean).slice(0, 4), flojo };
-  }).sort((a, b) => b.puntos - a.puntos);
-  return { top: res.slice(0, elegirN()), todos: res.map(x => x.i), total: res.length, sinPrecio: sinPrecioIdx.length, sinPrecioIdx };
+    const casi = desvio[i] ? desvio[i].txt : '';
+    // Con el "casi" arriba quedan 3 renglones para lo demás: siempre 4 en total.
+    return { i, puntos, parte, casi, d: desvio[i] ? desvio[i].d : 0, motivos: motivos.concat(resto).filter(Boolean).slice(0, casi ? 3 : 4), flojo };
+  });
+  const cumplen = res.filter(x => !x.casi).sort((a, b) => b.puntos - a.puntos);
+  // Los "casi", del que menos se aparta al que más; a igual desvío, el de más puntos.
+  const casi = res.filter(x => x.casi).sort((a, b) => a.d - b.d || b.puntos - a.puntos);
+  // Siempre N (pedido de Mati, 2026-10-30): primero los que cumplen y después los casi, con como mucho
+  // 2 autos por marca. Si así no se llega a N, se completa sin el tope de marca.
+  const N = elegirN(), top = [], porMarca = {};
+  const tomar = (lista, tope) => lista.forEach(x => {
+    if (top.length >= N || top.includes(x)) return;
+    const m = CARS[x.i].brand;
+    if (tope && (porMarca[m] || 0) >= 2) return;
+    porMarca[m] = (porMarca[m] || 0) + 1; top.push(x);
+  });
+  tomar(cumplen, true); tomar(casi, true); tomar(cumplen, false); tomar(casi, false);
+  // Los que cumplen van primero también en la lista final.
+  top.sort((a, b) => (!!a.casi - !!b.casi) || (a.casi ? a.d - b.d : b.puntos - a.puntos));
+  return { top, todos: cumplen.map(x => x.i), total: cumplen.length, casi: top.filter(x => x.casi).length, sinPrecio: sinPrecioIdx.length, sinPrecioIdx };
 }
 function pintarElegir(cambio){
   const r = elegirResp, out = elegirCalcular(r);
@@ -6635,21 +6720,24 @@ function pintarElegir(cambio){
       q.ops.map(([v, t, pesos]) => '<label><input type="radio" name="el-' + q.k + '" value="' + v + '"' + (r[q.k] === v ? ' checked' : '') + '><span' +
         ((ELEGIR_TIP[q.k] || {})[v] ? ' data-tip="' + ELEGIR_TIP[q.k][v] + '"' : q.k === 'presu' && v ? ' data-tip="Los autos con la lista en pesos entran por su precio pasado a dólares al ' + DOLAR_TXT + '."' : '') + '>' + t +
         (pesos ? '<small class="precio-pesos">' + pesos + '</small>' : '') + '</span></label>').join('') + '</div></fieldset>').join('') + '</div>' +
-    '<div class="elegir-resultados">' + elegirResumenHTML(r) + '<h3 class="elegir-res-tit" id="elegirResTit">' + (out.top.length ? 'Te sugerimos' : 'Ningún auto a la venta cumple todo eso') + '</h3>' +
-    (out.top.length ? '<ol class="elegir-res">' + out.top.map(x => {
+    '<div class="elegir-resultados">' + elegirResumenHTML(r) + '<h3 class="elegir-res-tit" id="elegirResTit">' + (out.total ? 'Te sugerimos' : 'Ningún auto a la venta cumple todo eso') + '</h3>' +
+    // Sin ninguno que cumpla: qué aflojar, y abajo los más cercanos (2026-10-30).
+    (!out.total ? elegirAflojarHTML(r) + (out.top.length ? '<h3 class="elegir-res-tit">Los más cercanos</h3>' : '') : '') +
+    (out.top.length ? (out.casi && out.total ? '<p class="ficha-nota">Cumplen todo ' + (out.total === 1 ? 'uno solo' : out.total) + '. Los demás se apartan en una cosa, y lo dicen arriba.</p>' : '') +
+      '<ol class="elegir-res">' + out.top.map(x => {
       const im = TH_AUTO[x.i].querySelector('img.car-photo');
       const n = listaDeFotos(SLUG_AUTO[x.i]).length;
-      return '<li><b>' + rkEsc(CARS[x.i].name) + '</b><span class="minicar" data-mini-slug="' + SLUG_AUTO[x.i] + '" data-k="0">' +
+      return '<li' + (x.casi ? ' class="casi"' : '') + '><b>' + rkEsc(CARS[x.i].name) + elegirPorqueHTML(x) + '</b><span class="minicar" data-mini-slug="' + SLUG_AUTO[x.i] + '" data-k="0">' +
         '<button type="button" class="elegir-foto" data-visor-slug="' + SLUG_AUTO[x.i] + '" aria-label="Ver ' + (n > 1 ? 'las ' + n + ' fotos' : 'la foto') + ' del ' + rkEsc(CARS[x.i].name) + '">' +
         '<img src="' + portadaDe(im) + '" alt="">' + (n > 1 ? '<span class="elegir-nfotos">' + n + ' fotos</span>' : '') + '</button>' + miniFlechas(SLUG_AUTO[x.i]) + '</span>' +
-        '<ul>' + x.motivos.map(m => '<li>' + rkEsc(m) + '</li>').join('') +
+        '<ul>' + (x.casi ? '<li class="elegir-casi">' + rkEsc(x.casi) + '</li>' : '') + x.motivos.map(m => '<li>' + rkEsc(m) + '</li>').join('') +
           (x.flojo && x.flojo.length ? '<li class="elegir-flojo">Flojo en ' + rkEsc(x.flojo.slice(0, 2).join(' y ')) + '</li>' : '') + '</ul>' +
         '<button type="button" class="mini-btn" data-elegir-ficha="' + x.i + '">Ver ficha</button></li>';
     }).join('') + '</ol>' +
       // Cuántos cumplen ya lo dice la barra: acá solo los que quedaron afuera por no tener precio.
       (out.sinPrecio ? '<p class="elegir-acc"><span class="ficha-nota">' + out.sinPrecio + ' auto' + (out.sinPrecio === 1 ? '' : 's') + ' más cumple' + (out.sinPrecio === 1 ? '' : 'n') + ' lo demás pero no publica' + (out.sinPrecio === 1 ? '' : 'n') + ' precio.</span></p>' : '') +
       '<p class="ficha-nota">Los precios en pesos van al ' + DOLAR_TXT + '.</p>'
-      : elegirAflojarHTML(r) + (out.sinPrecio ? '<p class="ficha-nota">Hay ' + out.sinPrecio + ' autos sin precio publicado que no se pueden filtrar por presupuesto.</p>' : '') +
+      : (out.sinPrecio ? '<p class="ficha-nota">Hay ' + out.sinPrecio + ' autos sin precio publicado que no se pueden filtrar por presupuesto.</p>' : '') +
         '') + '</div></div>';   // cierra .elegir-resultados y .elegir-cuerpo
   // Barra al pie del panel (2026-10-09): en el celular la lista queda debajo de las preguntas,
   // fuera de la pantalla, y parecía que tocar una opción no cambiaba nada. La barra muestra
@@ -6666,13 +6754,24 @@ function pintarElegir(cambio){
   ].join('');
   hoja.insertAdjacentHTML('beforeend', '<div class="elegir-barra" role="status" aria-live="polite"><p class="elegir-barra-txt">' +
     (igual ? '<em>Sin cambios.</em> ' : cambio && out.top.length ? '<em>Nuevas sugerencias.</em> ' : '') +
-    (out.top.length ? '<b>' + out.total + '</b> autos cumplen.' : 'Ningún auto con precio cumple todo eso') +
+    (out.total ? '<b>' + out.total + '</b> auto' + (out.total === 1 ? ' cumple.' : 's cumplen.') : out.top.length ? 'Ninguno cumple todo: van los más cercanos.' : 'Ningún auto con precio cumple todo eso') +
     '</p>' +
     (botones ? '<p class="elegir-barra-btns"><span>Comparar</span>' + botones +
       (out.top.length ? '<button type="button" class="mini-btn" id="elegirVer">Ver lista</button>' : '') + '</p>' : '') + '</div>');
   hoja.dataset.top = out.top.map(x => x.i).join(',');
   hoja.dataset.todos = out.todos.join(',');
   hoja.dataset.sinprecio = out.sinPrecioIdx.join(',');
+}
+// Por qué salió cada auto (2026-10-30, pedido de Mati): el puntaje desglosado en un cartel.
+function elegirPorqueHTML(x){
+  const f = n => n.toLocaleString('es-AR', { minimumFractionDigits: 1, maximumFractionDigits: 1 });
+  const p = x.parte, partes = ['Encaja con el uso y el enchufe: ' + f(p.fit) + ' de 3', 'Rinde en lo que importa para ese uso: ' + f(p.uso) + ' de 1,5',
+    'Respaldo (quién lo trae, fábrica, red y garantías): ' + f(p.respaldo) + ' de 1'];
+  if (p.bonus) partes.push('Pickup o 4x4 para ese uso: ' + f(p.bonus));
+  if (p.equipo) partes.push('Equipamiento por su precio: ' + f(p.equipo) + ' de 0,4');
+  if (p.precio) partes.push('Precio: ' + f(p.precio) + ' de 0,3');
+  const tip = 'Por qué lo sugerimos. ' + partes.join('. ') + '. Total: ' + f(x.puntos) + '.' + (x.casi ? ' No cumple todo lo pedido: ' + x.casi.charAt(0).toLowerCase() + x.casi.slice(1) + '.' : '');
+  return ' <span class="elegir-porque" tabindex="0" role="button" aria-label="' + rkEsc(tip) + '" data-tip="' + rkEsc(tip) + '">?</span>';
 }
 // "Tus respuestas" arriba de los sugeridos, con "Cambiar" (2026-10-10, GOV.UK: resumir y dejar cambiar
 // sin perder lo demás). En el celular las preguntas quedan arriba y la lista abajo; en la computadora
