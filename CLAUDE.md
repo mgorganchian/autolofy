@@ -1,6 +1,6 @@
 # Autolofy — reglas del proyecto
 
-Autolofy (https://autolofy.vercel.app) compara **238 autos** 0 km vendidos (o por llegar) en Argentina.
+Autolofy (https://autolofy.vercel.app) compara **264 autos** 0 km vendidos (o por llegar) en Argentina.
 Empezó con los chinos y electrificados; el nombre cambió el 2026-10-28 (repo `mgorganchian/autolofy`,
 proyectos de Vercel `autolofy` y `autolofy-plan`).
 Desde el 2026-10-28 también entran autos de marcas no chinas (decisión de Mati y Sebastián del
@@ -17,8 +17,14 @@ El 2026-10-29 (pedido de Mati) se sumaron **73 de los 100 modelos más patentado
 - La fila Patentamientos 2026 cuenta las inscripciones de esa versión y dice el total del modelo y su puesto.
 - La caja de una pickup en litros se escribe «Caja de carga de N L» y no se rankea contra los baúles (`PCTL_VETO`).
 - Portadas: la foto oficial de la marca y, cuando el sitio bloquea las descargas (Ford, Peugeot, Toyota) o no hay
-  foto de esa versión, Wikimedia Commons. **Faltan 3** sin ninguna foto válida de la versión argentina, que no se
-  cargaron todavía: Bronco Sport Badlands, RAV4 PHEV XSE y T-Cross Extreme (el 2008 GT entró el 2026-10-29).
+  foto de esa versión, Wikimedia Commons.
+- **Autos sin foto** (2026-10-31, pedido de Mati: mejor cargarlos que dejarlos afuera): `FOTOS_POR_AUTO[slug] = 0`,
+  `VISTAS_POR_FOTO[slug] = []` y la miniatura `fotos/mini/<slug>.jpg` es la silueta de su carrocería con «Sin foto
+  todavía» (900×570, la arma `siluetas.js` de la tanda). `sinFoto()` hace que el zoom, el visor y la página del auto
+  muestren esa silueta con su aclaración, y `herramientas-paginas.py` usa la miniatura en `autos/` y `comparar/` y
+  `og.jpg` como vista previa. Son 9: Audi S3 Sportback, BMW 118, 220i Coupé y 430i Coupé, Range Rover Evoque S,
+  Toyota GR Yaris, Land Cruiser 300 HEV y RAV4 PHEV XSE, y Ford Bronco Sport Badlands. Cuando aparezca una foto
+  válida de la versión argentina, se instala con `herramientas-fotos.py portada` y se borra el 0.
 Todo vive en un único `index.html` autocontenido: sin CSS, JS ni imágenes externas.
 Ese principio es deliberado — **no agregar dependencias externas ni partir el
 archivo.** Las únicas excepciones, servidas junto a la página y bajadas cuando hacen
