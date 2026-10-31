@@ -443,7 +443,7 @@ test('ayudame a elegir: sin presupuesto preelegido, resumen con "Cambiar" y, si 
   await page.locator('[data-aflojar="presu"]').click();
   await expect(page.locator('.elegir-res > li').first()).toBeVisible();
   // El visor dice "3 de 9" en vez de puntitos.
-  await page.locator('.elegir-foto').first().click();
+  await page.locator('.elegir-res > li:has(.elegir-nfotos) .elegir-foto').first().click();   // uno con varias fotos: los sin foto muestran solo su silueta
   await expect(page.locator('#visorFotos .foto-num')).toHaveText(/^1 de \d+$/);
 });
 

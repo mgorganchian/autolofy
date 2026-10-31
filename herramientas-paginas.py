@@ -21,6 +21,11 @@ import sys
 
 RAIZ = os.path.dirname(os.path.abspath(__file__))
 SITIO = 'https://autolofy.vercel.app'
+# Un auto sin foto válida de la versión argentina (FOTOS_POR_AUTO = 0, 2026-10-31) no tiene fotos/<slug>-1.jpg:
+# su página muestra la miniatura, que es la silueta de la carrocería, y la vista previa al compartir es og.jpg.
+tiene_foto = lambda slug: os.path.exists(os.path.join(RAIZ, 'fotos', slug + '-1.jpg'))
+img_auto = lambda slug: f'/fotos/{slug}-1.jpg' if tiene_foto(slug) else f'/fotos/mini/{slug}.jpg'
+SIN_FOTO = 'Todavía no tenemos una foto de esta versión: es la silueta de su carrocería.'
 # El formulario de sugerencias (el mismo que FORM_SUGERENCIAS del script; entry.1360569446 = Auto).
 FORM_SUGERENCIAS = 'https://docs.google.com/forms/d/e/1FAIpQLSdytJoPO5w4I-AjJiVyj_wwnPmWQFWs9k3sfjOMgyMXEkgKyQ/viewform'
 DIR = os.path.join(RAIZ, 'autos')
@@ -41,6 +46,7 @@ def leer():
     tags = re.findall(r'<img class="car-photo" data-slug="[^"]+"[^>]*>', s)
     slugs = [re.search(r'data-slug="([^"]+)"', t).group(1) for t in tags]
     creditos = [H.unescape((re.search(r'data-credito="([^"]*)"', t) or [None, ''])[1]) for t in tags]
+    creditos = [cr if tiene_foto(re.search(r'data-slug="([^"]+)"', t)[1]) else SIN_FOTO for cr, t in zip(creditos, tags)]
     colores = json.loads(re.search(r'const COLORES_AR = (\{.*?\});\n', s).group(1))
     videos = json.loads(re.search(r'const VIDEOS = (\{.*?\});\n', s).group(1))
     extra = {k: json.loads(re.search(r'const ' + k + r' = (\{.*?\});\n', s).group(1))
@@ -103,7 +109,7 @@ def pagina(i, data, car, slug, credito, colores, videos, vs=(), extra=None):
     desc = ', '.join(p for p in desc_partes if p) + '. Ficha técnica oficial, equipamiento, colores y comparación con otros autos 0 km en Argentina.'
     titulo = f'{nombre}: precio, ficha técnica y equipamiento en Argentina'
     url = f'{SITIO}/autos/{slug}'
-    foto = f'{SITIO}/fotos/{slug}-1.jpg'
+    foto = f'{SITIO}/fotos/{slug}-1.jpg' if tiene_foto(slug) else f'{SITIO}/og.jpg'
     e = H.escape
     # Ficha completa, por categoría
     secciones = []
@@ -143,7 +149,7 @@ def pagina(i, data, car, slug, credito, colores, videos, vs=(), extra=None):
 <link rel="canonical" href="{url}">
 <meta property="og:type" content="article"><meta property="og:title" content="{e(titulo)}">
 <meta property="og:description" content="{e(desc)}"><meta property="og:url" content="{url}">
-<meta property="og:image" content="{foto}"><meta property="og:image:width" content="900"><meta property="og:image:height" content="570">
+<meta property="og:image" content="{foto}"><meta property="og:image:width" content="{900 if tiene_foto(slug) else 1200}"><meta property="og:image:height" content="{570 if tiene_foto(slug) else 630}">
 <meta name="twitter:card" content="summary_large_image">
 <link rel="alternate" type="application/rss+xml" title="{e(nombre)}: cambios de precio y promociones" href="/autos/{slug}.xml">
 <script type="application/ld+json">{json.dumps(ld, ensure_ascii=False)}</script>
@@ -167,7 +173,7 @@ td small{{display:block;font-size:.75rem;color:var(--ink2)}} .colores{{list-styl
 <p class="sub"><a href="/">Autolofy</a> / {e(car['brand'])}</p>
 <h1>{e(nombre)}</h1>
 <p class="sub">{e(tipo.capitalize())}, {e(car.get('body', ''))}. {e(ESTADO.get(car['status'], ''))}. Precio de lista: {e(precio)}.</p>
-<figure><img src="/fotos/{slug}-1.jpg" alt="{e(nombre)}" width="900" height="570">{f'<figcaption>{e(credito)}</figcaption>' if credito else ''}</figure>
+<figure><img src="{img_auto(slug)}" alt="{e(nombre)}" width="900" height="570">{f'<figcaption>{e(credito)}</figcaption>' if credito else ''}</figure>
 <a class="cta" href="/?auto={slug}">Compararlo con otros autos</a>
 <p class="nota">Para enterarte cuando cambie su precio o salga una promoción, sumá <a href="/autos/{slug}.xml">su RSS</a> a tu lector de noticias.</p>
 {vs_html(vs)}
@@ -350,7 +356,7 @@ def pagina_vs(a, b, data, cars, slugs, creditos):
             td = lambda t, n: f'<td>{e(t)}' + (f'<small>{e(n)}</small>' if n else '') + '</td>'
             trs.append(f'<tr><th scope="row">{e(f[0])}</th>{td(ta, na)}{td(tb, nb)}</tr>')
         if trs: difs.append(f'<tr class="cat"><th colspan="3" scope="colgroup">{e(cat)}</th></tr>' + ''.join(trs))
-    fig = lambda k: (f'<figure><img src="/fotos/{slugs[k]}-1.jpg" alt="{e(cars[k]["name"])}" width="900" height="570">'
+    fig = lambda k: (f'<figure><img src="{img_auto(slugs[k])}" alt="{e(cars[k]["name"])}" width="900" height="570">'
                      f'<figcaption><b>{e(cars[k]["name"])}</b>' + (f'<br>{e(creditos[k])}' if creditos[k] else '') + '</figcaption></figure>')
     return f'''<!doctype html>
 <html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
@@ -359,7 +365,7 @@ def pagina_vs(a, b, data, cars, slugs, creditos):
 <link rel="canonical" href="{url}">
 <meta property="og:type" content="article"><meta property="og:title" content="{e(titulo)}">
 <meta property="og:description" content="{e(desc)}"><meta property="og:url" content="{url}">
-<meta property="og:image" content="{SITIO}/fotos/{slugs[a]}-1.jpg">
+<meta property="og:image" content="{SITIO}{img_auto(slugs[a]) if tiene_foto(slugs[a]) else '/og.jpg'}">
 <style>
 :root{{--paper:#EEF1EE;--ink:#17211D;--ink2:#4B5A53;--line:#C9D4CE;--accent:#00843D}}
 @media (prefers-color-scheme:dark){{:root{{--paper:#141B18;--ink:#E4EAE6;--ink2:#9DB3A8;--line:#2E3A35;--accent:#3FB57A}}}}
