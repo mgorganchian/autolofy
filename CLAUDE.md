@@ -22,9 +22,15 @@ El 2026-10-29 (pedido de Mati) se sumaron **73 de los 100 modelos más patentado
   `VISTAS_POR_FOTO[slug] = []` y la miniatura `fotos/mini/<slug>.jpg` es la silueta de su carrocería con «Sin foto
   todavía» (900×570, la arma `siluetas.js` de la tanda). `sinFoto()` hace que el zoom, el visor y la página del auto
   muestren esa silueta con su aclaración, y `herramientas-paginas.py` usa la miniatura en `autos/` y `comparar/` y
-  `og.jpg` como vista previa. Son 9: Audi S3 Sportback, BMW 118, 220i Coupé y 430i Coupé, Range Rover Evoque S,
-  Toyota GR Yaris, Land Cruiser 300 HEV y RAV4 PHEV XSE, y Ford Bronco Sport Badlands. Cuando aparezca una foto
-  válida de la versión argentina, se instala con `herramientas-fotos.py portada` y se borra el 0.
+  `og.jpg` como vista previa. Cuando aparezca una foto válida de la versión argentina, se instala con
+  `herramientas-fotos.py portada` (deja el 1 solo). El 2026-10-31 entraron 9 así y 6 consiguieron portada oficial
+  el mismo día; quedan con la silueta el BMW 118 Sportline (el colorizador de bmw.com.ar no dice si es la Sportline
+  o la BlackEdition), el 220i Coupé (la página del Serie 2 Coupé muestra el M240i) y el Range Rover Evoque S.
+- **Bajar fotos de sitios que bloquean a curl** (Ford, Toyota, Audi, BMW; 2026-10-31): con el navegador integrado,
+  como una persona. La página pide la imagen con `fetch` y la manda a un receptor local (`127.0.0.1`) con un
+  formulario: el `connect-src` de esos sitios no deja hacer `fetch` a localhost, pero el formulario no pasa por ahí.
+  Ford entrega AVIF aunque el nombre diga .jpg: convertir con `sips` antes de `portada`. No se cambian encabezados
+  ni el user agent.
 Todo vive en un único `index.html` autocontenido: sin CSS, JS ni imágenes externas.
 Ese principio es deliberado — **no agregar dependencias externas ni partir el
 archivo.** Las únicas excepciones, servidas junto a la página y bajadas cuando hacen
