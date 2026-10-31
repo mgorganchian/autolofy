@@ -529,12 +529,22 @@ sí quedan en inglés, porque no muestran la palabra. Se coló con `YES` dos vec
 
 - **Gastos para patentarlo** (plegado en la página de cada auto, `IMPUESTOS_AR`): el arancel del
   Registro (1%, 0,8% por el Registro Único Virtual), el sellado de la provincia elegida (se guarda
-  como la de "Dónde comprarlo") y el formulario 01, **sobre el precio de lista**, como estimado. La
-  patente anual no se calcula (depende de la valuación de cada provincia): va el beneficio para
-  eléctricos e híbridos con su norma. Las lecturas dudosas de la investigación (Santa Fe, La Pampa,
+  como la de "Dónde comprarlo") y el formulario 01, **sobre el precio de lista**, como estimado. Para
+  la provincia elegida, la patente anual no se calcula (depende de la valuación de cada provincia): va
+  el beneficio para eléctricos e híbridos con su norma. Las lecturas dudosas de la investigación (Santa Fe, La Pampa,
   San Luis, Neuquén, Catamarca) van en la nota de esa provincia (`sn`), a la vista. Santiago del
   Estero no tiene sellado consolidado: "s/d". Jujuy, Chubut y Neuquén cobran distinto a eléctricos
   e híbridos (`sev`, `shev`); un mild-hybrid paga como naftero y su patente lo aclara.
+- **¿Dónde cuesta menos?** (2026-10-31, pedido de Mati; plegado dentro de Gastos para patentarlo,
+  `#fichaMenos`, porque `#fichaDonde` es Dónde comprarlo): las 24 jurisdicciones ordenadas por alta
+  (Registro 1% + sellado) más 5 años de patente, sobre el precio de lista. La patente es `pa` (% por año
+  para un 0 km a combustión de unos $ 50 millones, 2026) con su calidad `pac` (`ley`, `estimada` por el
+  informe de UADE o `sin verificar`) y su fuente `paf`; `pme`/`pmh` son el factor de cada año para
+  eléctricos e híbridos (solo los beneficios claros; los que vencen en 2026 o son dudosos van en `pbn`).
+  **Lo no verificado no se inventa:** Chaco, Santiago del Estero y Santa Cruz van `pa: null` ("s/d", al
+  final) y la provincia de Buenos Aires queda `sin verificar` (la Ley 15.558 es una imagen; la escala sale
+  de la prensa). Arriba va la regla del domicilio real: la patente la cobra la provincia donde vive el
+  titular. La investigación está en `plan-negocio/investigacion-patentamiento.md`.
 - **¿Cuánto pagarías por mes?** (plegado): sistema francés con la **TEA máxima** que cada banco informa
   al BCRA (`TASAS_BCRA`, entre `/*tasas:inicio*/` y `/*tasas:fin*/`, lo escribe
   `herramientas-tasas.py`; la rutina lo corre, tarea K). Solo líneas para 0 km de bancos, en pesos o
