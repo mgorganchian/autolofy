@@ -474,6 +474,14 @@ sí quedan en inglés, porque no muestran la palabra. Se coló con `YES` dos vec
   elegir una más alta dice que querés gastar más, y dentro de la franja el precio no suma. Con
   enchufe en casa, los enchufables van primero (`ELEGIR_ENCHUFE`). Un enchufable nunca se
   presenta como de bajo consumo (`RK_APARTE`).
+- **Motor de Ayudame a elegir** (2026-10-30, pedido de Mati, issue del PR «motor de sugerencias»): siempre sugiere
+  `elegirN()` autos. Primero los que cumplen todo; si no alcanzan, los «casi» (`elegirDesvio`: fallan en una sola
+  cosa y por poco: precio hasta un 15% fuera de la franja, el SUV del segmento de al lado o un asiento menos), con esa
+  diferencia escrita arriba de sus motivos. Como mucho 2 autos por marca (se afloja solo si no se llega a N). Pesos:
+  propulsión 3, percentiles del uso 1,5, respaldo **como mucho 1** (el bruto se divide por 2,5), extra pickup/4x4 .5,
+  y dentro de una franja el equipamiento por dólar hasta .4 (`elegirEquipo`: ✓ sobre filas con dato). Cada tarjeta
+  tiene un «?» con el puntaje desglosado (`elegirPorqueHTML`). «Sedán o hatchback» incluye coupés y descapotables.
+  Las opciones de cada pregunta son una grilla de botones del mismo ancho.
 - **Respaldo de fábrica** (2026-10-10, pedido del usuario: en Argentina da miedo conseguir repuestos;
   después del precio es de lo que más pesa): `MARCAS_INFO[marca].fabrica_mercosur` = planta que
   **ya produce** autos en el Mercosur, con fuente (BYD, GWM en Haval/Ora/Tank/Poer, Chery por CAOA,

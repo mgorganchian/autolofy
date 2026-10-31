@@ -719,3 +719,42 @@ test('cada dirección empieza con la marca, y los links con un slug viejo siguen
   await page.goto('/index.html?autos=song-pro,tank-300');
   await expect(page).toHaveURL(/autos=byd-song-pro,gwm-tank-300|autos=gwm-tank-300,byd-song-pro/);
 });
+
+test('ayudame a elegir: siempre N sugeridos, con los «casi» marcados, 2 por marca y el porqué de cada uno', async ({ page }) => {
+  // 2026-10-30, pedido de Mati: a veces sugería uno solo; el respaldo pesaba más que el uso.
+  await abrir(page);
+  const r = await page.evaluate(() => {
+    const N = elegirN(), casos = [];
+    for (const presu of ELEGIR_PREG.find(q => q.k === 'presu').ops.map(o => o[0]))
+      for (const carro of ['', 'suv-b', 'suv-c', 'suv-d', 'auto', 'pickup'])
+        for (const plazas of ['4', '5', '6']){
+          const o = elegirCalcular({ presu, plazas, uso: 'mixto', enchufe: 'nose', carro });
+          const marcas = {}; o.top.forEach(x => { marcas[CARS[x.i].brand] = (marcas[CARS[x.i].brand] || 0) + 1; });
+          casos.push({ k: presu + '/' + carro + '/' + plazas, n: o.top.length, total: o.total, casiSinTxt: o.top.filter(x => x.d && !x.casi).length,
+            cumplenPrimero: o.top.every((x, j) => !x.casi || o.top.slice(j).every(y => y.casi)),
+            masDe2: Object.values(marcas).some(v => v > 2) && o.total + o.casi > o.top.length + 5,
+            respaldo: Math.max(...o.top.map(x => x.parte.respaldo)) });
+        }
+    const coupe = CARS.findIndex(c => c.body === 'Coupé' && c.status === 'venta');
+    return { N, casos, coupeEntra: coupe < 0 || elegirDesvio(coupe, { presu: '', plazas: '4', carro: 'auto' }) === 0 };
+  });
+  for (const c of r.casos){
+    expect(c.n, c.k).toBeLessThanOrEqual(r.N);
+    expect(c.cumplenPrimero, c.k).toBe(true);
+    expect(c.respaldo, c.k).toBeLessThanOrEqual(1);
+    expect(c.masDe2, c.k).toBe(false);
+  }
+  // Casi siempre se llega a N: solo puede faltar si ni con los «casi» alcanza.
+  expect(r.casos.filter(c => c.n === r.N).length).toBeGreaterThan(r.casos.length * .8);
+  expect(r.coupeEntra).toBe(true);
+  // En pantalla, el «casi» va arriba de los motivos y cada auto tiene su porqué.
+  await page.locator('#vistaElegir').click();
+  await page.locator('label:has(input[name="el-presu"][value="0-28000"])').click();
+  await page.locator('label:has(input[name="el-carro"][value="suv-d"])').click();
+  await expect(page.locator('.elegir-res > li')).toHaveCount(r.N);
+  await expect(page.locator('.elegir-res > li.casi .elegir-casi').first()).toHaveText(/sobre tu franja|Otro tamaño de SUV|asientos/);
+  await expect(page.locator('.elegir-res .elegir-porque').first()).toHaveAttribute('data-tip', /^Por qué lo sugerimos\. .*Total: /);
+  // Los botones de una misma pregunta miden lo mismo.
+  const anchos = await page.locator('fieldset:has(input[name="el-presu"]) .elegir-ops span').evaluateAll(s => s.map(e => Math.round(e.getBoundingClientRect().width)));
+  expect(new Set(anchos).size).toBe(1);
+});
