@@ -1,6 +1,6 @@
 # Autolofy — reglas del proyecto
 
-Autolofy (https://autolofy.vercel.app) compara **264 autos** 0 km vendidos (o por llegar) en Argentina.
+Autolofy (https://autolofy.vercel.app) compara **265 autos** 0 km vendidos (o por llegar) en Argentina.
 Empezó con los chinos y electrificados; el nombre cambió el 2026-10-28 (repo `mgorganchian/autolofy`,
 proyectos de Vercel `autolofy` y `autolofy-plan`).
 Desde el 2026-10-28 también entran autos de marcas no chinas (decisión de Mati y Sebastián del
@@ -24,7 +24,7 @@ El 2026-10-29 (pedido de Mati) se sumaron **73 de los 100 modelos más patentado
   muestren esa silueta con su aclaración, y `herramientas-paginas.py` usa la miniatura en `autos/` y `comparar/` y
   `og.jpg` como vista previa. Cuando aparezca una foto válida de la versión argentina, se instala con
   `herramientas-fotos.py portada` (deja el 1 solo). El 2026-10-31 entraron 9 así y 6 consiguieron portada oficial
-  el mismo día; quedan con la silueta el BMW 118 Sportline (el colorizador de bmw.com.ar no dice si es la Sportline
+  el mismo día; quedan con la silueta el T-Cross Extreme (entró después, sin foto), el BMW 118 Sportline (el colorizador de bmw.com.ar no dice si es la Sportline
   o la BlackEdition), el 220i Coupé (la página del Serie 2 Coupé muestra el M240i) y el Range Rover Evoque S.
 - **Bajar fotos de sitios que bloquean a curl** (Ford, Toyota, Audi, BMW; 2026-10-31): con el navegador integrado,
   como una persona. La página pide la imagen con `fetch` y la manda a un receptor local (`127.0.0.1`) con un
