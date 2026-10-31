@@ -6754,7 +6754,7 @@ function pintarElegir(cambio){
   ].join('');
   hoja.insertAdjacentHTML('beforeend', '<div class="elegir-barra" role="status" aria-live="polite"><p class="elegir-barra-txt">' +
     (igual ? '<em>Sin cambios.</em> ' : cambio && out.top.length ? '<em>Nuevas sugerencias.</em> ' : '') +
-    (out.total ? '<b>' + out.total + '</b> auto' + (out.total === 1 ? ' cumple.' : 's cumplen.') : out.top.length ? 'Ninguno cumple todo: van los más cercanos.' : 'Ningún auto con precio cumple todo eso') +
+    (out.total ? '<b>' + out.total + '</b> auto' + (out.total === 1 ? ' cumple.' : 's cumplen.') : out.top.length ? 'Ninguno cumple todo.' : 'Ningún auto con precio cumple todo eso') +
     '</p>' +
     (botones ? '<p class="elegir-barra-btns"><span>Comparar</span>' + botones +
       (out.top.length ? '<button type="button" class="mini-btn" id="elegirVer">Ver lista</button>' : '') + '</p>' : '') + '</div>');
