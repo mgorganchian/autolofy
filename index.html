@@ -1123,6 +1123,8 @@ if(!location.search&&!location.hash)document.documentElement.classList.add('arra
   .colores .muestra-color{display:inline-block;width:.9em;height:.9em;border-radius:50%;border:1px solid var(--border-strong);vertical-align:-.1em;margin-right:5px}
   .elegir-ops{display:grid;grid-template-columns:repeat(auto-fill,minmax(7.5rem,1fr));gap:5px}
   /* Botones del mismo tamaño en cada pregunta (2026-10-30, pedido de Mati): grilla de columnas iguales. */
+  /* Las preguntas de tres opciones van de a tres en el celular, en una sola fila (2026-11-01, pedido de Mati). */
+  @media (max-width:640px){ .elegir-ops[data-n="3"]{grid-template-columns:repeat(3,1fr)} .elegir-ops[data-n="3"] span{padding:4px 2px} }
   .elegir-ops label{cursor:pointer;display:flex}
   .elegir-ops input{position:absolute;opacity:0;pointer-events:none}
   .elegir-ops span{display:flex;flex-direction:column;justify-content:center;flex:1;text-align:center;border:1px solid var(--border-strong);border-radius:3px;padding:4px 6px;font-size:.76rem}
@@ -6568,7 +6570,7 @@ const ELEGIR_PREG = [
   { k: 'plazas', t: '¿Cuántos viajan seguido?', ops: [['4', 'Hasta 4'], ['5', '5'], ['6', '6 o 7']] },
   // 2026-11-01, pedido de Mati: un auto chico donde entran 4 o 5 sirve para 2 adultos y 2 o 3 niños si tiene
   // ISOFIX, pero menos para 4 o 5 adultos. Sin umbrales nuevos: «chico» es el segmento A o B del sitio.
-  { k: 'quien', t: '¿Quiénes viajan seguido?', ops: [['', 'Me da igual'], ['ninos', 'Adultos con niños'], ['adultos', 'Todos adultos']] },
+  { k: 'quien', t: '¿Quiénes viajan seguido?', ops: [['', 'Me da igual'], ['ninos', 'Con niños'], ['adultos', 'Solo adultos']] },
   { k: 'uso', t: '¿Para qué lo vas a usar más?', ops: [['ciudad', 'Ciudad'], ['mixto', 'Ciudad y ruta'], ['ruta', 'Mucha ruta'], ['tierra', 'Tierra o campo'], ['carga', 'Trabajo o carga']] },
   { k: 'enchufe', t: '¿Podés cargarlo en tu casa o en el trabajo?', ops: [['si', 'Sí'], ['no', 'No'], ['nose', 'No sé']] },
   // Los SUV (y los 4 que la tabla llama crossover) se parten por tamaño, con el segmento que sale
@@ -6839,7 +6841,7 @@ function pintarElegir(cambio){
   hoja.innerHTML = '<h2 id="elegirTitulo" class="elegir-titulo">Ayudame a elegir</h2>' +
     '<p class="ficha-nota">5 preguntas y te sugerimos ' + elegirN() + ' autos. ' +
       '<button type="button" class="mini-btn" id="elegirTabla">Ver la tabla</button></p>' +
-    '<div class="elegir-cuerpo"><div class="elegir-preg">' + ELEGIR_PREG.map(q => '<fieldset><legend>' + q.t + '</legend><div class="elegir-ops">' +
+    '<div class="elegir-cuerpo"><div class="elegir-preg">' + ELEGIR_PREG.map(q => '<fieldset><legend>' + q.t + '</legend><div class="elegir-ops" data-n="' + q.ops.length + '">' +
       q.ops.map(([v, t, pesos]) => '<label><input type="radio" name="el-' + q.k + '" value="' + v + '"' + (r[q.k] === v ? ' checked' : '') + '><span' +
         ((ELEGIR_TIP[q.k] || {})[v] ? ' data-tip="' + ELEGIR_TIP[q.k][v] + '"' : q.k === 'presu' && v ? ' data-tip="Los autos con la lista en pesos entran por su precio pasado a dólares al ' + DOLAR_TXT + '."' : '') + '>' + t +
         (pesos ? '<small class="precio-pesos">' + pesos + '</small>' : '') + '</span></label>').join('') + '</div></fieldset>').join('') + '</div>' +

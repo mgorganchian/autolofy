@@ -39,5 +39,16 @@ test('la pregunta está en la hoja con «me da igual» marcada y el resumen la n
   await expect(page.locator('input[name="el-quien"]')).toHaveCount(3);
   await expect(page.locator('input[name="el-quien"][value=""]')).toBeChecked();
   await page.locator('label:has(input[name="el-quien"][value="ninos"])').click();
-  await expect(page.locator('#elegirHoja')).toContainText('Adultos con niños');
+  await expect(page.locator('#elegirHoja')).toContainText('Con niños');
+});
+
+test('en el celular, las preguntas de tres opciones van de a tres en una sola fila y sin partir el texto', async ({ page }) => {
+  await page.goto('/index.html');
+  const r = await page.evaluate(() => [...document.querySelectorAll('.elegir-ops[data-n="3"]')].map(g => {
+    const bs = [...g.querySelectorAll('span')], tops = new Set(bs.map(b => Math.round(b.getBoundingClientRect().top)));
+    return { filas: tops.size, n: bs.length };
+  }));
+  expect(r.length).toBeGreaterThanOrEqual(3);
+  const ancho = await page.evaluate(() => innerWidth);
+  if (ancho <= 640) for (const g of r) expect(g.filas).toBe(1);
 });
