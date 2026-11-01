@@ -508,6 +508,10 @@ sí quedan en inglés, porque no muestran la palabra. Se coló con `YES` dos vec
 - **Franjas de presupuesto en una fila** (2026-11-01, pedido de Mati): los botones de «¿Cuánto querés gastar?» abrevian los
   miles («USD 28 a 32 mil», «USD 35,5 a 39,8 mil») para que los dólares entren en una fila, con los pesos debajo; el corte
   exacto («De USD 28.001 a 32.000.») va en el cartel (`usdExacto`). El valor de la franja no cambia. `rangos-precio.spec.js`.
+- **¿Quiénes viajan seguido?** (2026-11-01, pedido de Mati; issue #101): pregunta de Ayudame a elegir después de las plazas,
+  con «Me da igual» marcada. «Adultos con niños» pide ISOFIX (`isofixDe`): sin él el auto no entra y si no informa queda
+  como «casi» («No informa ISOFIX»). «Todos adultos» deja como «casi» a los de segmento A o B (`size` mini o compact), sin
+  umbrales nuevos. Un solo «casi» por auto. `quien-viaja.spec.js` lo cubre.
 - **Respaldo de fábrica** (2026-10-10, pedido del usuario: en Argentina da miedo conseguir repuestos;
   después del precio es de lo que más pesa): `MARCAS_INFO[marca].fabrica_mercosur` = planta que
   **ya produce** autos en el Mercosur, con fuente (BYD, GWM en Haval/Ora/Tank/Poer, Chery por CAOA,
