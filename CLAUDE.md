@@ -23,9 +23,15 @@ El 2026-10-29 (pedido de Mati) se sumaron **73 de los 100 modelos más patentado
   todavía» (900×570, la arma `siluetas.js` de la tanda). `sinFoto()` hace que el zoom, el visor y la página del auto
   muestren esa silueta con su aclaración, y `herramientas-paginas.py` usa la miniatura en `autos/` y `comparar/` y
   `og.jpg` como vista previa. Cuando aparezca una foto válida de la versión argentina, se instala con
-  `herramientas-fotos.py portada` (deja el 1 solo). El 2026-10-31 entraron 9 así y 6 consiguieron portada oficial
-  el mismo día; quedan con la silueta el T-Cross Extreme (entró después, sin foto), el BMW 118 Sportline (el colorizador de bmw.com.ar no dice si es la Sportline
-  o la BlackEdition), el 220i Coupé (la página del Serie 2 Coupé muestra el M240i) y el Range Rover Evoque S.
+  `herramientas-fotos.py portada` (deja el 1 solo). El 2026-10-31 entraron 9 así y 6 consiguieron portada oficial el mismo día; el 2026-11-01 otros 3
+  (BMW 220i Coupé, Range Rover Evoque S y T-Cross Extreme). **Queda con la silueta solo el BMW 118 Sportline**: el
+  colorizador de bmw.com.ar renderiza un 118 con llantas M y freno azul, que según la ficha AR son del M135 (la Sportline
+  lleva llantas bicolor de 18" estilo 974 y sin freno M), y la tapa de la ficha del Serie 1 es un M135.
+  De dónde salió cada una: el 220i, de la tapa de la ficha AR G42 (es la regla: se compara con la tapa de la ficha, y sus llantas
+  de 18" bicolor de radios dobles coinciden con la ficha); el T-Cross Extreme, de la tapa del folleto oficial `Flyer_TCross_MY26.pdf`
+  (se ve la insignia EXTREME); el Evoque S, de la imagen de su tarjeta en landroverargentina.com (640×360, la única medida que publica).
+  **El sitio argentino de Land Rover es `landroverargentina.com`**; `landrover.com.ar` no existe. Los PDF de BMW y Volkswagen bajan
+  con curl, y se renderizan con PDFKit (Swift) porque no hay `pdftoppm`.
 - **Bajar fotos de sitios que bloquean a curl** (Ford, Toyota, Audi, BMW; 2026-10-31): con el navegador integrado,
   como una persona. La página pide la imagen con `fetch` y la manda a un receptor local (`127.0.0.1`) con un
   formulario: el `connect-src` de esos sitios no deja hacer `fetch` a localhost, pero el formulario no pasa por ahí.
