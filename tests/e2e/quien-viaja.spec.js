@@ -52,3 +52,19 @@ test('en el celular, las preguntas de tres opciones van de a tres en una sola fi
   const ancho = await page.evaluate(() => innerWidth);
   if (ancho <= 640) for (const g of r) expect(g.filas).toBe(1);
 });
+
+test('cada opción de «quiénes viajan» lleva su dibujo del auto y la elegida explica el supuesto', async ({ page }) => {
+  await page.goto('/index.html');
+  const ops = page.locator('input[name="el-quien"] + span');
+  await expect(ops).toHaveCount(3);
+  for (let i = 0; i < 3; i++) await expect(ops.nth(i).locator('svg.quien-ico[aria-hidden="true"]')).toHaveCount(1);
+  await expect(page.locator('.quien-nota')).toHaveCount(0);
+  await page.locator('label:has(input[name="el-quien"][value="ninos"])').click();
+  await expect(page.locator('.quien-nota')).toContainText('dos adultos');
+  const chicos = await page.locator('input[name="el-quien"][value="ninos"] + span svg circle').count();
+  expect(chicos).toBe(5);
+  await page.locator('label:has(input[name="el-plazas"][value="4"])').click();
+  expect(await page.locator('input[name="el-quien"][value="ninos"] + span svg circle').count()).toBe(4);
+  const filas = await page.evaluate(() => new Set([...document.querySelectorAll('input[name="el-quien"] + span')].map(s => Math.round(s.getBoundingClientRect().top))).size);
+  if ((await page.evaluate(() => innerWidth)) <= 640) expect(filas).toBe(1);
+});

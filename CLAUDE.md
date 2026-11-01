@@ -513,6 +513,8 @@ sí quedan en inglés, porque no muestran la palabra. Se coló con `YES` dos vec
   como «casi» («No informa ISOFIX»). «Todos adultos» deja como «casi» a los de segmento A o B (`size` mini o compact), sin
   umbrales nuevos. Un solo «casi» por auto. Las opciones se llaman «Con niños» y «Solo adultos». En el celular, toda pregunta
   de tres opciones va de a tres en una fila (`data-n="3"`: plazas, quiénes viajan, enchufe). `quien-viaja.spec.js` lo cubre.
+  Cada opción de «¿Quiénes viajan seguido?» lleva el dibujo del auto visto desde arriba con quién va en cada asiento (`quienSVG`: con
+  niños, 2 adultos adelante y 2 o 3 chicos atrás según las plazas) y la elegida explica el supuesto debajo (`.quien-nota`). Es un dibujo, no un dato.
 - **Respaldo de fábrica** (2026-10-10, pedido del usuario: en Argentina da miedo conseguir repuestos;
   después del precio es de lo que más pesa): `MARCAS_INFO[marca].fabrica_mercosur` = planta que
   **ya produce** autos en el Mercosur, con fuente (BYD, GWM en Haval/Ora/Tank/Poer, Chery por CAOA,
