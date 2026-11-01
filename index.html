@@ -1147,21 +1147,26 @@ if(!location.search&&!location.hash)document.documentElement.classList.add('arra
     .elegir-cuerpo .elegir-preg{grid-template-columns:1fr !important}
     .elegir-resultados .elegir-res-tit{margin-top:0}
     .elegir-res{grid-template-columns:repeat(2,minmax(0,1fr));gap:14px 22px}
-    .elegir-res > li{grid-template-columns:150px 1fr auto;grid-template-areas:"nombre nombre ver" "foto motivos motivos";column-gap:12px;row-gap:4px;
+    .elegir-res > li{grid-template-columns:150px 1fr;grid-template-areas:"nombre nombre" "foto motivos";column-gap:12px;row-gap:4px;
       border-bottom:1px solid var(--line);padding-bottom:10px}
     .elegir-res > li > .minicar{width:150px}
     .elegir-res ul{margin:0;padding-left:16px}
   }
   /* Tarjeta: en escritorio, foto arriba y texto abajo; en el celular, nombre arriba y foto
      a la izquierda con "Ver su página" debajo, para que entren las 4 (pedido del 2026-10-09). */
-  /* "Ver ficha" a la derecha del nombre (2026-10-10): la tarjeta ocupa un renglón menos. */
-  .elegir-res > li{display:grid;grid-template-columns:1fr auto;grid-template-areas:"foto foto" "nombre ver" "motivos motivos";gap:6px;align-content:start;align-items:start}
+  /* Sin «Ver ficha» (2026-11-01, issue #87): la ficha se abre desde el nombre, y la tarjeta queda con menos texto. */
+  .elegir-res > li{display:grid;grid-template-columns:1fr;grid-template-areas:"foto" "nombre" "motivos";gap:6px;align-content:start;align-items:start}
   .elegir-res > li > b{grid-area:nombre} .elegir-res > li > .minicar{grid-area:foto}
   .elegir-foto{position:relative;display:block;width:100%;padding:0;border:0;background:none;cursor:zoom-in;line-height:0}
   .elegir-nfotos{position:absolute;right:5px;bottom:5px;line-height:1.2;font-family:var(--fuente-tabla);font-size:.62rem;font-weight:700;background:rgba(10,15,30,.75);color:#fff;border-radius:3px;padding:1px 5px}
-  .elegir-res > li > ul{grid-area:motivos} .elegir-res > li > button{grid-area:ver;justify-self:end;align-self:center;white-space:nowrap}
+  .elegir-res > li > ul{grid-area:motivos}
   .elegir-res img{width:100%;aspect-ratio:300/190;object-fit:contain;background:#fff;border-radius:2px}
   .elegir-res b{font-family:var(--fuente-titulo);font-size:1.1rem}
+  /* Igual que el nombre del auto en la Tabla (.th-nombre, 2026-11-01): con su mismo color --h-ink (negro de día, blanco de noche),
+     sin subrayado en reposo y con el subrayado entero al pasar el mouse o al enfocarlo con el teclado. */
+  .elegir-nombre{font:inherit;color:var(--h-ink);background:none;border:0;padding:0;min-height:24px;text-align:left;cursor:pointer;text-decoration:none}
+  .elegir-nombre:hover,.elegir-nombre:focus-visible{text-decoration:underline;text-underline-offset:3px}
+  .elegir-nombre:focus-visible{outline:2px solid currentColor;outline-offset:2px}
   .elegir-res ul{margin:4px 0 6px;padding-left:16px;font-size:.76rem;line-height:1.4}
   .elegir-acc{display:flex;flex-wrap:wrap;align-items:center;gap:10px;margin-top:12px}
   /* Barra al pie, compacta (2026-10-09): una línea de texto y una de botones, pegada al borde
@@ -1188,7 +1193,7 @@ if(!location.search&&!location.hash)document.documentElement.classList.add('arra
   @media (prefers-reduced-motion:reduce){ .elegir-barra.cambio{animation:none} }
   @media (max-width:640px){
     .elegir-res{grid-template-columns:1fr;gap:10px}
-    .elegir-res > li{grid-template-columns:96px 1fr auto;grid-template-areas:"nombre nombre ver" "foto motivos motivos";
+    .elegir-res > li{grid-template-columns:96px 1fr;grid-template-areas:"nombre nombre" "foto motivos";
       column-gap:10px;row-gap:2px;border-bottom:1px solid var(--line);padding-bottom:6px}
     .elegir-res{gap:8px}
     .elegir-res img{width:96px}
@@ -1196,7 +1201,6 @@ if(!location.search&&!location.hash)document.documentElement.classList.add('arra
     .elegir-res b{font-size:1rem}
     .elegir-barra-btns .ficha-btn{padding:4px 7px;font-size:.7rem}
     .elegir-res ul{margin:0;font-size:.72rem;line-height:1.3;padding-left:14px}
-    .elegir-res > li > button{align-self:center}
   }
   .ficha-hist-res{margin:2px 0 4px;font-family:var(--fuente-tabla);font-weight:700;font-size:.9rem}
   .ficha-hist-res.baja{color:var(--etq-a)} .ficha-hist-res.sube{color:var(--etq-e)}
@@ -6809,12 +6813,13 @@ function pintarElegir(cambio){
       '<ol class="elegir-res">' + out.top.map(x => {
       const im = TH_AUTO[x.i].querySelector('img.car-photo');
       const n = listaDeFotos(SLUG_AUTO[x.i]).length;
-      return '<li' + (x.casi ? ' class="casi"' : '') + '><b>' + rkEsc(CARS[x.i].name) + elegirPorqueHTML(x) + '</b><span class="minicar" data-mini-slug="' + SLUG_AUTO[x.i] + '" data-k="0">' +
+      // La ficha se abre desde el nombre (issue #87, 2026-10-31): la foto solo la agranda. Sin botón «Ver ficha» desde el 2026-11-01.
+      return '<li' + (x.casi ? ' class="casi"' : '') + '><b><button type="button" class="elegir-nombre" data-elegir-ficha="' + x.i + '">' + rkEsc(CARS[x.i].name) + '</button>' +
+        elegirPorqueHTML(x) + '</b><span class="minicar" data-mini-slug="' + SLUG_AUTO[x.i] + '" data-k="0">' +
         '<button type="button" class="elegir-foto" data-visor-slug="' + SLUG_AUTO[x.i] + '" aria-label="Ver ' + (n > 1 ? 'las ' + n + ' fotos' : 'la foto') + ' del ' + rkEsc(CARS[x.i].name) + '">' +
         '<img src="' + portadaDe(im) + '" alt="">' + (n > 1 ? '<span class="elegir-nfotos">' + n + ' fotos</span>' : '') + '</button>' + miniFlechas(SLUG_AUTO[x.i]) + '</span>' +
         '<ul>' + (x.casi ? '<li class="elegir-casi">' + rkEsc(x.casi) + '</li>' : '') + x.motivos.map(m => '<li>' + rkEsc(m) + '</li>').join('') +
-          (x.flojo && x.flojo.length ? '<li class="elegir-flojo">Flojo en ' + rkEsc(x.flojo.slice(0, 2).join(' y ')) + '</li>' : '') + '</ul>' +
-        '<button type="button" class="mini-btn" data-elegir-ficha="' + x.i + '">Ver ficha</button></li>';
+          (x.flojo && x.flojo.length ? '<li class="elegir-flojo">Flojo en ' + rkEsc(x.flojo.slice(0, 2).join(' y ')) + '</li>' : '') + '</ul></li>';
     }).join('') + '</ol>' +
       // Cuántos cumplen ya lo dice la barra: acá solo los que quedaron afuera por no tener precio.
       (out.sinPrecio ? '<p class="elegir-acc"><span class="ficha-nota">' + out.sinPrecio + ' auto' + (out.sinPrecio === 1 ? '' : 's') + ' más cumple' + (out.sinPrecio === 1 ? '' : 'n') + ' lo demás pero no publica' + (out.sinPrecio === 1 ? '' : 'n') + ' precio.</span></p>' : '') +
