@@ -828,6 +828,12 @@ si esos tres lugares no coinciden o si una foto queda sin autor.
 
 ## Fuentes de datos
 
+- **Fuente de cada dato** (2026-11-01, pedido de Mati): todo dato que se carga o se mejora desde esa fecha va en
+  `datos-fuentes.tsv`, una fila por celda (slug, fila, valor visible, `dato` o `motivo de s/d`, fuente, URL,
+  sha256 o «leída en línea, sin hash», fecha). `tests/e2e/fuentes-celdas.spec.js` lo cruza contra `DATA`: el valor
+  registrado tiene que ser el de la tabla. Lo anterior a esa fecha solo tiene la fuente por auto
+  (`fichas-fuentes.tsv`). Las tandas de búsqueda piden la fuente por celda, no por auto.
+
 **Las fichas técnicas en PDF de importadores y concesionarias argentinas rinden mucho
 más que la prensa**: 25-50 celdas contra 5-10. Traen ADAS ítem por ítem, airbags,
 suspensión, multimedia, luces y climatización, que las notas nunca publican.
