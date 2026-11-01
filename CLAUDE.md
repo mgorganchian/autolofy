@@ -348,6 +348,15 @@ sí quedan en inglés, porque no muestran la palabra. Se coló con `YES` dos vec
   **solo si es de la misma versión** (`promoComparable`: la promo nombra una versión cuyas palabras están
   en la de la tabla, o el modelo tiene una única versión) y en dólares; así salen la línea "para la
   versión de la tabla…" en Dónde comprarlo y el ranking "Rebajas publicadas".
+- **El precio de lista va debajo del nombre, no en una fila** (2026-11-01, issue #89, decisión de Mati): la categoría «Precio»
+  ya no se dibuja en la tabla (sin botón ni título); su única fila (`Precio de lista…`) sigue en `DATA` y en el cuerpo, **oculta**
+  (`tr[data-oculta]`), para que todo lo que compara filas (★ del mejor, ▲▼ contra la referencia, mayores diferencias, «Gana en más
+  filas», orden por precio) siga contando el precio. El encabezado de cada auto lleva `.th-precio` con el mismo texto, los pesos al BNA y
+  la fecha de la lista (`fechasDePrecio`); `espejarPrecio()` copia a ese lugar la ★ y las ▲▼ de la fila oculta. **El precio ya no tiene
+  barra de percentil visible.** Las 9 filas que estaban en «Precio» pasaron a tres categorías al final, con el vocabulario del sitio:
+  **Respaldo** (garantía general, garantía de la batería, importador), **Origen** (fabricado en, grupo automotriz) y **Ventas en
+  Argentina** (patentamientos 2026 a 2023). `DATA` tiene 17 categorías y 104 filas; la tabla dibuja 16 y 103 (`N_FILAS` en los tests).
+  `herramientas-paginas.py` sigue leyendo el precio como la primera fila de la primera categoría.
 - **Encabezado compacto** (2026-10-10): `#theadWrap` se pega con `top` negativo igual al alto de las
   fotos (`compactarThead`), así al bajar las fotos salen de la pantalla y quedan nombre, descripción
   y botones (celular: 208 → 104 px). No cambia ningún alto, así que no salta. "Ocultar filas sin

@@ -157,8 +157,8 @@ test.describe('orden de columnas', () => {
 test.describe('categorías plegables', () => {
   test('tocar la categoría esconde sus filas y la deja visible para reabrirla', async ({ page }) => {
     await abrir(page);
-    const cat = page.locator('#mainTable tr.cat-row[data-cat="0"] td');
-    const filas = page.locator('#mainTable tbody tr[data-cat="0"]:not(.cat-row)');
+    const cat = page.locator('#mainTable tr.cat-row[data-cat="1"] td');
+    const filas = page.locator('#mainTable tbody tr[data-cat="1"]:not(.cat-row)');
     await cat.click();
     await expect(cat).toHaveAttribute('aria-expanded', 'false');
     await expect(filas.first()).toBeHidden();
@@ -175,7 +175,7 @@ test.describe('categorías plegables', () => {
     await page.click('#plegarTodoBtn');
     // Se mide el texto de cada celda, no un elemento en particular: vale para
     // cualquier forma de armar la fila.
-    const enPantalla = () => page.locator('#mainTable tr.cat-row td').evaluateAll(tds => tds.length === 14 &&
+    const enPantalla = () => page.locator('#mainTable tr.cat-row td').evaluateAll(tds => tds.length === 16 &&
       tds.every(td => { const rg = document.createRange(); rg.selectNodeContents(td); const r = rg.getBoundingClientRect();
         return r.left >= 0 && r.right <= innerWidth && r.width > 20; }));
     expect(await enPantalla()).toBe(true);
@@ -187,7 +187,7 @@ test.describe('categorías plegables', () => {
     await abrir(page);
     await page.click('#plegarTodoBtn');
     await expect(page.locator('#mainTable tbody tr:not(.cat-row):visible')).toHaveCount(0);
-    await expect(page.locator('#mainTable tbody tr.cat-row:visible')).toHaveCount(14);
+    await expect(page.locator('#mainTable tbody tr.cat-row:visible')).toHaveCount(16);
     await expect(page.locator('#noResults')).toBeHidden();
     await expect(page.locator('#plegarTodoBtn')).toHaveText('Desplegar todo');
   });
@@ -326,9 +326,10 @@ test.describe('selector y comparación', () => {
 
   test('las barras de una fila quedan a la misma altura y solo la del mejor llena el ancho', async ({ page }) => {
     // Pedido del 2026-10-07: barras alineadas aunque el texto ocupe distintas líneas, y en
-    // "menos es mejor" (precio) el más barato es el que llena la barra, no el más caro.
+    // "menos es mejor" (precio) el más barato es el que llena la barra, no el más caro. Desde el 2026-11-01 el precio va debajo
+    // del nombre (issue #89) y ya no tiene barra visible: el test usa la velocidad máxima (más es mejor).
     await abrir(page, '?autos=deepal-s05,byd-shark,geely-ex5,chery-tiggo-7-pro-phev');
-    const fila = page.locator('#mainTable tr[data-nombre="Precio de lista (versión tope de gama de la tabla)"]');
+    const fila = page.locator('#mainTable tr[data-nombre="Velocidad máxima (km/h)"]');
     const visibles = fila.locator('td[data-col]:visible .pct:not(.fuera)');
     const tops = await visibles.evaluateAll(bs => bs.map(b => Math.round(b.getBoundingClientRect().top)));
     expect(tops).toHaveLength(4);
@@ -339,7 +340,7 @@ test.describe('selector y comparación', () => {
       const r = document.createRange(); const t = [...td.childNodes].find(n => n.nodeType === 3 || (n.nodeType === 1 && !n.matches('.mejor-sel,.pct')));
       r.selectNodeContents(t); return Math.round(r.getBoundingClientRect().top); }));
     expect(new Set(textos).size).toBe(1);
-    await expect(fila.locator(`td[data-col="${indice('Deepal S05')}"] .pct`)).toHaveClass(/mejor/);
+    await expect(fila.locator('.pct:has(i[style*="width:100%"]), .pct:has(i[style*="width: 100%"])').first()).toHaveClass(/mejor/);
   });
 
   test('con todos los autos, la barra de percentil va al pie de la celda y el mejor la llena casi entera', async ({ page }) => {
@@ -466,7 +467,7 @@ test('celular apaisado: con pocos autos las columnas llenan la pantalla, con tod
   await page.setViewportSize({ width: 844, height: 390 });
   await page.goto('/index.html?autos=baic-x55-ii-hybrid,ford-territory-hibrida');
   const anchos = () => page.evaluate(() => {
-    const fila = document.querySelector('#mainTable tbody tr:not(.cat-row)');
+    const fila = document.querySelector('#mainTable tbody tr:not(.cat-row):not([data-oculta])');
     return [...fila.querySelectorAll('td:not(.col-hidden)')].map(td => td.getBoundingClientRect().width);
   });
   const dos = await anchos();
@@ -481,7 +482,7 @@ test('celular apaisado: con pocos autos las columnas llenan la pantalla, con tod
 test('girar el celular de vertical a apaisado y de vuelta deja los mismos anchos y el mismo encabezado', async ({ page }) => {
   // Pedido del usuario (2026-10-28): al volver a vertical la tabla no recuperaba los anchos de antes.
   const medir = () => page.evaluate(() => ({
-    anchos: [...document.querySelectorAll('#mainTable tbody tr:not(.cat-row)')[0].querySelectorAll('td:not(.col-hidden)')]
+    anchos: [...document.querySelectorAll('#mainTable tbody tr:not(.cat-row):not([data-oculta])')[0].querySelectorAll('td:not(.col-hidden)')]
       .map(td => Math.round(td.getBoundingClientRect().width)),
     encabezado: [...document.querySelectorAll('#theadTable th:not(.col-hidden)')].map(th => Math.round(th.getBoundingClientRect().width)),
     top: document.getElementById('theadWrap').style.top,
