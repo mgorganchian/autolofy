@@ -35,7 +35,7 @@ test.describe('filtros de la tabla', () => {
 
   test('los botones de categoría muestran solo esa categoría y "Todas" vuelve', async ({ page }) => {
     const botones = page.locator('#catScroll .cat-btn');
-    await expect(botones).toHaveCount(DATA.length + 1);
+    await expect(botones).toHaveCount(DATA.length);   // Todas + las categorías, sin la de Precio (va en el encabezado)
     const [nombre, filas] = DATA[1];
     await botones.filter({ hasText: nombre }).first().click();
     await expect(page.locator(FILAS_DATOS)).toHaveCount(filas.length);
@@ -185,7 +185,7 @@ const zoomUbicado = page => page.evaluate(() => new Promise(r => requestAnimatio
 
 test.describe('tooltips y fotos', () => {
   test('una celda sin dato muestra su explicación en el tooltip', async ({ page }) => {
-    const celda = page.locator('#mainTable .val-nd[data-tip]').first();
+    const celda = page.locator('#mainTable tbody tr:not([data-oculta]) .val-nd[data-tip]').first();
     const tip = await celda.getAttribute('data-tip');
     await celda.scrollIntoViewIfNeeded();
     await celda.click();

@@ -19,9 +19,9 @@ test.describe('render de la tabla', () => {
     expect(errores).toEqual([]);
   });
 
-  test('dibuja todas las filas de datos en 14 categorías, cada una con N+1 celdas', async ({ page }) => {
+  test('dibuja todas las filas de datos en 16 categorías, cada una con N+1 celdas', async ({ page }) => {
     await expect(page.locator(FILAS_DATOS)).toHaveCount(N_FILAS);
-    await expect(page.locator(FILAS_CAT)).toHaveCount(14);
+    await expect(page.locator(FILAS_CAT)).toHaveCount(16);
     const celdas = await page.locator(FILAS_DATOS).evaluateAll(trs => [...new Set(trs.map(tr => tr.cells.length))]);
     expect(celdas).toEqual([N + 1]);
   });

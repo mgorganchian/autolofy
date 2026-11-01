@@ -46,11 +46,13 @@ function vigilarErrores(page) {
 }
 
 // Filas visibles de la tabla (sin las de categoría).
-const FILAS_DATOS = '#mainTable tbody tr:not(.cat-row):not(.hidden)';
+const FILAS_DATOS = '#mainTable tbody tr:not(.cat-row):not(.hidden):not([data-oculta])';
 const FILAS_CAT = '#mainTable tbody tr.cat-row:not(.hidden)';
 
 // Cantidad de filas de datos, leída de DATA: las specs de comportamiento no la
 // fijan a mano (invariantes.spec.js sí, porque ahí es justamente lo que se controla).
-const N_FILAS = leerIndex().filas.length;
+// El precio de lista no va en el cuerpo de la tabla: se dibuja debajo del nombre de cada auto (issue #89), así que el cuerpo
+// tiene una fila menos que DATA.
+const N_FILAS = leerIndex().filas.length - 1;
 
 module.exports = { leerIndex, vigilarErrores, FILAS_DATOS, FILAS_CAT, N_FILAS };
