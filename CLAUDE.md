@@ -505,6 +505,9 @@ sí quedan en inglés, porque no muestran la palabra. Se coló con `YES` dos vec
   ejes: coupés y descapotables 4, sedanes, crossovers y pickups 5, hatchbacks 5 o 4 por debajo de 2,45 m, SUV de menos de
   2,80 m 5; un SUV más largo no se estima) y la tarjeta dice «(estimado por su tamaño)». Para 6 o 7 plazas no entra. La
   tabla sigue en s/d: nunca se escribe la estimación como dato. `asientos-estimados.spec.js` mide que no prometa de más.
+- **Franjas de presupuesto en una fila** (2026-11-01, pedido de Mati): los botones de «¿Cuánto querés gastar?» abrevian los
+  miles («USD 28 a 32 mil», «USD 35,5 a 39,8 mil») para que los dólares entren en una fila, con los pesos debajo; el corte
+  exacto («De USD 28.001 a 32.000.») va en el cartel (`usdExacto`). El valor de la franja no cambia. `rangos-precio.spec.js`.
 - **¿Quiénes viajan seguido?** (2026-11-01, pedido de Mati; issue #101): pregunta de Ayudame a elegir después de las plazas,
   con «Me da igual» marcada. «Adultos con niños» pide ISOFIX (`isofixDe`): sin él el auto no entra y si no informa queda
   como «casi» («No informa ISOFIX»). «Todos adultos» deja como «casi» a los de segmento A o B (`size` mini o compact), sin
