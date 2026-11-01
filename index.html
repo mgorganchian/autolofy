@@ -6562,7 +6562,7 @@ const ELEGIR_PREG = [
     // Sin "USD" en cada opción (2026-10-10, menos renglones): lo dice la pregunta.
   // En las dos monedas desde el 2026-10-29 (issue #60): el corte va en dólares y debajo, en pesos al BNA
   // vendedor; los autos con la lista en pesos entran por PRECIO_CMP.
-  { k: 'presu', t: '¿Cuánto querés gastar?', ops: [['0-28000', 'Hasta USD 28.000'], ['28001-32000', 'USD 28.001 a 32.000'], ['32001-35500', 'USD 32.001 a 35.500'], ['35501-39800', 'USD 35.501 a 39.800'], ['39801-52500', 'USD 39.801 a 52.500'], ['52501-66000', 'USD 52.501 a 66.000'], ['66001-', 'Más de USD 66.000'], ['', 'Me da igual']]
+  { k: 'presu', t: '¿Cuánto querés gastar?', ops: [['0-28000', 'Hasta USD 28 mil'], ['28001-32000', 'USD 28 a 32 mil'], ['32001-35500', 'USD 32 a 35,5 mil'], ['35501-39800', 'USD 35,5 a 39,8 mil'], ['39801-52500', 'USD 39,8 a 52,5 mil'], ['52501-66000', 'USD 52,5 a 66 mil'], ['66001-', 'Más de USD 66 mil'], ['', 'Me da igual']]
     .map(([v, t]) => { if (!v) return [v, t]; const [a, b] = v.split('-').map(x => x === '' ? null : +x);
       return [v, t, a === 0 ? 'Hasta ' + pesosCorto(aPesos(b)) : b == null ? 'Más de ' + pesosCorto(aPesos(a)) : pesosCorto(aPesos(a)) + ' a ' + pesosCorto(aPesos(b))]; }) },
   { k: 'plazas', t: '¿Cuántos viajan seguido?', ops: [['4', 'Hasta 4'], ['5', '5'], ['6', '6 o 7']] },
@@ -6821,7 +6821,7 @@ function pintarElegir(cambio){
       '<button type="button" class="mini-btn" id="elegirTabla">Ver la tabla</button></p>' +
     '<div class="elegir-cuerpo"><div class="elegir-preg">' + ELEGIR_PREG.map(q => '<fieldset><legend>' + q.t + '</legend><div class="elegir-ops">' +
       q.ops.map(([v, t, pesos]) => '<label><input type="radio" name="el-' + q.k + '" value="' + v + '"' + (r[q.k] === v ? ' checked' : '') + '><span' +
-        ((ELEGIR_TIP[q.k] || {})[v] ? ' data-tip="' + ELEGIR_TIP[q.k][v] + '"' : q.k === 'presu' && v ? ' data-tip="Los autos con la lista en pesos entran por su precio pasado a dólares al ' + DOLAR_TXT + '."' : '') + '>' + t +
+        ((ELEGIR_TIP[q.k] || {})[v] ? ' data-tip="' + ELEGIR_TIP[q.k][v] + '"' : q.k === 'presu' && v ? ' data-tip="' + usdExacto(v) + ' Los autos con la lista en pesos entran por su precio pasado a dólares al ' + DOLAR_TXT + '."' : '') + '>' + t +
         (pesos ? '<small class="precio-pesos">' + pesos + '</small>' : '') + '</span></label>').join('') + '</div></fieldset>').join('') + '</div>' +
     '<div class="elegir-resultados">' + elegirResumenHTML(r) + '<h3 class="elegir-res-tit" id="elegirResTit">' + (out.total ? 'Te sugerimos' : 'Ningún auto a la venta cumple todo eso') + '</h3>' +
     // Sin ninguno que cumpla: qué aflojar, y abajo los más cercanos (2026-10-30).
@@ -6880,6 +6880,9 @@ function elegirPorqueHTML(x){
 // "Tus respuestas" arriba de los sugeridos, con "Cambiar" (2026-10-10, GOV.UK: resumir y dejar cambiar
 // sin perder lo demás). En el celular las preguntas quedan arriba y la lista abajo; en la computadora
 // están al lado, así que ahí no hace falta.
+// El corte exacto de una franja de presupuesto, para el cartel: «De USD 28.001 a 32.000.» (los botones dicen «28 a 32 mil»).
+const usdExacto = v => { const [a, b] = v.split('-').map(x => x === '' ? null : +x), f = n => n.toLocaleString('es-AR');
+  return a === 0 ? 'Hasta USD ' + f(b) + '.' : b == null ? 'Más de USD ' + f(a - 1) + '.' : 'De USD ' + f(a) + ' a ' + f(b) + '.'; };
 function elegirResumenHTML(r){
   const txt = q => { const o = q.ops.find(([v]) => v === r[q.k]); return o ? o[1] : ''; };
   const partes = [];
