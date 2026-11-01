@@ -507,8 +507,9 @@ sí quedan en inglés, porque no muestran la palabra. Se coló con `YES` dos vec
   (`IMPORTA_FABRICA`: BYD, Omoda, Jaecoo y Leapmotor los trae la casa matriz, según
   `MARCAS_INFO`) cuenta como una fila más en "Gana en más filas" cuando los elegidos difieren,
   y en Ayudame a elegir suma puntos y aparece como motivo.
-- **Tarjetas de Ayudame a elegir** (2026-10-10): "Ver ficha" a la derecha del nombre (un renglón
-  menos). A lo sumo **4 renglones**, cada uno de una línea en el celular (~26 caracteres): precio y
+- **Tarjetas de Ayudame a elegir** (2026-10-10): el nombre abre la ficha (issue #87, 2026-11-01; ya no hay
+  botón «Ver ficha»: la tarjeta queda con menos texto) y se ve como el de la Tabla: color del texto, sin
+  subrayado en reposo y subrayado entero al pasar el mouse. A lo sumo **4 renglones**, cada uno de una línea en el celular (~26 caracteres): precio y
   propulsión, cómo es el auto (tipo, tamaño, largo, kW) y los dos motivos que más pesan (respaldo de
   fábrica primero). En escritorio, preguntas a la izquierda y sugerencias a la derecha
   (`.elegir-cuerpo`), para que la primera pantalla muestre los autos con su información. El botón principal de la barra ("Estos 4") es más grande y destella (`destelloComparar`,
