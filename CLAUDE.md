@@ -500,6 +500,11 @@ sí quedan en inglés, porque no muestran la palabra. Se coló con `YES` dos vec
   y dentro de una franja el equipamiento por dólar hasta .4 (`elegirEquipo`: ✓ sobre filas con dato). Cada tarjeta
   tiene un «?» con el puntaje desglosado (`elegirPorqueHTML`). «Sedán o hatchback» incluye coupés y descapotables.
   Las opciones de cada pregunta son una grilla de botones del mismo ancho.
+- **Asientos estimados** (2026-11-01, pedido de Mati): el que no tiene la fila Número de asientos (32 autos) ya no pasa en
+  silencio por «¿Cuántos viajan seguido?». Hasta 5 plazas entra con `estimarAsientos()` (carrocería y distancia entre
+  ejes: coupés y descapotables 4, sedanes, crossovers y pickups 5, hatchbacks 5 o 4 por debajo de 2,45 m, SUV de menos de
+  2,80 m 5; un SUV más largo no se estima) y la tarjeta dice «(estimado por su tamaño)». Para 6 o 7 plazas no entra. La
+  tabla sigue en s/d: nunca se escribe la estimación como dato. `asientos-estimados.spec.js` mide que no prometa de más.
 - **Respaldo de fábrica** (2026-10-10, pedido del usuario: en Argentina da miedo conseguir repuestos;
   después del precio es de lo que más pesa): `MARCAS_INFO[marca].fabrica_mercosur` = planta que
   **ya produce** autos en el Mercosur, con fuente (BYD, GWM en Haval/Ora/Tank/Poer, Chery por CAOA,

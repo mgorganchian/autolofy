@@ -3173,6 +3173,21 @@ const precioDosMonedas = i => SIM_PRECIO[i] != null ? 'USD ' + FMT_ENTERO.format
 // Un monto en dólares de un filtro, con su equivalente en pesos: "USD 30.000 ($ 46,8 M)".
 const usdYPesos = n => 'USD ' + n.toLocaleString('es-AR') + ' (' + pesosCorto(aPesos(n)) + ')';
 const SIM_ASIENTOS = simColumna('Número de asientos');
+const SIM_EJES = simColumna('Distancia entre ejes (mm)');
+// Asientos estimados (2026-11-01, pedido de Mati): un auto sin la fila Número de asientos no pasa en silencio por
+// el filtro de plazas; se estima por carrocería y distancia entre ejes, y la tarjeta lo dice. Nunca se escribe en
+// la tabla (la celda sigue en s/d). Es un mínimo seguro, medido contra los autos que sí tienen el dato: no
+// promete más asientos de los que el auto tiene en el 97% de los casos (subestima a algunos SUV de 7, lo que
+// no estorba para 5 plazas). Coupés y descapotables 4, sedanes, crossovers y pickups 5, hatchbacks 5 (4 si
+// miden menos de 2,45 m entre ejes), SUV de menos de 2,80 m entre ejes 5. Un SUV de 2,80 m o más no se estima.
+const estimarAsientos = i => {
+  const c = CARS[i], e = SIM_EJES[i];
+  if (['Coupé', 'Convertible'].includes(c.body)) return 4;
+  if (['Sedán', 'Crossover', 'Pickup'].includes(c.body)) return 5;
+  if (c.body === 'Hatchback') return e != null && e < 2450 ? 4 : 5;
+  if (c.body === 'SUV') return e != null && e < 2800 ? 5 : null;
+  return null;
+};
 const SIM_AUTONOMIA = simColumna('Autonomía eléctrica (km)');
 const SIM_GARANTIA = simColumna('Garantía general');
 const SIM_GARANTIA_BAT = simColumna('Garantía de la batería de alto voltaje');
@@ -6661,10 +6676,12 @@ function elegirDesvio(i, r){
   // Coupés y descapotables van con los sedanes y hatchbacks (2026-10-30, pedido de Mati).
   if (r.carro === 'auto' && !['Sedán', 'Hatchback', 'Coupé', 'Convertible'].includes(c.body)) return null;
   if (r.carro === 'pickup' && c.body !== 'Pickup') return null;
-  const plazas = +r.plazas, as = SIM_ASIENTOS[i];
+  const plazas = +r.plazas, dato = SIM_ASIENTOS[i];
+  // Hasta 5 plazas, el que no tiene el dato entra con su estimación; para 6 o 7 sigue sin entrar.
+  const as = dato != null || plazas >= 6 ? dato : estimarAsientos(i);
   if (plazas >= 6 ? !(as >= 6) : (as != null && as < plazas)){
     if (as == null || as < (plazas >= 6 ? 5 : plazas - 1)) return null;
-    fallas.push({ d: .15, txt: 'Tiene ' + as + ' asientos' });
+    fallas.push({ d: .15, txt: 'Tiene ' + as + ' asientos' + (dato == null ? ' (estimado por su tamaño)' : '') });
   }
   if (r.presu){
     const [pMin, pMax] = r.presu.split('-').map(x => x === '' ? null : +x);
