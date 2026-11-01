@@ -1126,6 +1126,8 @@ if(!location.search&&!location.hash)document.documentElement.classList.add('arra
   /* Las preguntas de tres opciones van de a tres en el celular, en una sola fila (2026-11-01, pedido de Mati). */
   @media (max-width:640px){ .elegir-ops[data-n="3"]{grid-template-columns:repeat(3,1fr)} .elegir-ops[data-n="3"] span{padding:4px 2px} }
   .elegir-ops label{cursor:pointer;display:flex}
+  .quien-ico{width:3rem;height:auto;margin:2px auto 3px;display:block}
+  .quien-nota{font-size:.8rem;color:var(--text-secondary);margin:6px 0 0}
   .elegir-ops input{position:absolute;opacity:0;pointer-events:none}
   .elegir-ops span{display:flex;flex-direction:column;justify-content:center;flex:1;text-align:center;border:1px solid var(--border-strong);border-radius:3px;padding:4px 6px;font-size:.76rem}
   .elegir-ops input:checked + span{background:var(--byd-blue);border-color:var(--byd-blue);color:var(--sobre-verde)}
@@ -6638,7 +6640,7 @@ const ELEGIR_TIP = {
     6: 'Solo los que informan 6 o 7 asientos. Además suma el baúl.',
   },
   quien: {
-    ninos: 'Piden ISOFIX: sin él no entran, y si no informan, quedan como «casi».',
+    ninos: 'Piden ISOFIX: sin él no entran, y si no informan, quedan como «casi». Con 3 chicos, el del medio va sin ISOFIX.',
     adultos: 'Los autos chicos (segmento A o B) quedan como «casi»: pueden quedar justos para adultos.',
   },
 };
@@ -6843,8 +6845,9 @@ function pintarElegir(cambio){
       '<button type="button" class="mini-btn" id="elegirTabla">Ver la tabla</button></p>' +
     '<div class="elegir-cuerpo"><div class="elegir-preg">' + ELEGIR_PREG.map(q => '<fieldset><legend>' + q.t + '</legend><div class="elegir-ops" data-n="' + q.ops.length + '">' +
       q.ops.map(([v, t, pesos]) => '<label><input type="radio" name="el-' + q.k + '" value="' + v + '"' + (r[q.k] === v ? ' checked' : '') + '><span' +
-        ((ELEGIR_TIP[q.k] || {})[v] ? ' data-tip="' + ELEGIR_TIP[q.k][v] + '"' : q.k === 'presu' && v ? ' data-tip="' + usdExacto(v) + ' Los autos con la lista en pesos entran por su precio pasado a dólares al ' + DOLAR_TXT + '."' : '') + '>' + t +
-        (pesos ? '<small class="precio-pesos">' + pesos + '</small>' : '') + '</span></label>').join('') + '</div></fieldset>').join('') + '</div>' +
+        ((ELEGIR_TIP[q.k] || {})[v] ? ' data-tip="' + ELEGIR_TIP[q.k][v] + '"' : q.k === 'presu' && v ? ' data-tip="' + usdExacto(v) + ' Los autos con la lista en pesos entran por su precio pasado a dólares al ' + DOLAR_TXT + '."' : '') + '>' + (q.k === 'quien' ? quienSVG(v, r.plazas) : '') + t +
+        (pesos ? '<small class="precio-pesos">' + pesos + '</small>' : '') + '</span></label>').join('') + '</div>' +
+      (q.k === 'quien' && r.quien ? '<p class="quien-nota">' + (r.quien === 'ninos' ? 'Atrás van los chicos con silla; adelante, dos adultos.' : 'Todos los asientos son para adultos: los autos chicos pueden quedar justos.') + '</p>' : '') + '</fieldset>').join('') + '</div>' +
     '<div class="elegir-resultados">' + elegirResumenHTML(r) + '<h3 class="elegir-res-tit" id="elegirResTit">' + (out.total ? 'Te sugerimos' : 'Ningún auto a la venta cumple todo eso') + '</h3>' +
     // Sin ninguno que cumpla: qué aflojar, y abajo los más cercanos (2026-10-30).
     (!out.total ? elegirAflojarHTML(r) + (out.top.length ? '<h3 class="elegir-res-tit">Los más cercanos</h3>' : '') : '') +
@@ -6905,6 +6908,18 @@ function elegirPorqueHTML(x){
 // El corte exacto de una franja de presupuesto, para el cartel: «De USD 28.001 a 32.000.» (los botones dicen «28 a 32 mil»).
 const usdExacto = v => { const [a, b] = v.split('-').map(x => x === '' ? null : +x), f = n => n.toLocaleString('es-AR');
   return a === 0 ? 'Hasta USD ' + f(b) + '.' : b == null ? 'Más de USD ' + f(a - 1) + '.' : 'De USD ' + f(a) + ' a ' + f(b) + '.'; };
+// Pictograma de «¿Quiénes viajan seguido?» (2026-11-01, pedido de Mati): el auto visto desde arriba con quién va en cada
+// asiento. Con niños: dos adultos adelante y los chicos atrás (2 con «Hasta 4», 3 con 5 o más). Es un dibujo, no un dato.
+function quienSVG(v, plazas){
+  const atras = plazas === '4' ? 2 : 3, xs = atras === 2 ? [30, 50] : [22, 40, 58];
+  const adulto = (x, y) => '<circle cx="' + x + '" cy="' + y + '" r="6"/><rect x="' + (x - 8) + '" y="' + (y + 7) + '" width="16" height="9" rx="4"/>';
+  const chico = (x, y) => '<circle cx="' + x + '" cy="' + y + '" r="4"/><rect x="' + (x - 5) + '" y="' + (y + 5) + '" width="10" height="9" rx="3"/>';
+  const asiento = (x, y, w) => '<rect x="' + (x - w / 2) + '" y="' + y + '" width="' + w + '" height="22" rx="5" fill="none" stroke="currentColor" stroke-width="1.5" stroke-dasharray="3 3" opacity=".5"/>';
+  let s = '<svg viewBox="0 0 80 112" class="quien-ico" aria-hidden="true" focusable="false"><rect x="8" y="4" width="64" height="104" rx="18" fill="none" stroke="currentColor" stroke-width="2" opacity=".6"/>';
+  if (!v) s += asiento(26, 22, 20) + asiento(54, 22, 20) + xs.map(x => asiento(x, 64, 16)).join('');
+  else s += '<g fill="currentColor">' + adulto(26, 26) + adulto(54, 26) + xs.map(x => v === 'ninos' ? chico(x, 70) : adulto(x, 66)).join('') + '</g>';
+  return s + '</svg>';
+}
 function elegirResumenHTML(r){
   const txt = q => { const o = q.ops.find(([v]) => v === r[q.k]); return o ? o[1] : ''; };
   const partes = [];
