@@ -529,6 +529,12 @@ sí quedan en inglés, porque no muestran la palabra. Se coló con `YES` dos vec
   de tres opciones va de a tres en una fila (`data-n="3"`: plazas, quiénes viajan, enchufe). `quien-viaja.spec.js` lo cubre.
   Cada opción de «¿Quiénes viajan seguido?» lleva el dibujo del auto visto desde arriba con quién va en cada asiento (`quienSVG`: con
   niños, 2 adultos adelante y 2 o 3 chicos atrás según las plazas) y la elegida explica el supuesto debajo (`.quien-nota`). Es un dibujo, no un dato.
+- **¿Viaja alguien en silla de ruedas?** (2026-11-01, issue #112; opción 1): pregunta de Ayudame a elegir con el símbolo de accesibilidad
+  dibujado a mano (`SVG_ACCESO`). Con «Sí» solo entran los de **baúl grande** (el 40% de autos con más litros entre los que lo informan, `baulGrande()`,
+  sin umbral inventado; la caja de una pickup no cuenta) cuyos **asientos traseros** no se informan como fijos (si no informan, «casi»: «No informa
+  si los asientos se pliegan»). Suma como motivo el baúl en litros y la apertura eléctrica. **No dice si la silla entra ni qué tan alto es el piso**:
+  ninguna fila lo tiene; el cartel dice que hay que probarla en el auto. Falta (opción 2 del issue) cargar la altura de carga y la boca del baúl.
+  Lenguaje: «silla de ruedas», nunca «discapacitado». `movilidad.spec.js`.
 - **Respaldo de fábrica** (2026-10-10, pedido del usuario: en Argentina da miedo conseguir repuestos;
   después del precio es de lo que más pesa): `MARCAS_INFO[marca].fabrica_mercosur` = planta que
   **ya produce** autos en el Mercosur, con fuente (BYD, GWM en Haval/Ora/Tank/Poer, Chery por CAOA,

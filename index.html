@@ -6644,6 +6644,9 @@ const ELEGIR_PREG = [
   // 2026-11-01, pedido de Mati: un auto chico donde entran 4 o 5 sirve para 2 adultos y 2 o 3 niños si tiene
   // ISOFIX, pero menos para 4 o 5 adultos. Sin umbrales nuevos: «chico» es el segmento A o B del sitio.
   { k: 'quien', t: '¿Quiénes viajan seguido?', ops: [['', 'Me da igual'], ['ninos', 'Con niños'], ['adultos', 'Adulto atrás']] },
+  // 2026-11-01, issue #112: una persona en silla de ruedas en la familia. Filtra con lo que la tabla publica (baúl grande y asientos
+  // traseros que se pliegan); no dice si la silla entra ni qué tan alto es el piso del baúl: ninguna fila lo tiene.
+  { k: 'movilidad', t: '¿Viaja alguien en silla de ruedas?', ops: [['', 'No'], ['silla', 'Sí']] },
   { k: 'uso', t: '¿Para qué lo vas a usar más?', ops: [['ciudad', 'Ciudad'], ['mixto', 'Ciudad y ruta'], ['ruta', 'Mucha ruta'], ['tierra', 'Tierra o campo'], ['carga', 'Trabajo o carga']] },
   { k: 'enchufe', t: '¿Podés cargarlo en tu casa o en el trabajo?', ops: [['si', 'Sí'], ['no', 'No'], ['nose', 'No sé']] },
   // Los SUV (y los 4 que la tabla llama crossover) se parten por tamaño, con el segmento que sale
@@ -6657,13 +6660,14 @@ const ELEGIR_ANCHO = window.matchMedia('(min-width: 900px)');
 const elegirN = () => ELEGIR_ANCHO.matches ? 5 : 4;
 ELEGIR_ANCHO.addEventListener('change', () => { const h = document.getElementById('elegirHoja'); if (h && !h.hidden) pintarElegir(); });
 // Sin presupuesto elegido de entrada (2026-10-10): lo que viene marcado se lee como recomendación.
-let elegirResp = { presu: '', plazas: '5', quien: '', uso: 'mixto', enchufe: 'nose', carro: '' };
+let elegirResp = { presu: '', plazas: '5', quien: '', movilidad: '', uso: 'mixto', enchufe: 'nose', carro: '' };
 try { const g = JSON.parse(localStorage.getItem('elegir') || 'null'); if (g) elegirResp = Object.assign(elegirResp, g); } catch (e) {}
 // Respuestas guardadas con opciones que ya no existen (topes o franjas anteriores, "suv"): se reinician.
 const elegirVale = (k, v) => ELEGIR_PREG.find(q => q.k === k).ops.some(o => o[0] === v);
 if (!elegirVale('presu', elegirResp.presu)) elegirResp.presu = '32001-35500';
 if (!elegirVale('carro', elegirResp.carro)) elegirResp.carro = '';
 if (!elegirVale('quien', elegirResp.quien)) elegirResp.quien = '';
+if (!elegirVale('movilidad', elegirResp.movilidad)) elegirResp.movilidad = '';
 // Qué tan bien encaja cada propulsión (0 a 1) según el enchufe y el uso. Es el criterio de la
 // herramienta, a la vista en el motivo de cada sugerencia: un eléctrico sin dónde cargarlo
 // casi no suma; en la ruta larga, el híbrido y el naftero no dependen de cargadores.
@@ -6710,6 +6714,9 @@ const ELEGIR_TIP = {
     5: 'Entran los de 5 asientos o más. Los que no informan cuántos tienen se estiman por su tamaño.',
     6: 'Solo los que informan 6 o 7 asientos. Además suma el baúl.',
   },
+  movilidad: {
+    silla: 'Entran los de baúl grande (el 40% de más litros) cuyos asientos traseros se plieguen o no informen si lo hacen. Ningún dato dice si la silla entra ni qué tan alto es el piso del baúl: probala en el auto.',
+  },
   quien: {
     ninos: 'Piden ISOFIX: sin él no entran, y si no informan, quedan como «casi». Con 3 chicos, el del medio va sin ISOFIX.',
     adultos: 'Si va algún adulto atrás, los autos chicos (segmento A o B) quedan como «casi»: pueden quedar justos.',
@@ -6744,6 +6751,13 @@ const ELEGIR_CASI_PRECIO = .15;
 const SEG_LETRA = { compact: 'B', mid: 'C', big: 'D', xl: 'D' };
 const SEG_LETRA_AB = { mini: 'A', compact: 'B' };
 // ISOFIX de la tabla: true, false o null si no hay dato. Las celdas con detalle (DET:, NOTE:, EXT:) valen igual.
+// Baúl grande para la silla de ruedas (issue #112): el 40% de autos con más litros entre los que informan el baúl (sin umbral
+// inventado: sale de la propia fila). La caja de una pickup no cuenta como baúl (rkValor no la da como comparable).
+let _baulGrande = null;
+const baulGrande = () => { if (_baulGrande == null){ const v = CARS.map((_, i) => rkValor(i, 'Volumen de baúl/carga (L)')).filter(x => x.tipo === 'ok').map(x => x.n).sort((a, b) => a - b);
+  _baulGrande = v[Math.floor(v.length * .6)]; } return _baulGrande; };
+const siNoDe = (fila, i) => { const v = String(FILA_POR_NOMBRE[fila][i + 1]).replace(/^(DET|NOTE|EXT):/, '');
+  return /^(YES|S[ií])\b/.test(v) ? true : /^(NO|No)\b/.test(v) ? false : null; };
 const isofixDe = i => { const v = String(FILA_POR_NOMBRE['Anclajes ISO-FIX'][i + 1]).replace(/^(DET|NOTE|EXT):/, '');
   return /^(YES|S[ií])\b/.test(v) ? true : /^(NO|No)\b/.test(v) ? false : null; };
 function elegirDesvio(i, r){
@@ -6764,6 +6778,13 @@ function elegirDesvio(i, r){
   if (r.carro === 'auto' && !['Sedán', 'Hatchback', 'Coupé', 'Convertible'].includes(c.body)) return null;
   if (r.carro === 'pickup' && c.body !== 'Pickup') return null;
   const isofix = isofixDe(i);
+  if (r.movilidad === 'silla'){
+    const b = rkValor(i, 'Volumen de baúl/carga (L)');
+    if (b.tipo !== 'ok' || b.n < baulGrande()) return null;
+    const pl = siNoDe('Asientos traseros plegables', i);
+    if (pl === false) return null;
+    if (pl == null) fallas.push({ d: .1, txt: 'No informa si los asientos se pliegan' });
+  }
   if (r.quien === 'ninos'){
     if (isofix === false) return null;
     if (isofix == null) fallas.push({ d: .1, txt: 'No informa ISOFIX' });
@@ -6870,6 +6891,8 @@ function elegirCalcular(r){
     motivos.push([caract(true, true), caract(false, true), caract(false, false)].find(t => t.length <= 26) || caract(false, false));
     const resto = [];
     if (r.quien === 'ninos' && isofixDe(i) === true) resto.push('Con ISOFIX');
+    if (r.movilidad === 'silla'){ const b = rkValor(i, 'Volumen de baúl/carga (L)'); if (b.tipo === 'ok') resto.unshift('Baúl de ' + Math.round(b.n) + ' L');
+      if (siNoDe('Apertura eléctrica del baúl/portón', i) === true) resto.unshift('Baúl con apertura eléctrica'); }
     if (c.type === 'ev' && r.enchufe !== 'si') resto.push('Necesita dónde cargar');
     if (pctDolar[i] != null && pctDolar[i] >= .8) resto.push('Muy equipado por su precio');
     if (fab) resto.push('Lo trae la marca');
@@ -6916,7 +6939,7 @@ function pintarElegir(cambio){
       '<button type="button" class="mini-btn" id="elegirTabla">Ver la tabla</button></p>' +
     '<div class="elegir-cuerpo"><div class="elegir-preg">' + ELEGIR_PREG.map(q => '<fieldset><legend>' + q.t + '</legend><div class="elegir-ops" data-n="' + q.ops.length + '">' +
       q.ops.map(([v, t, pesos]) => '<label><input type="radio" name="el-' + q.k + '" value="' + v + '"' + (r[q.k] === v ? ' checked' : '') + '><span' +
-        ((ELEGIR_TIP[q.k] || {})[v] ? ' data-tip="' + ELEGIR_TIP[q.k][v] + '"' : q.k === 'presu' && v ? ' data-tip="' + usdExacto(v) + ' Los autos con la lista en pesos entran por su precio pasado a dólares al ' + DOLAR_TXT + '."' : '') + '>' + (q.k === 'quien' ? quienSVG(v, r.plazas) : '') + t +
+        ((ELEGIR_TIP[q.k] || {})[v] ? ' data-tip="' + ELEGIR_TIP[q.k][v] + '"' : q.k === 'presu' && v ? ' data-tip="' + usdExacto(v) + ' Los autos con la lista en pesos entran por su precio pasado a dólares al ' + DOLAR_TXT + '."' : '') + '>' + (q.k === 'quien' ? quienSVG(v, r.plazas) : q.k === 'movilidad' && v ? SVG_ACCESO : '') + t +
         (pesos ? '<small class="precio-pesos">' + pesos + '</small>' : '') + '</span></label>').join('') + '</div>' +
       (q.k === 'quien' && r.quien ? '<p class="quien-nota">' + (r.quien === 'ninos' ? 'Atrás van los chicos con silla; adelante, dos adultos.' : 'Va algún adulto atrás: los autos chicos pueden quedar justos.') + '</p>' : '') + '</fieldset>').join('') + '</div>' +
     '<div class="elegir-resultados">' + elegirResumenHTML(r) + '<h3 class="elegir-res-tit" id="elegirResTit">' + (out.total ? 'Te sugerimos' : 'Ningún auto a la venta cumple todo eso') + '</h3>' +
@@ -6981,6 +7004,8 @@ const usdExacto = v => { const [a, b] = v.split('-').map(x => x === '' ? null : 
   return a === 0 ? 'Hasta USD ' + f(b) + '.' : b == null ? 'Más de USD ' + f(a - 1) + '.' : 'De USD ' + f(a) + ' a ' + f(b) + '.'; };
 // Pictograma de «¿Quiénes viajan seguido?» (2026-11-01, pedido de Mati): el auto visto desde arriba con quién va en cada
 // asiento. Con niños: dos adultos adelante y los chicos atrás (2 con «Hasta 4», 3 con 5 o más). Es un dibujo, no un dato.
+// Símbolo de accesibilidad dibujado a mano (persona en silla de ruedas), no un emoji ni una imagen externa.
+const SVG_ACCESO = '<svg viewBox="0 0 48 48" class="quien-ico" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="21" cy="8" r="3.4" fill="currentColor" stroke="none"/><path d="M21 14v14h12l5 10"/><path d="M21 21h9"/><path d="M14 25a11 11 0 1 0 14 14"/></svg>';
 function quienSVG(v, plazas){
   // Con 6 o 7 plazas el auto tiene tres hileras (2 + 3 + 2); con menos, dos (2 adelante y 2 o 3 atrás).
   const filas = plazas === '6' ? [[26, 54], [22, 40, 58], [26, 54]] : [[26, 54], plazas === '4' ? [30, 50] : [22, 40, 58]];
@@ -6999,6 +7024,7 @@ function elegirResumenHTML(r){
   const presu = ELEGIR_PREG.find(q => q.k === 'presu'), carro = ELEGIR_PREG.find(q => q.k === 'carro'), uso = ELEGIR_PREG.find(q => q.k === 'uso');
   if (r.presu) partes.push(txt(presu).replace(/^Hasta /, 'hasta ').replace(/^Más de /, 'más de '));
   partes.push(r.plazas === '6' ? '6 o 7 plazas' : r.plazas === '4' ? 'hasta 4 plazas' : '5 plazas');
+  if (r.movilidad === 'silla') partes.push('con silla de ruedas');
   if (r.quien) partes.push(r.quien === 'ninos' ? 'con niños' : 'con adulto atrás');
   if (uso) partes.push(txt(uso).toLowerCase());
   if (r.carro && carro) partes.push(txt(carro));
@@ -7007,7 +7033,7 @@ function elegirResumenHTML(r){
 }
 // Cero resultados: qué respuesta aflojar, con cuántos autos daría (GOV.UK: decir cómo salir).
 function elegirAflojarHTML(r){
-  const pruebas = [['presu', '', 'cualquier presupuesto'], ['carro', '', 'cualquier tipo de auto'], ['plazas', '5', '5 plazas'], ['quien', '', 'me da igual quiénes viajen'], ['uso', 'mixto', 'ciudad y ruta']]
+  const pruebas = [['presu', '', 'cualquier presupuesto'], ['carro', '', 'cualquier tipo de auto'], ['plazas', '5', '5 plazas'], ['quien', '', 'me da igual quiénes viajen'], ['movilidad', '', 'sin silla de ruedas'], ['uso', 'mixto', 'ciudad y ruta']]
     .filter(([k, v]) => r[k] !== v)
     .map(([k, v, t]) => { const o = elegirCalcular(Object.assign({}, r, { [k]: v })); return [k, v, t, o.total]; })
     .filter(x => x[3] > 0);
