@@ -542,6 +542,9 @@ sí quedan en inglés, porque no muestran la palabra. Se coló con `YES` dos vec
   (`presuMoverCentro`: los de arriba están más separados en precio); los extremos se ajustan aparte, y las flechas mueven de a USD 1.000.
   La pista llega a `PRESU_TOPE` (el 5% más caro, «o más», sin tope). El valor guardado es `mín-máx` en USD, `mín-` sin tope y `''` es
   «Me da igual el precio». Cuenta `PRECIO_CMP`, así que los de lista en pesos entran. `presupuesto-deslizador.spec.js`.
+  **Mangos y flechas** (2026-11-01, opción C de Mati): los mangos van por **fuera** de la barra (cada uno junto a su extremo) para que la barra del medio, con
+  sus puntitos de agarre, siempre se pueda tocar aunque el rango sea angosto; dos flechas ‹ › de 44 px mueven todo el rango de a USD 1.000 (mantenidas, repiten).
+  El fin se redondea para arriba o para abajo, el que deje la cantidad de autos más cerca de la original (hay precios repetidos).
 - **Respaldo de fábrica** (2026-10-10, pedido del usuario: en Argentina da miedo conseguir repuestos;
   después del precio es de lo que más pesa): `MARCAS_INFO[marca].fabrica_mercosur` = planta que
   **ya produce** autos en el Mercosur, con fuente (BYD, GWM en Haval/Ora/Tank/Poer, Chery por CAOA,

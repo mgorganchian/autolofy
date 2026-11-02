@@ -68,3 +68,38 @@ test('el filtro usa el rango del deslizador', async ({ page }) => {
     return CARS.map((c, i) => [c.status === 'venta' && PRECIO_CMP[i] != null, PRECIO_CMP[i], elegirDesvio(i, o)]).filter(x => x[0]).map(x => x[1] >= 30000 && x[1] <= 40000 ? x[2] === 0 || (x[2] && x[2].d !== undefined) : x[2] !== 0); });
   expect(r.every(Boolean)).toBe(true);
 });
+
+test('con un rango angosto la barra del medio sigue libre: los mangos quedan por fuera de ella', async ({ page }) => {
+  await page.evaluate(() => { elegirResp.presu = '42000-45000'; pintarElegir(true); });
+  const r = await page.evaluate(() => {
+    const b = document.getElementById('presuBarra').getBoundingClientRect(), mi = document.getElementById('presuMin').getBoundingClientRect(), ma = document.getElementById('presuMax').getBoundingClientRect();
+    const centro = document.elementFromPoint(b.left + b.width / 2, b.top + b.height / 2);
+    return { centro: centro && centro.id, libre: mi.right <= b.left + 1 && ma.left >= b.right - 1, ancho: b.width };
+  });
+  expect(r.centro).toBe('presuBarra');
+  expect(r.libre).toBe(true);
+  expect(r.ancho).toBeGreaterThanOrEqual(28);
+});
+
+test('las flechas mueven todo el rango de a USD 1.000 y mantienen la cantidad de autos', async ({ page }) => {
+  const antes = await estado(page);
+  await page.locator('#presuDer').click();
+  const a = await estado(page);
+  expect(a.p.min).toBe(antes.p.min + 1000);
+  expect(Math.abs(a.n - antes.n)).toBeLessThanOrEqual(2);
+  await page.locator('#presuIzq').click();
+  const b = await estado(page);
+  expect(b.p.min).toBe(antes.p.min);
+});
+
+test('mantener apretada la flecha repite el paso', async ({ page }) => {
+  const antes = await estado(page);
+  const c = await page.locator('#presuDer').boundingBox();
+  await page.mouse.move(c.x + c.width / 2, c.y + c.height / 2);
+  await page.mouse.down();
+  await page.waitForTimeout(1000);
+  await page.mouse.up();
+  const d = await estado(page);
+  expect(d.p.min).toBeGreaterThanOrEqual(antes.p.min + 4000);
+  expect(Math.abs(d.n - antes.n)).toBeLessThanOrEqual(4);
+});
