@@ -1145,7 +1145,7 @@ if(!location.search&&!location.hash)document.documentElement.classList.add('arra
   .elegir-titulo{margin:0 0 2px;font-family:var(--fuente-titulo);font-size:1.6rem}
   .elegir-preg{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:10px 18px;margin:8px 0 12px}
   .elegir-preg fieldset{border:0;border-top:1px solid var(--line);margin:0;padding:6px 0 0}
-  .elegir-preg legend{font-family:var(--fuente-tabla);font-weight:700;font-size:.82rem;padding:0;margin-bottom:4px}
+  .elegir-preg .elegir-leyenda{font-family:var(--fuente-tabla);font-weight:700;font-size:.82rem;padding:0;margin-bottom:4px}
   .colores .muestra-color{display:inline-block;width:.9em;height:.9em;border-radius:50%;border:1px solid var(--border-strong);vertical-align:-.1em;margin-right:5px}
   .elegir-ops{display:grid;grid-template-columns:repeat(auto-fill,minmax(7.5rem,1fr));gap:5px}
   /* Botones del mismo tamaño en cada pregunta (2026-10-30, pedido de Mati): grilla de columnas iguales. */
@@ -1179,10 +1179,20 @@ if(!location.search&&!location.hash)document.documentElement.classList.add('arra
      tarjetas con la foto al costado, para que la primera pantalla ya muestre los autos con su
      información. */
   @media (min-width:900px){
-    .elegir-cuerpo{display:grid;grid-template-columns:minmax(300px,360px) minmax(0,1fr);gap:0 32px;align-items:start}
-    .elegir-cuerpo .elegir-preg{grid-template-columns:1fr !important}
-    .elegir-resultados .elegir-res-tit{margin-top:0}
-    .elegir-res{grid-template-columns:repeat(2,minmax(0,1fr));gap:14px 22px}
+    /* 2026-11-02, pedido de Mati: en la computadora, cada pregunta en un solo renglón (el título a la izquierda y las opciones en fila),
+       con las sugerencias debajo y a lo ancho. */
+    .elegir-cuerpo{display:block}
+    .elegir-cuerpo .elegir-preg{display:block;margin:6px 0 10px}
+    .elegir-preg fieldset{display:grid;grid-template-columns:200px minmax(0,1fr);column-gap:16px;align-items:center;padding:6px 0;border-top:1px solid var(--line)}
+    .elegir-preg fieldset > .elegir-leyenda{grid-column:1;margin:0;padding:0}
+    .elegir-preg fieldset > :not(.elegir-leyenda){grid-column:2}
+    .elegir-preg .elegir-ops{grid-template-columns:repeat(var(--n),minmax(0,1fr))}
+    .elegir-preg .presu{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:2px 16px;align-items:center}
+    .elegir-preg .presu .presu-txt{grid-column:1;grid-row:1}
+    .elegir-preg .presu .presu-igual{grid-column:2;grid-row:1}
+    .elegir-preg .presu .presu-fila,.elegir-preg .presu .presu-ejes{grid-column:1 / -1}
+    .elegir-resultados .elegir-res-tit{margin-top:14px}
+    .elegir-res{grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:14px 22px}
     .elegir-res > li{grid-template-columns:150px 1fr;grid-template-areas:"nombre nombre" "foto motivos";column-gap:12px;row-gap:4px;
       border-bottom:1px solid var(--line);padding-bottom:10px}
     .elegir-res > li > .minicar{width:150px}
@@ -6698,7 +6708,7 @@ function movilidadBtnHTML(r){
 }
 function presuHTML(r){
   const on = !!r.presu, p = presuLeer(on ? r.presu : presuInicial()), max = p.max == null ? PRESU_TOPE : p.max;
-  return '<fieldset class="presu-fs"><legend>¿Cuánto querés gastar?</legend><div class="presu' + (on ? '' : ' apagado') + '" id="presu">' +
+  return '<fieldset class="presu-fs" role="group" aria-label="¿Cuánto querés gastar?"><div class="elegir-leyenda">¿Cuánto querés gastar?</div><div class="presu' + (on ? '' : ' apagado') + '" id="presu">' +
     '<p class="presu-txt" aria-live="polite"><b id="presuUsd">' + presuUsdLargo(p.min, p.max) + '</b>' +
       '<small class="precio-pesos" id="presuPesos">' + presuPesosLargo(p.min, p.max) + '</small>' +
       '<small id="presuN">' + presuCuenta(p.min, p.max) + ' autos con precio</small></p>' +
@@ -7019,7 +7029,7 @@ function pintarElegir(cambio){
   hoja.innerHTML = '<h2 id="elegirTitulo" class="elegir-titulo">Ayudame a elegir</h2>' +
     '<p class="ficha-nota">5 preguntas y te sugerimos ' + elegirN() + ' autos. ' +
       '<button type="button" class="mini-btn" id="elegirTabla">Ver la tabla</button></p>' +
-    '<div class="elegir-cuerpo"><div class="elegir-preg">' + ELEGIR_PREG.map(q => q.deslizador ? presuHTML(r) : q.interruptor ? '' : '<fieldset><legend' + (q.k === 'quien' ? ' class="quien-leyenda"' : '') + '>' + q.t + (q.k === 'quien' ? movilidadBtnHTML(r) : '') + '</legend><div class="elegir-ops" data-n="' + q.ops.length + '" data-q="' + q.k + '">' +
+    '<div class="elegir-cuerpo"><div class="elegir-preg">' + ELEGIR_PREG.map(q => q.deslizador ? presuHTML(r) : q.interruptor ? '' : '<fieldset role="group" aria-label="' + q.t + '"><div class="elegir-leyenda' + (q.k === 'quien' ? ' quien-leyenda' : '') + '">' + q.t + (q.k === 'quien' ? movilidadBtnHTML(r) : '') + '</div><div class="elegir-ops" data-n="' + q.ops.length + '" data-q="' + q.k + '" style="--n:' + q.ops.length + '">' +
       q.ops.map(([v, t, pesos]) => '<label><input type="radio" name="el-' + q.k + '" value="' + v + '"' + (r[q.k] === v ? ' checked' : '') + '><span' +
         ((ELEGIR_TIP[q.k] || {})[v] ? ' data-tip="' + ELEGIR_TIP[q.k][v] + '"' : q.k === 'presu' && v ? ' data-tip="' + usdExacto(v) + ' Los autos con la lista en pesos entran por su precio pasado a dólares al ' + DOLAR_TXT + '."' : '') + '>' + (q.k === 'quien' ? quienSVG(v, r.plazas) : q.k === 'movilidad' && v ? SVG_ACCESO : '') + t +
         (pesos ? '<small class="precio-pesos">' + pesos + '</small>' : '') + '</span></label>').join('') + '</div>' +

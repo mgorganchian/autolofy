@@ -31,7 +31,7 @@ test('con silla de ruedas solo entran los de baúl al menos como el del BYD Song
 
 test('la silla de ruedas es un círculo chico con su ícono en el título de «quiénes viajan»: se toca para sumar o sacar', async ({ page }) => {
   await page.goto('/index.html');
-  const btn = page.locator('legend.quien-leyenda #movilidadBtn');
+  const btn = page.locator('.elegir-leyenda.quien-leyenda #movilidadBtn');
   await expect(btn).toHaveAttribute('aria-pressed', 'false');
   await expect(btn).toHaveAttribute('aria-label', 'Viaja alguien en silla de ruedas');
   await expect(btn.locator('svg.quien-ico[aria-hidden="true"]')).toBeVisible();
