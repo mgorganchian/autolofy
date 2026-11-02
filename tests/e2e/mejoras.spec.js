@@ -17,12 +17,15 @@ async function abrir(page, query = ''){
   await expect(page.locator(FILAS_DATOS)).toHaveCount(N_FILAS);
 }
 
+// El presupuesto es un deslizador (2026-11-01): para fijar un rango sin arrastrar se escribe la respuesta y se repinta.
+const fijarPresu = (page, v) => page.evaluate(x => { elegirResp.presu = x; pintarElegir(true); }, v);
+
 test('ayudame a elegir: la franja de precio es piso y techo, y con enchufe en casa van los que se enchufan', async ({ page }) => {
   // Pedido del 2026-10-09: "35.001 a 45.000" no trae autos de 30.000, y con enchufe en casa
   // no sugiere híbridos comunes.
   await abrir(page);
   await page.locator('#vistaElegir').click();
-  await page.locator('label:has(input[name="el-presu"][value="35501-39800"])').click();
+  await fijarPresu(page, '35501-39800');
   await page.locator('label:has(input[name="el-enchufe"][value="si"])').click();
   const res = page.locator('.elegir-res > li');
   // 5 en escritorio y 4 en el celular (pedido del 2026-10-09).
@@ -44,7 +47,7 @@ test('ayudame a elegir: la franja de precio es piso y techo, y con enchufe en ca
   await expect(barra).toContainText(/Nuevas sugerencias|Sin cambios/);
   await expect(barra).toHaveClass(/cambio/);
   for (const t of await res.locator("ul").allTextContents()) expect(t).not.toMatch(/necesita dónde cargar/i);
-  await page.locator('label:has(input[name="el-presu"][value=""])').click();
+  await fijarPresu(page, '');
   await expect(res).toHaveCount(N);
   await page.locator('[data-elegir-comparar="top"]').click();
   await expect(page).toHaveURL(/\?autos=/);
@@ -56,7 +59,7 @@ test('ayudame a elegir: comparar todos los que cumplen, y sumando los que no pub
   // que cumplen todo menos el precio (no lo publican en dólares).
   await abrir(page);
   await page.locator('#vistaElegir').click();
-  await page.locator('label:has(input[name="el-presu"][value="32001-35500"])').click();
+  await fijarPresu(page, '32001-35500');
   const todos = page.locator('[data-elegir-comparar="todos"]');
   const n = Number(/Los (\d+)/.exec(await todos.textContent())[1]);
   expect(n).toBeGreaterThan(4);
@@ -73,7 +76,7 @@ test('ayudame a elegir: en el celular los botones de comparar van en una fila, s
   await page.setViewportSize({ width: 390, height: 844 });
   await abrir(page);
   await page.locator('#vistaElegir').click();
-  await page.locator('label:has(input[name="el-presu"][value="32001-35500"])').click();
+  await fijarPresu(page, '32001-35500');
   const btns = page.locator('.elegir-barra-btns .ficha-btn');
   await expect(btns).toHaveCount(3);
   // El principal es más alto (2026-10-10): la misma fila es el mismo centro, no el mismo borde.
@@ -322,7 +325,8 @@ test('ayudame a elegir: cada sugerido tiene a lo sumo 4 renglones y en el celula
   // Pedido del 2026-10-10: precio y propulsión, cómo es el auto y los dos motivos que más pesan.
   await page.goto('/index.html');
   const items = page.locator('.elegir-res > li');
-  for (const n of await items.locator('ul').evaluateAll(us => us.map(u => u.children.length))) expect(n).toBeLessThanOrEqual(4);
+  // «Flojo en …» (solo en la computadora) es una línea extra, aparte de las 4.
+  for (const n of await items.locator('ul').evaluateAll(us => us.map(u => [...u.children].filter(l => !l.classList.contains('elegir-flojo')).length))) expect(n).toBeLessThanOrEqual(4);
   await expect(items.first().locator('ul > li').nth(1)).toHaveText(/\d,\d m/);   // el renglón de cómo es el auto
   if (page.viewportSize().width > 640) return;
   const dobles = await page.locator('.elegir-res ul > li').evaluateAll(ls => ls.filter(li => li.getBoundingClientRect().height > 1.5 * parseFloat(getComputedStyle(li).lineHeight)).map(li => li.textContent));
@@ -459,8 +463,10 @@ test('mejoras de UX: buscador con sinónimos, precio escrito con filtro quitable
 
 test('ayudame a elegir: sin presupuesto preelegido, resumen con "Cambiar" y, si no hay autos, qué aflojar', async ({ page }) => {
   await page.goto('/index.html');
-  await expect(page.locator('input[name="el-presu"][value=""]')).toBeChecked();
-  await page.locator('label:has(input[name="el-presu"][value="0-28000"])').click();
+  // Desde el 2026-11-01 el deslizador arranca en el rango más bajo (pedido de Mati); «Me da igual el precio» lo apaga.
+  expect(await page.evaluate(() => elegirResp.presu === presuInicial())).toBe(true);
+  await expect(page.locator('#presuIgual')).not.toBeChecked();
+  await fijarPresu(page, '0-28000');
   // Desde el 2026-10-29 las pickups en pesos entran en «Hasta USD 28.000» (issue #60): un SUV grande no.
   await page.locator('label:has(input[name="el-carro"][value="suv-d"])').click();
   await expect(page.locator('[data-aflojar]').first()).toBeVisible();
@@ -679,21 +685,19 @@ test('precios en pesos: la lista en pesos entra en las franjas y los de dólares
   await abrir(page);
   const d = await page.evaluate(() => {
     const i = CARS.findIndex(c => /Cronos/.test(c.name));
-    // La franja de Ayudame a elegir que contiene su precio pasado a dólares.
-    const op = ELEGIR_PREG.find(q => q.k === 'presu').ops.find(([v]) => { if (!v) return false; const [a, b] = v.split('-').map(x => x === '' ? Infinity : +x); return PRECIO_CMP[i] >= a && PRECIO_CMP[i] <= b; });
-    const r = elegirCalcular({ presu: op[0], plazas: '5', uso: 'mixto', enchufe: 'nose', carro: 'auto' });
-    return { i, usd: SIM_PRECIO[i], pesos: SIM_PESOS[i], cmp: PRECIO_CMP[i], venta: DOLAR_BNA.venta, entra: r.todos.includes(i), op: op[2] };
+    // El rango del deslizador que contiene su precio pasado a dólares.
+    const presu = Math.floor(PRECIO_CMP[i] / 1000) * 1000 + '-' + Math.ceil(PRECIO_CMP[i] / 1000) * 1000;
+    const r = elegirCalcular({ presu, plazas: '5', uso: 'mixto', enchufe: 'nose', carro: 'auto' });
+    return { i, usd: SIM_PRECIO[i], pesos: SIM_PESOS[i], cmp: PRECIO_CMP[i], venta: DOLAR_BNA.venta, entra: r.todos.includes(i) };
   });
   expect(d.usd).toBeNull();
   expect(d.pesos).toBe(45270000);
   expect(d.cmp).toBe(Math.round(45270000 / d.venta));
   expect(d.entra).toBe(true);
-  expect(d.op).toMatch(/^\$ [\d,]+ M a \$ [\d,]+ M$/);
-  // En la tabla, el precio en dólares lleva debajo su equivalente en pesos; el de pesos, no.
-  const fila = page.locator('#mainTable tr[data-nombre="Precio de lista (versión tope de gama de la tabla)"]');
+  // Debajo del nombre (issue #89), el precio en dólares lleva su equivalente en pesos y el de pesos, su equivalente en dólares al BNA.
   const usdIdx = await page.evaluate(() => SIM_PRECIO.findIndex(p => p != null));
-  await expect(fila.locator(`td[data-col="${usdIdx}"] .precio-pesos`)).toHaveText(/^≈ \$ [\d,]+ M$/);
-  await expect(fila.locator(`td[data-col="${d.i}"] .precio-pesos`)).toHaveCount(0);
+  await expect(page.locator(`#theadTable th[data-idx="${usdIdx}"] .th-precio .precio-pesos`)).toHaveText(/^≈ \$ [\d,]+ M$/);
+  await expect(page.locator(`#theadTable th[data-idx="${d.i}"] .th-precio .precio-pesos`)).toHaveText(new RegExp('^≈ USD ' + d.cmp.toLocaleString('es-AR').replace(/\./g, '\\.') + '$'));
   // Los autos sin ningún precio publicado son los únicos que quedan sin cifra para filtrar.
   const sinCifra = await page.evaluate(() => PRECIO_CMP.filter(p => p == null).length);
   await page.click('#openModalBtn');
@@ -725,7 +729,7 @@ test('ayudame a elegir: las opciones de uso, enchufe, asientos y presupuesto exp
   await page.locator('#vistaElegir').click();
   for (const k of ['uso', 'enchufe', 'plazas'])
     for (const s of await page.locator(`input[name="el-${k}"] + span`).all()) await expect(s).toHaveAttribute('data-tip', /\S/);
-  await expect(page.locator('input[name="el-presu"][value="0-28000"] + span')).toHaveAttribute('data-tip', /dólar BNA vendedor/);
+  await expect(page.locator('#presuPesos')).toContainText('$');   // el deslizador dice los pesos al lado de los dólares
   await page.locator('input[name="el-uso"][value="tierra"] + span').hover();
   await expect(page.locator('#tooltipBox')).toContainText('reductora');
 });
@@ -749,7 +753,7 @@ test('ayudame a elegir: siempre N sugeridos, con los «casi» marcados, 2 por ma
   await abrir(page);
   const r = await page.evaluate(() => {
     const N = elegirN(), casos = [];
-    for (const presu of ELEGIR_PREG.find(q => q.k === 'presu').ops.map(o => o[0]))
+    for (const presu of ['', '17000-28000', '30000-40000', '50000-66000', '77000-'])
       for (const carro of ['', 'suv-b', 'suv-c', 'suv-d', 'auto', 'pickup'])
         for (const plazas of ['4', '5', '6']){
           const o = elegirCalcular({ presu, plazas, uso: 'mixto', enchufe: 'nose', carro });
@@ -773,12 +777,12 @@ test('ayudame a elegir: siempre N sugeridos, con los «casi» marcados, 2 por ma
   expect(r.coupeEntra).toBe(true);
   // En pantalla, el «casi» va arriba de los motivos y cada auto tiene su porqué.
   await page.locator('#vistaElegir').click();
-  await page.locator('label:has(input[name="el-presu"][value="0-28000"])').click();
+  await fijarPresu(page, '0-28000');
   await page.locator('label:has(input[name="el-carro"][value="suv-d"])').click();
   await expect(page.locator('.elegir-res > li')).toHaveCount(r.N);
   await expect(page.locator('.elegir-res > li.casi .elegir-casi').first()).toHaveText(/sobre tu franja|Otro tamaño de SUV|asientos/);
   await expect(page.locator('.elegir-res .elegir-porque').first()).toHaveAttribute('data-tip', /^Por qué lo sugerimos\. .*Total: /);
   // Los botones de una misma pregunta miden lo mismo.
-  const anchos = await page.locator('fieldset:has(input[name="el-presu"]) .elegir-ops span').evaluateAll(s => s.map(e => Math.round(e.getBoundingClientRect().width)));
+  const anchos = await page.locator('fieldset:has(input[name="el-uso"]) .elegir-ops span').evaluateAll(s => s.map(e => Math.round(e.getBoundingClientRect().width)));
   expect(new Set(anchos).size).toBe(1);
 });
