@@ -693,6 +693,13 @@ sí quedan en inglés, porque no muestran la palabra. Se coló con `YES` dos vec
   afuera el C10 (manejado en China con 223 CV, la tabla tiene 215) y el Dolphin Mini (manejado
   en Roma con la versión europea), además de las presentaciones sin manejo (Kaiyi, GAC, Maxus
   en Expoagro, salones). Para sumar otro periodista, mismo criterio.
+- **Segunda pasada (2026-11-02, pedido de Mati: «videos de Matías Antico a todos los que le faltan»)**: se revisó el catálogo completo del canal
+  (937 videos y 53 shorts, bajado con `yt-dlp --flat-playlist`; fecha y duración de cada video elegido, con `yt-dlp --print`, nunca estimadas) contra los 236 autos sin video, y 67
+  ganaron uno o más (96 de 265 autos tienen video). Mismo criterio: misma generación y mismo motor, tracción e hibridación que la tabla; un test de otra
+  versión del mismo auto entra si coincide la mecánica (Montana Premier por RS, Amarok Extreme por Black Style); quedaron afuera los de generación vieja o
+  anterior a una renovación (GLB 2019, Vento GLI 2019, Tiggo 2 de 2018, Kwid 2019) y los de otro motor (BJ30 4x2 contra 4x4, X55 II Hybrid contra el naftero). YouTube
+  bloquea `yt-dlp` por exceso de consultas (HTTP 429): para volver a revisar el canal conviene espaciar los pedidos. Sin video del canal, por no haberlo hecho: Audi,
+  Forthing, Arcfox, Dongfeng, Changan, Skywell, GAC Aion, Lynk & Co, Omoda, Porsche, smart, MINI, JAC, Stelato y otros.
 - En la tabla, cada auto con video lleva un botón **"Video"** en su encabezado que abre su prueba
   **más reciente**, con canal, fecha de subida y título al pasar el mouse (2026-10-09). En la
   página del auto, los videos van del más nuevo al más viejo (`videosDe`).
