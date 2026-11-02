@@ -284,7 +284,7 @@ sí quedan en inglés, porque no muestran la palabra. Se coló con `YES` dos vec
   la misma cotización (`PRECIO_CMP`; `SIM_PESOS` es la lista en pesos, solo si el valor visible es esa
   cifra: un s/d que nombra pesos en la explicación no cuenta). Es **la única conversión de moneda del
   sitio**: la celda sigue diciendo el precio como lo publica la marca (el de dólares lleva debajo
-  «≈ $ N M»), el ranking por precio no mezcla monedas (`PCTL_VETO`) y las promos siguen sin convertir.
+  «≈ $ N M»), las promos siguen sin convertir. **Desde el 2026-11-01 (pedido de Mati) los 77 precios en pesos también entran al ranking por precio, las barras y «Mayores diferencias», pasados a dólares al BNA** (`pctlValor` convierte `precioPesosPub`; el ranking los marca «de $ N al BNA»; `SIM_PRECIO` sigue siendo solo lo publicado en dólares y `PRECIO_CMP` ya los incluía): ninguno queda aislado por publicarse en pesos.
   La cotización va en `DOLAR_BNA`, entre `/*dolar:inicio*/` y `/*dolar:fin*/`, con su fecha y fuente:
   la del día la trae la página al cargar (2026-10-30, pedido de Mati: sin PRs diarios): `api/dolar.js`, una función
   de Vercel, lee la tabla «Billetes» de bna.com.ar (el banco no permite leerla desde otra página: sin CORS) y
@@ -535,6 +535,12 @@ sí quedan en inglés, porque no muestran la palabra. Se coló con `YES` dos vec
   si los asientos se pliegan»). Suma como motivo el baúl en litros y la apertura eléctrica. **No dice si la silla entra ni qué tan alto es el piso**:
   ninguna fila lo tiene; el cartel dice que hay que probarla en el auto. Falta (opción 2 del issue) cargar la altura de carga y la boca del baúl.
   Lenguaje: «silla de ruedas», nunca «discapacitado». `movilidad.spec.js`.
+- **Presupuesto con deslizador** (2026-11-01, pedido de Mati): «¿Cuánto querés gastar?» ya no son franjas sino un deslizador de dos mangos
+  (de a USD 1.000, con los pesos al BNA al lado y la cantidad de autos con precio). Arranca en el rango más bajo (`presuInicial()`, unos 30
+  autos). **Arrastrar la barra del medio hacia la derecha mueve el inicio y estira el fin para seguir capturando la misma cantidad de autos**
+  (`presuMoverCentro`: los de arriba están más separados en precio); los extremos se ajustan aparte, y las flechas mueven de a USD 1.000.
+  La pista llega a `PRESU_TOPE` (el 5% más caro, «o más», sin tope). El valor guardado es `mín-máx` en USD, `mín-` sin tope y `''` es
+  «Me da igual el precio». Cuenta `PRECIO_CMP`, así que los de lista en pesos entran. `presupuesto-deslizador.spec.js`.
 - **Respaldo de fábrica** (2026-10-10, pedido del usuario: en Argentina da miedo conseguir repuestos;
   después del precio es de lo que más pesa): `MARCAS_INFO[marca].fabrica_mercosur` = planta que
   **ya produce** autos en el Mercosur, con fuente (BYD, GWM en Haval/Ora/Tank/Poer, Chery por CAOA,

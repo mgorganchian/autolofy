@@ -982,6 +982,21 @@ if(!location.search&&!location.hash)document.documentElement.classList.add('arra
     cursor:pointer;text-decoration:underline dotted rgb(var(--h-rgb) / .5);text-underline-offset:2px}
   .th-nombre:hover{text-decoration-color:var(--h-ink)}
   #mainTable tr[data-oculta]{display:none !important}
+  .presu{display:flex;flex-direction:column;gap:6px;padding:2px 2px 4px}
+  .presu-txt{margin:0;display:flex;flex-wrap:wrap;align-items:baseline;gap:2px 10px}
+  .presu-txt b{font-family:var(--fuente-tabla);font-size:1.05rem}
+  .presu-txt small{font-size:.8rem;color:var(--text-secondary)}
+  .presu-pista{position:relative;height:44px;touch-action:none;cursor:pointer;--a:0%;--b:100%}
+  .presu-riel{position:absolute;left:0;right:0;top:19px;height:6px;border-radius:3px;background:var(--border-strong)}
+  .presu-barra{position:absolute;top:12px;height:20px;left:var(--a);width:calc(var(--b) - var(--a));min-width:6px;border-radius:10px;background:var(--byd-blue);opacity:.85;cursor:grab;outline-offset:2px}
+  .presu-barra:active{cursor:grabbing}
+  .presu-mango{position:absolute;top:8px;width:28px;height:28px;margin-left:-14px;padding:0;border-radius:50%;border:3px solid var(--byd-blue);background:var(--surface);cursor:ew-resize;box-shadow:0 1px 3px rgba(0,0,0,.35)}
+  .presu-mango.min{left:var(--a)} .presu-mango.max{left:var(--b)}
+  .presu-mango:focus-visible,.presu-barra:focus-visible{outline:2px solid var(--link)}
+  .presu.apagado .presu-barra,.presu.apagado .presu-mango{opacity:.4;filter:grayscale(1)}
+  .presu-ejes{margin:0;display:flex;justify-content:space-between;font-size:.8rem;color:var(--text-secondary)}
+  .presu-igual{display:flex;align-items:center;gap:8px;font-size:.84rem;cursor:pointer}
+  .presu-igual input{width:20px;height:20px}
   .th-precio{display:block;margin:2px 0 1px;font-family:var(--fuente-tabla);font-weight:600;font-size:.84rem;line-height:1.2}
   .th-precio .precio-pesos,.th-precio .precio-fecha{display:block;font-weight:400}
   .th-nombre:focus-visible{outline:2px solid var(--h-ink);outline-offset:1px}
@@ -2794,7 +2809,8 @@ const PCTL_VETO = {
   // queda en la tabla, marcada, pero no compite (decisión del usuario, 2026-10-04).
   "Potencia total del sistema (kW)": /suma de (los )?motores/i,
   "Consumo de combustible (L/100km)": /km\/l/i,
-  // Un precio en pesos no se compara contra los de dólares: queda en la tabla, sin puesto.
+  // Un precio en pesos (formato «$ 52.834.440») no se veta: pctlValor lo pasa a dólares al BNA vendedor (2026-11-01, pedido de
+  // Mati: no pueden quedar aislados por publicarse en pesos). Lo que traiga «ARS» o un «$» en otro formato sigue sin comparar.
   "Precio de lista (versión tope de gama de la tabla)": /\bARS\b|\$\s?\d/
 };
 const PCTL_NUM = /\d[\d.,]*/;
@@ -2812,6 +2828,11 @@ function pctlValor(v, nombre){
   // nueve eléctricos rankeados como los que más nafta gastan. Pasó de verdad.
   if(/^\s*No aplica|no publicad/i.test(s)) return null;
 
+  // El precio que la marca publica en pesos entra en el ranking, las barras y los filtros pasado a dólares al BNA vendedor.
+  if(nombre === FILA_PRECIO){
+    var pesos = precioPesosPub(v);
+    if(pesos != null) return Math.round(pesos / DOLAR_BNA.venta);
+  }
   var veto = PCTL_VETO[nombre];
   if(veto && veto.test(s)) return null;
 
@@ -2855,7 +2876,7 @@ function pctlValor(v, nombre){
 // franjas de Ayudame a elegir) se dicen en las dos monedas. Para comparar contra un tope o una franja,
 // la lista en pesos pasa a dólares a la misma cotización: así entran los autos que la marca publica en
 // pesos. Es la única conversión de moneda del sitio: la celda sigue diciendo el precio como lo publica
-// la marca, y el ranking por precio sigue sin mezclar monedas (PCTL_VETO).
+// la marca. Desde el 2026-11-01 el ranking por precio también los incluye, pasados a dólares al BNA (pctlValor).
 // La cotización es la de billetes que publica el Banco Nación. La del día llega de /api/dolar
 // (window.DOLAR_VIVO, cargado antes de este script); si no llega o no es razonable, se usa la embebida,
 // que herramientas-dolar.py pone al día.
@@ -2879,7 +2900,7 @@ function precioPesosPub(v){
 // Debajo de un precio en dólares de la tabla, el mismo en pesos.
 function pesosCeldaHTML(v){
   const u = pctlValor(v, FILA_PRECIO);
-  return u == null ? '' : '<span class="precio-pesos" data-tip="Al ' + DOLAR_TXT + '.">≈ ' + pesosCorto(aPesos(u)) + '</span>';
+  return u == null || precioPesosPub(v) != null ? '' : '<span class="precio-pesos" data-tip="Al ' + DOLAR_TXT + '.">≈ ' + pesosCorto(aPesos(u)) + '</span>';
 }
 
 // Devuelve, por auto, {c: cuadrados 0-4, p: percentil} o null si no hay dato.
@@ -2979,7 +3000,10 @@ const FILA_PRECIO_DATOS = DATA[PRECIO_CAT][1].find(r => r[0] === FILA_PRECIO);
 TH_AUTO.forEach((th, i) => {
   const v = FILA_PRECIO_DATOS[i + 1], sp = document.createElement('span');
   sp.className = 'th-precio'; sp.dataset.col = i;
-  sp.innerHTML = renderVal(v) + pesosCeldaHTML(v);
+  const pesosPub = precioPesosPub(v);
+  sp.innerHTML = renderVal(v) + (pesosPub != null
+    ? '<span class="precio-pesos" data-tip="La marca lo publica en pesos. Pasado a dólares al ' + DOLAR_TXT + '.">≈ USD ' + Math.round(pesosPub / DOLAR_BNA.venta).toLocaleString('es-AR') + '</span>'
+    : pesosCeldaHTML(v));
   th.insertBefore(sp, th.querySelector('small'));
 });
 // En el celular vertical, los nombres cortos de ETIQUETA_CEL y "Dato" en vez de "Característica".
@@ -3188,7 +3212,8 @@ function simColumna(nombre){
 // Un cambio de precio de menos del 1% no se informa (2026-10-18, pedido del usuario): ni en Seguir un
 // auto, ni como titular del historial, ni como rebaja. Lo mismo hace herramientas-paginas.py en el RSS.
 const CAMBIO_MIN = 0.01, cambioChico = (antes, ahora) => Math.abs(ahora - antes) < CAMBIO_MIN * antes;
-const SIM_PRECIO = simColumna('Precio de lista (versión tope de gama de la tabla)');
+// Solo los precios que la marca publica en dólares: el de pesos va aparte en SIM_PESOS (pctlValor ya lo pasa a dólares para ranking y filtros).
+const SIM_PRECIO = simColumna(FILA_PRECIO).map((p, i) => precioPesosPub(FILA_PRECIO_DATOS[i + 1]) != null ? null : p);
 // La lista en pesos de los que la marca publica así, y el precio para topes y franjas: el de dólares
 // o, si no hay, la lista en pesos pasada a dólares al BNA vendedor (ver DOLAR_BNA).
 const SIM_PESOS = (() => { const f = DATA.flatMap(cat => cat[1]).find(r => r[0] === FILA_PRECIO); return CARS.map((_, i) => f ? precioPesosPub(f[i + 1]) : null); })();
@@ -4255,6 +4280,7 @@ function rkValor(i, k){
   const aparte = RK_APARTE[k];
   if (c.tipo === 'ok' && aparte && aparte.tipos.includes(car.type)) return { tipo: 'aparte', v };
   if (c.tipo !== 'ok') return { tipo: c.tipo, v };
+  if (k === FILA_PRECIO && precioPesosPub(v) != null) return { tipo: 'ok', n: c.n, v, conv: true, pesos: precioPesosPub(v) };
   if (k === FILA_AUT || k === FILA_CONS){
     const ciclo = cicloDe(v);
     if (!ciclo || ciclo === 'ciclo no informado') return { tipo: 'ciclo', v, motivo: 'La fuente no dice en qué ciclo se midió: no se puede estimar.' };
@@ -4382,6 +4408,7 @@ function rkValorHTML(r, k, dec){
       (r.est ? '<div class="rk-est" title="Estimado WLTP, solo para ordenar">≈ ' + rkNumero(r.n, k, dec) + ' WLTP est.</div>' : '');
   }
   return (k === 'usd-kw' || k === 'usd-km' ? 'USD ' + r.n.toLocaleString('es-AR') : rkNumero(r.n, k, dec) + u) + marca +
+    (r.conv ? '<div class="rk-est" title="La marca lo publica en pesos; se pasó a dólares al ' + rkEsc(DOLAR_TXT) + ' solo para ordenar">de $ ' + r.pesos.toLocaleString('es-AR') + ' al BNA</div>' : '') +
     (k === FILA_COMB && r.ciclo ? '<div class="rk-ciclo-fila"><span class="rk-ciclo">' + rkEsc(r.ciclo) + '</span></div>' : '') +
     (r.est ? '<div class="rk-est">con autonomía estimada a WLTP</div>' : '');
 }
@@ -4396,7 +4423,7 @@ function rkOrigHTML(r){
   // Si dice lo mismo que la cifra grande ("USD 16.900" con 16900), no se repite (2026-10-10).
   const sinUnidad = original.replace(/^USD\s*/, '').replace(/\s*[a-zA-Z·\/]+$/, '').replace(/\s+/g, '');
   const soloNumero = [String(r.n).replace('.', ','), r.n.toLocaleString('es-AR')].includes(sinUnidad) || original === String(r.n);
-  return soloNumero || r.orig != null ? '' : '<div class="rk-orig" title="' + rkEsc(original) + '">' + rkEsc(original) + '</div>';
+  return soloNumero || r.orig != null || r.conv ? '' : '<div class="rk-orig" title="' + rkEsc(original) + '">' + rkEsc(original) + '</div>';
 }
 
 // Los que no entran en la lista ordenada, en grupos que no se mezclan.
@@ -6629,6 +6656,43 @@ document.addEventListener('click', e => {
 // percentiles de la tabla en las filas que importan para ese uso (los mismos de las barras).
 // Cada motivo que se muestra sale de un dato de la tabla. Sin precio en dólares, el auto no
 // entra si hay tope (no se sabe si cabe), y se avisa cuántos quedaron afuera por eso.
+// ---- Deslizador de presupuesto (2026-11-01, pedido de Mati) ----
+// Dos mangos (mínimo y máximo, de a USD 1.000) y la barra del medio: al arrastrarla hacia la derecha el inicio avanza y el fin se
+// estira para seguir capturando la misma cantidad de autos (los de arriba están más separados en precio). Los extremos se
+// ajustan aparte. Arranca en el rango más bajo. El valor guardado es «mín-máx» en USD; «mín-» no tiene tope; '' es «Me da igual».
+const PRESU_PASO = 1000;
+const PRESU_PRECIOS = CARS.map((c, i) => c.status === 'venta' ? PRECIO_CMP[i] : null).filter(p => p != null).sort((a, b) => a - b);
+const PRESU_PISO = Math.floor(PRESU_PRECIOS[0] / PRESU_PASO) * PRESU_PASO;
+const PRESU_TOPE = Math.ceil(PRESU_PRECIOS[Math.floor((PRESU_PRECIOS.length - 1) * .95)] / 10000) * 10000;   // el 5% más caro va como «o más»
+const PRESU_INICIAL_AUTOS = 30;   // cuántos autos entran en el rango de arranque (como las franjas de antes: 30 a 33)
+const presuLeer = s => { const [a, b] = s.split('-'); return { min: +a, max: b === '' || b == null ? null : +b }; };
+const presuTexto = (min, max) => min + '-' + (max == null || max >= PRESU_TOPE ? '' : max);
+const presuCuenta = (min, max) => PRESU_PRECIOS.filter(p => p >= min && (max == null || p <= max)).length;
+function presuInicial(){
+  const max = Math.ceil(PRESU_PRECIOS[PRESU_INICIAL_AUTOS - 1] / PRESU_PASO) * PRESU_PASO;
+  return presuTexto(PRESU_PISO, max);
+}
+const usdMiles = n => { const k = n / 1000; return Number.isInteger(k) ? String(k) : k.toLocaleString('es-AR', { maximumFractionDigits: 1 }); };
+// «USD 28 a 35,5 mil», «hasta USD 28 mil», «USD 77 mil o más» (para resúmenes) y su versión larga con pesos.
+const presuCorto = s => { const { min, max } = presuLeer(s);
+  return max == null ? 'USD ' + usdMiles(min) + ' mil o más' : min <= PRESU_PISO ? 'hasta USD ' + usdMiles(max) + ' mil' : 'USD ' + usdMiles(min) + ' a ' + usdMiles(max) + ' mil'; };
+const presuUsdLargo = (min, max) => max == null ? 'USD ' + min.toLocaleString('es-AR') + ' o más' : 'USD ' + min.toLocaleString('es-AR') + ' a ' + max.toLocaleString('es-AR');
+const presuPesosLargo = (min, max) => max == null ? pesosCorto(aPesos(min)) + ' o más' : pesosCorto(aPesos(min)) + ' a ' + pesosCorto(aPesos(max));
+const presuPct = usd => ((Math.min(Math.max(usd, PRESU_PISO), PRESU_TOPE) - PRESU_PISO) / (PRESU_TOPE - PRESU_PISO) * 100).toFixed(2) + '%';
+function presuHTML(r){
+  const on = !!r.presu, p = presuLeer(on ? r.presu : presuInicial()), max = p.max == null ? PRESU_TOPE : p.max;
+  return '<fieldset class="presu-fs"><legend>¿Cuánto querés gastar?</legend><div class="presu' + (on ? '' : ' apagado') + '" id="presu">' +
+    '<p class="presu-txt" aria-live="polite"><b id="presuUsd">' + presuUsdLargo(p.min, p.max) + '</b>' +
+      '<small class="precio-pesos" id="presuPesos">' + presuPesosLargo(p.min, p.max) + '</small>' +
+      '<small id="presuN">' + presuCuenta(p.min, p.max) + ' autos con precio</small></p>' +
+    '<div class="presu-pista" id="presuPista" style="--a:' + presuPct(p.min) + ';--b:' + presuPct(max) + '">' +
+      '<span class="presu-riel"></span><span class="presu-barra" id="presuBarra" role="slider" tabindex="0" aria-label="Mover el rango de precio sin cambiar la cantidad de autos" aria-valuemin="' + PRESU_PISO + '" aria-valuemax="' + PRESU_TOPE + '" aria-valuenow="' + p.min + '" aria-valuetext="' + rkEsc(presuUsdLargo(p.min, p.max)) + '"></span>' +
+      '<button type="button" class="presu-mango min" id="presuMin" role="slider" aria-label="Precio mínimo" aria-valuemin="' + PRESU_PISO + '" aria-valuemax="' + (PRESU_TOPE - PRESU_PASO) + '" aria-valuenow="' + p.min + '"></button>' +
+      '<button type="button" class="presu-mango max" id="presuMax" role="slider" aria-label="Precio máximo" aria-valuemin="' + (PRESU_PISO + PRESU_PASO) + '" aria-valuemax="' + PRESU_TOPE + '" aria-valuenow="' + max + '"></button>' +
+    '</div>' +
+    '<p class="presu-ejes"><span>USD ' + usdMiles(PRESU_PISO) + ' mil</span><span>USD ' + usdMiles(PRESU_TOPE) + ' mil o más</span></p>' +
+    '<label class="presu-igual"><input type="checkbox" id="presuIgual"' + (on ? '' : ' checked') + '> Me da igual el precio</label></div></fieldset>';
+}
 const ELEGIR_PREG = [
   // Franjas, no topes (pedido del 2026-10-09): elegir una más alta dice que querés gastar más
   // que en la anterior. Cortes elegidos para que cada franja tenga una cantidad pareja de autos
@@ -6637,9 +6701,8 @@ const ELEGIR_PREG = [
     // Sin "USD" en cada opción (2026-10-10, menos renglones): lo dice la pregunta.
   // En las dos monedas desde el 2026-10-29 (issue #60): el corte va en dólares y debajo, en pesos al BNA
   // vendedor; los autos con la lista en pesos entran por PRECIO_CMP.
-  { k: 'presu', t: '¿Cuánto querés gastar?', ops: [['0-28000', 'Hasta USD 28 mil'], ['28001-32000', 'USD 28 a 32 mil'], ['32001-35500', 'USD 32 a 35,5 mil'], ['35501-39800', 'USD 35,5 a 39,8 mil'], ['39801-52500', 'USD 39,8 a 52,5 mil'], ['52501-66000', 'USD 52,5 a 66 mil'], ['66001-', 'Más de USD 66 mil'], ['', 'Me da igual']]
-    .map(([v, t]) => { if (!v) return [v, t]; const [a, b] = v.split('-').map(x => x === '' ? null : +x);
-      return [v, t, a === 0 ? 'Hasta ' + pesosCorto(aPesos(b)) : b == null ? 'Más de ' + pesosCorto(aPesos(a)) : pesosCorto(aPesos(a)) + ' a ' + pesosCorto(aPesos(b))]; }) },
+  // Deslizador de presupuesto (2026-11-01, pedido de Mati): sin opciones, se dibuja con presuHTML().
+  { k: 'presu', t: '¿Cuánto querés gastar?', ops: [], deslizador: true },
   { k: 'plazas', t: '¿Cuántos viajan seguido?', ops: [['4', 'Hasta 4'], ['5', '5'], ['6', '6 o 7']] },
   // 2026-11-01, pedido de Mati: un auto chico donde entran 4 o 5 sirve para 2 adultos y 2 o 3 niños si tiene
   // ISOFIX, pero menos para 4 o 5 adultos. Sin umbrales nuevos: «chico» es el segmento A o B del sitio.
@@ -6660,11 +6723,12 @@ const ELEGIR_ANCHO = window.matchMedia('(min-width: 900px)');
 const elegirN = () => ELEGIR_ANCHO.matches ? 5 : 4;
 ELEGIR_ANCHO.addEventListener('change', () => { const h = document.getElementById('elegirHoja'); if (h && !h.hidden) pintarElegir(); });
 // Sin presupuesto elegido de entrada (2026-10-10): lo que viene marcado se lee como recomendación.
-let elegirResp = { presu: '', plazas: '5', quien: '', movilidad: '', uso: 'mixto', enchufe: 'nose', carro: '' };
+let elegirResp = { presu: presuInicial(), plazas: '5', quien: '', movilidad: '', uso: 'mixto', enchufe: 'nose', carro: '' };
 try { const g = JSON.parse(localStorage.getItem('elegir') || 'null'); if (g) elegirResp = Object.assign(elegirResp, g); } catch (e) {}
 // Respuestas guardadas con opciones que ya no existen (topes o franjas anteriores, "suv"): se reinician.
-const elegirVale = (k, v) => ELEGIR_PREG.find(q => q.k === k).ops.some(o => o[0] === v);
-if (!elegirVale('presu', elegirResp.presu)) elegirResp.presu = '32001-35500';
+const elegirVale = (k, v) => k === 'presu' ? v === '' || /^\d+-(\d+)?$/.test(v) : ELEGIR_PREG.find(q => q.k === k).ops.some(o => o[0] === v);
+if (!elegirVale('presu', elegirResp.presu)) elegirResp.presu = presuInicial();
+else if (elegirResp.presu){ const p = presuLeer(elegirResp.presu); elegirResp.presu = presuTexto(Math.max(PRESU_PISO, Math.floor(p.min / 1000) * 1000), p.max); }
 if (!elegirVale('carro', elegirResp.carro)) elegirResp.carro = '';
 if (!elegirVale('quien', elegirResp.quien)) elegirResp.quien = '';
 if (!elegirVale('movilidad', elegirResp.movilidad)) elegirResp.movilidad = '';
@@ -6937,7 +7001,7 @@ function pintarElegir(cambio){
   hoja.innerHTML = '<h2 id="elegirTitulo" class="elegir-titulo">Ayudame a elegir</h2>' +
     '<p class="ficha-nota">5 preguntas y te sugerimos ' + elegirN() + ' autos. ' +
       '<button type="button" class="mini-btn" id="elegirTabla">Ver la tabla</button></p>' +
-    '<div class="elegir-cuerpo"><div class="elegir-preg">' + ELEGIR_PREG.map(q => '<fieldset><legend>' + q.t + '</legend><div class="elegir-ops" data-n="' + q.ops.length + '">' +
+    '<div class="elegir-cuerpo"><div class="elegir-preg">' + ELEGIR_PREG.map(q => q.deslizador ? presuHTML(r) : '<fieldset><legend>' + q.t + '</legend><div class="elegir-ops" data-n="' + q.ops.length + '">' +
       q.ops.map(([v, t, pesos]) => '<label><input type="radio" name="el-' + q.k + '" value="' + v + '"' + (r[q.k] === v ? ' checked' : '') + '><span' +
         ((ELEGIR_TIP[q.k] || {})[v] ? ' data-tip="' + ELEGIR_TIP[q.k][v] + '"' : q.k === 'presu' && v ? ' data-tip="' + usdExacto(v) + ' Los autos con la lista en pesos entran por su precio pasado a dólares al ' + DOLAR_TXT + '."' : '') + '>' + (q.k === 'quien' ? quienSVG(v, r.plazas) : q.k === 'movilidad' && v ? SVG_ACCESO : '') + t +
         (pesos ? '<small class="precio-pesos">' + pesos + '</small>' : '') + '</span></label>').join('') + '</div>' +
@@ -7022,7 +7086,7 @@ function elegirResumenHTML(r){
   const txt = q => { const o = q.ops.find(([v]) => v === r[q.k]); return o ? o[1] : ''; };
   const partes = [];
   const presu = ELEGIR_PREG.find(q => q.k === 'presu'), carro = ELEGIR_PREG.find(q => q.k === 'carro'), uso = ELEGIR_PREG.find(q => q.k === 'uso');
-  if (r.presu) partes.push(txt(presu).replace(/^Hasta /, 'hasta ').replace(/^Más de /, 'más de '));
+  if (r.presu) partes.push(presuCorto(r.presu));
   partes.push(r.plazas === '6' ? '6 o 7 plazas' : r.plazas === '4' ? 'hasta 4 plazas' : '5 plazas');
   if (r.movilidad === 'silla') partes.push('con silla de ruedas');
   if (r.quien) partes.push(r.quien === 'ninos' ? 'con niños' : 'con adulto atrás');
@@ -7041,7 +7105,76 @@ function elegirAflojarHTML(r){
     (pruebas.length ? '<p class="elegir-aflojar">' + pruebas.map(([k, v, t, n]) => '<button type="button" class="ficha-btn" data-aflojar="' + k + '" data-valor="' + v + '">' + rkEsc(t) + ' (' + n + ')</button>').join('') + '</p>' : '');
 }
 const elegirHoja = document.getElementById('elegirHoja');
+// ---- Deslizador de presupuesto: arrastre con el dedo o el mouse, y flechas con el teclado ----
+function presuGuardar(valor){
+  elegirResp.presu = valor;
+  try { localStorage.setItem('elegir', JSON.stringify(elegirResp)); } catch (er) {}
+  const y = window.scrollY; pintarElegir(true); window.scrollTo(0, y);
+  const barra = document.querySelector('.elegir-barra');
+  if (barra){ barra.classList.remove('cambio'); void barra.offsetWidth; barra.classList.add('cambio'); }
+}
+// Pone en pantalla un rango (sin recalcular las sugerencias hasta soltar).
+function presuMostrar(min, max){
+  const pista = document.getElementById('presuPista'); if (!pista) return;
+  const tope = max == null || max >= PRESU_TOPE, m = tope ? PRESU_TOPE : max, mx = tope ? null : max;
+  pista.style.setProperty('--a', presuPct(min)); pista.style.setProperty('--b', presuPct(m));
+  document.getElementById('presuUsd').textContent = presuUsdLargo(min, mx);
+  document.getElementById('presuPesos').textContent = presuPesosLargo(min, mx);
+  document.getElementById('presuN').textContent = presuCuenta(min, mx) + ' autos con precio';
+  document.getElementById('presuMin').setAttribute('aria-valuenow', min); document.getElementById('presuMax').setAttribute('aria-valuenow', m);
+  const b = document.getElementById('presuBarra'); b.setAttribute('aria-valuenow', min); b.setAttribute('aria-valuetext', presuUsdLargo(min, mx));
+}
+// El rango movido de lugar manteniendo la cantidad de autos: el inicio avanza en USD y el fin se estira lo que haga falta.
+function presuMoverCentro(min0, k, nuevoMin){
+  const n = PRESU_PRECIOS.length, ult = PRESU_PRECIOS[Math.max(0, n - k)];
+  let min = Math.max(PRESU_PISO, Math.min(nuevoMin, Math.floor(ult / PRESU_PASO) * PRESU_PASO));
+  min = Math.round(min / PRESU_PASO) * PRESU_PASO;
+  const a = Math.min(PRESU_PRECIOS.findIndex(p => p >= min), n - k);
+  const fin = Math.ceil(PRESU_PRECIOS[a + k - 1] / PRESU_PASO) * PRESU_PASO;
+  return { min, max: Math.max(fin, min + PRESU_PASO) };
+}
+let presuArrastre = null;
+elegirHoja.addEventListener('pointerdown', e => {
+  const pista = e.target.closest('#presuPista'); if (!pista) return;
+  const apagado = document.getElementById('presu').classList.contains('apagado');
+  const p = presuLeer(elegirResp.presu || presuInicial());
+  const modo = e.target.closest('#presuMin') ? 'min' : e.target.closest('#presuMax') ? 'max' : e.target.closest('#presuBarra') ? 'centro' : null;
+  const r = pista.getBoundingClientRect(), usd = x => PRESU_PISO + (x - r.left) / r.width * (PRESU_TOPE - PRESU_PISO);
+  let m = modo;
+  if (!m){   // tocar el riel: lleva al mango más cercano
+    const u = usd(e.clientX), c = (p.min + (p.max == null ? PRESU_TOPE : p.max)) / 2; m = u < c ? 'min' : 'max';
+  }
+  presuArrastre = { modo: m, r, p, k: Math.max(1, presuCuenta(p.min, p.max)), x0: e.clientX, usd, min: p.min, max: p.max == null ? PRESU_TOPE : p.max };
+  document.getElementById('presu').classList.remove('apagado'); document.getElementById('presuIgual').checked = false;
+  pista.setPointerCapture(e.pointerId); e.preventDefault();
+  if (!modo) presuMover(e);
+});
+function presuMover(e){
+  const a = presuArrastre; if (!a) return;
+  const snap = v => Math.round(v / PRESU_PASO) * PRESU_PASO;
+  if (a.modo === 'min') a.min = Math.max(PRESU_PISO, Math.min(snap(a.usd(e.clientX)), a.max - PRESU_PASO));
+  else if (a.modo === 'max') a.max = Math.min(PRESU_TOPE, Math.max(snap(a.usd(e.clientX)), a.min + PRESU_PASO));
+  else { const d = (e.clientX - a.x0) / a.r.width * (PRESU_TOPE - PRESU_PISO), o = presuMoverCentro(a.p.min, a.k, a.p.min + d); a.min = o.min; a.max = Math.min(o.max, PRESU_TOPE); }
+  presuMostrar(a.min, a.max >= PRESU_TOPE ? null : a.max);
+}
+elegirHoja.addEventListener('pointermove', presuMover);
+const presuSoltar = () => { const a = presuArrastre; if (!a) return; presuArrastre = null; presuGuardar(presuTexto(a.min, a.max)); };
+elegirHoja.addEventListener('pointerup', presuSoltar);
+elegirHoja.addEventListener('pointercancel', presuSoltar);
+elegirHoja.addEventListener('keydown', e => {
+  const t = e.target.closest ? e.target.closest('#presuMin, #presuMax, #presuBarra') : null;
+  if (!t || !/^Arrow(Left|Right|Down|Up)$/.test(e.key)) return;
+  e.preventDefault();
+  const dir = /Right|Up/.test(e.key) ? 1 : -1, paso = (e.shiftKey ? 5 : 1) * PRESU_PASO * dir, p = presuLeer(elegirResp.presu || presuInicial()), mx = p.max == null ? PRESU_TOPE : p.max;
+  let min = p.min, max = mx;
+  if (t.id === 'presuMin') min = Math.max(PRESU_PISO, Math.min(min + paso, max - PRESU_PASO));
+  else if (t.id === 'presuMax') max = Math.min(PRESU_TOPE, Math.max(max + paso, min + PRESU_PASO));
+  else { const o = presuMoverCentro(min, Math.max(1, presuCuenta(p.min, p.max)), min + paso); min = o.min; max = Math.min(o.max, PRESU_TOPE); }
+  presuGuardar(presuTexto(min, max));
+  const nuevo = document.getElementById(t.id); if (nuevo) nuevo.focus();
+});
 elegirHoja.addEventListener('change', e => {
+  if (e.target.id === 'presuIgual'){ presuGuardar(e.target.checked ? '' : presuInicial()); return; }
   const m = /^el-(\w+)$/.exec(e.target.name || ''); if (!m) return;
   elegirResp[m[1]] = e.target.value;
   try { localStorage.setItem('elegir', JSON.stringify(elegirResp)); } catch (er) {}
