@@ -1147,6 +1147,12 @@ if(!location.search&&!location.hash)document.documentElement.classList.add('arra
   /* Las preguntas de tres opciones van de a tres en el celular, en una sola fila (2026-11-01, pedido de Mati). */
   @media (max-width:640px){ .elegir-ops[data-n="3"]{grid-template-columns:repeat(3,1fr)} .elegir-ops[data-n="3"] span{padding:4px 2px} }
   .elegir-ops label{cursor:pointer;display:flex}
+  /* «Silla de ruedas» es un círculo chico en el título de «Quiénes viajan seguido» (2026-11-01, pedido de Mati). */
+  .quien-leyenda{display:flex;align-items:center;justify-content:space-between;width:100%}
+  .movilidad-ico{width:38px;height:38px;border-radius:50%;padding:0;display:inline-flex;align-items:center;justify-content:center;border:1px solid var(--border-strong);background:var(--surface);color:var(--ink);cursor:pointer;flex:0 0 auto}
+  .movilidad-ico .quien-ico{width:1.4rem;height:1.4rem;margin:0}
+  .movilidad-ico.on{background:var(--byd-blue);border-color:var(--byd-blue);color:var(--sobre-verde)}
+  .movilidad-ico:focus-visible{outline:2px solid var(--link);outline-offset:2px}
   .quien-ico{width:3rem;height:auto;margin:2px auto 3px;display:block}
   .quien-nota{font-size:.8rem;color:var(--text-secondary);margin:6px 0 0}
   .elegir-ops input{position:absolute;opacity:0;pointer-events:none}
@@ -6679,6 +6685,12 @@ const presuCorto = s => { const { min, max } = presuLeer(s);
 const presuUsdLargo = (min, max) => max == null ? 'USD ' + min.toLocaleString('es-AR') + ' o más' : 'USD ' + min.toLocaleString('es-AR') + ' a ' + max.toLocaleString('es-AR');
 const presuPesosLargo = (min, max) => max == null ? pesosCorto(aPesos(min)) + ' o más' : pesosCorto(aPesos(min)) + ' a ' + pesosCorto(aPesos(max));
 const presuPct = usd => ((Math.min(Math.max(usd, PRESU_PISO), PRESU_TOPE) - PRESU_PISO) / (PRESU_TOPE - PRESU_PISO) * 100).toFixed(2) + '%';
+// «Silla de ruedas» como un ícono chico en el título de «¿Quiénes viajan seguido?» (2026-11-01, pedido de Mati: opción C): un círculo con el
+// símbolo de accesibilidad que se toca para sumar o sacar. No es una pregunta aparte.
+function movilidadBtnHTML(r){
+  const on = r.movilidad === 'silla';
+  return '<button type="button" class="movilidad-ico' + (on ? ' on' : '') + '" id="movilidadBtn" aria-pressed="' + on + '" aria-label="Viaja alguien en silla de ruedas" data-tip="' + rkEsc('¿Viaja alguien en silla de ruedas? ' + ELEGIR_TIP.movilidad.silla) + '">' + SVG_ACCESO + '</button>';
+}
 function presuHTML(r){
   const on = !!r.presu, p = presuLeer(on ? r.presu : presuInicial()), max = p.max == null ? PRESU_TOPE : p.max;
   return '<fieldset class="presu-fs"><legend>¿Cuánto querés gastar?</legend><div class="presu' + (on ? '' : ' apagado') + '" id="presu">' +
@@ -6709,7 +6721,7 @@ const ELEGIR_PREG = [
   { k: 'quien', t: '¿Quiénes viajan seguido?', ops: [['', 'Me da igual'], ['ninos', 'Con niños'], ['adultos', 'Adulto atrás']] },
   // 2026-11-01, issue #112: una persona en silla de ruedas en la familia. Filtra con lo que la tabla publica (baúl grande y asientos
   // traseros que se pliegan); no dice si la silla entra ni qué tan alto es el piso del baúl: ninguna fila lo tiene.
-  { k: 'movilidad', t: '¿Viaja alguien en silla de ruedas?', ops: [['', 'No'], ['silla', 'Sí']] },
+  { k: 'movilidad', t: '¿Viaja alguien en silla de ruedas?', ops: [['', 'No'], ['silla', 'Sí']], interruptor: true },
   { k: 'uso', t: '¿Para qué lo vas a usar más?', ops: [['ciudad', 'Ciudad'], ['mixto', 'Ciudad y ruta'], ['ruta', 'Mucha ruta'], ['tierra', 'Tierra o campo'], ['carga', 'Trabajo o carga']] },
   { k: 'enchufe', t: '¿Podés cargarlo en tu casa o en el trabajo?', ops: [['si', 'Sí'], ['no', 'No'], ['nose', 'No sé']] },
   // Los SUV (y los 4 que la tabla llama crossover) se parten por tamaño, con el segmento que sale
@@ -6779,7 +6791,7 @@ const ELEGIR_TIP = {
     6: 'Solo los que informan 6 o 7 asientos. Además suma el baúl.',
   },
   movilidad: {
-    silla: 'Entran los de baúl grande (el 40% de más litros) cuyos asientos traseros se plieguen o no informen si lo hacen. Ningún dato dice si la silla entra ni qué tan alto es el piso del baúl: probala en el auto.',
+    silla: 'Entran los de baúl al menos tan grande como el del BYD Song Pro, donde la silla entra de costado con los asientos sin plegar (referencia de Mati). Ningún dato dice qué tan alto es el piso del baúl: probala en el auto.',
   },
   quien: {
     ninos: 'Piden ISOFIX: sin él no entran, y si no informan, quedan como «casi». Con 3 chicos, el del medio va sin ISOFIX.',
@@ -6815,11 +6827,13 @@ const ELEGIR_CASI_PRECIO = .15;
 const SEG_LETRA = { compact: 'B', mid: 'C', big: 'D', xl: 'D' };
 const SEG_LETRA_AB = { mini: 'A', compact: 'B' };
 // ISOFIX de la tabla: true, false o null si no hay dato. Las celdas con detalle (DET:, NOTE:, EXT:) valen igual.
-// Baúl grande para la silla de ruedas (issue #112): el 40% de autos con más litros entre los que informan el baúl (sin umbral
-// inventado: sale de la propia fila). La caja de una pickup no cuenta como baúl (rkValor no la da como comparable).
+// Baúl grande para la silla de ruedas (issue #112). Referencia de Mati (2026-11-01): en el BYD Song Pro, con los asientos traseros en su
+// posición recta (sin plegarlos), la silla de ruedas entra de costado en el baúl. Se pide un baúl al menos igual: el litraje que la tabla
+// trae para el Song Pro (~520 L, EXT aproximado), leído de la fila para que siga a los datos. La caja de una pickup no cuenta (rkValor).
 let _baulGrande = null;
-const baulGrande = () => { if (_baulGrande == null){ const v = CARS.map((_, i) => rkValor(i, 'Volumen de baúl/carga (L)')).filter(x => x.tipo === 'ok').map(x => x.n).sort((a, b) => a - b);
-  _baulGrande = v[Math.floor(v.length * .6)]; } return _baulGrande; };
+const BAUL_REFERENCIA = 'Song Pro';
+const baulGrande = () => { if (_baulGrande == null){ const i = CARS.findIndex(c => c.name === BAUL_REFERENCIA), b = i >= 0 ? rkValor(i, 'Volumen de baúl/carga (L)') : null;
+  _baulGrande = b && b.tipo === 'ok' ? b.n : Infinity; } return _baulGrande; };
 const siNoDe = (fila, i) => { const v = String(FILA_POR_NOMBRE[fila][i + 1]).replace(/^(DET|NOTE|EXT):/, '');
   return /^(YES|S[ií])\b/.test(v) ? true : /^(NO|No)\b/.test(v) ? false : null; };
 const isofixDe = i => { const v = String(FILA_POR_NOMBRE['Anclajes ISO-FIX'][i + 1]).replace(/^(DET|NOTE|EXT):/, '');
@@ -6844,10 +6858,7 @@ function elegirDesvio(i, r){
   const isofix = isofixDe(i);
   if (r.movilidad === 'silla'){
     const b = rkValor(i, 'Volumen de baúl/carga (L)');
-    if (b.tipo !== 'ok' || b.n < baulGrande()) return null;
-    const pl = siNoDe('Asientos traseros plegables', i);
-    if (pl === false) return null;
-    if (pl == null) fallas.push({ d: .1, txt: 'No informa si los asientos se pliegan' });
+    if (b.tipo !== 'ok' || b.n < baulGrande()) return null;   // sin dato de baúl no entra: no se puede decir que la silla entre
   }
   if (r.quien === 'ninos'){
     if (isofix === false) return null;
@@ -6956,6 +6967,7 @@ function elegirCalcular(r){
     const resto = [];
     if (r.quien === 'ninos' && isofixDe(i) === true) resto.push('Con ISOFIX');
     if (r.movilidad === 'silla'){ const b = rkValor(i, 'Volumen de baúl/carga (L)'); if (b.tipo === 'ok') resto.unshift('Baúl de ' + Math.round(b.n) + ' L');
+      if (siNoDe('Asientos traseros plegables', i) === true) resto.push('Asientos que se pliegan');
       if (siNoDe('Apertura eléctrica del baúl/portón', i) === true) resto.unshift('Baúl con apertura eléctrica'); }
     if (c.type === 'ev' && r.enchufe !== 'si') resto.push('Necesita dónde cargar');
     if (pctDolar[i] != null && pctDolar[i] >= .8) resto.push('Muy equipado por su precio');
@@ -7001,10 +7013,11 @@ function pintarElegir(cambio){
   hoja.innerHTML = '<h2 id="elegirTitulo" class="elegir-titulo">Ayudame a elegir</h2>' +
     '<p class="ficha-nota">5 preguntas y te sugerimos ' + elegirN() + ' autos. ' +
       '<button type="button" class="mini-btn" id="elegirTabla">Ver la tabla</button></p>' +
-    '<div class="elegir-cuerpo"><div class="elegir-preg">' + ELEGIR_PREG.map(q => q.deslizador ? presuHTML(r) : '<fieldset><legend>' + q.t + '</legend><div class="elegir-ops" data-n="' + q.ops.length + '">' +
+    '<div class="elegir-cuerpo"><div class="elegir-preg">' + ELEGIR_PREG.map(q => q.deslizador ? presuHTML(r) : q.interruptor ? '' : '<fieldset><legend' + (q.k === 'quien' ? ' class="quien-leyenda"' : '') + '>' + q.t + (q.k === 'quien' ? movilidadBtnHTML(r) : '') + '</legend><div class="elegir-ops" data-n="' + q.ops.length + '" data-q="' + q.k + '">' +
       q.ops.map(([v, t, pesos]) => '<label><input type="radio" name="el-' + q.k + '" value="' + v + '"' + (r[q.k] === v ? ' checked' : '') + '><span' +
         ((ELEGIR_TIP[q.k] || {})[v] ? ' data-tip="' + ELEGIR_TIP[q.k][v] + '"' : q.k === 'presu' && v ? ' data-tip="' + usdExacto(v) + ' Los autos con la lista en pesos entran por su precio pasado a dólares al ' + DOLAR_TXT + '."' : '') + '>' + (q.k === 'quien' ? quienSVG(v, r.plazas) : q.k === 'movilidad' && v ? SVG_ACCESO : '') + t +
         (pesos ? '<small class="precio-pesos">' + pesos + '</small>' : '') + '</span></label>').join('') + '</div>' +
+      (q.k === 'quien' && r.movilidad === 'silla' ? '<p class="quien-nota quien-nota-silla">Con silla de ruedas: solo autos con baúl al menos como el del BYD Song Pro, donde la silla entra de costado. Probala en el auto antes de comprar.</p>' : '') +
       (q.k === 'quien' && r.quien ? '<p class="quien-nota">' + (r.quien === 'ninos' ? 'Atrás van los chicos con silla; adelante, dos adultos.' : 'Va algún adulto atrás: los autos chicos pueden quedar justos.') + '</p>' : '') + '</fieldset>').join('') + '</div>' +
     '<div class="elegir-resultados">' + elegirResumenHTML(r) + '<h3 class="elegir-res-tit" id="elegirResTit">' + (out.total ? 'Te sugerimos' : 'Ningún auto a la venta cumple todo eso') + '</h3>' +
     // Sin ninguno que cumpla: qué aflojar, y abajo los más cercanos (2026-10-30).
@@ -7106,6 +7119,13 @@ function elegirAflojarHTML(r){
 }
 const elegirHoja = document.getElementById('elegirHoja');
 // ---- Deslizador de presupuesto: arrastre con el dedo o el mouse, y flechas con el teclado ----
+function presuGuardarCampo(k, valor){
+  elegirResp[k] = valor;
+  try { localStorage.setItem('elegir', JSON.stringify(elegirResp)); } catch (er) {}
+  const y = window.scrollY; pintarElegir(true); window.scrollTo(0, y);
+  const barra = document.querySelector('.elegir-barra');
+  if (barra){ barra.classList.remove('cambio'); void barra.offsetWidth; barra.classList.add('cambio'); }
+}
 function presuGuardar(valor){
   elegirResp.presu = valor;
   try { localStorage.setItem('elegir', JSON.stringify(elegirResp)); } catch (er) {}
@@ -7183,6 +7203,7 @@ elegirHoja.addEventListener('change', e => {
   if (barra){ barra.classList.remove('cambio'); void barra.offsetWidth; barra.classList.add('cambio'); }
 });
 elegirHoja.addEventListener('click', e => {
+  if (e.target.closest('#movilidadBtn')){ presuGuardarCampo('movilidad', elegirResp.movilidad === 'silla' ? '' : 'silla'); return; }
   if (e.target.closest('#elegirTabla')) return irAVista('tabla');
   if (e.target.closest('#elegirCambiar')){ const f = elegirHoja.querySelector('.elegir-preg'); if (f) f.scrollIntoView({ behavior: suave(), block: 'start' }); return; }
   const af = e.target.closest('[data-aflojar]');
