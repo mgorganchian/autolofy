@@ -746,12 +746,14 @@ sí quedan en inglés, porque no muestran la palabra. Se coló con `YES` dos vec
 - En la vista Grupos (grupo y cada marca) y en el filtro de Marca. Archivos en `logos/`,
   el respaldo de cada uno (archivo de Commons, licencia, autor, página) en
   `logos-fuentes.tsv`, y en el script `LOGOS`, `LOGO_MARCA` y `LOGO_GRUPO`.
-- **Solo Wikimedia Commons, con licencia libre y el logo vigente.** Nada de sitios de
-  logos ni de fair use de en.wikipedia. Una marca sin logo así va solo con el nombre:
-  **nunca armar, recortar ni redibujar un logo** (el de BAIC marca saldría de recortar el
-  del grupo: no). Quedaron afuera por licencia endeble Arcfox, GAC y Shineray (subidos
-  como "obra propia"), el de Geely Holding por fecha dudosa y el de JMC porque no se pudo
-  confirmar que sea el vigente. Changan y Maxus solo tienen en Commons el logo anterior.
+- **Logos oficiales de la marca, sin modificarlos, o de Wikimedia Commons con licencia libre** (decisión de Mati del 2026-11-02, issue #124: no le
+  preocupan las licencias de marca). Se prefiere el de Commons cuando existe y es el vigente; si no, el que publica la marca (kit de prensa o su sitio). Cada
+  uno se anota en `logos-fuentes.tsv` con su `origen` (`commons` u `oficial`), y el cartel dice «Logo: Wikimedia Commons, dominio público» o «Logo oficial de la marca».
+  **Lo único que no se hace es recortar, recolorear ni redibujar un logo** (a un SVG sin `viewBox` solo se le agrega). Ese día entraron 33 de las 40 marcas que
+  faltaban (24 de Commons y 9 oficiales: GAC, Changan, Skywell, Chevrolet, Nissan, Stelato, DFSK, Forthing y JMC, más Maxus). Los blancos o claros llevan `osc: true` (placa oscura).
+  Dudas: Peugeot, Porsche y DS solo tienen el logotipo con letras (no el escudo); Honda, el logotipo y no la H; Fiat, el roundel de 2006; JMC trae un cartel de
+  «15 años en Argentina»; Skywell, solo el símbolo. **Siguen sin logo:** Arcfox, JMEV, Rely, SWM, smart (el de Commons, `Smart_2022.svg`, no se pudo bajar por el límite
+  de pedidos de Wikimedia) y Subaru (los SVG vigentes de Commons traen 13 imágenes embebidas y pesan 1,6 MB).
 - Un grupo usa el logo de su marca solo si es el mismo logo. Los logos van sobre placa
   blanca en los dos temas (`--logo-fondo`); los blancos (Soueast), sobre `--logo-fondo-osc`.
 - Un SVG sin `viewBox` no escala dentro de `<img>`: se le agrega con su ancho y alto.
