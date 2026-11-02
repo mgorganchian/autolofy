@@ -16,14 +16,21 @@ const cab = tsv[0].split('\t');
 const FUENTES = tsv.slice(1).map(l => Object.fromEntries(l.split('\t').map((v, i) => [cab[i], v])));
 
 test.describe('logos/ y logos-fuentes.tsv', () => {
-  test('cada logo existe, está anotado con su fuente de Commons y tiene licencia libre', () => {
+  test('cada logo existe y está anotado: de Commons con licencia libre, o el oficial de la marca', () => {
     const archivos = fs.readdirSync(path.join(RAIZ, 'logos')).map(f => 'logos/' + f).sort();
     expect(Object.values(LOGOS).map(l => l.f).sort()).toEqual(archivos);
     expect(FUENTES.map(f => f.archivo).sort()).toEqual(archivos);
     for (const f of FUENTES) {
-      expect(f.licencia, f.archivo).toMatch(/^(Dominio público|CC0|CC BY)/);
-      expect(f.pagina, f.archivo).toMatch(/^https:\/\/commons\.wikimedia\.org\//);
-      expect(f.archivo_commons, f.archivo).toMatch(/^File:/);
+      expect(['commons', 'oficial'], f.archivo).toContain(f.origen);
+      expect(f.pagina, f.archivo).toMatch(/^https:\/\//);
+      if (f.origen === 'commons') {
+        // Desde el 2026-11-02 (pedido de Mati) también valen los logos oficiales de la marca, sin modificar; los de Commons siguen con licencia libre.
+        expect(f.licencia, f.archivo).toMatch(/^(Dominio público|CC0|CC BY)/);
+        expect(f.pagina, f.archivo).toMatch(/^https:\/\/commons\.wikimedia\.org\//);
+        expect(f.archivo_commons, f.archivo).toMatch(/^File:/);
+      } else {
+        expect(f.licencia, f.archivo).toBe('Logo oficial de la marca');
+      }
     }
   });
 
