@@ -1032,6 +1032,9 @@ if(!location.search&&!location.hash)document.documentElement.classList.add('arra
   .ficha-estado.venta{background:var(--yes-bg);color:var(--yes)}
   .ficha-estado.preventa,.ficha-estado.nolanzado{background:var(--ext-bg);color:var(--ext-text)}
   .ficha-acciones{display:flex;flex-direction:column;gap:6px}
+  .ficha-compartir{display:flex;flex-wrap:wrap;align-items:center;gap:6px;margin:10px 0 0}
+  .ficha-compartir-tit{flex:0 0 100%;font-size:.8rem;color:var(--text-secondary)}
+  a.ficha-btn{text-decoration:none;display:inline-block}
   .ficha-btn{background:var(--surface);color:var(--link);border:1px solid var(--link);border-radius:8px;padding:7px 12px;font-size:.78rem;font-weight:600;cursor:pointer}
   .ficha-btn.primario{background:var(--byd-blue);border-color:var(--byd-blue);color:var(--sobre-verde)}
   .rk-ver-ficha{margin-top:10px;width:100%}
@@ -6053,6 +6056,20 @@ function fichaFortalezas(i){
   return { fuertes: fuertes.slice(0, 6), debiles: debiles.slice(0, 6), sinDato };
 }
 
+// Compartir la ficha de un auto (2026-11-01, issue #90): por mail, por WhatsApp o copiando el link, sin pedir ni guardar
+// datos de nadie. Se comparte la página estática /autos/<slug> (tiene título y vista previa propios). En el celular, además,
+// el menú de compartir del sistema.
+const compartirURL = i => location.origin + '/autos/' + SLUG_AUTO[i];
+const compartirTexto = i => 'Mirá este auto en Autolofy: ' + CARS[i].name;
+function compartirFichaHTML(i){
+  const u = compartirURL(i), t = compartirTexto(i);
+  const sistema = navigator.share && matchMedia('(pointer:coarse)').matches;
+  return '<p class="ficha-compartir"><span class="ficha-compartir-tit">Compartir esta ficha</span>' +
+    (sistema ? '<button type="button" class="ficha-btn" id="fichaCompartirSis">Compartir</button>' : '') +
+    '<a class="ficha-btn" id="fichaCompartirMail" href="mailto:?subject=' + encodeURIComponent('Autolofy: ' + CARS[i].name) + '&body=' + encodeURIComponent(t + '\n' + u) + '">Mail</a>' +
+    '<a class="ficha-btn" id="fichaCompartirWa" target="_blank" rel="noopener" href="https://wa.me/?text=' + encodeURIComponent(t + '\n' + u) + '">WhatsApp</a>' +
+    '<button type="button" class="ficha-btn" id="fichaCompartirCopiar">Copiar link</button></p>';
+}
 async function abrirFicha(i){
   // De un parecido a otro también es un paso (urlGuardar('paso') más abajo): Atrás vuelve al anterior.
   fichaActual = i;
@@ -6088,6 +6105,7 @@ async function abrirFicha(i){
         '<button type="button" class="ficha-btn" id="fichaIrDonde">Dónde comprarlo</button>' +
         seguirBtnHTML(i) +
         '<button type="button" class="ficha-btn" id="fichaSumar">' + (colVisible.every(Boolean) ? 'Empezar una comparación' : (colVisible[i] ? '✓ Ya está en tu comparación' : '+ Sumar a mi comparación')) + '</button></div>' +
+      compartirFichaHTML(i) +
     '</div></div>' +
     '<dl class="ficha-datos">' + FICHA_DATOS.filter(n => FILA_POR_NOMBRE[n] && aplica(n)).map(n =>
       '<div><dt>' + rkEsc(rkTitulo(n) + (rkUnidad(n) ? ' (' + rkUnidad(n) + ')' : '')) + '</dt><dd>' + val(n) + '</dd></div>').join('') +
@@ -6188,6 +6206,21 @@ document.addEventListener('click', e => {
   const cmp = e.target.closest('[data-comparar]');
   if (cmp){ const i = fichaActual; compararConPaso(() => { simFijar([i, +cmp.dataset.comparar]); simRefrescarSelector(); cerrarFicha(); aplicarSeleccion(); }); ocultarTitulo(); return; }
   if (e.target.closest('#fichaVerTabla')){ const i = fichaActual; compararConPaso(() => { simFijar([i]); simRefrescarSelector(); cerrarFicha(); aplicarSeleccion(); }); ocultarTitulo(); window.scrollTo({ top: 0 }); return; }
+  const cp = e.target.closest('#fichaCompartirCopiar, #fichaCompartirSis');
+  if (cp && fichaActual !== null){
+    const i = fichaActual, url = compartirURL(i), orig = cp.textContent;
+    (async () => {
+      try {
+        if (cp.id === 'fichaCompartirSis'){ await navigator.share({ title: CARS[i].name, text: compartirTexto(i), url }); return; }
+        await navigator.clipboard.writeText(url);
+        cp.textContent = 'Link copiado'; setTimeout(() => { cp.textContent = orig; }, 2200);
+      } catch (er) {
+        if (er && er.name === 'AbortError') return;
+        window.prompt('Copiá este link:', url);
+      }
+    })();
+    return;
+  }
   if (e.target.closest('#fichaSumar')){
     const i = fichaActual;
     compararConPaso(() => { if (colVisible.every(Boolean)) simFijar([i]); else simHabilitar(i);
@@ -6610,7 +6643,7 @@ const ELEGIR_PREG = [
   { k: 'plazas', t: '¿Cuántos viajan seguido?', ops: [['4', 'Hasta 4'], ['5', '5'], ['6', '6 o 7']] },
   // 2026-11-01, pedido de Mati: un auto chico donde entran 4 o 5 sirve para 2 adultos y 2 o 3 niños si tiene
   // ISOFIX, pero menos para 4 o 5 adultos. Sin umbrales nuevos: «chico» es el segmento A o B del sitio.
-  { k: 'quien', t: '¿Quiénes viajan seguido?', ops: [['', 'Me da igual'], ['ninos', 'Con niños'], ['adultos', 'Solo adultos']] },
+  { k: 'quien', t: '¿Quiénes viajan seguido?', ops: [['', 'Me da igual'], ['ninos', 'Con niños'], ['adultos', 'Adulto atrás']] },
   { k: 'uso', t: '¿Para qué lo vas a usar más?', ops: [['ciudad', 'Ciudad'], ['mixto', 'Ciudad y ruta'], ['ruta', 'Mucha ruta'], ['tierra', 'Tierra o campo'], ['carga', 'Trabajo o carga']] },
   { k: 'enchufe', t: '¿Podés cargarlo en tu casa o en el trabajo?', ops: [['si', 'Sí'], ['no', 'No'], ['nose', 'No sé']] },
   // Los SUV (y los 4 que la tabla llama crossover) se parten por tamaño, con el segmento que sale
@@ -6679,7 +6712,7 @@ const ELEGIR_TIP = {
   },
   quien: {
     ninos: 'Piden ISOFIX: sin él no entran, y si no informan, quedan como «casi». Con 3 chicos, el del medio va sin ISOFIX.',
-    adultos: 'Los autos chicos (segmento A o B) quedan como «casi»: pueden quedar justos para adultos.',
+    adultos: 'Si va algún adulto atrás, los autos chicos (segmento A o B) quedan como «casi»: pueden quedar justos.',
   },
 };
 const elegirFit = (tipo, r) => (ELEGIR_ENCHUFE[r.enchufe][tipo] ?? .5) * (ELEGIR_USO[r.uso][tipo] ?? .5);
@@ -6885,7 +6918,7 @@ function pintarElegir(cambio){
       q.ops.map(([v, t, pesos]) => '<label><input type="radio" name="el-' + q.k + '" value="' + v + '"' + (r[q.k] === v ? ' checked' : '') + '><span' +
         ((ELEGIR_TIP[q.k] || {})[v] ? ' data-tip="' + ELEGIR_TIP[q.k][v] + '"' : q.k === 'presu' && v ? ' data-tip="' + usdExacto(v) + ' Los autos con la lista en pesos entran por su precio pasado a dólares al ' + DOLAR_TXT + '."' : '') + '>' + (q.k === 'quien' ? quienSVG(v, r.plazas) : '') + t +
         (pesos ? '<small class="precio-pesos">' + pesos + '</small>' : '') + '</span></label>').join('') + '</div>' +
-      (q.k === 'quien' && r.quien ? '<p class="quien-nota">' + (r.quien === 'ninos' ? 'Atrás van los chicos con silla; adelante, dos adultos.' : 'Todos los asientos son para adultos: los autos chicos pueden quedar justos.') + '</p>' : '') + '</fieldset>').join('') + '</div>' +
+      (q.k === 'quien' && r.quien ? '<p class="quien-nota">' + (r.quien === 'ninos' ? 'Atrás van los chicos con silla; adelante, dos adultos.' : 'Va algún adulto atrás: los autos chicos pueden quedar justos.') + '</p>' : '') + '</fieldset>').join('') + '</div>' +
     '<div class="elegir-resultados">' + elegirResumenHTML(r) + '<h3 class="elegir-res-tit" id="elegirResTit">' + (out.total ? 'Te sugerimos' : 'Ningún auto a la venta cumple todo eso') + '</h3>' +
     // Sin ninguno que cumpla: qué aflojar, y abajo los más cercanos (2026-10-30).
     (!out.total ? elegirAflojarHTML(r) + (out.top.length ? '<h3 class="elegir-res-tit">Los más cercanos</h3>' : '') : '') +
@@ -6949,13 +6982,15 @@ const usdExacto = v => { const [a, b] = v.split('-').map(x => x === '' ? null : 
 // Pictograma de «¿Quiénes viajan seguido?» (2026-11-01, pedido de Mati): el auto visto desde arriba con quién va en cada
 // asiento. Con niños: dos adultos adelante y los chicos atrás (2 con «Hasta 4», 3 con 5 o más). Es un dibujo, no un dato.
 function quienSVG(v, plazas){
-  const atras = plazas === '4' ? 2 : 3, xs = atras === 2 ? [30, 50] : [22, 40, 58];
-  const adulto = (x, y) => '<circle cx="' + x + '" cy="' + y + '" r="6"/><rect x="' + (x - 8) + '" y="' + (y + 7) + '" width="16" height="9" rx="4"/>';
-  const chico = (x, y) => '<circle cx="' + x + '" cy="' + y + '" r="4"/><rect x="' + (x - 5) + '" y="' + (y + 5) + '" width="10" height="9" rx="3"/>';
-  const asiento = (x, y, w) => '<rect x="' + (x - w / 2) + '" y="' + y + '" width="' + w + '" height="22" rx="5" fill="none" stroke="currentColor" stroke-width="1.5" stroke-dasharray="3 3" opacity=".5"/>';
+  // Con 6 o 7 plazas el auto tiene tres hileras (2 + 3 + 2); con menos, dos (2 adelante y 2 o 3 atrás).
+  const filas = plazas === '6' ? [[26, 54], [22, 40, 58], [26, 54]] : [[26, 54], plazas === '4' ? [30, 50] : [22, 40, 58]];
+  const ys = plazas === '6' ? [14, 44, 74] : [22, 64], k = plazas === '6' ? .82 : 1;
+  const adulto = (x, y) => '<circle cx="' + x + '" cy="' + (y + 4) + '" r="' + 6 * k + '"/><rect x="' + (x - 8 * k) + '" y="' + (y + 4 + 7 * k) + '" width="' + 16 * k + '" height="' + 9 * k + '" rx="4"/>';
+  const chico = (x, y) => '<circle cx="' + x + '" cy="' + (y + 8) + '" r="' + 4 * k + '"/><rect x="' + (x - 5 * k) + '" y="' + (y + 8 + 5 * k) + '" width="' + 10 * k + '" height="' + 9 * k + '" rx="3"/>';
+  const asiento = (x, y, w) => '<rect x="' + (x - w / 2) + '" y="' + y + '" width="' + w + '" height="' + 22 * k + '" rx="5" fill="none" stroke="currentColor" stroke-width="1.5" stroke-dasharray="3 3" opacity=".5"/>';
   let s = '<svg viewBox="0 0 80 112" class="quien-ico" aria-hidden="true" focusable="false"><rect x="8" y="4" width="64" height="104" rx="18" fill="none" stroke="currentColor" stroke-width="2" opacity=".6"/>';
-  if (!v) s += asiento(26, 22, 20) + asiento(54, 22, 20) + xs.map(x => asiento(x, 64, 16)).join('');
-  else s += '<g fill="currentColor">' + adulto(26, 26) + adulto(54, 26) + xs.map(x => v === 'ninos' ? chico(x, 70) : adulto(x, 66)).join('') + '</g>';
+  if (!v) s += filas.map((xs, f) => xs.map(x => asiento(x, ys[f], f ? 16 * k : 20 * k)).join('')).join('');
+  else s += '<g fill="currentColor">' + filas.map((xs, f) => xs.map(x => f === 0 || v === 'adultos' ? adulto(x, ys[f]) : chico(x, ys[f])).join('')).join('') + '</g>';
   return s + '</svg>';
 }
 function elegirResumenHTML(r){
@@ -6964,7 +6999,7 @@ function elegirResumenHTML(r){
   const presu = ELEGIR_PREG.find(q => q.k === 'presu'), carro = ELEGIR_PREG.find(q => q.k === 'carro'), uso = ELEGIR_PREG.find(q => q.k === 'uso');
   if (r.presu) partes.push(txt(presu).replace(/^Hasta /, 'hasta ').replace(/^Más de /, 'más de '));
   partes.push(r.plazas === '6' ? '6 o 7 plazas' : r.plazas === '4' ? 'hasta 4 plazas' : '5 plazas');
-  if (r.quien) partes.push(r.quien === 'ninos' ? 'con niños' : 'todos adultos');
+  if (r.quien) partes.push(r.quien === 'ninos' ? 'con niños' : 'con adulto atrás');
   if (uso) partes.push(txt(uso).toLowerCase());
   if (r.carro && carro) partes.push(txt(carro));
   if (r.enchufe === 'si') partes.push('con dónde cargar');

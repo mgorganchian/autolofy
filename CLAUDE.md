@@ -390,6 +390,11 @@ sí quedan en inglés, porque no muestran la palabra. Se coló con `YES` dos vec
   Jetour G700, más 9 pickups con reductora; el BJ40 Plus, los BJ30 y el Jetour T2 quedaron en `4x4`
   porque ninguna fuente oficial nombra la reductora, y el T2 i-DM es de tracción delantera. Hay filtro
   por tracción en el panel (`selectedTracs`).
+- **Compartir la ficha** (2026-11-01, issue #90, decisión de Mati): la ficha de cada auto tiene «Compartir esta ficha» con Mail (`mailto:`),
+  WhatsApp (`wa.me`) y Copiar link, y en el celular también «Compartir» (menú del sistema). Se comparte la página estática
+  `/autos/<slug>` (título y vista previa propios), con el texto «Mirá este auto en Autolofy: <nombre>». **No toma ni guarda datos de nadie**:
+  abre el mail o el WhatsApp de la propia persona. Pedir mail o teléfono a quien no está registrado sigue pospuesto (cambiaría Privacidad y
+  obligaría a cumplir la ley de datos personales). `compartir-ficha.spec.js`.
 - **Seguir un auto** (2026-10-11): sin cuentas ni mails. `seguidos` (en el navegador) guarda, por
   slug, el precio de lista en dólares y la disponibilidad de la última vez que se vio el auto; al
   volver, `#avisoSeguidos` dice qué cambió, con "Comparar los que sigo" y "Listo". Abrir la página
@@ -520,7 +525,7 @@ sí quedan en inglés, porque no muestran la palabra. Se coló con `YES` dos vec
 - **¿Quiénes viajan seguido?** (2026-11-01, pedido de Mati; issue #101): pregunta de Ayudame a elegir después de las plazas,
   con «Me da igual» marcada. «Adultos con niños» pide ISOFIX (`isofixDe`): sin él el auto no entra y si no informa queda
   como «casi» («No informa ISOFIX»). «Todos adultos» deja como «casi» a los de segmento A o B (`size` mini o compact), sin
-  umbrales nuevos. Un solo «casi» por auto. Las opciones se llaman «Con niños» y «Solo adultos». En el celular, toda pregunta
+  umbrales nuevos. Un solo «casi» por auto. Las opciones se llaman «Con niños» y «Adulto atrás» (si va algún adulto en una plaza trasera; con 6 o 7 plazas el dibujo tiene tres hileras). En el celular, toda pregunta
   de tres opciones va de a tres en una fila (`data-n="3"`: plazas, quiénes viajan, enchufe). `quien-viaja.spec.js` lo cubre.
   Cada opción de «¿Quiénes viajan seguido?» lleva el dibujo del auto visto desde arriba con quién va en cada asiento (`quienSVG`: con
   niños, 2 adultos adelante y 2 o 3 chicos atrás según las plazas) y la elegida explica el supuesto debajo (`.quien-nota`). Es un dibujo, no un dato.
