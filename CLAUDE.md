@@ -545,6 +545,10 @@ sí quedan en inglés, porque no muestran la palabra. Se coló con `YES` dos vec
   **Mangos y flechas** (2026-11-01, opción C de Mati): los mangos van por **fuera** de la barra (cada uno junto a su extremo) para que la barra del medio, con
   sus puntitos de agarre, siempre se pueda tocar aunque el rango sea angosto; dos flechas ‹ › de 44 px mueven todo el rango de a USD 1.000 (mantenidas, repiten).
   El fin se redondea para arriba o para abajo, el que deje la cantidad de autos más cerca de la original (hay precios repetidos).
+- **Ayudame a elegir en la computadora: una pregunta por renglón** (2026-11-02, pedido de Mati): desde 900 px el título de cada pregunta va a la
+  izquierda (200 px) y sus opciones en una sola fila (`--n` = cantidad de opciones), con las sugerencias debajo y a lo ancho. El título es un
+  `div.elegir-leyenda` dentro de un `fieldset role="group"`, no un `<legend>` (un legend no participa de la grilla). En el celular sigue todo apilado.
+  `elegir-escritorio.spec.js` mide un renglón por pregunta a 1024, 1280 y 1440 px.
 - **Respaldo de fábrica** (2026-10-10, pedido del usuario: en Argentina da miedo conseguir repuestos;
   después del precio es de lo que más pesa): `MARCAS_INFO[marca].fabrica_mercosur` = planta que
   **ya produce** autos en el Mercosur, con fuente (BYD, GWM en Haval/Ora/Tank/Poer, Chery por CAOA,
