@@ -986,13 +986,18 @@ if(!location.search&&!location.hash)document.documentElement.classList.add('arra
   .presu-txt{margin:0;display:flex;flex-wrap:wrap;align-items:baseline;gap:2px 10px}
   .presu-txt b{font-family:var(--fuente-tabla);font-size:1.05rem}
   .presu-txt small{font-size:.8rem;color:var(--text-secondary)}
-  .presu-pista{position:relative;height:44px;touch-action:none;cursor:pointer;--a:0%;--b:100%}
-  .presu-riel{position:absolute;left:0;right:0;top:19px;height:6px;border-radius:3px;background:var(--border-strong)}
-  .presu-barra{position:absolute;top:12px;height:20px;left:var(--a);width:calc(var(--b) - var(--a));min-width:6px;border-radius:10px;background:var(--byd-blue);opacity:.85;cursor:grab;outline-offset:2px}
+  /* Los mangos flanquean la barra (cada uno por fuera de su extremo) para que la barra del medio siempre se pueda tocar, y dos flechas
+     mueven todo el rango de a USD 1.000 (2026-11-01, pedido de Mati, opción C). */
+  .presu-fila{display:flex;align-items:center;gap:4px}
+  .presu-paso{flex:0 0 44px;width:44px;height:44px;border-radius:50%;border:1px solid var(--border-strong);background:var(--surface);color:var(--ink);font-size:1.4rem;line-height:1;padding:0;cursor:pointer;touch-action:manipulation}
+  .presu-paso:active{background:var(--byd-blue);border-color:var(--byd-blue);color:var(--sobre-verde)}
+  .presu-pista{position:relative;flex:1;height:56px;margin:0 20px;touch-action:none;cursor:pointer;--a:0%;--b:100%;--mid:calc((var(--a) + var(--b)) / 2);--med:max(14px, calc((var(--b) - var(--a)) / 2))}
+  .presu-riel{position:absolute;left:0;right:0;top:25px;height:6px;border-radius:3px;background:var(--border-strong)}
+  .presu-barra{position:absolute;top:12px;height:32px;left:calc(var(--mid) - var(--med));width:max(28px, calc(var(--b) - var(--a)));border-radius:8px;background-color:var(--byd-blue);background-image:radial-gradient(circle,rgba(255,255,255,.85) 1.6px,transparent 2px);background-size:8px 8px;background-position:center;cursor:grab;outline-offset:2px}
   .presu-barra:active{cursor:grabbing}
-  .presu-mango{position:absolute;top:8px;width:28px;height:28px;margin-left:-14px;padding:0;border-radius:50%;border:3px solid var(--byd-blue);background:var(--surface);cursor:ew-resize;box-shadow:0 1px 3px rgba(0,0,0,.35)}
-  .presu-mango.min{left:var(--a)} .presu-mango.max{left:var(--b)}
-  .presu-mango:focus-visible,.presu-barra:focus-visible{outline:2px solid var(--link)}
+  .presu-mango{position:absolute;top:8px;width:18px;height:40px;padding:0;border-radius:9px;border:2px solid var(--byd-blue);background:var(--surface);cursor:ew-resize;box-shadow:0 1px 3px rgba(0,0,0,.35)}
+  .presu-mango.min{left:calc(var(--mid) - var(--med));transform:translateX(-100%)} .presu-mango.max{left:calc(var(--mid) + var(--med))}
+  .presu-mango:focus-visible,.presu-barra:focus-visible,.presu-paso:focus-visible{outline:2px solid var(--link)}
   .presu.apagado .presu-barra,.presu.apagado .presu-mango{opacity:.4;filter:grayscale(1)}
   .presu-ejes{margin:0;display:flex;justify-content:space-between;font-size:.8rem;color:var(--text-secondary)}
   .presu-igual{display:flex;align-items:center;gap:8px;font-size:.84rem;cursor:pointer}
@@ -6697,11 +6702,12 @@ function presuHTML(r){
     '<p class="presu-txt" aria-live="polite"><b id="presuUsd">' + presuUsdLargo(p.min, p.max) + '</b>' +
       '<small class="precio-pesos" id="presuPesos">' + presuPesosLargo(p.min, p.max) + '</small>' +
       '<small id="presuN">' + presuCuenta(p.min, p.max) + ' autos con precio</small></p>' +
+    '<div class="presu-fila"><button type="button" class="presu-paso" id="presuIzq" aria-label="Mover todo el rango hacia abajo, de a USD 1.000">‹</button>' +
     '<div class="presu-pista" id="presuPista" style="--a:' + presuPct(p.min) + ';--b:' + presuPct(max) + '">' +
       '<span class="presu-riel"></span><span class="presu-barra" id="presuBarra" role="slider" tabindex="0" aria-label="Mover el rango de precio sin cambiar la cantidad de autos" aria-valuemin="' + PRESU_PISO + '" aria-valuemax="' + PRESU_TOPE + '" aria-valuenow="' + p.min + '" aria-valuetext="' + rkEsc(presuUsdLargo(p.min, p.max)) + '"></span>' +
       '<button type="button" class="presu-mango min" id="presuMin" role="slider" aria-label="Precio mínimo" aria-valuemin="' + PRESU_PISO + '" aria-valuemax="' + (PRESU_TOPE - PRESU_PASO) + '" aria-valuenow="' + p.min + '"></button>' +
       '<button type="button" class="presu-mango max" id="presuMax" role="slider" aria-label="Precio máximo" aria-valuemin="' + (PRESU_PISO + PRESU_PASO) + '" aria-valuemax="' + PRESU_TOPE + '" aria-valuenow="' + max + '"></button>' +
-    '</div>' +
+    '</div><button type="button" class="presu-paso" id="presuDer" aria-label="Mover todo el rango hacia arriba, de a USD 1.000">›</button></div>' +
     '<p class="presu-ejes"><span>USD ' + usdMiles(PRESU_PISO) + ' mil</span><span>USD ' + usdMiles(PRESU_TOPE) + ' mil o más</span></p>' +
     '<label class="presu-igual"><input type="checkbox" id="presuIgual"' + (on ? '' : ' checked') + '> Me da igual el precio</label></div></fieldset>';
 }
@@ -7150,9 +7156,35 @@ function presuMoverCentro(min0, k, nuevoMin){
   let min = Math.max(PRESU_PISO, Math.min(nuevoMin, Math.floor(ult / PRESU_PASO) * PRESU_PASO));
   min = Math.round(min / PRESU_PASO) * PRESU_PASO;
   const a = Math.min(PRESU_PRECIOS.findIndex(p => p >= min), n - k);
-  const fin = Math.ceil(PRESU_PRECIOS[a + k - 1] / PRESU_PASO) * PRESU_PASO;
+  // El fin, redondeado a USD 1.000 para arriba o para abajo, el que deje más cerca de k la cantidad de autos (hay precios repetidos).
+  const x = PRESU_PRECIOS[a + k - 1], arriba = Math.ceil(x / PRESU_PASO) * PRESU_PASO, abajo = Math.floor(x / PRESU_PASO) * PRESU_PASO;
+  const fin = abajo >= min + PRESU_PASO && Math.abs(presuCuenta(min, abajo) - k) < Math.abs(presuCuenta(min, arriba) - k) ? abajo : arriba;
   return { min, max: Math.max(fin, min + PRESU_PASO) };
 }
+// Flechas: mueven todo el rango de a USD 1.000 (como arrastrar la barra: el fin se estira para mantener la cantidad de autos). Mantenidas, repiten.
+let presuHold = null;
+function presuPasoTick(h){
+  const o = presuMoverCentro(h.min, h.k, h.min + h.dir * PRESU_PASO);
+  h.min = o.min; h.max = Math.min(o.max, PRESU_TOPE);
+  presuMostrar(h.min, h.max >= PRESU_TOPE ? null : h.max);
+}
+elegirHoja.addEventListener('pointerdown', e => {
+  const b = e.target.closest ? e.target.closest('#presuIzq, #presuDer') : null; if (!b) return;
+  const p = presuLeer(elegirResp.presu || presuInicial());
+  document.getElementById('presu').classList.remove('apagado'); document.getElementById('presuIgual').checked = false;
+  presuHold = { dir: b.id === 'presuDer' ? 1 : -1, min: p.min, max: p.max == null ? PRESU_TOPE : p.max, k: Math.max(1, presuCuenta(p.min, p.max)), t: null, iv: null };
+  presuPasoTick(presuHold);
+  presuHold.t = setTimeout(() => { presuHold.iv = setInterval(() => presuPasoTick(presuHold), 90); }, 380);
+});
+const presuHoldSoltar = () => { const h = presuHold; if (!h) return; presuHold = null; clearTimeout(h.t); clearInterval(h.iv); presuGuardar(presuTexto(h.min, h.max)); };
+document.addEventListener('pointerup', presuHoldSoltar); document.addEventListener('pointercancel', presuHoldSoltar);
+// Con el teclado (Enter o espacio) el clic llega sin puntero: un solo paso.
+elegirHoja.addEventListener('click', e => {
+  const b = e.target.closest ? e.target.closest('#presuIzq, #presuDer') : null; if (!b || e.detail !== 0) return;
+  const p = presuLeer(elegirResp.presu || presuInicial()), o = presuMoverCentro(p.min, Math.max(1, presuCuenta(p.min, p.max)), p.min + (b.id === 'presuDer' ? 1 : -1) * PRESU_PASO);
+  presuGuardar(presuTexto(o.min, Math.min(o.max, PRESU_TOPE)));
+  const n = document.getElementById(b.id); if (n) n.focus();
+});
 let presuArrastre = null;
 elegirHoja.addEventListener('pointerdown', e => {
   const pista = e.target.closest('#presuPista'); if (!pista) return;
