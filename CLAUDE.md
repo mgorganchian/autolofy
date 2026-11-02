@@ -529,11 +529,12 @@ sí quedan en inglés, porque no muestran la palabra. Se coló con `YES` dos vec
   de tres opciones va de a tres en una fila (`data-n="3"`: plazas, quiénes viajan, enchufe). `quien-viaja.spec.js` lo cubre.
   Cada opción de «¿Quiénes viajan seguido?» lleva el dibujo del auto visto desde arriba con quién va en cada asiento (`quienSVG`: con
   niños, 2 adultos adelante y 2 o 3 chicos atrás según las plazas) y la elegida explica el supuesto debajo (`.quien-nota`). Es un dibujo, no un dato.
-- **¿Viaja alguien en silla de ruedas?** (2026-11-01, issue #112; opción 1): pregunta de Ayudame a elegir con el símbolo de accesibilidad
-  dibujado a mano (`SVG_ACCESO`). Con «Sí» solo entran los de **baúl grande** (el 40% de autos con más litros entre los que lo informan, `baulGrande()`,
-  sin umbral inventado; la caja de una pickup no cuenta) cuyos **asientos traseros** no se informan como fijos (si no informan, «casi»: «No informa
-  si los asientos se pliegan»). Suma como motivo el baúl en litros y la apertura eléctrica. **No dice si la silla entra ni qué tan alto es el piso**:
-  ninguna fila lo tiene; el cartel dice que hay que probarla en el auto. Falta (opción 2 del issue) cargar la altura de carga y la boca del baúl.
+- **¿Viaja alguien en silla de ruedas?** (2026-11-01, issue #112; opción 1): **círculo chico con el símbolo de accesibilidad** (dibujado a mano,
+  `SVG_ACCESO`) en el título de «¿Quiénes viajan seguido?», que se toca para sumar o sacar (opción C elegida por Mati, `movilidadBtnHTML`); no es una pregunta aparte. Con «Sí» solo entran los de **baúl al menos tan grande como el del BYD Song Pro** (`baulGrande()`): referencia de Mati del 2026-11-01, en el Song Pro
+  con los asientos traseros en su posición recta (sin plegarlos) la silla de ruedas entra de costado; se toma el litraje que la tabla trae
+  para el Song Pro (~520 L, EXT aproximado) y se lee de la fila. Sin dato de baúl no entra; la caja de una pickup no cuenta. Ya no se exige que los
+  asientos se plieguen (si lo hacen, es un motivo más). Suma como motivo el baúl en litros y la apertura eléctrica. **No dice qué tan alto es el piso**:
+  ninguna fila lo tiene; el cartel dice que hay que probar la silla en el auto. Falta (opción 2 del issue) cargar la altura de carga y la boca del baúl.
   Lenguaje: «silla de ruedas», nunca «discapacitado». `movilidad.spec.js`.
 - **Presupuesto con deslizador** (2026-11-01, pedido de Mati): «¿Cuánto querés gastar?» ya no son franjas sino un deslizador de dos mangos
   (de a USD 1.000, con los pesos al BNA al lado y la cantidad de autos con precio). Arranca en el rango más bajo (`presuInicial()`, unos 30
