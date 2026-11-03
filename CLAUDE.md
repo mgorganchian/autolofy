@@ -549,6 +549,10 @@ sí quedan en inglés, porque no muestran la palabra. Se coló con `YES` dos vec
   izquierda (200 px) y sus opciones en una sola fila (`--n` = cantidad de opciones), con las sugerencias debajo y a lo ancho. El título es un
   `div.elegir-leyenda` dentro de un `fieldset role="group"`, no un `<legend>` (un legend no participa de la grilla). En el celular sigue todo apilado.
   `elegir-escritorio.spec.js` mide un renglón por pregunta a 1024, 1280 y 1440 px.
+- **Dos arreglos de los issues de Sebastián** (2026-11-03): **(#129)** la cantidad de sugerencias de Ayudame a elegir (5 en pantalla ancha, 4 en chica) se decide **una sola vez
+  al cargar** (`ELEGIR_N`); achicar o agrandar la ventana no la cambia (`elegir-resize.spec.js`). **(#130)** los botones de la ventana de un auto que arman una comparación
+  («Ver todos sus datos en la tabla», «Sumar a mi comparación» y «Comparar con…») llevan a la **vista Tabla** (`mostrarVista('tabla')`) también cuando se abrió
+  desde Ayudame a elegir, Grupos o Ranking; antes cerraban la ventana y dejaban la pantalla anterior (`ficha-ver-tabla.spec.js`).
 - **Respaldo de fábrica** (2026-10-10, pedido del usuario: en Argentina da miedo conseguir repuestos;
   después del precio es de lo que más pesa): `MARCAS_INFO[marca].fabrica_mercosur` = planta que
   **ya produce** autos en el Mercosur, con fuente (BYD, GWM en Haval/Ora/Tank/Poer, Chery por CAOA,

@@ -6252,8 +6252,8 @@ document.addEventListener('click', e => {
     const c = document.getElementById('cLargo'); if (c) c.focus(); return;
   }
   const cmp = e.target.closest('[data-comparar]');
-  if (cmp){ const i = fichaActual; compararConPaso(() => { simFijar([i, +cmp.dataset.comparar]); simRefrescarSelector(); cerrarFicha(); aplicarSeleccion(); }); ocultarTitulo(); return; }
-  if (e.target.closest('#fichaVerTabla')){ const i = fichaActual; compararConPaso(() => { simFijar([i]); simRefrescarSelector(); cerrarFicha(); aplicarSeleccion(); }); ocultarTitulo(); window.scrollTo({ top: 0 }); return; }
+  if (cmp){ const i = fichaActual; compararConPaso(() => { simFijar([i, +cmp.dataset.comparar]); simRefrescarSelector(); cerrarFicha(); aplicarSeleccion(); mostrarVista('tabla'); }); ocultarTitulo(); return; }
+  if (e.target.closest('#fichaVerTabla')){ const i = fichaActual; compararConPaso(() => { simFijar([i]); simRefrescarSelector(); cerrarFicha(); aplicarSeleccion(); mostrarVista('tabla'); }); ocultarTitulo(); window.scrollTo({ top: 0 }); return; }
   const cp = e.target.closest('#fichaCompartirCopiar, #fichaCompartirSis');
   if (cp && fichaActual !== null){
     const i = fichaActual, url = compartirURL(i), orig = cp.textContent;
@@ -6272,7 +6272,7 @@ document.addEventListener('click', e => {
   if (e.target.closest('#fichaSumar')){
     const i = fichaActual;
     compararConPaso(() => { if (colVisible.every(Boolean)) simFijar([i]); else simHabilitar(i);
-      simRefrescarSelector(); cerrarFicha(); aplicarSeleccion(); }); ocultarTitulo(); return;
+      simRefrescarSelector(); cerrarFicha(); aplicarSeleccion(); mostrarVista('tabla'); }); ocultarTitulo(); return;
   }
 });
 document.addEventListener('keydown', e => {
@@ -6748,8 +6748,9 @@ const ELEGIR_PREG = [
 // Cuántos sugiere (pedido del 2026-10-09): 5 en escritorio, donde entran en una fila, y 4 en
 // el celular; o los que haya si cumplen menos. Si la ventana cruza el corte, se repinta.
 const ELEGIR_ANCHO = window.matchMedia('(min-width: 900px)');
-const elegirN = () => ELEGIR_ANCHO.matches ? 5 : 4;
-ELEGIR_ANCHO.addEventListener('change', () => { const h = document.getElementById('elegirHoja'); if (h && !h.hidden) pintarElegir(); });
+// Se decide una sola vez al cargar (issue #129, de Sebastián): al achicar o agrandar la ventana la cantidad de sugerencias no cambia.
+const ELEGIR_N = ELEGIR_ANCHO.matches ? 5 : 4;
+const elegirN = () => ELEGIR_N;
 // Sin presupuesto elegido de entrada (2026-10-10): lo que viene marcado se lee como recomendación.
 let elegirResp = { presu: presuInicial(), plazas: '5', quien: '', movilidad: '', uso: 'mixto', enchufe: 'nose', carro: '' };
 try { const g = JSON.parse(localStorage.getItem('elegir') || 'null'); if (g) elegirResp = Object.assign(elegirResp, g); } catch (e) {}
