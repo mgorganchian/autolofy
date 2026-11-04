@@ -598,6 +598,16 @@ sí quedan en inglés, porque no muestran la palabra. Se coló con `YES` dos vec
 - Los dos van en la página de cada auto y en `autos/<slug>.html`. La rutina los revisa (tareas I y J).
   `tests/e2e/service.spec.js` falla si una lista no tiene fuente https o es de otra marca.
 
+## Listas mensuales de Stellantis (2026-11-04, pedido de Mati: «sin que yo navegue por Stellantis»)
+
+- Stellantis publica cada mes una nota de prensa en `media.stellantis.com/ar-es/corporate/press` con las listas de precios en PDF adjuntas
+  (`uploads/ar/attachment/<n>/listadeprecios_<marca><mes><año>-<hash>.pdf`). **El bloqueo era solo de WebFetch**: la página y los PDF bajan con `curl`.
+- `herramientas-stellantis.py` descubre la lista más reciente (prensa de los últimos 45 días), baja los PDF a `insumos/stellantis-AAAA-MM/` (fuera de git), lee su texto
+  (`herramientas-pdftxt.swift`, PDFKit) y compara 28 autos mapeados (Fiat, Jeep, RAM, Peugeot, Citroën, Leapmotor) contra la tabla; `--aplicar` actualiza celdas, `HISTORIAL_PRECIOS`
+  (si es USD) y `precios-historial.json`. **DS no se lee por texto** (el PDF no liga cada precio con su modelo): el DS 7 se carga a mano mirando la imagen. La rutina semanal
+  lo corre (tarea L). El 2026-11-04 cargó la lista de octubre: Titano Ranch (de $72.370.000 del configurador a $75.270.000 de la lista), C4 Hybrid MAX y C5 Aircross MAX (de s/d
+  a precio) y el DS 7 Plug-in Hybrid AWD (USD 69.400 de la lista; antes USD 72.000 «valor especial» del sitio).
+
 ## Base de datos en Neon (2026-11-04, pedido de Mati)
 
 - **La base es la fuente de verdad; el sitio no la lee al cargar.** Un viaje a Neon suma 100 a 400 ms con la base dormida: por eso un build

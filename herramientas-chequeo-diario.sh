@@ -227,6 +227,12 @@ J) SERVICE OFICIAL (SERVICE_MARCAS y SERVICE_OFICIAL): si una marca cambió los 
 lista de service programado, actualizalos tal cual (moneda, IVA, vigencia) y su fecha de consulta.
 Una lista nueva solo se asigna a un auto si es del mismo modelo y versión que la tabla.
 
+L) LISTAS DE STELLANTIS (Fiat, Jeep, RAM, Peugeot, Citroën, DS y Leapmotor): corré python3 herramientas-stellantis.py. Busca solo en
+la prensa de media.stellantis.com la lista mensual, baja los PDF a insumos/ y compara contra la tabla. Si muestra cambios, corré
+python3 herramientas-stellantis.py --aplicar (actualiza las celdas, el historial en dólares y el de precios) y sumá una fila a
+datos-fuentes.tsv por cada celda cambiada (URL del PDF y su sha256). El DS 7 se carga a mano: el PDF de DS no liga cada precio con su
+modelo, así que mirá la imagen (python3 con herramientas-pdftxt no alcanza). Si la herramienta falla, no toques nada a mano y decilo.
+
 K) TASAS DEL BCRA: corré python3 herramientas-tasas.py, que actualiza las líneas de préstamo
 para 0 km que la calculadora de cuota toma del BCRA. Si falla (sin conexión, la API cambió), no
 toques nada a mano y decilo en el resumen."
