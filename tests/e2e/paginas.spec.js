@@ -96,11 +96,14 @@ test('"Quién hace esto": existe, está en el sitemap y el pie del comparativo l
   await expect(page.locator('footer a[href="/quien-hace-esto"]')).toHaveCount(1);
 });
 
-test('la página dice que no hay publicidad ni seguimiento: que siga siendo cierto', ({ }, info) => {
+test('la página dice que no hay publicidad y que mide con Clarity: que siga siendo cierto', ({ }, info) => {
   test.skip(info.project.name !== 'escritorio', 'no depende del viewport');
-  // Si se suma algo de esto, hay que cambiar "Privacidad" en herramientas-paginas.py (quien()).
+  // Clarity es la única medición (2026-11-04). Si se suma otra, hay que cambiar "Privacidad" en herramientas-paginas.py (quien()).
   const fs = require('fs');
   const html = fs.readFileSync(path.join(RAIZ, 'index.html'), 'utf8');
-  for (const t of ['googletagmanager', 'google-analytics', 'gtag(', 'adsbygoogle', '_vercel/insights', 'speed-insights', 'plausible.io', 'clarity.ms', 'hotjar', 'fbq(', 'umami'])
+  for (const t of ['googletagmanager', 'google-analytics', 'gtag(', 'adsbygoogle', '_vercel/insights', 'speed-insights', 'plausible.io', 'hotjar', 'fbq(', 'umami'])
     expect(html.includes(t), t).toBe(false);
+  expect(html.includes('clarity.ms'), 'clarity.ms').toBe(true);
+  const quien = fs.readFileSync(path.join(RAIZ, 'quien-hace-esto.html'), 'utf8');
+  expect(quien).toContain('Microsoft Clarity');
 });

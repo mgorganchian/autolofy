@@ -27,6 +27,11 @@ tiene_foto = lambda slug: os.path.exists(os.path.join(RAIZ, 'fotos', slug + '-1.
 img_auto = lambda slug: f'/fotos/{slug}-1.jpg' if tiene_foto(slug) else f'/fotos/mini/{slug}.jpg'
 SIN_FOTO = 'Todavía no tenemos una foto de esta versión: es la silueta de su carrocería.'
 # El formulario de sugerencias (el mismo que FORM_SUGERENCIAS del script; entry.1360569446 = Auto).
+# Microsoft Clarity (2026-11-04, pedido de Mati): única excepción a "sin JS externo"; mide visitas, clics y scroll.
+CLARITY_ID = 'z8m6ec1hi3'
+CLARITY = ('<script>(function(c,l,a,r,i,t,y){c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};'
+           't=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;y=l.getElementsByTagName(r)[0];'
+           f'y.parentNode.insertBefore(t,y);}})(window,document,"clarity","script","{CLARITY_ID}");</script>')
 FORM_SUGERENCIAS = 'https://docs.google.com/forms/d/e/1FAIpQLSdytJoPO5w4I-AjJiVyj_wwnPmWQFWs9k3sfjOMgyMXEkgKyQ/viewform'
 DIR = os.path.join(RAIZ, 'autos')
 DIR_VS = os.path.join(RAIZ, 'comparar')
@@ -168,7 +173,7 @@ td small{{display:block;font-size:.75rem;color:var(--ink2)}} .colores{{list-styl
 .colores li{{border:1px solid var(--line);border-radius:3px;padding:2px 8px}}
 .muestra{{display:inline-block;width:.9em;height:.9em;border-radius:50%;border:1px solid var(--line);vertical-align:-.1em;margin-right:5px}}
 .vs{{padding-left:18px}} .vs li{{margin:3px 0}} .videos{{padding-left:18px}} .videos li{{margin:4px 0}} .videos small{{display:block;color:var(--ink2)}} .nota,footer{{font-size:.8rem;color:var(--ink2)}}
-</style></head>
+</style>{CLARITY}</head>
 <body><main>
 <p class="sub"><a href="/">Autolofy</a> / {e(car['brand'])}</p>
 <h1>{e(nombre)}</h1>
@@ -242,7 +247,7 @@ main{{max-width:760px;margin:0 auto;padding:16px}} a{{color:var(--accent)}} h1{{
 .sub{{color:var(--ink2);margin:0 0 16px}} ol{{list-style:none;margin:0;padding:0}}
 li{{border-bottom:1px solid var(--line);padding:10px 0}} time{{font-size:.8rem;color:var(--ink2)}}
 h2{{font-size:1.05rem;margin:2px 0}} p{{margin:2px 0}}
-</style></head><body><main>
+</style>{CLARITY}</head><body><main>
 <p class="sub"><a href="/">Autolofy</a> / Novedades</p>
 <h1>Novedades</h1>
 <p class="sub">Cambios de precio de lista, promociones vigentes y lo nuevo del comparativo. También por <a href="/novedades.xml">RSS</a>.</p>
@@ -380,7 +385,7 @@ h2{{font-size:1.15rem;margin:24px 0 6px;border-bottom:2px solid var(--ink)}} tab
 th,td{{text-align:left;vertical-align:top;padding:5px 6px;border-bottom:1px solid var(--line);overflow-wrap:anywhere}} th{{font-weight:500;width:34%;color:var(--ink2)}}
 thead th{{color:var(--ink);font-weight:700}} tr.cat th{{color:var(--ink);font-weight:700;padding-top:14px}}
 td small{{display:block;font-size:.75rem;color:var(--ink2)}} .nota,footer{{font-size:.8rem;color:var(--ink2)}}
-</style></head>
+</style>{CLARITY}</head>
 <body><main>
 <p class="sub"><a href="/">Autolofy</a> / Comparaciones</p>
 <h1>{e(A['name'])} vs {e(B['name'])}</h1>
@@ -400,7 +405,7 @@ td small{{display:block;font-size:.75rem;color:var(--ink2)}} .nota,footer{{font-
 def quien():
     """Quién hace esto (2026-10-11): quién está detrás, su relación con las marcas (ninguna) y cómo se
     arman los datos. En primera persona, como lo contó el dueño del sitio. Solo afirma lo que es cierto
-    del sitio: si se suma publicidad o algo que mida visitas, hay que cambiar "Privacidad"."""
+    del sitio: si se suma publicidad u otra medición de visitas además de Clarity, hay que cambiar "Privacidad"."""
     return f'''<!doctype html>
 <html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Quién hace Autolofy</title>
@@ -413,7 +418,7 @@ html{{-webkit-text-size-adjust:100%;text-size-adjust:100%}} @media screen and (m
 body{{margin:0;background:var(--paper);color:var(--ink);font:1rem/1.6 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}}
 main{{max-width:680px;margin:0 auto;padding:16px}} a{{color:var(--accent)}} h1{{font-size:2rem;line-height:1.1;margin:8px 0 12px;text-wrap:balance}}
 h2{{font-size:1.15rem;margin:24px 0 6px;border-bottom:2px solid var(--ink)}} .sub{{color:var(--ink2);margin:0 0 12px}} ul{{padding-left:20px}} li{{margin:4px 0}}
-</style></head><body><main>
+</style>{CLARITY}</head><body><main>
 <p class="sub"><a href="/">Autolofy</a> / Quién hace esto</p>
 <h1>Quién hace esto</h1>
 <p>Hago este comparativo por mi cuenta. <b>No tengo ninguna relación comercial</b> con marcas, importadores ni concesionarios: nadie paga por aparecer ni por cómo aparece, y el sitio no tiene publicidad.</p>
@@ -428,7 +433,7 @@ h2{{font-size:1.15rem;margin:24px 0 6px;border-bottom:2px solid var(--ink)}} .su
 <li>Cada semana se revisan las fichas, los precios y las promociones.</li>
 </ul>
 <h2>Privacidad</h2>
-<p>El sitio no tiene publicidad ni programas que sigan lo que hacés, y no pide registrarte. Lo que guardás (los autos que seguís, tu provincia, tu cochera) queda en tu navegador.</p>
+<p>El sitio no tiene publicidad y no pide registrarte. Para entender cómo se usa y mejorarlo, mide las visitas con <a href="https://clarity.microsoft.com" rel="nofollow">Microsoft Clarity</a>: registra de forma anónima los clics, el scroll y las páginas que recorrés, y para eso guarda cookies propias. Lo que guardás (los autos que seguís, tu provincia, tu cochera) queda en tu navegador.</p>
 <h2>Sugerencias</h2>
 <p>Un dato que está mal, un auto que falta o una idea para el sitio: contame en <a href="{FORM_SUGERENCIAS}" rel="nofollow">este formulario</a> (es de Google; lo que escribís lo veo solo yo). Si es un dato, pasá el link de la ficha o la página oficial que lo dice: cada dato del sitio tiene que tener su fuente.</p>
 <p><a href="/">Volver al comparativo</a></p>
