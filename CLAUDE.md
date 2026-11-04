@@ -896,6 +896,13 @@ si esos tres lugares no coinciden o si una foto queda sin autor.
   registrado tiene que ser el de la tabla. Lo anterior a esa fecha solo tiene la fuente por auto
   (`fichas-fuentes.tsv`). Las tandas de búsqueda piden la fuente por celda, no por auto.
 
+- **Ola 5 de huecos** (2026-11-04, pedido de Mati: seguir de los más vendidos a los menos): puestos 91 a 150 de prioridad (60 autos, 2.057 celdas sin dato)
+  con 6 agentes; **43 celdas cargadas en 8 autos** (BJ40 Pro 19, Jetour T2 i-DM 15, BJ30 2, Audi A3 y S3 NCAP, Lynk & Co 06, Lexus UX, MG 3, Everest, GLE 450).
+  Rinde poco porque las fichas oficiales ya estaban agotadas: lo que no listan son ausencias reales, no huecos de búsqueda. Lo que sí rindió: manuales de
+  usuario AR (cargados como NOTE: describen la función pero no son la ficha de la versión) y la ficha de la filial chilena de la misma versión (EXT). Dejado afuera
+  a propósito: el Euro NCAP del Audi A1 (cifras de resúmenes de búsqueda, sin la fuente). **Bloqueados para curl:** MINI (el PDF viene vacío también en el navegador),
+  Toyota y Lexus AR, `audi.com.ar`; los PDF de `media.toyota.com.ar` sí bajan con el navegador, y `herramientas` locales (`recv.py`) reciben de a un archivo por formulario.
+
 **Las fichas técnicas en PDF de importadores y concesionarias argentinas rinden mucho
 más que la prensa**: 25-50 celdas contra 5-10. Traen ADAS ítem por ítem, airbags,
 suspensión, multimedia, luces y climatización, que las notas nunca publican.
