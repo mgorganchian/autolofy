@@ -1131,6 +1131,12 @@
     "moneda": "ARS",
     "monto": 72370000,
     "version": "Titano Ranch AT AWD (año modelo 2026), la versión más cara de la gama. Es el precio sugerido que publica hoy el configurador oficial de titano.fiat.com.ar (cons"
+   },
+   {
+    "desde": "2026-10-01",
+    "moneda": "ARS",
+    "monto": 75270000,
+    "version": "Titano Ranch At 4X4, versión de la tabla; «Lista de precios sugerida al público» de Stellantis Argentina de 10/2026 (vigencia a partir del 01/10/2026): https://"
    }
   ],
   "citroen-aircross-shine-7": [
@@ -1541,6 +1547,12 @@
     "moneda": "USD",
     "monto": 72000,
     "version": "DS 7 Plug-in Hybrid AWD 300 Pallas, única versión del híbrido enchufable y la más cara de la gama DS 7. «Valor especial» publicado en dsautomobiles.com.ar (cons"
+   },
+   {
+    "desde": "2026-10-01",
+    "moneda": "USD",
+    "monto": 69400,
+    "version": "DS 7 Plug-in Hybrid AWD, versión de la tabla; «Lista de precios sugerida al público» de DS Automobiles (Stellantis Argentina) de octubre de 2026 (vigencia a par"
    }
   ],
   "mini-countryman-s-all4-favoured": [
@@ -1801,6 +1813,22 @@
     "moneda": "ARS",
     "monto": 111361800,
     "version": "GR Yaris AT (GR-DAT 8 velocidades), precio sugerido al público publicado en toyota.com.ar (consultado el 04/11/2026); Toyota lo muestra junto a US$71.800."
+   }
+  ],
+  "citroen-c4-hybrid-max": [
+   {
+    "desde": null,
+    "moneda": "ARS",
+    "monto": 59320000,
+    "version": "Hybrid Max, versión de la tabla; «Lista de precios sugerida al público» de Stellantis Argentina de 10/2026 (vigencia a partir del 01/10/2026): https://www.media"
+   }
+  ],
+  "citroen-c5-aircross-max": [
+   {
+    "desde": null,
+    "moneda": "ARS",
+    "monto": 64730000,
+    "version": "Aircross Max, versión de la tabla; «Lista de precios sugerida al público» de Stellantis Argentina de 10/2026 (vigencia a partir del 01/10/2026): https://www.med"
    }
   ]
  }
