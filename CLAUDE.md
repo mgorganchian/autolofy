@@ -598,6 +598,18 @@ sí quedan en inglés, porque no muestran la palabra. Se coló con `YES` dos vec
 - Los dos van en la página de cada auto y en `autos/<slug>.html`. La rutina los revisa (tareas I y J).
   `tests/e2e/service.spec.js` falla si una lista no tiene fuente https o es de otra marca.
 
+## Base de datos en Neon (2026-11-04, pedido de Mati)
+
+- **La base es la fuente de verdad; el sitio no la lee al cargar.** Un viaje a Neon suma 100 a 400 ms con la base dormida: por eso un build
+  **exporta** la base a `index.html` y a los JSON, y el visitante sigue bajando archivos estáticos desde el borde de Vercel (latencia igual que hoy).
+- `db/MODELO.md` (modelo conceptual, invariantes y etapas), `db/schema.sql` (esquema `autolofy`), `db/cargar.mjs` (repo → base),
+  `db/exportar.mjs` (base → las mismas estructuras) y `db/ida-y-vuelta.mjs`, que carga todo en PGlite (Postgres embebido, no toca Neon) y falla si lo
+  exportado no es **idéntico** a `DATA`, `LLAMADOS`, `VIDEOS`, `HISTORIAL_PRECIOS`, `precios-historial.json` y las promos de `concesionarios.json`. Corre en el
+  job `db` de GitHub Actions. Con `AUTOLOFY_DB_URL` (cadena de Neon, del Keychain, nunca a un archivo) los mismos scripts cargan Neon.
+- **Etapa 1** (hecha): marcas, autos, categorías, filas, celdas (partidas en origen/valor/detalle) con su fuente, historiales de precios, concesionarios,
+  promos con sus versiones, llamados, videos y ventas por marca. **Etapa 2**: colores, fotos, service, impuestos, tasas, red oficial. **Etapa 3**: la rutina escribe en la base.
+- El proyecto de Neon es propio (`autolofy`), nunca `neondb` ni los de gimnasio o mensajeria.
+
 ## Gastos para patentarlo y cuota (2026-10-11)
 
 - **Gastos para patentarlo** (plegado en la página de cada auto, `IMPUESTOS_AR`): el arancel del

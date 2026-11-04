@@ -24,3 +24,21 @@ jobs:
       - run: npm ci
       # La suite usa el Chrome instalado (channel: 'chrome'); el runner de Ubuntu ya lo trae.
       - run: npm test
+
+  # Base de datos (2026-11-04): carga todo el repo en un Postgres embebido (PGlite) y comprueba que lo exportado
+  # es idéntico a lo que sirve el sitio. No toca Neon.
+  db:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    defaults:
+      run:
+        working-directory: db
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: db/package-lock.json
+      - run: npm ci
+      - run: node ida-y-vuelta.mjs
