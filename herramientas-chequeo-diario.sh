@@ -178,6 +178,8 @@ gama de la tabla)\" solo si el precio oficial cambió o si hoy sale de la prensa
 ya lo publica. Formato: USD 36.500 (versión, tope de gama). Si la marca publica solo en
 pesos, va NOTE:ARS … con la explicación, NUNCA convertido a dólares. Prensa solo como
 EXT: con medio y fecha, y solo si no hay fuente oficial.
+Después de tocar cualquier precio (en la moneda que sea) corré python3 herramientas-precios.py --desde AAAA-MM-DD
+(la fecha de la lista nueva): deja el historial de precios en precios-historial.json; commiteá ese archivo.
 Cada vez que cambies un precio en dólares de la MISMA versión, agregá al final de su lista en
 HISTORIAL_PRECIOS (en el script) [fecha de la lista o de hoy, monto en USD como número,
 versión tal como figura en la última entrada, URL https de la lista]. Si cambió la versión, la
@@ -204,7 +206,8 @@ el esquema que ya usan (autos por slug, tipo, texto, precio o descuento solo si 
 publica el monto, vigencia, fuente https, consultado). Solo el sitio de la marca o del
 propio concesionario: nada de clasificados, comparadores, prensa ni redes. Nunca
 conviertas monedas ni estimes un precio. Actualizá marcas[m].promos_consultado con la
-fecha de hoy en cada marca que revisaste. El test concesionarios.spec.js falla si una
+fecha de hoy en cada marca que revisaste. Después corré python3 herramientas-promos.py: deja en promos-historial.json lo nuevo, lo
+que cambió y lo que se retiró (y commiteá ese archivo). El test concesionarios.spec.js falla si una
 promo no tiene fuente https o si vence antes de la fecha de consulta.
 
 H) PRUEBAS EN VIDEO (VIDEOS, en el script): revisá los videos nuevos del canal de Matías
