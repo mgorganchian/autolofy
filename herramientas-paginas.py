@@ -93,7 +93,7 @@ def service_llamados_html(slug, extra):
     ll, f = extra['LLAMADOS'].get(slug, []), extra['LLAMADOS_FUENTE']
     fuente = f'<a href="{e(f["u"])}" rel="nofollow">registro oficial de alertas de productos</a>, consultado el {fecha_corta(f["c"])}'
     out += ('<section><h2>Llamados a revisión</h2>' + (
-        '<ul class="vs">' + ''.join(f'<li><b>{fecha_corta(x["f"])}, {e(x["mod"])}:</b> {e(x["d"])}</li>' for x in ll) + f'</ul><p class="nota">Del {fuente}.</p>'
+        '<ul class="vs">' + ''.join(f'<li><b>{fecha_corta(x["f"])}{" (fecha por confirmar)" if x.get("dud") else ""}, {e(x["mod"])}:</b> {e(x["d"])}</li>' for x in ll) + f'</ul><p class="nota">Cada llamado alcanza solo a unidades de ciertos lotes o años: el registro no siempre aclara cuáles. Del {fuente}.</p>'
         if ll else f'<p class="nota">No figura ninguno en el {fuente}.</p>') + '</section>')
     return out
 

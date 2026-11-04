@@ -1,0 +1,1807 @@
+{
+ "nota": "Lo escribe herramientas-precios.py; no se edita a mano.",
+ "autos": {
+  "baic-bj60": [
+   {
+    "desde": null,
+    "moneda": "USD",
+    "monto": 78600,
+    "version": "BJ60 Mild-Hybrid, única versión"
+   }
+  ],
+  "lynk-co-08": [
+   {
+    "desde": null,
+    "moneda": "USD",
+    "monto": 63200,
+    "version": "Lynk & Co 08, única versión"
+   }
+  ],
+  "arcfox-s5": [
+   {
+    "desde": null,
+    "moneda": "USD",
+    "monto": 39800,
+    "version": "Arcfox S5, única versión"
+   }
+  ],
+  "baic-bj40-pro": [
+   {
+    "desde": null,
+    "moneda": "USD",
+    "monto": 54500,
+    "version": "BJ40 Pro, única versión"
+   }
+  ],
+  "byd-seal-5-dm-i": [
+   {
+    "desde": null,
+    "moneda": "USD",
+    "monto": 31990,
+    "version": "Seal 5 DM-i GL, única versión"
+   }
+  ],
+  "byd-seal-u-dm-i": [
+   {
+    "desde": null,
+    "moneda": "USD",
+    "monto": 47990,
+    "version": "Seal U DM-i GS"
+   }
+  ],
+  "baic-x55-plus": [
+   {
+    "desde": null,
+    "moneda": "USD",
+    "monto": 42500,
+    "version": "X55 Plus, única versión"
+   }
+  ],
+  "byd-song-pro": [
+   {
+    "desde": null,
+    "moneda": "USD",
+    "monto": 37490,
+    "version": "Song Pro GS, tope de gama. Configurador oficial de byd.com/ar, consultado el 08/10/2026 (la GL cuesta USD 35.490)"
+   }
+  ],
+  "arcfox-t5": [
+   {
+    "desde": null,
+    "moneda": "USD",
+    "monto": 39600,
+    "version": "Arcfox T5, única versión"
+   }
+  ],
+  "baic-eu5": [
+   {
+    "desde": null,
+    "moneda": "USD",
+    "monto": 28900,
+    "version": "EU5, única versión"
+   }
+  ],
+  "baic-u5-plus": [
+   {
+    "desde": null,
+    "moneda": "USD",
+    "monto": 25600,
+    "version": "U5 Plus, única versión"
+   }
+  ],
+  "baic-bj40-plus": [
+   {
+    "desde": null,
+    "moneda": "USD",
+    "monto": 63900,
+    "version": "BJ40 Plus, única versión. La lista oficial de precios de BAIC/Arcfox (enero 2026) trae US$ 61.300 y US$ 63.900 para «BJ40 3 Puertas» y «BJ40 Plus», pero el form"
+   }
+  ],
+  "baic-x55-ii": [
+   {
+    "desde": null,
+    "moneda": "USD",
+    "monto": 36900,
+    "version": "X55 II Luxury, única versión listada"
+   }
+  ],
+  "baic-x55-ii-hybrid": [
+   {
+    "desde": null,
+    "moneda": "USD",
+    "monto": 36900,
+    "version": "La preventa se abrió en junio de 2026 y las primeras entregas fueron en agosto; ya es precio de lista, no de preventa. Fuente: prensa argentina de lanzamiento ("
+   }
+  ],
+  "lynk-co-01": [
+   {
+    "desde": null,
+    "moneda": "USD",
+    "monto": 37900,
+    "version": "Lynk & Co 01, única versión"
+   }
+  ],
+  "arcfox-koala-s": [
+   {
+    "desde": null,
+    "moneda": "USD",
+    "monto": 33800,
+    "version": "Arcfox Koala S, única versión"
+   }
+  ],
+  "baic-bj30-4x2": [
+   {
+    "desde": null,
+    "moneda": "USD",
+    "monto": 35800,
+    "version": "BJ30 Hybrid 1.5T 4x2, única versión. La Nación (1-jul-2026): «Hybrid 1.5T 4x2, con un precio de US$35.800». Clarín (16-jun-2026) da para el BJ30 un rango de US$"
+   }
+  ],
+  "baic-bj30-4x4": [
+   {
+    "desde": null,
+    "moneda": "USD",
+    "monto": 42500,
+    "version": "BJ30 Hybrid 1.5T 4WD, única versión. La Nación (1-jul-2026): «Hybrid 1.5T 4WD, que cuesta US$42.500». Clarín (16-jun-2026) da la misma cifra como tope del rango"
+   }
+  ],
+  "lynk-co-06": [
+   {
+    "desde": null,
+    "moneda": "USD",
+    "monto": 32800,
+    "version": "Lynk & Co 06, única versión"
+   }
+  ],
+  "arcfox-t1": [
+   {
+    "desde": null,
+    "moneda": "USD",
+    "monto": 29500,
+    "version": "Arcfox T1, única versión"
+   }
+  ],
+  "byd-atto-2-dm-i": [
+   {
+    "desde": null,
+    "moneda": "USD",
+    "monto": 33990,
+    "version": "Atto 2 DM-i GS. El configurador oficial de byd.com/ar (08/10/2026) publica una sola versión, sin nombre, a USD 33.990; el concesionario oficial BYD ArgenDreams "
+   }
+  ],
+  "baic-x35": [
+   {
+    "desde": null,
+    "moneda": "USD",
+    "monto": 28200,
+    "version": "X35 Luxury, única versión"
+   }
+  ],
+  "byd-yuan-pro": [
+   {
+    "desde": null,
+    "moneda": "USD",
+    "monto": 31990,
+    "version": "Yuan Pro GS"
+   }
+  ],
+  "byd-dolphin-mini": [
+   {
+    "desde": null,
+    "moneda": "USD",
+    "monto": 23990,
+    "version": "Dolphin Mini GS"
+   }
+  ],
+  "chery-tiggo-8-pro": [
+   {
+    "desde": null,
+    "moneda": "USD",
+    "monto": 41800,
+    "version": "Tiggo 8 Pro 290T 1.6T 7DCT Luxury, única versión. Lista oficial Chery N°14 del 06/10/2026"
+   }
+  ],
+  "gwm-haval-h6-pro-hev": [
+   {
+    "desde": null,
+    "moneda": "USD",
+    "monto": 35500,
+    "version": "Haval H6 PRO HEV, única versión"
+   }
+  ],
+  "gwm-poer-4wd": [
+   {
+    "desde": null,
+    "moneda": "USD",
+    "monto": 41990,
+    "version": "Poer 4WD Super Luxury 8AT, tope de gama"
+   }
+  ],
+  "gwm-tank-300": [
+   {
+    "desde": null,
+    "moneda": "USD",
+    "monto": 51900,
+    "version": "Tank 300, única versión listada"
+   }
+  ],
+  "gwm-ora-03": [
+   {
+    "desde": null,
+    "moneda": "USD",
+    "monto": 31000,
+    "version": "Ora 03 Deluxe, única versión listada"
+   }
+  ],
+  "mg-zs-hev": [
+   {
+    "desde": null,
+    "moneda": "USD",
+    "monto": 29900,
+    "version": "MG ZS HEV Luxury. La gama de MG también incluye el deportivo MG Cyberster (USD 130.000), pero se tomó el SUV ZS HEV Luxury como representativo por ser un produc"
+   }
+  ],
+  "changan-cs55-plus": [
+   {
+    "desde": null,
+    "moneda": "USD",
+    "monto": 31990,
+    "version": "CS55 Plus PHEV, única versión listada"
+   }
+  ],
+  "geely-ex5": [
+   {
+    "desde": null,
+    "moneda": "USD",
+    "monto": 34800,
+    "version": "EX5, tope de gama"
+   }
+  ],
+  "jac-t9": [
+   {
+    "desde": null,
+    "moneda": "USD",
+    "monto": 38500,
+    "version": "T9 Luxury, tope de gama"
+   }
+  ],
+  "jetour-t2": [
+   {
+    "desde": null,
+    "moneda": "USD",
+    "monto": 56500,
+    "version": "T2 2.0 TGDI 7DCT 4x4"
+   }
+  ],
+  "gac-s7": [
+   {
+    "desde": null,
+    "moneda": "USD",
+    "monto": 74990,
+    "version": "S7 PHEV, tope de gama; precio de preventa. Precio de preventa de GAC Motor Argentina de junio de 2026. La prensa informa un precio de lista posterior de USD 79."
+   }
+  ],
+  "kaiyi-x7": [
+   {
+    "desde": null,
+    "moneda": "USD",
+    "monto": 38000,
+    "version": "X7 2.0T Luxury, tope de gama"
+   }
+  ],
+  "forthing-u-tour": [
+   {
+    "desde": null,
+    "moneda": "USD",
+    "monto": 39900,
+    "version": "U-Tour Hybrid, tope de gama. Lista de precios de Forthing publicada por Autoxarg (23/10/2026) en el lanzamiento comercial del S7 REEV y la V9; en octubre de 202"
+   }
+  ],
+  "foton-tunland-v9": [
+   {
+    "desde": null,
+    "moneda": "USD",
+    "monto": 57000,
+    "version": "Tunland V9 Pro Sport 4x4 AT, tope de gama"
+   }
+  ],
+  "maxus-eterron": [
+   {
+    "desde": null,
+    "moneda": "USD",
+    "monto": 80600,
+    "version": "eTerron 4x4 Flagship 102.2kWh, tope de gama"
+   }
+  ],
+  "leapmotor-c10": [
+   {
+    "desde": null,
+    "moneda": "USD",
+    "monto": 35500,
+    "version": "C10 REEV Design, única versión. Precio publicado en el sitio oficial (leapmotor.com.ar, consultado el 19/10/2026)."
+   }
+  ],
+  "leapmotor-b10": [
+   {
+    "desde": null,
+    "moneda": "USD",
+    "monto": 31990,
+    "version": "B10 REEV Design, única versión. Precio publicado en el sitio oficial (leapmotor.com.ar, consultado el 19/10/2026)."
+   }
+  ],
+  "jmev-easy-3": [
+   {
+    "desde": null,
+    "moneda": "USD",
+    "monto": 17900,
+    "version": "Easy 3, única versión. Precio sugerido al público del sitio oficial de JMEV Argentina (consultado el 15/10/2026); la misma página muestra también USD 18.900"
+   }
+  ],
+  "chery-arrizo-8": [
+   {
+    "desde": null,
+    "moneda": "USD",
+    "monto": 35800,
+    "version": "Arrizo 8 Hybrid 1.5T PHEV Luxury"
+   }
+  ],
+  "mg-cyberster": [
+   {
+    "desde": null,
+    "moneda": "USD",
+    "monto": 130000,
+    "version": "Cyberster 77kWh AWD, única versión. Web oficial de MG Argentina (octubre 2026), que lo publica como \"desde\"; la ficha del concesionario oficial la llama GT AWD "
+   }
+  ],
+  "chery-himla": [
+   {
+    "desde": null,
+    "moneda": "USD",
+    "monto": 40900,
+    "version": "Himla 2.3TDI AT8 Luxury 4x4"
+   }
+  ],
+  "chery-tiggo-2-pro-max": [
+   {
+    "desde": null,
+    "moneda": "USD",
+    "monto": 25500,
+    "version": "Tiggo 2 Pro Max 1.5L CVT Comfort"
+   }
+  ],
+  "chery-tiggo-4-hybrid": [
+   {
+    "desde": null,
+    "moneda": "USD",
+    "monto": 31000,
+    "version": "Tiggo 4 Hybrid 1.5L DHT HEV Premium, única versión. Lista oficial Chery N°14 del 06/10/2026"
+   }
+  ],
+  "chery-tiggo-4-pro": [
+   {
+    "desde": null,
+    "moneda": "USD",
+    "monto": 28700,
+    "version": "Tiggo 4 Pro 1.5T CVT Luxury FL, única versión"
+   }
+  ],
+  "chery-tiggo-7-pro-mhev": [
+   {
+    "desde": null,
+    "moneda": "USD",
+    "monto": 29500,
+    "version": "Tiggo 7 Pro Hybrid 1.5T MHEV Premium. Lista oficial Chery N°14 del 06/10/2026"
+   }
+  ],
+  "chery-tiggo-7-pro-phev": [
+   {
+    "desde": null,
+    "moneda": "USD",
+    "monto": 36500,
+    "version": "Tiggo 7 Pro Hybrid 1.5T PHEV Premium"
+   }
+  ],
+  "byd-shark": [
+   {
+    "desde": null,
+    "moneda": "USD",
+    "monto": 59990,
+    "version": "Shark GS, única versión. Configurador oficial de byd.com/ar, consultado el 08/10/2026"
+   }
+  ],
+  "deepal-s05": [
+   {
+    "desde": null,
+    "moneda": "USD",
+    "monto": 34000,
+    "version": "S05 PHEV, única versión. Precio de preventa sugerido al público publicado en deepal.com.ar/s05 (octubre 2026). Todavía no hay precio de lista definitivo."
+   }
+  ],
+  "dongfeng-box": [
+   {
+    "desde": null,
+    "moneda": "USD",
+    "monto": 24990,
+    "version": "Box EV, única versión. Precio sugerido no vinculante del sitio oficial de Dongfeng Argentina (3-oct-2026). Clarín (16-jun-2026) publicaba USD 29.700."
+   }
+  ],
+  "dongfeng-huge": [
+   {
+    "desde": null,
+    "moneda": "USD",
+    "monto": 33990,
+    "version": "Huge HEV, única versión. Precio sugerido no vinculante del sitio oficial de Dongfeng Argentina (3-oct-2026). Clarín (16-jun-2026) publicaba USD 36.700."
+   }
+  ],
+  "dongfeng-mage": [
+   {
+    "desde": null,
+    "moneda": "USD",
+    "monto": 30990,
+    "version": "Mage HEV, única versión. Precio sugerido no vinculante del sitio oficial de Dongfeng Argentina (3-oct-2026). Clarín (16-jun-2026) publicaba USD 34.400."
+   }
+  ],
+  "forthing-friday-reev": [
+   {
+    "desde": null,
+    "moneda": "USD",
+    "monto": 34500,
+    "version": "Friday REEV Luxury, única versión. Lista de precios de Forthing publicada por Autoxarg (23/10/2026) en el lanzamiento comercial del S7 REEV y la V9; en octubre "
+   }
+  ],
+  "forthing-s7-reev": [
+   {
+    "desde": null,
+    "moneda": "USD",
+    "monto": 40500,
+    "version": "S7 REEV. Lista de precios de Forthing publicada por Autoxarg (23/10/2026), en la nota que anuncia que Forthing ya lo comercializa oficialmente; en octubre de 20"
+   }
+  ],
+  "forthing-t5-evo": [
+   {
+    "desde": null,
+    "moneda": "USD",
+    "monto": 35595,
+    "version": "T5 EVO Exclusive. Lista de precios de Forthing publicada por Autoxarg (23/10/2026) en el lanzamiento comercial del S7 REEV y la V9: vuelve al precio de antes de"
+   }
+  ],
+  "gac-aion-v": [
+   {
+    "desde": null,
+    "moneda": "USD",
+    "monto": 36990,
+    "version": "Aion V Luxury, única versión"
+   }
+  ],
+  "gwm-ora-5-hev": [
+   {
+    "desde": null,
+    "moneda": "USD",
+    "monto": 30990,
+    "version": "Precio de lanzamiento. Web oficial de GWM Argentina (octubre 2026), sin nombre de versión. La ficha AR menciona una versión High (techo panorámico \"exclusivo Hi"
+   }
+  ],
+  "gwm-haval-h7-4wd": [
+   {
+    "desde": null,
+    "moneda": "USD",
+    "monto": 36900,
+    "version": "H7 2.0T 4WD, única versión"
+   }
+  ],
+  "gwm-haval-h7-hev": [
+   {
+    "desde": null,
+    "moneda": "USD",
+    "monto": 37900,
+    "version": "H7 HEV 2WD, única versión"
+   }
+  ],
+  "gwm-haval-jolion-pro-hev": [
+   {
+    "desde": null,
+    "moneda": "USD",
+    "monto": 32990,
+    "version": "Jolion Pro HEV Supreme, única versión. Precio de lista de la web oficial de GWM Argentina (octubre 2026), que además muestra una bonificación especial a USD 30."
+   }
+  ],
+  "jac-ev-30x": [
+   {
+    "desde": null,
+    "moneda": "USD",
+    "monto": 30500,
+    "version": "EV 30X, única versión. Precio informado por Clarín (16-jun-2026). El sitio oficial de JAC no publica el precio de este modelo y autocosmos lo da como no disponi"
+   }
+  ],
+  "jac-js4": [
+   {
+    "desde": null,
+    "moneda": "USD",
+    "monto": 27900,
+    "version": "JS4, versión no especificada. Precio sugerido que muestra el sitio oficial jacargentina.com.ar (ASTRAK S.A., importador), consultado el 3-oct-2026, sin aclarar "
+   }
+  ],
+  "jac-js6-phev": [
+   {
+    "desde": null,
+    "moneda": "USD",
+    "monto": 39900,
+    "version": "JS6 PHEV, única versión. Precio informado por Clarín (16-jun-2026). Se lanzó en noviembre de 2025 a USD 33.900 (autocosmos). El sitio oficial de JAC no publica "
+   }
+  ],
+  "jac-js8-pro": [
+   {
+    "desde": null,
+    "moneda": "USD",
+    "monto": 38900,
+    "version": "JS8 Pro Flagship+, única versión. Precio informado por Clarín (16-jun-2026) y por autocosmos como JS8 Pro 1.5T GDi. El sitio oficial de JAC no publica el precio"
+   }
+  ],
+  "jac-s2": [
+   {
+    "desde": null,
+    "moneda": "USD",
+    "monto": 23900,
+    "version": "S2 FL, versión no especificada. Precio sugerido que muestra el sitio oficial jacargentina.com.ar (ASTRAK S.A., importador), consultado el 3-oct-2026, sin aclara"
+   }
+  ],
+  "jac-t8": [
+   {
+    "desde": null,
+    "moneda": "USD",
+    "monto": 37900,
+    "version": "T8 Intelligent 4x4, única versión. Precio sugerido que muestra el sitio oficial jacargentina.com.ar (ASTRAK S.A., importador), consultado el 3-oct-2026, junto a"
+   }
+  ],
+  "jetour-dashing": [
+   {
+    "desde": null,
+    "moneda": "USD",
+    "monto": 38500,
+    "version": "Dashing 1.6T 7DCT"
+   }
+  ],
+  "jetour-t1-i-dm": [
+   {
+    "desde": null,
+    "moneda": "USD",
+    "monto": 35800,
+    "version": "T1 i-DM 1.5 TGDI PHEV 2WD. Precio sugerido del sitio oficial de Jetour Argentina (jetour.com.ar), consultado el 3/10/2026. Es más barato que el T1 naftero (USD "
+   }
+  ],
+  "jetour-t1": [
+   {
+    "desde": null,
+    "moneda": "USD",
+    "monto": 47900,
+    "version": "T1 2.0 TGDI 8AT 4x4"
+   }
+  ],
+  "jetour-t2-i-dm": [
+   {
+    "desde": null,
+    "moneda": "USD",
+    "monto": 66500,
+    "version": "T2 i-DM 1.5 TGDI PHEV"
+   }
+  ],
+  "jetour-x50": [
+   {
+    "desde": null,
+    "moneda": "USD",
+    "monto": 26900,
+    "version": "X50 1.5T 6DCT"
+   }
+  ],
+  "jetour-x70-plus": [
+   {
+    "desde": null,
+    "moneda": "USD",
+    "monto": 37900,
+    "version": "X70 Plus 1.6T 7DCT"
+   }
+  ],
+  "jetour-x70": [
+   {
+    "desde": null,
+    "moneda": "USD",
+    "monto": 31900,
+    "version": "X70 FL 1.5T 6DCT"
+   }
+  ],
+  "kaiyi-x3-pro": [
+   {
+    "desde": null,
+    "moneda": "USD",
+    "monto": 26000,
+    "version": "X3 Pro 1.5T CVT"
+   }
+  ],
+  "kaiyi-x3": [
+   {
+    "desde": null,
+    "moneda": "USD",
+    "monto": 22000,
+    "version": "X3 1.5 CVT"
+   }
+  ],
+  "lynk-co-900": [
+   {
+    "desde": null,
+    "moneda": "USD",
+    "monto": 129500,
+    "version": "900 PHEV 2.0 turbo Ultra, 6 plazas. Precio de lanzamiento informado por AutoWeb (05/10/2026), el mismo que la prensa dio como precio de preventa en la Expo Auto"
+   }
+  ],
+  "maxus-d90": [
+   {
+    "desde": null,
+    "moneda": "USD",
+    "monto": 57000,
+    "version": "D90 Luxury, única versión. Maxus Argentina no publica lista de precios. Autoweb informó USD 57.000 en el lanzamiento comercial (11/3/2026); La Nación (abril 202"
+   }
+  ],
+  "maxus-t60-max": [
+   {
+    "desde": null,
+    "moneda": "USD",
+    "monto": 41500,
+    "version": "T60 Max Luxury 4x4 AT8. Maxus Argentina no publica lista de precios. Precio informado por Autoweb en el lanzamiento comercial (11/3/2026) y repetido por La Naci"
+   }
+  ],
+  "mg-3-hev": [
+   {
+    "desde": null,
+    "moneda": "USD",
+    "monto": 25900,
+    "version": "MG3 Hybrid+ Luxury. Lista de precios oficial de MG Argentina (Eximar) vigente desde el 01/09/2025, la única publicada en mgargentina.ar; la web oficial y la pre"
+   }
+  ],
+  "mg-hs-hev": [
+   {
+    "desde": null,
+    "moneda": "USD",
+    "monto": 33900,
+    "version": "HS híbrido, versión no informada. Precio anunciado por MG en la Expo Auto Chino 2026 según AutoWeb (02/10/2026); MG consiguió unidades del cupo 2026, pero todav"
+   }
+  ],
+  "soueast-s06": [
+   {
+    "desde": null,
+    "moneda": "USD",
+    "monto": 33900,
+    "version": "S06 Luxury, tope de gama"
+   }
+  ],
+  "dfsk-e5-plus": [
+   {
+    "desde": null,
+    "moneda": "USD",
+    "monto": 34500,
+    "version": "E5 Plus, única versión. Precio publicado en la portada del sitio oficial dfsk.ar (3-oct-2026). En el lanzamiento (junio 2026) se ofreció a USD 33.800 como promo"
+   }
+  ],
+  "dfsk-glory-600": [
+   {
+    "desde": null,
+    "moneda": "USD",
+    "monto": 31000,
+    "version": "Glory 600, única versión. Precio de lanzamiento informado por la prensa argentina (Autocosmos, 5-ago-2026; Autozoom). DFSK Argentina no publica el precio del Gl"
+   }
+  ],
+  "forthing-t5-hev": [
+   {
+    "desde": null,
+    "moneda": "USD",
+    "monto": 34500,
+    "version": "T5 HEV, única versión. Lista de precios de Forthing publicada por Autoxarg (23/10/2026) en el lanzamiento comercial del S7 REEV y la V9; en octubre de 2026 se o"
+   }
+  ],
+  "kaiyi-x7-hybrid": [
+   {
+    "desde": null,
+    "moneda": "USD",
+    "monto": 34500,
+    "version": "X7 Hybrid 1.5T PHEV, única versión"
+   }
+  ],
+  "maxus-t60": [
+   {
+    "desde": null,
+    "moneda": "USD",
+    "monto": 35000,
+    "version": "T60 4x4 MT6 Minera. Maxus Argentina no publica lista de precios. Precio informado por Autoweb (11/3/2026) en el lanzamiento comercial y repetido por La Nación ("
+   }
+  ],
+  "mg-3": [
+   {
+    "desde": null,
+    "moneda": "USD",
+    "monto": 21900,
+    "version": "MG3 1.5 Luxury, única versión. Precio de lanzamiento informado por la prensa argentina (Parabrisas 25/09/2026, AutoX Arg 28/09/2026, AutoWeb 02/10/2026). Todaví"
+   }
+  ],
+  "mg-zs": [
+   {
+    "desde": null,
+    "moneda": "USD",
+    "monto": 25900,
+    "version": "ZS 1.5T Luxury. Precio de lanzamiento informado por la prensa argentina (Parabrisas 25/09/2026, AutoX Arg 28/09/2026, AutoWeb 02/10/2026). Todavía no figura en "
+   }
+  ],
+  "swm-g03f": [
+   {
+    "desde": null,
+    "moneda": "USD",
+    "monto": 21900,
+    "version": "G03F 1.5 Nafta MT 7p. Lista de precios de Shineray (Ralitor) publicada por Autoxarg (26/06/2026), que aclara que el G03F sigue a la venta aunque no figura en el"
+   }
+  ],
+  "changan-eado-plus-phev": [
+   {
+    "desde": null,
+    "moneda": "USD",
+    "monto": 29990,
+    "version": "Eado Plus PHEV, única versión publicada; precio de lanzamiento"
+   }
+  ],
+  "forthing-v9": [
+   {
+    "desde": null,
+    "moneda": "USD",
+    "monto": 69300,
+    "version": "V9 HEV, a pedido. Lista de precios de Forthing de julio 2026 publicada por Autoxarg (28/07/2026): se vende solo a pedido. La lista de abril (Autoxarg, 08/04/202"
+   }
+  ],
+  "gac-aion-es": [
+   {
+    "desde": null,
+    "moneda": "USD",
+    "monto": 33800,
+    "version": "Aion ES, única versión. GAC Motor Argentina no publica precios en su sitio. Precio de La Nación (15/09/2026), igual al de preventa de Autoweb (11/11/2025) y al "
+   }
+  ],
+  "gac-aion-ut": [
+   {
+    "desde": null,
+    "moneda": "USD",
+    "monto": 27490,
+    "version": "Aion UT Premium. GAC Motor Argentina no publica precios en su sitio. Precio de Autoweb (26/08/2026, lanzamiento) y de La Nación (15/09/2026). La Elite, con 134 "
+   }
+  ],
+  "gac-emkoo-hev": [
+   {
+    "desde": null,
+    "moneda": "USD",
+    "monto": 33800,
+    "version": "Emkoo GE HEV. GAC Motor Argentina no publica precios en su sitio. USD 33.800 según La Nación (15/09/2026) y Autocosmos. Autoweb (17/06/2026) informó una versión"
+   }
+  ],
+  "gac-empow": [
+   {
+    "desde": null,
+    "moneda": "USD",
+    "monto": 34000,
+    "version": "Empow, única versión. GAC Motor Argentina no publica precios en su sitio. Precio de lanzamiento según Autoweb (19/02/2026). La lista de La Nación del 15/09/2026"
+   }
+  ],
+  "gac-gs3-emzoom": [
+   {
+    "desde": null,
+    "moneda": "USD",
+    "monto": 36500,
+    "version": "GS3 Emzoom GL R Style. GAC Motor Argentina no publica precios en su sitio. Autoweb (11/11/2025, lanzamiento): GB USD 31.900, GL Plus USD 34.000 y GL R Style USD"
+   }
+  ],
+  "gac-gs8": [
+   {
+    "desde": null,
+    "moneda": "USD",
+    "monto": 60000,
+    "version": "GS8, única versión. GAC Motor Argentina no publica precios en su sitio. Precio de La Nación (15/09/2026), igual al de Autoweb (11/11/2025, lanzamiento) y al de "
+   }
+  ],
+  "geely-icon": [
+   {
+    "desde": null,
+    "moneda": "USD",
+    "monto": 30800,
+    "version": "Icon 1.5TD 7DCT, versión única. Precio de lanzamiento (18/08/2026) informado por La Nación (03/08/2026), Autoweb (25/08/2026), Autotest e iProfesional (31/08/20"
+   }
+  ],
+  "gwm-haval-h6-4wd": [
+   {
+    "desde": null,
+    "moneda": "USD",
+    "monto": 39900,
+    "version": "Haval H6 4WD, única versión"
+   }
+  ],
+  "gwm-haval-h6-gt": [
+   {
+    "desde": null,
+    "moneda": "USD",
+    "monto": 44400,
+    "version": "Haval H6 GT 4WD, única versión. Precio de lista de la web oficial de GWM Argentina (06/10/2026), que además muestra una bonificación especial a USD 41.990."
+   }
+  ],
+  "gwm-haval-jolion-hev": [
+   {
+    "desde": null,
+    "moneda": "USD",
+    "monto": 28990,
+    "version": "Jolion HEV Supreme, única versión"
+   }
+  ],
+  "rely-r8": [
+   {
+    "desde": null,
+    "moneda": "USD",
+    "monto": 39500,
+    "version": "R8 Limited 4x4 CD AT. Rely Argentina (Grupo La Emilia) no publica precios en su sitio. Precio de La Nación (15/09/2026), igual al del lanzamiento según AutoWeb "
+   }
+  ],
+  "smart-1": [
+   {
+    "desde": null,
+    "moneda": "USD",
+    "monto": 73900,
+    "version": "smart #1 BRABUS. smart Argentina no publica precios en su sitio. Precios de lanzamiento (1/9/2026) informados por Autocosmos (01/09/2026), Autotest/Motorpress e"
+   }
+  ],
+  "smart-3": [
+   {
+    "desde": null,
+    "moneda": "USD",
+    "monto": 75900,
+    "version": "smart #3 BRABUS. smart Argentina no publica precios en su sitio. Precios de lanzamiento (1/9/2026) informados por Autocosmos (01/09/2026), Autotest/Motorpress e"
+   }
+  ],
+  "ford-territory-hibrida": [
+   {
+    "desde": null,
+    "moneda": "ARS",
+    "monto": 52834440,
+    "version": "Trend Híbrida, única versión híbrida; precio sugerido de Ford Argentina vigente del 01/10/2026 al 31/10/2026, IVA incluido"
+   },
+   {
+    "desde": "2026-11-01",
+    "moneda": "ARS",
+    "monto": 53515300,
+    "version": "Trend Híbrida, única versión híbrida; precio sugerido de Ford Argentina vigente del 01/11/2026 al 30/11/2026, IVA incluido (sin IVA: $44.227.520,66)"
+   }
+  ],
+  "chevrolet-captiva-phev": [
+   {
+    "desde": null,
+    "moneda": "ARS",
+    "monto": 54871900,
+    "version": "Captiva PHEV Premier, única versión. Precio sugerido publicado en chevrolet.com.ar, válido del 01/10/2026 al 31/10/2026 (sin impuestos nacionales: $45.348.678)"
+   }
+  ],
+  "nissan-x-trail-e-power": [
+   {
+    "desde": null,
+    "moneda": "ARS",
+    "monto": 82990000,
+    "version": "Exclusive e-POWER e-4ORCE, única versión; lista de octubre 2026 (vigente del 1 al 31/10/2026). Nissan publica para el mismo período una bonificación especial de"
+   }
+  ],
+  "renault-koleos-esprit-alpine-full-hybrid": [
+   {
+    "desde": null,
+    "moneda": "ARS",
+    "monto": 93790000,
+    "version": "esprit Alpine full hybrid E-Tech, tope de gama. Precio sugerido con IVA de renault.com.ar (tarifa del 2/10/2026, consultada el 28/10/2026). En el lanzamiento (c"
+   }
+  ],
+  "subaru-forester-hybrid": [
+   {
+    "desde": null,
+    "moneda": "USD",
+    "monto": 61000,
+    "version": "2.5 Hybrid Limited ES, única versión híbrida. subaru.com.ar lo publica como «precio de campaña»: USD 61.000 / $93.025.000, oferta válida del 01/10/2026 al 31/10"
+   }
+  ],
+  "toyota-corolla-cross-seg-hev": [
+   {
+    "desde": null,
+    "moneda": "ARS",
+    "monto": 63684000,
+    "version": "SEG HEV 1.8 eCVT, precio sugerido al público vigente del 01/10/2026 al 31/10/2026 (toyota.com.ar)"
+   }
+  ],
+  "toyota-yaris-cross-seg-hev": [
+   {
+    "desde": null,
+    "moneda": "ARS",
+    "monto": 54020000,
+    "version": "SEG HEV 1.5 eCVT, precio sugerido al público vigente del 01/10/2026 al 31/10/2026 (toyota.com.ar)"
+   }
+  ],
+  "lexus-ux-300h": [
+   {
+    "desde": null,
+    "moneda": "USD",
+    "monto": 55600,
+    "version": "UX 300h, única versión; precio sugerido en lexus.com.ar (tipo de cambio del 27/10/2026)"
+   }
+  ],
+  "toyota-hilux-gr-sport": [
+   {
+    "desde": null,
+    "moneda": "ARS",
+    "monto": 89863000,
+    "version": "HILUX 4X4 DC GR-SPORT IV 2.8 TDI 6 AT, la versión más cara de la Hilux que publica toyota.com.ar (cabina doble; la SRX 4x4 AT cuesta $84.855.000). Precio sugeri"
+   }
+  ],
+  "fiat-cronos-precision": [
+   {
+    "desde": null,
+    "moneda": "ARS",
+    "monto": 45270000,
+    "version": "Cronos Precision 1.3 CVT, la versión más cara de la gama. Precio sugerido que publica el configurador oficial de cronos.fiat.com.ar (consultado el 28/10/2026; «"
+   }
+  ],
+  "ford-ranger-ltd-plus-v6": [
+   {
+    "desde": null,
+    "moneda": "ARS",
+    "monto": 84104350,
+    "version": "LTD+ 3.0L V6 Diesel Cabina Doble 4WD, la versión más cara de la página de la Ranger; precio sugerido al público de Ford Argentina vigente del 01/10/2026 al 31/1"
+   },
+   {
+    "desde": "2026-11-01",
+    "moneda": "ARS",
+    "monto": 85228230,
+    "version": "LTD+ 3.0L V6 Diesel Cabina Doble 4WD, la versión más cara de la página de la Ranger; precio sugerido al público de Ford Argentina vigente del 01/11/2026 al 30/1"
+   }
+  ],
+  "peugeot-208-gt": [
+   {
+    "desde": null,
+    "moneda": "ARS",
+    "monto": 47420000,
+    "version": "208 GT T200 AM27, la versión más cara del 208 en la «Lista de precios sugerida al público» de Stellantis Argentina de octubre de 2026 (vigencia a partir del 01/"
+   }
+  ],
+  "volkswagen-amarok-v6-black-style": [
+   {
+    "desde": null,
+    "moneda": "ARS",
+    "monto": 93711100,
+    "version": "Black Style V6 AT 4x4 G2, la versión más cara de la lista de la Amarok; lista de precios sugeridos a público de Volkswagen Argentina S.A. vigente del 01/10/2026"
+   }
+  ],
+  "volkswagen-tera-outfit": [
+   {
+    "desde": null,
+    "moneda": "ARS",
+    "monto": 48881950,
+    "version": "Outfit 170TSI AT, la versión más cara del Tera; lista de precios sugeridos a público de Volkswagen Argentina S.A. vigente del 01/10/2026 al 31/10/2026, IVA incl"
+   }
+  ],
+  "chevrolet-tracker-rs": [
+   {
+    "desde": null,
+    "moneda": "ARS",
+    "monto": 51914900,
+    "version": "Tracker RS AT Turbo (1.2T RS AT), la versión más cara del Tracker 2027; precio sugerido al público publicado en chevrolet.com.ar, válido del 01/10/2026 al 31/10"
+   }
+  ],
+  "toyota-yaris-s": [
+   {
+    "desde": null,
+    "moneda": "ARS",
+    "monto": 43255000,
+    "version": "Yaris Hatchback S 1.5 CVT 5P (modelo 2027), la versión más cara del Yaris (XLS+ $40.340.000; XS $36.315.000); el Yaris sedán ya no figura en toyota.com.ar. Prec"
+   }
+  ],
+  "volkswagen-polo-highline": [
+   {
+    "desde": null,
+    "moneda": "ARS",
+    "monto": 49502950,
+    "version": "Highline 170TSI AT, la versión más cara del Polo; lista de precios sugeridos a público de Volkswagen Argentina S.A. vigente del 01/10/2026 al 31/10/2026, IVA in"
+   }
+  ],
+  "renault-kwid-iconic-outsider": [
+   {
+    "desde": null,
+    "moneda": "ARS",
+    "monto": 28580000,
+    "version": "Iconic Outsider, mismo precio que la Iconic Bitono (las dos únicas versiones). Precio sugerido al público con IVA que publica renault.com.ar al 28/10/2026 (tari"
+   }
+  ],
+  "volkswagen-taos-highline-bitono": [
+   {
+    "desde": null,
+    "moneda": "ARS",
+    "monto": 69346850,
+    "version": "Highline Bi Tono 250TSI AT, la versión más cara del Taos; lista de precios sugeridos a público de Volkswagen Argentina S.A. vigente del 01/10/2026 al 31/10/2026"
+   }
+  ],
+  "chevrolet-onix-rs": [
+   {
+    "desde": null,
+    "moneda": "ARS",
+    "monto": 39568900,
+    "version": "Onix RS Turbo AT (1.0T RS AT), la versión más cara del Onix 2027; precio sugerido al público publicado en chevrolet.com.ar, válido del 01/10/2026 al 31/10/2026 "
+   }
+  ],
+  "renault-kardian-iconic": [
+   {
+    "desde": null,
+    "moneda": "ARS",
+    "monto": 49910000,
+    "version": "Iconic 200 EDC (1.0 turbo TCe de 120 cv, doble embrague EDC de 6 marchas), la más cara de las tres versiones. Precio sugerido al público con IVA que publica ren"
+   }
+  ],
+  "jeep-compass-blackhawk": [
+   {
+    "desde": null,
+    "moneda": "ARS",
+    "monto": 84260000,
+    "version": "Compass Blackhawk 2.0L AT9 4X4, la versión más cara del Compass. jeep.com.ar no publica precios: el valor sale del servicio de precios de Stellantis que usan lo"
+   }
+  ],
+  "volkswagen-nivus-outfit": [
+   {
+    "desde": null,
+    "moneda": "ARS",
+    "monto": 54881550,
+    "version": "Outfit 200TSI AT (en el configurador, «Highline Outfit 200 TSI»), la versión más cara del Nivus; lista de precios sugeridos a público de Volkswagen Argentina S."
+   }
+  ],
+  "fiat-strada-ultra": [
+   {
+    "desde": null,
+    "moneda": "ARS",
+    "monto": 52750000,
+    "version": "Strada Ultra T200 CD CVT (cabina doble, año modelo 2027), la versión más cara de la cabina doble, que es la carrocería más patentada. Precio sugerido que public"
+   }
+  ],
+  "fiat-argo-drive-cvt": [
+   {
+    "desde": null,
+    "moneda": "ARS",
+    "monto": 37730000,
+    "version": "Argo Drive 1.3 CVT (año modelo 2026), la más cara de las dos versiones que se venden. Precio sugerido que publica el configurador oficial de argo.fiat.com.ar (c"
+   }
+  ],
+  "chevrolet-s10-high-country": [
+   {
+    "desde": null,
+    "moneda": "ARS",
+    "monto": 74591900,
+    "version": "S10 High Country (CD 2.8 TD 4x4 AT), la versión más cara de la S10 2027 y de cabina doble, la carrocería más patentada; precio sugerido al público («desde») pub"
+   }
+  ],
+  "fiat-toro-volcano-td": [
+   {
+    "desde": null,
+    "moneda": "ARS",
+    "monto": 64150000,
+    "version": "Toro Volcano TD450 AT9 4X4 (Volcano 2.2 turbodiésel, año modelo 2027), la versión más cara de la gama. Precio sugerido que publica el configurador oficial de to"
+   }
+  ],
+  "citroen-c3-you": [
+   {
+    "desde": null,
+    "moneda": "ARS",
+    "monto": 39330000,
+    "version": "C3 T200 FEEL PK YOU! MY26, la versión más cara del C3 en la «Lista de precios sugerida al público» de Stellantis Argentina de octubre de 2026 (vigencia a partir"
+   }
+  ],
+  "toyota-corolla-hev-seg": [
+   {
+    "desde": null,
+    "moneda": "ARS",
+    "monto": 56180000,
+    "version": "Corolla HEV 1.8 SEG eCVT, la versión más cara del Corolla sedán (GR-Sport $55.439.000; 2.0 SEG $54.392.000). Precio sugerido al público vigente del 01/10/2026 a"
+   }
+  ],
+  "jeep-renegade-willys": [
+   {
+    "desde": null,
+    "moneda": "ARS",
+    "monto": 64580000,
+    "version": "Renegade Willys 1.3T AT9 4X4 (Nuevo Renegade 2027), la versión más cara del Renegade. jeep.com.ar no publica precios: el valor sale del servicio de precios de S"
+   }
+  ],
+  "citroen-basalt-dark-edition": [
+   {
+    "desde": null,
+    "moneda": "ARS",
+    "monto": 45730000,
+    "version": "BASALT T200 DARK EDITION MY26, la versión más cara del Basalt en la «Lista de precios sugerida al público» de Stellantis Argentina de octubre de 2026 (vigencia "
+   }
+  ],
+  "chevrolet-onix-plus-premier": [
+   {
+    "desde": null,
+    "moneda": "ARS",
+    "monto": 39679900,
+    "version": "Onix Plus Premier AT Turbo (1.0T Premier AT), la versión más cara del Onix Plus 2027; precio sugerido al público publicado en chevrolet.com.ar, válido del 01/10"
+   }
+  ],
+  "fiat-titano-ranch": [
+   {
+    "desde": null,
+    "moneda": "ARS",
+    "monto": 72370000,
+    "version": "Titano Ranch AT AWD (año modelo 2026), la versión más cara de la gama. Es el precio sugerido que publica hoy el configurador oficial de titano.fiat.com.ar (cons"
+   }
+  ],
+  "citroen-aircross-shine-7": [
+   {
+    "desde": null,
+    "moneda": "ARS",
+    "monto": 50170000,
+    "version": "AIRCROSS T200 SHINE 7 MY26.5, la versión más cara del Aircross en la «Lista de precios sugerida al público» de Stellantis Argentina de octubre de 2026 (vigencia"
+   }
+  ],
+  "toyota-sw4-gr-sport": [
+   {
+    "desde": null,
+    "moneda": "ARS",
+    "monto": 97092000,
+    "version": "SW4 4X4 GR-S 6 AT 7A, la versión más cara de la SW4 (Diamond II $92.508.000; SRX $91.585.000). Precio sugerido al público vigente del 01/10/2026 al 31/10/2026, "
+   }
+  ],
+  "fiat-pulse-impetus": [
+   {
+    "desde": null,
+    "moneda": "ARS",
+    "monto": 49300000,
+    "version": "Pulse Impetus 1.0T CVT (año modelo 2026; configurador: «IMPETUS T200 CVT», código 363BR21), la más cara de las versiones Fiat del Pulse; el Pulse Abarth ($50.21"
+   }
+  ],
+  "nissan-kicks-exclusive": [
+   {
+    "desde": null,
+    "moneda": "ARS",
+    "monto": 59990000,
+    "version": "Nuevo Kicks Exclusive (1.0 turbo, doble embrague 6DCT), precio sugerido al público vigente del 1/10 al 31/10 de 2026, IVA incluido (nissan.com.ar). Con la bonif"
+   }
+  ],
+  "chevrolet-montana-rs": [
+   {
+    "desde": null,
+    "moneda": "ARS",
+    "monto": 49013900,
+    "version": "Montana RS Turbo AT (1.2T RS AT), la versión más cara de la gama. Precio sugerido al público publicado en chevrolet.com.ar, válido del 01/10/2026 al 31/10/2026"
+   }
+  ],
+  "hyundai-hb20-platinum-safety": [
+   {
+    "desde": null,
+    "moneda": "ARS",
+    "monto": 36500000,
+    "version": "HB20 Platinum Safety AT, la más cara de las tres versiones que publica hyundai.com.ar/modelo/hb20/precio («desde AR$ 36.500.000», IVA incluido, sin flete ni pat"
+   }
+  ],
+  "fiat-fastback-turbo-270": [
+   {
+    "desde": null,
+    "moneda": "ARS",
+    "monto": 54250000,
+    "version": "Fastback Turbo 270 AT6 (año modelo 2026; configurador: «FASTBACK TURBO 270 AT6», código 376BM81), la única versión Fiat del Fastback; el Fastback Abarth ($55.75"
+   }
+  ],
+  "fiat-mobi-trekking": [
+   {
+    "desde": null,
+    "moneda": "ARS",
+    "monto": 30280000,
+    "version": "Mobi Trekking 1.0 MT5 (año modelo 2027), única versión que se vende. Precio sugerido al público de Fiat Argentina, del servicio de precios que consulta el confi"
+   }
+  ],
+  "ram-dakota-laramie-night-edition": [
+   {
+    "desde": null,
+    "moneda": "ARS",
+    "monto": 84410000,
+    "version": "Dakota Laramie Night Edition 2.2 TD AT8 4x4, la versión más cara de la Dakota. ram.com.ar muestra «A consultar»: el valor sale del servicio de precios que usa e"
+   }
+  ],
+  "ford-maverick-tremor": [
+   {
+    "desde": null,
+    "moneda": "ARS",
+    "monto": 77891300,
+    "version": "Tremor 2.0L 4WD, la versión más cara de la Maverick (la Lariat híbrida cuesta $76.219.100); precio sugerido al público de Ford Argentina vigente del 01/10/2026 "
+   }
+  ],
+  "nissan-frontier-pro-4x": [
+   {
+    "desde": null,
+    "moneda": "ARS",
+    "monto": 74559100,
+    "version": "Frontier PRO-4X 4x4 AT (2.3 bi-turbo diésel, automática de 7 velocidades), precio sugerido al público vigente del 1/10 al 31/10 de 2026, IVA incluido (nissan.co"
+   }
+  ],
+  "ram-rampage-rt": [
+   {
+    "desde": null,
+    "moneda": "ARS",
+    "monto": 89870000,
+    "version": "Rampage R/T 2.0L GME AT9 4X4, la versión más cara de la Rampage. ram.com.ar muestra «A consultar»: el valor sale del servicio de precios que usa el configurador"
+   }
+  ],
+  "honda-wr-v-exl": [
+   {
+    "desde": null,
+    "moneda": "ARS",
+    "monto": 43490000,
+    "version": "WR-V (EXL), única versión; valor sugerido al público de Honda Motor de Argentina vigente del 01/10/2026 al 31/10/2026, sin flete ni patentamiento (autos.honda.c"
+   }
+  ],
+  "honda-hr-v-exl": [
+   {
+    "desde": null,
+    "moneda": "ARS",
+    "monto": 51240000,
+    "version": "New HR-V EXL (la LX: $45.890.000); valor sugerido al público de Honda Motor de Argentina vigente del 01/10/2026 al 31/10/2026, sin flete ni patentamiento (autos"
+   }
+  ],
+  "renault-duster-iconic-4x4": [
+   {
+    "desde": null,
+    "moneda": "ARS",
+    "monto": 52890000,
+    "version": "Iconic 1.3T MT6 4WD (en el sitio, versión «129»: 1.3L TCe Turbo, manual de 6 marchas, 4x4), la más cara de las tres. Precio sugerido al público con IVA que publ"
+   }
+  ],
+  "kia-k3-cross-gt-line": [
+   {
+    "desde": null,
+    "moneda": "USD",
+    "monto": 28500,
+    "version": "K3 Cross GT-Line 1.6 A/T, la más cara de las dos versiones; precio sugerido al público de kia.com.ar/precios, publicado en dólares («Lista en: U$D») con «Vigenc"
+   }
+  ],
+  "chevrolet-spin-premier": [
+   {
+    "desde": null,
+    "moneda": "ARS",
+    "monto": 43484900,
+    "version": "Spin 1.8 Premier AT 7A, la versión más cara. El legal de financiación de chevrolet.com.ar, vigente del 01/10/2026 al 31/10/2026, da para esta versión «precio su"
+   }
+  ],
+  "renault-boreal-iconic": [
+   {
+    "desde": null,
+    "moneda": "ARS",
+    "monto": 61200000,
+    "version": "Boreal iconic (1.3 TCe de 156 cv, doble embrague EDC de 6 marchas), la más cara de las tres versiones. Precio sugerido al público con IVA que publica renault.co"
+   }
+  ],
+  "volkswagen-saveiro-extreme-cd": [
+   {
+    "desde": null,
+    "moneda": "ARS",
+    "monto": 40289100,
+    "version": "Extreme CD MSI MT, la versión más cara de la Saveiro y la tope de la cabina doble (la carrocería que más se patenta: 1.023 de 1.698 inscripciones DNRPA ene-sep "
+   }
+  ],
+  "nissan-kait-exclusive": [
+   {
+    "desde": null,
+    "moneda": "ARS",
+    "monto": 46779000,
+    "version": "Kait Exclusive (1.6, CVT), precio sugerido al público; la página de versiones indica «Precios vigentes del 1 al 31 de octubre de 2026 inclusive», IVA incluido ("
+   },
+   {
+    "desde": "2026-11-01",
+    "moneda": "ARS",
+    "monto": 47246800,
+    "version": "Kait Exclusive (1.6, CVT), precio sugerido al público; la página de versiones indica «Precios vigentes del 1 al 30 de noviembre de 2026 inclusive», IVA incluido"
+   }
+  ],
+  "ford-everest-titanium": [
+   {
+    "desde": null,
+    "moneda": "ARS",
+    "monto": 90493430,
+    "version": "Titanium, única versión publicada; precio sugerido al público de Ford Argentina vigente del 01/10/2026 al 31/10/2026, IVA incluido (sin IVA: $74.787.958,68), fo"
+   },
+   {
+    "desde": "2026-11-01",
+    "moneda": "ARS",
+    "monto": 91659590,
+    "version": "Titanium, única versión publicada; precio sugerido al público de Ford Argentina vigente del 01/11/2026 al 30/11/2026, IVA incluido (sin IVA: $75.751.727,27), fo"
+   }
+  ],
+  "renault-arkana-esprit-alpine": [
+   {
+    "desde": null,
+    "moneda": "ARS",
+    "monto": 58590000,
+    "version": "Esprit Alpine, única versión. Precio sugerido al público con IVA que publica renault.com.ar al 28/10/2026 (tarifa 9714, aplicada desde el 02/10/2026); sin impue"
+   }
+  ],
+  "renault-oroch-outsider-4wd": [
+   {
+    "desde": null,
+    "moneda": "ARS",
+    "monto": 57050000,
+    "version": "Outsider 1.3 TCe 4WD (manual de 6 marchas), la más cara de las tres versiones. Precio sugerido al público con IVA que publica renault.com.ar al 28/10/2026 (tari"
+   }
+  ],
+  "volkswagen-virtus-exclusive": [
+   {
+    "desde": null,
+    "moneda": "ARS",
+    "monto": 50890050,
+    "version": "Exclusive 250TSI AT, la versión más cara del Virtus; lista de precios sugeridos a público por Volkswagen Argentina S.A. a sus concesionarios, vigente hasta el 3"
+   }
+  ],
+  "renault-kangoo-stepway": [
+   {
+    "desde": null,
+    "moneda": "ARS",
+    "monto": 47170000,
+    "version": "Stepway 1.6 SCe, única versión de pasajeros que publica renault.com.ar (el furgón es la Kangoo Express, otra página). Precio sugerido al público con IVA al 28/1"
+   }
+  ],
+  "nissan-versa-exclusive": [
+   {
+    "desde": null,
+    "moneda": "ARS",
+    "monto": 42349900,
+    "version": "Versa Exclusive CVT (1.6), precio sugerido al público; la página de versiones indica «Precios vigentes del 1 al 31 de octubre de 2026 inclusive», IVA incluido ("
+   },
+   {
+    "desde": "2026-11-01",
+    "moneda": "ARS",
+    "monto": 42561600,
+    "version": "Versa Exclusive CVT (1.6), precio sugerido al público; la página de versiones indica «Precios vigentes del 1 al 30 de noviembre de 2026 inclusive», IVA incluido"
+   }
+  ],
+  "chevrolet-sonic-rs": [
+   {
+    "desde": null,
+    "moneda": "ARS",
+    "monto": 41584900,
+    "version": "Sonic RS 1.0T AT, la versión más cara (la Premier cuesta $40.222.900). Precio sugerido al público publicado en chevrolet.com.ar, válido del 01/10/2026 al 31/10/"
+   }
+  ],
+  "fiat-600-hybrid": [
+   {
+    "desde": null,
+    "moneda": "ARS",
+    "monto": 49340000,
+    "version": "600 Hybrid 1.2L eDCT (año modelo 2026), única versión. Precio sugerido al público de Fiat Argentina, del servicio de precios que consulta el configurador oficia"
+   }
+  ],
+  "ford-f-150-raptor": [
+   {
+    "desde": null,
+    "moneda": "ARS",
+    "monto": 158550000,
+    "version": "F-150 Raptor 3.5L V6 4x4 Automática, la F-150 más cara (la Lariat Híbrida cuesta $132.880.000 y la Tremor $120.800.000); precio sugerido al público de Ford Arge"
+   }
+  ],
+  "jeep-commander-blackhawk": [
+   {
+    "desde": null,
+    "moneda": "ARS",
+    "monto": 94190000,
+    "version": "Commander Blackhawk 2.0L AT9 4X4, la versión más cara del Commander. jeep.com.ar no publica precios: el valor sale del servicio de precios de Stellantis que usa"
+   }
+  ],
+  "hyundai-hb20s-platinum-safety": [
+   {
+    "desde": null,
+    "moneda": "ARS",
+    "monto": 36000000,
+    "version": "HB20S Platinum Safety AT, la más cara de las dos versiones que publica hyundai.com.ar/modelo/hb20sedan/precio («desde AR$ 36.000.000», IVA incluido, sin flete n"
+   }
+  ],
+  "bmw-x1-sdrive18i-efficient": [
+   {
+    "desde": null,
+    "moneda": "USD",
+    "monto": 48500,
+    "version": "BMW X1 sDrive18i Efficient, precio sugerido en dólares del último comunicado de BMW Group Argentina con la gama de la X1 (05/08/2026); bmw.com.ar no publica pre"
+   }
+  ],
+  "nissan-sentra-sr": [
+   {
+    "desde": null,
+    "moneda": "ARS",
+    "monto": 49990000,
+    "version": "Sentra SR CVT (2.0), precio sugerido al público vigente del 1/10 al 31/10 de 2026, IVA incluido (nissan.com.ar). Con la bonificación especial de $8.000.000 qued"
+   }
+  ],
+  "volkswagen-tiguan-r-line": [
+   {
+    "desde": null,
+    "moneda": "ARS",
+    "monto": 85375250,
+    "version": "R-Line 250TSI DSG, la versión más cara del Tiguan; lista de precios sugeridos a público por Volkswagen Argentina S.A. a sus concesionarios, vigente hasta el 31/"
+   }
+  ],
+  "peugeot-3008-gt": [
+   {
+    "desde": null,
+    "moneda": "ARS",
+    "monto": 81750000,
+    "version": "NUEVO 3008 GT AM25, única versión del 3008 en la «Lista de precios sugerida al público» de Stellantis Argentina de octubre de 2026 (vigencia a partir del 01/10/"
+   }
+  ],
+  "bmw-x3-m50-xdrive": [
+   {
+    "desde": null,
+    "moneda": "USD",
+    "monto": 125900,
+    "version": "BMW X3 M50 xDrive M Performance, la versión más cara de la X3 (20 xDrive xLine USD 82.900; 30 xDrive M Sport USD 97.900). Precio sugerido en dólares del último "
+   }
+  ],
+  "volkswagen-vento-gli": [
+   {
+    "desde": null,
+    "moneda": "ARS",
+    "monto": 75576100,
+    "version": "GLI 350TSI DSG, única versión del Vento; lista de precios sugeridos a público por Volkswagen Argentina S.A. a sus concesionarios, vigente hasta el 31/10/2026, I"
+   }
+  ],
+  "suzuki-jimny-5-puertas-glx-at": [
+   {
+    "desde": null,
+    "moneda": "USD",
+    "monto": 36000,
+    "version": "Jimny 5 puertas GLX AT («Jimny 5D AT» en el sitio), la versión más cara del Jimny (Jimny 5 puertas MT USD 33.900; Jimny de 3 puertas GLX AT USD 35.000). suzuki."
+   }
+  ],
+  "honda-zr-v-touring": [
+   {
+    "desde": null,
+    "moneda": "ARS",
+    "monto": 59990000,
+    "version": "ZR-V TRG (Touring), única versión; valor sugerido al público de Honda Motor de Argentina vigente del 01/10/2026 al 31/10/2026, sin flete ni patentamiento (autos"
+   }
+  ],
+  "suzuki-swift-hybrid-glx-cvt": [
+   {
+    "desde": null,
+    "moneda": "USD",
+    "monto": 24400,
+    "version": "Swift Hybrid GLX CVT, la versión más cara del Swift (GLX MT USD 22.400). suzuki.com.ar publica el precio «desde» en dólares, con oferta válida del 01/10/2026 al"
+   }
+  ],
+  "bmw-m135-xdrive": [
+   {
+    "desde": null,
+    "moneda": "USD",
+    "monto": 71900,
+    "version": "BMW M135 xDrive, la versión más cara del Serie 1 (118 BlackEdition USD 45.900; 118 Sportline USD 55.900). Precio sugerido en dólares del último comunicado de BM"
+   }
+  ],
+  "peugeot-2008": [
+   {
+    "desde": null,
+    "moneda": "ARS",
+    "monto": 57820000,
+    "version": "2008 GT T200 AM27, lista de precios sugeridos al público de Stellantis para Peugeot de octubre de 2026 (vigente desde el 01/10/2026): https://www.media.stellant"
+   }
+  ],
+  "mitsubishi-l200": [
+   {
+    "desde": null,
+    "moneda": "USD",
+    "monto": 54000,
+    "version": "L200 2.4L GLS 6AT 4WD Full, única versión; precio de lista publicado en mitsubishi-motors.com.ar (consultado el 29/10/2026), «bonificado» a USD 51.500, en dólar"
+   }
+  ],
+  "chevrolet-silverado-high-country": [
+   {
+    "desde": null,
+    "moneda": "ARS",
+    "monto": 116837900,
+    "version": "High Country, la versión más cara de la Silverado 2026 (la Z71 Trail Boss cuesta $108.775.900). Precio sugerido al público publicado en chevrolet.com.ar, válido"
+   }
+  ],
+  "chevrolet-spark-euv": [
+   {
+    "desde": null,
+    "moneda": "ARS",
+    "monto": 38460900,
+    "version": "Spark EUV Activ, única versión; precio sugerido de lista de octubre 2026 (válido del 01/10 al 31/10/2026) en chevrolet.com.ar"
+   }
+  ],
+  "chevrolet-trailblazer-high-country": [
+   {
+    "desde": null,
+    "moneda": "ARS",
+    "monto": 82138900,
+    "version": "High Country (TRAILBLAZER CTDI 4X4 HIGH COUNTRY AT), única versión. Precio sugerido publicado en chevrolet.com.ar, válido del 01/10/2026 al 31/10/2026."
+   }
+  ],
+  "ford-mustang-dark-horse": [
+   {
+    "desde": null,
+    "moneda": "ARS",
+    "monto": 128350000,
+    "version": "Mustang Dark Horse 5.0L V8, la versión más cara (la GT Performance cuesta $113.250.000); precio sugerido al público de Ford Argentina vigente del 01/10/2026 al "
+   }
+  ],
+  "subaru-crosstrek-hybrid": [
+   {
+    "desde": null,
+    "moneda": "USD",
+    "monto": 48500,
+    "version": "2.0 Hybrid AWD CVT Limited ES, la versión más cara de la Crosstrek. subaru.com.ar lo publica como «precio de campaña»: USD 48.500 / $73.962.500, oferta válida d"
+   }
+  ],
+  "ds-7-plug-in-hybrid-awd": [
+   {
+    "desde": null,
+    "moneda": "USD",
+    "monto": 72000,
+    "version": "DS 7 Plug-in Hybrid AWD 300 Pallas, única versión del híbrido enchufable y la más cara de la gama DS 7. «Valor especial» publicado en dsautomobiles.com.ar (cons"
+   }
+  ],
+  "mini-countryman-s-all4-favoured": [
+   {
+    "desde": null,
+    "moneda": "USD",
+    "monto": 65900,
+    "version": "S ALL4 Favoured, la versión más cara de la gama que publica la prensa: Autocosmos (19/03/2026) informa D Essential USD 43.500, C Classic USD 54.900, S All4 Clas"
+   }
+  ],
+  "mini-cooper-s-cabrio": [
+   {
+    "desde": null,
+    "moneda": "USD",
+    "monto": 59900,
+    "version": "MINI Cooper S Cabrio, precio sugerido en dólares de su lanzamiento en Argentina (16 Válvulas y Autoweb, 10 y 12/09/2025); mini.com.ar no publica precios y la úl"
+   }
+  ],
+  "mitsubishi-outlander": [
+   {
+    "desde": null,
+    "moneda": "USD",
+    "monto": 52500,
+    "version": "Outlander 2.5L GLS AT Full (S-AWC), única versión; precio de lista publicado en mitsubishi-motors.com.ar (consultado el 29/10/2026), «bonificado» a USD 51.500, "
+   }
+  ],
+  "bmw-m340i-xdrive": [
+   {
+    "desde": null,
+    "moneda": "USD",
+    "monto": 87900,
+    "version": "BMW M340i xDrive M Performance, la versión más cara de la gama permanente del Serie 3 (320i SportLine USD 61.400; 330i M Sport USD 73.900). Precio sugerido en d"
+   }
+  ],
+  "honda-cr-v-advanced-hybrid": [
+   {
+    "desde": null,
+    "moneda": "USD",
+    "monto": 74900,
+    "version": "CR-V Advanced Hybrid, única versión; valor sugerido al público de Honda Motor de Argentina vigente del 01/10/2026 al 31/10/2026, sin flete ni patentamiento; la "
+   }
+  ],
+  "kia-k3-sedan-gt-line": [
+   {
+    "desde": null,
+    "moneda": "USD",
+    "monto": 28500,
+    "version": "K3 Sedán GT-Line 1.6 A/T, la más cara de las dos versiones; precio sugerido al público de kia.com.ar/precios, publicado en dólares («Lista en: U$D») con «Vigenc"
+   }
+  ],
+  "kia-seltos-lx": [
+   {
+    "desde": null,
+    "moneda": "USD",
+    "monto": 34000,
+    "version": "Seltos LX 1.5 A/T, única versión; precio sugerido al público de kia.com.ar/precios, publicado en dólares con «Vigencia desde: Abril 2025» (consultado el 29/10/2"
+   }
+  ],
+  "kia-sportage-x-line": [
+   {
+    "desde": null,
+    "moneda": "USD",
+    "monto": 58000,
+    "version": "Sportage X-Line 2.0R AWD AT, la más cara de las dos versiones; precio sugerido al público de kia.com.ar/precios, publicado en dólares («Lista en: U$D») con «Vig"
+   }
+  ],
+  "peugeot-408-gt": [
+   {
+    "desde": null,
+    "moneda": "ARS",
+    "monto": 78300000,
+    "version": "Nuevo 408 GT AM26, única versión del 408 en la «Lista de precios sugerida al público» de Stellantis Argentina de octubre de 2026 (vigencia a partir del 01/10/20"
+   }
+  ],
+  "ram-1500-laramie-night-edition": [
+   {
+    "desde": null,
+    "moneda": "USD",
+    "monto": 89900,
+    "version": "Laramie Night Edition 3.0 SO AT8 4x4. La 1500 se vende en dos versiones, Laramie y Laramie Night Edition, con el mismo precio (USD 89.900); se cargó la Night Ed"
+   }
+  ],
+  "porsche-911-turbo-s-cabriolet": [
+   {
+    "desde": null,
+    "moneda": "USD",
+    "monto": 587600,
+    "version": "911 Turbo S Cabriolet, la versión más cara de la gama 911 que publica Porsche Argentina (página del modelo y comparador es-AR, consultados el 29/10/2026). Le si"
+   }
+  ],
+  "porsche-cayenne-turbo-gt": [
+   {
+    "desde": null,
+    "moneda": "USD",
+    "monto": 388200,
+    "version": "Cayenne Turbo GT, la versión más cara de la gama Cayenne que publica Porsche Argentina (incluidos los Cayenne Electric, cuyo tope es el Turbo Coupé Electric de "
+   }
+  ],
+  "porsche-macan-gts": [
+   {
+    "desde": null,
+    "moneda": "USD",
+    "monto": 179100,
+    "version": "Macan GTS 2026, precio base del configurador oficial de Porsche Argentina (configurator.porsche.com/es-AR, Macan GTS 2026, Nordenwagen S.A.), consultado el 29/1"
+   }
+  ],
+  "subaru-wrx-performance-es": [
+   {
+    "desde": null,
+    "moneda": "USD",
+    "monto": 62000,
+    "version": "2.4T AWD 6MT Performance ES, la única versión que publica subaru.com.ar en octubre de 2026 (la ficha AR también lista la AWD CVT ES tS, sin precio en el sitio)."
+   }
+  ],
+  "subaru-impreza-limited-es": [
+   {
+    "desde": null,
+    "moneda": "USD",
+    "monto": 39900,
+    "version": "2.0 CVT Limited ES, la versión más cara del Impreza (la Dynamic ES cuesta USD 34.900). subaru.com.ar lo publica como «precio de campaña»: USD 39.900 / $60.847.5"
+   }
+  ],
+  "peugeot-5008-gt": [
+   {
+    "desde": null,
+    "moneda": "ARS",
+    "monto": 86250000,
+    "version": "NUEVO 5008 GT AM25, única versión del 5008 en la «Lista de precios sugerida al público» de Stellantis Argentina de octubre de 2026 (vigencia a partir del 01/10/"
+   }
+  ],
+  "kia-k4-sedan-gt-line": [
+   {
+    "desde": null,
+    "moneda": "USD",
+    "monto": 38000,
+    "version": "K4 Sedán GT-Line 2.0 A/T, la más cara de las dos versiones del Sedán; precio sugerido al público de kia.com.ar/precios, publicado en dólares, con «Vigencia desd"
+   }
+  ],
+  "honda-civic-advanced-hybrid": [
+   {
+    "desde": null,
+    "moneda": "USD",
+    "monto": 54000,
+    "version": "Civic Advanced Hybrid, única versión; valor sugerido al público de Honda Motor de Argentina vigente del 01/10/2026 al 31/10/2026, sin flete ni patentamiento; la"
+   }
+  ],
+  "lexus-nx-450h-plus": [
+   {
+    "desde": null,
+    "moneda": "USD",
+    "monto": 98000,
+    "version": "NX 450h+, la versión más cara del NX; precio sugerido en lexus.com.ar al 28/10/2026 (en pesos lo convierten con el tipo de cambio vendedor BNA)"
+   }
+  ],
+  "bmw-m2-coupe": [
+   {
+    "desde": null,
+    "moneda": "USD",
+    "monto": 127900,
+    "version": "BMW M2 Coupé (M Steptronic). bmw.com.ar no publica precios: la cifra es la que informó la prensa argentina en el lanzamiento del M2 CS (Autocosmos, 19/08/2026: "
+   }
+  ],
+  "bmw-x6-xdrive40i-m-sport-pro": [
+   {
+    "desde": null,
+    "moneda": "USD",
+    "monto": 169900,
+    "version": "X6 xDrive40i M Sport, lista oficial de BMW Group Argentina vigente desde el 01/04/2026, según 16 Válvulas («BMW y MINI bajan sus precios en Argentina», 19/03/20"
+   }
+  ],
+  "volkswagen-t-cross-highline": [
+   {
+    "desde": null,
+    "moneda": "ARS",
+    "monto": 66638000,
+    "version": "Highline 200TSI AT, la versión más cara del T-Cross que muestran hoy la página del modelo y la ficha técnica MY27 (la Extreme 200TSI AT, a $68.312.850, sigue en"
+   }
+  ],
+  "kia-tasman-x-pro-2-5-tgdi": [
+   {
+    "desde": null,
+    "moneda": "USD",
+    "monto": 79000,
+    "version": "X-Pro 2.5 TGDI Nafta, la más cara de las tres versiones (EX 2.5 TGDI USD 57.500 y EX 2.2 CRDI USD 58.500); precio sugerido al público de kia.com.ar/precios, pub"
+   }
+  ],
+  "bmw-430i-coupe-m-sport": [
+   {
+    "desde": null,
+    "moneda": "USD",
+    "monto": 74900,
+    "version": "430i Coupé M Sport, lista oficial de BMW Group Argentina vigente desde el 01/04/2026, según 16 Válvulas («BMW y MINI bajan sus precios en Argentina», 19/03/2026"
+   }
+  ],
+  "toyota-land-cruiser-300-vx-hev": [
+   {
+    "desde": null,
+    "moneda": "ARS",
+    "monto": 258845400,
+    "version": "Land Cruiser 300 VX HEV, precio publicado en toyota.com.ar (copia de la página de modelos del 28/10/2026); la GR-S figura al mismo precio. En el lanzamiento (7/"
+   },
+   {
+    "desde": "2026-11-04",
+    "moneda": "ARS",
+    "monto": 261033300,
+    "version": "Land Cruiser 300 VX HEV, precio sugerido al público publicado en toyota.com.ar (consultado el 04/11/2026); Toyota lo muestra junto a US$168.300. La GR-S figurab"
+   }
+  ],
+  "bmw-118-sportline": [
+   {
+    "desde": null,
+    "moneda": "USD",
+    "monto": 55900,
+    "version": "BMW 118 Sportline, la versión más cara del Serie 1 fuera del M135 xDrive (BMW M, ya en la tabla); 118 BlackEdition USD 45.900. Precio sugerido en dólares del co"
+   }
+  ],
+  "bmw-220i-coupe": [
+   {
+    "desde": null,
+    "moneda": "USD",
+    "monto": 59900,
+    "version": "BMW 220i Coupé («220i Coupé Advantage» en la ficha AR), lista oficial de BMW Group Argentina vigente desde el 01/04/2026, sin cambios respecto de marzo, según 1"
+   }
+  ],
+  "ford-bronco-sport-badlands": [
+   {
+    "desde": null,
+    "moneda": "ARS",
+    "monto": 71351700,
+    "version": "Badlands 2.0L 4WD AT, la versión más cara de la Bronco Sport (la Big Bend cuesta $60.617.380); precio sugerido al público de Ford Argentina vigente del 01/10/20"
+   },
+   {
+    "desde": "2026-11-01",
+    "moneda": "ARS",
+    "monto": 72243600,
+    "version": "Badlands 2.0L 4WD AT, la versión más cara de la Bronco Sport (la Big Bend cuesta $61.406.660); precio sugerido al público de Ford Argentina vigente del 01/11/20"
+   }
+  ],
+  "toyota-rav4-phev-xse": [
+   {
+    "desde": null,
+    "moneda": "USD",
+    "monto": 78100,
+    "version": "RAV4 PHEV 2.5 AWD XSE, la versión más cara de la RAV4 (GR-S USD 77.600; Limited HEV USD 70.200). toyota.com.ar publica el precio sugerido en dólares y lo muestr"
+   }
+  ],
+  "volkswagen-t-cross-extreme": [
+   {
+    "desde": null,
+    "moneda": "ARS",
+    "monto": 68312850,
+    "version": "Extreme 200TSI AT, la versión más cara del T-Cross en la lista de precios sugeridos a público por Volkswagen Argentina S.A. a sus concesionarios, vigente hasta "
+   }
+  ],
+  "toyota-gr-yaris-at": [
+   {
+    "desde": "2026-11-04",
+    "moneda": "ARS",
+    "monto": 111361800,
+    "version": "GR Yaris AT (GR-DAT 8 velocidades), precio sugerido al público publicado en toyota.com.ar (consultado el 04/11/2026); Toyota lo muestra junto a US$71.800."
+   }
+  ]
+ }
+}

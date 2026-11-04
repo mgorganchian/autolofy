@@ -588,6 +588,13 @@ sí quedan en inglés, porque no muestran la palabra. Se coló con `YES` dos vec
 - **Llamados a revisión** (`LLAMADOS`, `LLAMADOS_FUENTE`): el registro oficial de alertas de productos
   de Defensa del Consumidor. Un auto que no figura dice "No figura ninguno en el registro", nunca "sin
   problemas". Al 10/10/2026 el único de la tabla es el Tiggo 4 Pro (lote de ejes traseros, junio 2024).
+  **Carga completa del 2026-11-04** (pedido de Mati: «cargá todos y marcá los dudosos»): el registro es un Google Sheet público que la
+  propia página de argentina.gob.ar carga (con la clave de esa página; Mati autorizó leerlo); sus filas están en orden de carga y las
+  fechas vienen mezcladas (AAAA/MM/DD y AAAA/DD/MM). Se cargaron los llamados de **2024 en adelante** que nombran un modelo de la tabla
+  (60 autos, 164 llamados). Una fecha que admite las dos lecturas se resuelve por la cercanía con las filas vecinas y lleva `"dud":1`: la
+  ficha dice «(fecha por confirmar)». No se asignó un llamado a un auto por analogía (Ranger Raptor no es el Ranger LTD+; el F-150 HEV
+  no es el Raptor; «Lexus» a secas no es ningún modelo). Cada llamado alcanza solo a ciertos lotes o años y el registro no siempre
+  aclara cuáles: la ficha lo dice. La rutina (tarea I) lee la hoja con el navegador integrado desde la página y suma lo nuevo.
 - Los dos van en la página de cada auto y en `autos/<slug>.html`. La rutina los revisa (tareas I y J).
   `tests/e2e/service.spec.js` falla si una lista no tiene fuente https o es de otra marca.
 
@@ -623,6 +630,15 @@ sí quedan en inglés, porque no muestran la palabra. Se coló con `YES` dos vec
 - **`concesionarios.json`** va aparte, como las fotos: la página lo baja recién al abrir la
   vista "Concesionarios" o "Dónde verlo" en la página de un auto. **No renombrarlo ni
   moverlo** (lo sirve Vercel). Si falta, la página avisa y no rompe.
+- **Historial de promos** (2026-11-04, pedido de Mati: «que los cambios de precios y promos queden persistidos»): `promos-historial.json`
+  (no se sirve; lo escribe `herramientas-promos.py`, que se corre **siempre** después de tocar las promos de `concesionarios.json`). Compara lo
+  publicado hoy (de cada marca y de cada local) con lo guardado y registra primera vez que se vio, cada cambio de texto, precio, descuento o
+  vigencia (`versiones`), última vez y cuándo se retiró. Las promos vencidas siguen saliendo de `concesionarios.json`, pero quedan en el
+  historial.
+- **Historial de precios en cualquier moneda** (2026-11-04): `HISTORIAL_PRECIOS` (en `index.html`) sigue siendo solo dólares de la misma versión y
+  alimenta Novedades y los RSS. `precios-historial.json` (no se sirve; lo escribe `herramientas-precios.py --desde AAAA-MM-DD`, que lee la fila de
+  precio de `DATA`) guarda además los precios en pesos: por auto, cada precio con moneda, monto, versión y desde cuándo rige; la primera entrada
+  de cada auto es la línea base (`desde: null`). Se corre **siempre** después de tocar un precio (tarea D). `tests/e2e/precios-historial.spec.js` falla si falta registrar uno. `tests/e2e/promos-historial.spec.js` falla si el historial no está al día.
 - **Solo la red oficial** que publica cada marca o su importador en su sitio (buscador,
   API o JSON que la página carga). Nada de directorios, Maps ni listados de terceros.
   Muchas redes cargan los datos por JS: la URL de esos datos va en `fuente` junto a la
