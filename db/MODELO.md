@@ -75,7 +75,7 @@ erDiagram
 1. **Etapa 1 (esta)**: marca, auto, categoría, fila, celda, fuente_celda, precio_lista (con el historial en dólares), precio_historial (todas las monedas),
    concesionario, promo y promo_version, llamado, video, venta_marca. Carga, exportador y prueba de ida y vuelta.
 2. **Etapa 2** (hecha el 2026-11-05, `schema-etapa2.sql`, `cargar2.mjs`, `exportar2.mjs`): colores (con su muestra), fotos (vista y crédito), fotos descartadas, logos, service oficial (marca, auto y cada visita), gastos para patentarlo (lo nacional y las 24 jurisdicciones) y tasas del BCRA. La prueba de ida y vuelta compara cada constante con la de `index.html`. **Quedan afuera a propósito**: `fotos-fuentes.tsv` y `fichas-fuentes.tsv` (cada uno mezcla secciones con columnas distintas; hay que normalizarlos antes) y `RED_OFICIAL`, que es **derivado** de `concesionarios.json` y no se guarda.
-3. **Etapa 3**: que la rutina semanal escriba en la base y regenere `index.html` (hoy escribe el archivo y la base se pone al día).
+3. **Etapa 3** (hecha el 2026-11-05 en su primera mitad): `sincronizar.mjs` pone la base al día desde el repo y la verifica contra Neon; la rutina lo corre al final. **Falta** invertir la dirección (la rutina escribe en la base y un build regenera `index.html`): requiere exportar el texto de cada constante byte a byte, hoy solo se reproduce su estructura.
 Los textos de interfaz (`GLOSSARY`, `ELEGIR_*`, etiquetas cortas) **se quedan en el código**: no son datos del mundo.
 
 ## Supuestos
