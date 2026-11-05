@@ -30,6 +30,14 @@ export async function comprobar(db) {
   chk('fotos-descartadas.tsv', desc.map(d => [d.archivo_commons, d.auto_slug, d.motivo, d.f]), filasTsv('fotos-descartadas.tsv'));
   chk('logos-fuentes.tsv', (await db.query('SELECT * FROM autolofy.logo ORDER BY archivo')).length, leer('logos-fuentes.tsv').split('\n').slice(1).filter(Boolean).length);
 
+  chk('fotos-fuentes.tsv', (await db.query('SELECT archivo,vista,origen,licencia,autor,pagina FROM autolofy.foto_fuente')).map(r => [r.archivo, r.vista, r.origen, r.licencia, r.autor, r.pagina]).sort((a, b) => a[0] < b[0] ? -1 : 1), filasTsv('fotos-fuentes.tsv').sort((a, b) => a[0] < b[0] ? -1 : 1));
+  const fich = [
+    ...(await db.query('SELECT linea,auto_nombre,archivo,url,verificacion,fecha::text f FROM autolofy.ficha_fuente')).map(r => [r.linea, [r.auto_nombre, r.archivo, r.url, r.verificacion, r.f]]),
+    ...(await db.query('SELECT linea,auto_nombre,archivo_commons,licencia,autor,pagina FROM autolofy.portada_commons')).map(r => [r.linea, [r.auto_nombre, r.archivo_commons, r.licencia, r.autor, r.pagina]]),
+    ...(await db.query('SELECT linea,auto_nombre,imagen,pagina FROM autolofy.portada_oficial')).map(r => [r.linea, r.pagina === null ? [r.auto_nombre, r.imagen] : [r.auto_nombre, r.imagen, r.pagina]]),
+  ].sort((a, b) => a[0] - b[0]).map(x => x[1]);
+  chk('fichas-fuentes.tsv', fich, filasTsv('fichas-fuentes.tsv'));
+
   const conc = JSON.parse(leer('concesionarios.json'));
   const hoy = await X.exportarPromosVigentes(db);
   const orden = L => (L || []).map(p => canon({ ...p, autos: [...p.autos].sort() })).sort();   // el orden de los autos de una promo no importa

@@ -650,7 +650,7 @@ sí quedan en inglés, porque no muestran la palabra. Se coló con `YES` dos vec
   job `db` de GitHub Actions. Con `AUTOLOFY_DB_URL` (cadena de Neon, del Keychain, nunca a un archivo) los mismos scripts cargan Neon.
 - **Etapa 1** (hecha): marcas, autos, categorías, filas, celdas (partidas en origen/valor/detalle) con su fuente, historiales de precios, concesionarios,
   promos con sus versiones, llamados, videos y ventas por marca. **Etapa 2** (hecha el 2026-11-05): colores, fotos (vista y crédito), fotos descartadas, logos, service oficial,
-  gastos para patentarlo y tasas del BCRA; falta normalizar `fotos-fuentes.tsv` y `fichas-fuentes.tsv` (mezclan formatos); `RED_OFICIAL` es derivado y no se guarda.
+  gastos para patentarlo y tasas del BCRA; `fotos-fuentes.tsv` y `fichas-fuentes.tsv` se cargaron el 2026-11-05 (etapa 2b, `schema-etapa2b.sql`: `foto_fuente`, `ficha_fuente`, `portada_commons`, `portada_oficial`; `fichas-fuentes.tsv` mezcla tres clases de fila y la base las separa, con `linea` para reconstruir el orden); `RED_OFICIAL` es derivado y no se guarda.
   **Etapa 3** (2026-11-05): `db/sincronizar.mjs` rehace el esquema de Neon desde lo que quedó en `main` y comprueba (`db/verificar.mjs`, la misma comparación de la prueba de
   ida y vuelta) que la base exporta idéntico a `index.html` y a los JSON. La rutina semanal lo corre al final (paso 5; si falla, avisa y el sitio no se ve afectado).
   **La fuente de verdad sigue siendo el repo**: la base es hoy un espejo verificado. Invertirlo (que la rutina escriba en la base y un build regenere `index.html`) exige
