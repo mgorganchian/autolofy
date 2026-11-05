@@ -306,6 +306,21 @@ sí quedan en inglés, porque no muestran la palabra. Se coló con `YES` dos vec
   Production y Preview, host con `-pooler`); en la Mac, el Keychain (servicio `neon-macroeconomia`, cuenta
   `lector_autolofy`). `api/package.json` trae `pg` solo para la función. Ni la respuesta pública ni el log dicen
   el motivo de un error (podría nombrar el host): solo el código.
+- **Contra la inflación** (2026-11-05, pedido de Mati: comparar con la inflación las tasas que cobran los bancos y la
+  suba del precio de los autos). `MACRO`, entre `/*macro:inicio*/` y `/*macro:fin*/`, lo escribe
+  `uv run herramientas-macro.py` desde `v1` de la base macroeconomia, con el mismo rol que el dólar: el IPC mensual
+  (`ar.bcra.inflacion_mensual`, la variación del IPC del INDEC como la publica el BCRA; `ar.ipc.nivel_general` llega
+  de datos.gob.ar con un mes más de atraso), el interanual (`ar.bcra.inflacion_interanual`), el REM a 12 meses
+  (`ar.bcra.inflacion_esperada_12m`, el mes es el del relevamiento) y el dólar BNA del último día de cada mes. Va
+  embebido, no por `/api`: cambia una vez por mes. Dos lugares lo usan:
+  - **Calculadora de cuota** (`cuotaContraInflacion`): en pesos, la tasa real esperada `(1 + TEA) / (1 + REM) − 1`;
+    en UVA, cuánto da en pesos `(1 + TEA) × (1 + REM) − 1` y la cuota 13 si la UVA sube lo que espera el REM. Se
+    compara con la inflación esperada porque es la del préstamo que se toma hoy; la de los últimos 12 meses va al lado.
+  - **Historial del precio** (`historialContraInflacion`): el precio en dólares pasado a pesos al dólar de fin de mes,
+    del fin del mes del primer precio registrado al fin del último mes que publicó el INDEC, contra el IPC de esos
+    mismos meses. Si entre los dos no hay un mes entero, no se muestra (no se estima ninguna inflación). Los autos con
+    lista en pesos no tienen historial en la página (`precios-historial.json` no se sirve), así que todavía no se comparan.
+  Si a `MACRO` le falta un dato, esa comparación no aparece. `tests/e2e/inflacion.spec.js` lo cubre.
 - **Letra en el celular** (2026-10-10, pedido del usuario: con presbicia no se leía): hasta
   640 px de ancho la base es `html{font-size:130%}` (con 115% los datos quedaban en 15 px y no
   alcanzó; con 130% van en 17 px y casi nada baja de 15). El título grande del encabezado no sube.

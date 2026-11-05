@@ -235,7 +235,11 @@ modelo, así que mirá la imagen (python3 con herramientas-pdftxt no alcanza). S
 
 K) TASAS DEL BCRA: corré python3 herramientas-tasas.py, que actualiza las líneas de préstamo
 para 0 km que la calculadora de cuota toma del BCRA. Si falla (sin conexión, la API cambió), no
-toques nada a mano y decilo en el resumen."
+toques nada a mano y decilo en el resumen.
+
+M) BASE MACROECONOMIA: corré uv run herramientas-macro.py (IPC, REM y dólar de fin de mes, para comparar
+contra la inflación) y uv run herramientas-dolar.py (el dólar embebido de respaldo). uv está en
+/opt/homebrew/bin. Si alguno falla, no toques nada a mano y decilo en el resumen."
 
 log "invocando a Claude…"
 PROMPT="Sos el mantenimiento automático semanal de Autolofy, el comparativo de autos 0 km. Corrés sin
