@@ -2901,13 +2901,25 @@ function pctlValor(v, nombre){
 // pesos. Es la única conversión de moneda del sitio: la celda sigue diciendo el precio como lo publica
 // la marca. Desde el 2026-11-01 el ranking por precio también los incluye, pasados a dólares al BNA (pctlValor).
 // La cotización es la de billetes que publica el Banco Nación. La del día llega de /api/dolar
-// (window.DOLAR_VIVO, cargado antes de este script); si no llega o no es razonable, se usa la embebida,
-// que herramientas-dolar.py pone al día.
-/*dolar:inicio*/const DOLAR_BNA_EMBEBIDO = { venta: 1570, fecha: '2026-11-03', fuente: 'https://www.bna.com.ar/Personas' };/*dolar:fin*/
+// (window.DOLAR_VIVO, cargado antes de este script), que la lee de la base macroeconomia (serie
+// ar.dolar.oficial.venta); si no llega o no es razonable, se usa la embebida, que herramientas-dolar.py
+// pone al día desde la misma serie.
+/*dolar:inicio*/const DOLAR_BNA_EMBEBIDO = { venta: 1570, fecha: '2026-11-04', fuente: 'https://www.bna.com.ar/Personas' };/*dolar:fin*/
 const DOLAR_BNA = (v => v && typeof v.venta === 'number' && v.venta >= 100 && v.venta <= 100000 && /^\d{4}-\d{2}-\d{2}$/.test(v.fecha || '')
   ? { venta: v.venta, fecha: v.fecha, fuente: DOLAR_BNA_EMBEBIDO.fuente } : DOLAR_BNA_EMBEBIDO)(window.DOLAR_VIVO);
 const DOLAR_TXT = 'dólar BNA vendedor del ' + DOLAR_BNA.fecha.split('-').reverse().join('/') + ' ($ ' + DOLAR_BNA.venta.toLocaleString('es-AR') + ')';
 const aPesos = usd => Math.round(usd * DOLAR_BNA.venta);
+// Contra la inflación (2026-11-05, pedido de Mati: comparar con la inflación las tasas de los préstamos y la
+// suba del precio de los autos). MACRO lo escribe herramientas-macro.py desde la base macroeconomia (v1): ipc,
+// la variación mensual del IPC del INDEC (% por mes, "AAAA-MM"); ipc12, la de los últimos 12 meses; rem12, la
+// mediana del REM del BCRA para los próximos 12 meses (el mes es el del relevamiento), y dolarFinMes, el dólar
+// BNA vendedor del último día de cada mes. Lo usan la calculadora de cuota (cuotaContraInflacion) y el
+// historial de precio de cada auto (historialContraInflacion). Si falta un dato, esa comparación no se muestra.
+/*macro:inicio*/const MACRO = {"ipc":[["2024-11",2.4],["2024-12",2.7],["2025-01",2.2],["2025-02",2.4],["2025-03",3.7],["2025-04",2.8],["2025-05",1.5],["2025-06",1.6],["2025-07",1.9],["2025-08",1.9],["2025-09",2.1],["2025-10",2.3],["2025-11",2.5],["2025-12",2.8],["2026-01",2.9],["2026-02",2.9],["2026-03",3.4],["2026-04",2.6],["2026-05",2.1],["2026-06",1.9],["2026-07",2.1],["2026-08",1.7],["2026-09",1.9]],"ipc12":["2026-09",33.4],"rem12":["2026-09",21.1],"dolarFinMes":[["2024-11",1031],["2024-12",1052.5],["2025-01",1073.5],["2025-02",1084.25],["2025-03",1093.5],["2025-04",1190],["2025-05",1195],["2025-06",1215],["2025-07",1380],["2025-08",1360],["2025-09",1400],["2025-10",1475],["2025-11",1475],["2025-12",1480],["2026-01",1465],["2026-02",1420],["2026-03",1405],["2026-04",1415],["2026-05",1430],["2026-06",1500],["2026-07",1510],["2026-08",1530],["2026-09",1545]],"fuentes":{"ipc":"https://www.indec.gob.ar/indec/web/Nivel4-Tema-3-5-31","rem":"https://www.bcra.gob.ar/relevamiento-expectativas-mercado-rem/"}};/*macro:fin*/
+const MESES_NOMBRE = ['enero', 'febrero', 'marzo', 'abril', 'mayo', 'junio', 'julio', 'agosto', 'septiembre', 'octubre', 'noviembre', 'diciembre'];
+const mesTxt = m => MESES_NOMBRE[+m.slice(5, 7) - 1] + ' de ' + m.slice(0, 4);
+// Un decimal fijo y el % pegado: «21,1%», «-3,0%».
+const pct1 = n => n.toLocaleString('es-AR', { minimumFractionDigits: 1, maximumFractionDigits: 1 }) + '%';
 // En millones, para que entre en una opción o en una tarjeta: "$ 44,5 M". Los formateadores se arman una
 // vez: el ranking los llama por cada auto de cada lista.
 const FMT_MILLONES = new Intl.NumberFormat('es-AR', { maximumFractionDigits: 1 }), FMT_ENTERO = new Intl.NumberFormat('es-AR');
@@ -5441,7 +5453,27 @@ function cuotaResultado(){
   if (!(m > 0)) return '<p class="ficha-nota">Escribí cuánto querés financiar, en pesos.</p>';
   const r = Math.pow(1 + l.tea / 100, 1 / 12) - 1, c = m * r / (1 - Math.pow(1 + r, -n));
   return '<p class="cuota-res"><b>$ ' + Math.round(c).toLocaleString('es-AR') + '</b> por mes, en ' + n + ' cuotas, para $ ' + m.toLocaleString('es-AR') + (l.mon === 'UVA' ? '. Es la primera: en UVA sube con la inflación' : '') + '.</p>' +
+    cuotaContraInflacion(l, c, n) +
     '<p class="ficha-nota">TEA máxima que ' + rkEsc(l.e) + ' informó al BCRA el ' + fechaCorta(l.f) + ' («' + rkEsc(l.n) + '»)' + (l.cft ? '; CFT máximo ' + pctTxt(l.cft) : '') + '. Tu tasa puede ser menor; pedí siempre el CFT, que suma seguros y gastos. Las marcas suelen tener tasas promocionales.</p>';
+}
+// La TEA contra la inflación (MACRO). En pesos, la tasa real esperada: (1 + TEA) / (1 + REM) − 1. En UVA la
+// TEA se suma a la inflación, así que se dice cuánto da en pesos, (1 + TEA) × (1 + REM) − 1, y cuánto sería
+// la cuota 13 si la UVA sube lo que espera el REM. Se compara con la inflación esperada (la del préstamo que
+// se toma hoy) y se cuenta también la de los últimos 12 meses.
+function cuotaContraInflacion(l, c, n){
+  if (!MACRO.rem12) return '';
+  const e = MACRO.rem12[1] / 100, t = l.tea / 100, rem = '<a href="' + rkEsc(MACRO.fuentes.rem) + '" target="_blank" rel="noopener">REM del BCRA</a>';
+  const espera = 'el ' + rem + ' de ' + mesTxt(MACRO.rem12[0]) + ' espera ' + pct1(MACRO.rem12[1]) + ' de inflación para los próximos 12 meses';
+  const pasada = MACRO.ipc12 ? ' La de los últimos 12 meses fue ' + pct1(MACRO.ipc12[1]) + ' (<a href="' + rkEsc(MACRO.fuentes.ipc) + '" target="_blank" rel="noopener">IPC del INDEC</a> a ' + mesTxt(MACRO.ipc12[0]) + ').' : '';
+  let txt;
+  if (l.mon === 'UVA'){
+    txt = 'en UVA la tasa va encima de la inflación; ' + espera + ', y con eso esta TEA de ' + pct1(l.tea) + ' equivale a unos ' + pct1(((1 + t) * (1 + e) - 1) * 100) + ' en pesos' +
+      (n > 12 ? '; la cuota 13 sería de unos $ ' + Math.round(c * (1 + e)).toLocaleString('es-AR') : '') + '.';
+  } else {
+    const real = ((1 + t) / (1 + e) - 1) * 100;
+    txt = espera + '. Con eso, esta TEA de ' + pct1(l.tea) + (real >= 0 ? ' es una tasa real de unos ' + pct1(real) + ' por año.' : ' queda debajo de la inflación: una tasa real de ' + pct1(real) + ' por año.');
+  }
+  return '<p class="ficha-nota cuota-inflacion"><b>Contra la inflación:</b> ' + txt + pasada + '</p>';
 }
 function cuotaHTML(i){
   const ls = TASAS_BCRA.lineas;
@@ -5933,7 +5965,7 @@ function historialHTML(slug){
   const ult = h[h.length - 1], serie = h.filter(x => x[2] === ult[2]);
   const fecha = f => f.split('-').reverse().join('/'), usd = n => 'USD ' + n.toLocaleString('es-AR');
   if (serie.length < 2) return '<section class="ficha-hist"><h3>Historial del precio</h3><p class="ficha-nota">' + usd(ult[1]) +
-    ' desde el ' + fecha(serie[0][0]) + ', sin cambios registrados en la lista oficial.</p></section>';
+    ' desde el ' + fecha(serie[0][0]) + ', sin cambios registrados en la lista oficial.</p>' + historialContraInflacion(serie) + '</section>';
   const d = ult[1] - serie[0][1], pct = (100 * d / serie[0][1]).toFixed(1).replace('.', ',');
   const W = 260, Hh = 54, min = Math.min(...serie.map(x => x[1])), max = Math.max(...serie.map(x => x[1]));
   const t0 = Date.parse(serie[0][0]), t1 = Math.max(Date.parse(ult[0]), t0 + 1);
@@ -5946,7 +5978,93 @@ function historialHTML(slug){
     '<svg class="ficha-hist-svg" viewBox="0 0 ' + W + ' ' + Hh + '" role="img" aria-label="Precio de lista: ' + serie.map(x => usd(x[1]) + ' el ' + fecha(x[0])).join(', ') + '"><path d="' + path + '"/>' +
       serie.map(x => '<circle cx="' + X(x[0]).toFixed(1) + '" cy="' + Y(x[1]).toFixed(1) + '" r="3"><title>' + usd(x[1]) + ', ' + fecha(x[0]) + '</title></circle>').join('') + '</svg>' +
     '<ol class="ficha-hist-lista">' + serie.map(x => '<li><span>' + fecha(x[0]) + '</span><b>' + usd(x[1]) + '</b><a href="' + rkEsc(x[3]) + '" target="_blank" rel="noopener">fuente</a></li>').join('') + '</ol>' +
-    '<p class="ficha-nota">Precio de lista oficial de la versión ' + rkEsc(ult[2] || 'de la tabla') + ', cada vez que cambió en las listas que cargamos.</p></section>';
+    '<p class="ficha-nota">Precio de lista oficial de la versión ' + rkEsc(ult[2] || 'de la tabla') + ', cada vez que cambió en las listas que cargamos.</p>' +
+    historialContraInflacion(serie) + '</section>';
+}
+// La suba del precio contra la inflación (MACRO): el precio de lista en dólares, pasado a pesos al dólar BNA del
+// último día de cada mes, contra el IPC de los mismos meses. Arranca a fin del mes del primer precio registrado
+// (antes no hay precio) y termina a fin del último mes que publicó el INDEC; si entre los dos no hay un mes
+// entero, no se muestra.
+function historialContraInflacion(serie){
+  const ipc = MACRO.ipc, dolar = Object.fromEntries(MACRO.dolarFinMes);
+  if (!ipc.length) return '';
+  const m0 = serie[0][0].slice(0, 7), m1 = ipc[ipc.length - 1][0];
+  if (m0 >= m1 || !dolar[m0] || !dolar[m1]) return '';
+  const finDe = m => { const [a, mm] = m.split('-').map(Number); return new Date(Date.UTC(a, mm, 0)).toISOString().slice(0, 10); };
+  const precioAl = f => serie.filter(x => x[0] <= f).pop()[1];
+  const p0 = precioAl(finDe(m0)) * dolar[m0], p1 = precioAl(finDe(m1)) * dolar[m1];
+  const meses = ipc.filter(x => x[0] > m0 && x[0] <= m1);
+  const suba = (p1 / p0 - 1) * 100, inf = (meses.reduce((a, x) => a * (1 + x[1] / 100), 1) - 1) * 100;
+  // El año va una sola vez si las dos puntas son del mismo: «de agosto a septiembre de 2026».
+  const mesCorto = m => m.slice(0, 4) === m1.slice(0, 4) ? MESES_NOMBRE[+m.slice(5, 7) - 1] : mesTxt(m);
+  const r1 = x => Math.round(x * 10) / 10, cuando = meses.length === 1 ? 'en ' + mesTxt(m1) : 'de ' + mesCorto(meses[0][0]) + ' a ' + mesTxt(m1);
+  const veredicto = r1(suba) < 0 ? 'en pesos bajó' : r1(suba) === 0 ? 'en pesos no cambió' : r1(suba) > r1(inf) ? 'subió más que la inflación' : r1(suba) < r1(inf) ? 'subió menos que la inflación' : 'subió lo mismo que la inflación';
+  const desde = mesCorto(m0);
+  return '<p class="ficha-nota ficha-hist-inflacion"><b>Contra la inflación:</b> en pesos, al dólar BNA de fin de mes, pasó de ' + pesosCorto(p0) + ' a fin de ' + desde +
+    ' a ' + pesosCorto(p1) + ' a fin de ' + mesTxt(m1) + ' (' + (suba > 0 ? '+' : '') + pct1(suba) + '). La inflación ' + cuando + ' fue ' + pct1(inf) +
+    ' (<a href="' + rkEsc(MACRO.fuentes.ipc) + '" target="_blank" rel="noopener">IPC del INDEC</a>): ' + veredicto + '.</p>';
+}
+// Historial de las listas en pesos (2026-11-05, pedido de Mati): HISTORIAL_PRECIOS solo guarda dólares, así que los autos
+// con lista en pesos lo toman de precios-historial.json (lo escribe herramientas-precios.py y el sitio lo sirve). Se baja
+// una sola vez, al abrir la primera ficha que lo necesita. Con una sola lista registrada no hay nada que comparar.
+let historialPesosP = null;
+const cargarHistorialPesos = () => historialPesosP || (historialPesosP = fetch('precios-historial.json', { cache: 'no-cache' })
+  .then(r => r.ok ? r.json() : {}).then(j => (j && j.autos) || {}).catch(() => ({})));
+async function pintarHistorialPesos(i){
+  const h = (await cargarHistorialPesos())[SLUG_AUTO[i]], el = document.getElementById('fichaHistPesos');
+  if (fichaActual !== i || !el) return;
+  const html = historialPesosHTML(h);
+  if (html) el.outerHTML = html;
+}
+function historialPesosHTML(h){
+  if (!Array.isArray(h)) return '';
+  let k = h.length;
+  while (k > 0 && h[k - 1] && h[k - 1].moneda === 'ARS' && Number.isFinite(h[k - 1].monto) && h[k - 1].monto > 0) k--;
+  const serie = h.slice(k), ult = serie[serie.length - 1], iso = /^\d{4}-\d{2}-\d{2}$/;
+  if (serie.length < 2 || serie.slice(1).some(x => !iso.test(x.desde || '')) || (serie[0].desde && !iso.test(serie[0].desde))) return '';
+  const fecha = f => f.split('-').reverse().join('/'), pesos = n => '$ ' + n.toLocaleString('es-AR');
+  const diaAntes = f => new Date(Date.parse(f) - 864e5).toISOString().slice(0, 10);
+  // La primera lista no tiene fecha de inicio (es la que tenía la tabla cuando empezó el historial): se sabe hasta cuándo rigió.
+  const cuando = (x, j) => x.desde ? 'desde el ' + fecha(x.desde) : 'hasta el ' + fecha(diaAntes(serie[j + 1].desde));
+  const d = ult.monto - serie[0].monto, pct = pct1(Math.abs(100 * d / serie[0].monto));
+  const con = serie.length === 2 ? ' con la lista del ' : ' desde la primera lista registrada hasta la del ';
+  return '<section class="ficha-hist ficha-hist-pesos"><h3>Historial del precio</h3>' +
+    (cambioChico(serie[0].monto, ult.monto) ? '' : '<p class="ficha-hist-res ' + (d < 0 ? 'baja' : 'sube') + '">' + (d < 0 ? 'Bajó ' : 'Subió ') + pesos(Math.abs(d)) +
+      ' (' + (d < 0 ? '-' : '+') + pct + ')' + con + fecha(ult.desde) + '</p>') +
+    '<ol class="ficha-hist-lista">' + serie.map((x, j) => '<li><span>' + cuando(x, j) + '</span><b>' + pesos(x.monto) + '</b></li>').join('') + '</ol>' +
+    '<p class="ficha-nota">Precio de lista oficial en pesos, cada vez que cambió en las listas que cargamos.</p>' +
+    historialPesosContraInflacion(serie) + '</section>';
+}
+// Las listas en pesos rigen por mes: la que empieza en un mes se compara con la inflación de ese mes (de la primera lista
+// nueva a la actual). Los meses que el INDEC todavía no publicó se cuentan con la inflación que espera el REM del BCRA
+// para los próximos 12 meses, repartida por mes, y el texto lo dice.
+function historialPesosContraInflacion(serie){
+  if (!MACRO.ipc.length) return '';
+  const ipc = Object.fromEntries(MACRO.ipc), ultIpc = MACRO.ipc[MACRO.ipc.length - 1][0], ult = serie[serie.length - 1];
+  const siguiente = m => { const [a, mm] = m.split('-').map(Number); return mm === 12 ? (a + 1) + '-01' : a + '-' + String(mm + 1).padStart(2, '0'); };
+  const desde = serie[0].desde ? siguiente(serie[0].desde.slice(0, 7)) : serie[1].desde.slice(0, 7), hasta = ult.desde.slice(0, 7);
+  const meses = [];
+  for (let m = desde; m <= hasta; m = siguiente(m)) meses.push(m);
+  const pub = meses.filter(m => m in ipc), est = meses.filter(m => !(m in ipc));
+  // Un mes sin IPC anterior al último publicado queda fuera de MACRO (más de dos años): no se inventa.
+  if (!meses.length || est.some(m => m <= ultIpc)) return '';
+  const remMes = (Math.pow(1 + MACRO.rem12[1] / 100, 1 / 12) - 1) * 100;
+  const infPub = (pub.reduce((a, m) => a * (1 + ipc[m] / 100), 1) - 1) * 100;
+  const inf = ((1 + infPub / 100) * Math.pow(1 + remMes / 100, est.length) - 1) * 100;
+  const suba = (ult.monto / serie[0].monto - 1) * 100, r1 = x => Math.round(x * 10) / 10;
+  const rango = ms => ms.length === 1 ? mesTxt(ms[0]) : (ms[0].slice(0, 4) === ms[ms.length - 1].slice(0, 4) ? MESES_NOMBRE[+ms[0].slice(5, 7) - 1] : mesTxt(ms[0])) + ' a ' + mesTxt(ms[ms.length - 1]);
+  const link = (url, txt) => '<a href="' + rkEsc(url) + '" target="_blank" rel="noopener">' + txt + '</a>';
+  const rem = 'el ' + link(MACRO.fuentes.rem, 'REM del BCRA') + ' de ' + mesTxt(MACRO.rem12[0]) + ' espera ' + pct1(MACRO.rem12[1]) + ' para los próximos 12 meses, unos ' + pct1(remMes) + ' por mes';
+  const ipcTxt = '(' + link(MACRO.fuentes.ipc, 'IPC del INDEC') + ')';
+  const inflacion = !est.length ? 'La inflación de ' + rango(pub) + ' fue ' + pct1(inf) + ' ' + ipcTxt
+    : !pub.length ? 'El INDEC todavía no publicó la inflación de ' + rango(est) + '; ' + rem + (est.length > 1 ? ' (' + pct1(inf) + ' en ' + est.length + ' meses)' : '')
+    : 'La inflación de ' + rango(pub) + ' fue ' + pct1(infPub) + ' ' + ipcTxt + '; la de ' + rango(est) + ' todavía no se publicó y ' + rem + '. En total, unos ' + pct1(inf);
+  const esp = est.length ? ' esperada' : '';
+  const veredicto = r1(suba) < 0 ? 'bajó' : r1(suba) === 0 ? 'no cambió' : r1(suba) > r1(inf) ? 'subió más que la inflación' + esp
+    : r1(suba) < r1(inf) ? 'subió menos que la inflación' + esp : 'subió lo mismo que la inflación' + esp;
+  const contra = serie.length === 2 ? 'la anterior' : 'la primera registrada';
+  return '<p class="ficha-nota ficha-hist-inflacion"><b>Contra la inflación:</b> la lista del ' + ult.desde.split('-').reverse().join('/') + ' está ' +
+    (r1(suba) === 0 ? 'igual que ' + contra : pct1(Math.abs(suba)) + (suba > 0 ? ' arriba' : ' abajo') + ' de ' + contra) + '. ' + inflacion + ': ' + veredicto + '.</p>';
 }
 // Tipo de cada video (2026-10-09; sin tipo = prueba): las presentaciones, informes, adelantos y
 // contactos con otra versión también van, con su etiqueta, porque el usuario los pidió.
@@ -6160,7 +6278,7 @@ async function abrirFicha(i){
     '<dl class="ficha-datos">' + FICHA_DATOS.filter(n => FILA_POR_NOMBRE[n] && aplica(n)).map(n =>
       '<div><dt>' + rkEsc(rkTitulo(n) + (rkUnidad(n) ? ' (' + rkUnidad(n) + ')' : '')) + '</dt><dd>' + val(n) + '</dd></div>').join('') +
     '</dl>' + cocheraFichaHTML(i) +
-    historialHTML(SLUG_AUTO[i]) +
+    (historialHTML(SLUG_AUTO[i]) || '<div id="fichaHistPesos" hidden></div>') +
     patentarHTML(i) + cuotaHTML(i) +
     '<section class="ficha-donde" id="fichaDondeSec"><h3>Dónde comprarlo</h3><div id="fichaDonde"><p class="ficha-vacio">Cargando la red de concesionarios…</p></div></section>' +
     '<div class="ficha-cols"><section><h3>Dónde se destaca</h3>' + lista(fuertes, 'fuerte') + '</section>' +
@@ -6189,6 +6307,7 @@ async function abrirFicha(i){
   document.getElementById('fichaCerrar').focus();
   urlGuardar('paso'); actualizarTitulo();
   pintarDondeVerlo(i);
+  pintarHistorialPesos(i);
   const fuentes = (await cargarManifiesto()).get(c.name) || [];
   if (fichaActual !== i) return;
   document.getElementById('fichaFuentes').outerHTML = fuentes.length

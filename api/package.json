@@ -1,0 +1,6 @@
+{
+  "name": "autolofy-api",
+  "private": true,
+  "description": "Dependencias de las funciones de Vercel en api/ (api/dolar.js lee la base macroeconomia).",
+  "dependencies": { "pg": "8.13.1" }
+}

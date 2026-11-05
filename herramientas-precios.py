@@ -2,7 +2,7 @@
 """Historial persistente de precios de lista en cualquier moneda (2026-11-04, pedido de Mati).
 
 HISTORIAL_PRECIOS (en index.html) solo guarda cambios en dólares de la misma versión y alimenta Novedades y los RSS. Este archivo
-(precios-historial.json, no se sirve) guarda además los precios en pesos: por auto, cada precio publicado con su moneda, monto,
+(precios-historial.json; Vercel lo sirve y la ficha lo lee para el historial de las listas en pesos) guarda además los precios en pesos: por auto, cada precio publicado con su moneda, monto,
 versión, desde cuándo rige y la fuente. Lo escribe esta herramienta leyendo la fila «Precio de lista» de DATA:
 
   python3 herramientas-precios.py --desde AAAA-MM-DD   # registra los cambios; --desde es la fecha de la lista nueva (por defecto, hoy)

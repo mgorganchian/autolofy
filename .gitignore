@@ -12,6 +12,9 @@ CONTEXTO_LOCAL_PRIVADO.md
 
 .DS_Store
 
+# Dependencias de las funciones de Vercel (api/package.json): Vercel las instala en el build.
+api/node_modules/
+
 # Tests e2e (tests/e2e): dependencias y resultados, se regeneran.
 tests/e2e/node_modules/
 tests/e2e/test-results/
