@@ -50,5 +50,29 @@ export async function cargarEtapa2(db) {
   for (const [o, l] of T.lineas.entries())
     await ins('INSERT INTO tasa_linea VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12)', [o, l.e, l.n, l.mon, l.tasa, l.tea, l.cft, l.plazo, l.terr, l.ben, l.f, l.tipo]);
 
-  return { colores: Object.keys(C.COLORES_AR).length, fotos: Object.values(C.FOTOS_POR_AUTO).reduce((a, b) => a + b, 0), service: Object.keys(C.SERVICE_OFICIAL).length, provincias: Object.keys(I.prov).length, tasas: T.lineas.length };
+  const fuentes = await cargarFuentes(db);
+
+  return { fuentes, colores: Object.keys(C.COLORES_AR).length, fotos: Object.values(C.FOTOS_POR_AUTO).reduce((a, b) => a + b, 0), service: Object.keys(C.SERVICE_OFICIAL).length, provincias: Object.keys(I.prov).length, tasas: T.lineas.length };
+}
+
+// fotos-fuentes.tsv y fichas-fuentes.tsv. Una fila de fichas-fuentes es de commons si trae 5 campos y el quinto es una página de Commons;
+// de ficha si trae 5 y no; oficial si trae 2 o 3.
+export async function cargarFuentes(db) {
+  await db.exec(fs.readFileSync(path.join(RAIZ, 'db', 'schema-etapa2b.sql'), 'utf8'));
+  await db.exec('SET search_path = autolofy, public');
+  const slugDe = new Map((await db.query('SELECT nombre, slug FROM autolofy.auto')).map(a => [a.nombre, a.slug]));
+  for (const f of filasTsv('fotos-fuentes.tsv'))
+    await db.query('INSERT INTO foto_fuente VALUES($1,$2,$3,$4,$5,$6)', f);
+  const n = { ficha: 0, commons: 0, oficial: 0 };
+  for (const [linea, c] of filasTsv('fichas-fuentes.tsv').entries()) {
+    const slug = slugDe.get(c[0]) ?? null;
+    if (c.length === 5 && c[4].startsWith('https://commons.wikimedia.org/')) {
+      await db.query('INSERT INTO portada_commons VALUES($1,$2,$3,$4,$5,$6,$7)', [linea, c[0], slug, c[1], c[2], c[3], c[4]]); n.commons++;
+    } else if (c.length === 5) {
+      await db.query('INSERT INTO ficha_fuente VALUES($1,$2,$3,$4,$5,$6,$7,$8)', [linea, c[0], slug, c[1], c[2], c[3], /^[0-9a-f]{64}$/.test(c[3]) ? c[3] : null, c[4]]); n.ficha++;
+    } else if (c.length === 2 || c.length === 3) {
+      await db.query('INSERT INTO portada_oficial VALUES($1,$2,$3,$4,$5)', [linea, c[0], slug, c[1], c[2] ?? null]); n.oficial++;
+    } else throw new Error('fichas-fuentes.tsv: fila con ' + c.length + ' campos: ' + c[0]);
+  }
+  return { fotoFuentes: filasTsv('fotos-fuentes.tsv').length, ...n };
 }
