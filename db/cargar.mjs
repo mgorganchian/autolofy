@@ -2,6 +2,7 @@
 import fs from 'node:fs';
 import { leer, constantes, slugsDelHtml, partirCelda, conectar, RAIZ } from './lib.mjs';
 import path from 'node:path';
+import { cargarEtapa2 } from './cargar2.mjs';
 
 export async function cargar(db) {
   await db.exec(fs.readFileSync(path.join(RAIZ, 'db', 'schema.sql'), 'utf8'));
@@ -102,11 +103,11 @@ export async function cargar(db) {
       [id, v.desde, v.texto, v.precio?.moneda ?? null, v.precio?.monto ?? null, v.descuento?.moneda ?? null, v.descuento?.monto ?? null, v.vigencia ?? null]);
     nPromos++;
   }
-  return { autos: C.CARS.length, promos: nPromos };
+  return { autos: C.CARS.length, promos: nPromos, etapa2: await cargarEtapa2(db) };
 }
 
 if (process.argv[1].endsWith('cargar.mjs')) {
   const db = await conectar();
-  console.log('base:', db.nombre, await cargar(db));
+  console.log('base:', db.nombre, process.argv.includes('--etapa2') ? { etapa2: await cargarEtapa2(db) } : await cargar(db));   // --etapa2: solo lo nuevo, sobre una base que ya tiene la etapa 1
   await db.close();
 }
