@@ -17,6 +17,7 @@
 #   3. Si todas las fichas se pudieron verificar, actualiza la "Fecha de consulta"
 #      del pie de la página
 #   4. Si publicó algo, lo verifica contra el sitio en vivo
+#   5. Pone al día la base de Neon desde lo que quedó en main (db/sincronizar.mjs)
 #   Si Claude no puede autenticarse o termina con error, avisa con una notificación
 #   de macOS: corriendo una vez por semana, una falla muda son dos semanas perdidas.
 #
@@ -385,5 +386,22 @@ if [[ "$ANTES" != "$DESPUES" ]]; then
   fi
 else
   log "no hubo cambios que publicar"
+fi
+# ---------- 5. poner al día la base de Neon ----------
+# La base es un espejo del repo (2026-11-05): después de cada corrida se rehace desde lo que quedó en
+# main y se comprueba que es idéntica. Si falla, el sitio no se ve afectado (nada lee la base en vivo):
+# solo avisa. La cadena de conexión la lee db/sincronizar.mjs del Keychain; nunca se imprime.
+# launchd arranca con un PATH mínimo: node vive en nvm, así que se lo busca ahí si no está en el PATH.
+NODE_BIN=$(command -v node || ls -d "$HOME"/.nvm/versions/node/*/bin/node 2>/dev/null | tail -1)
+if [[ -z "$NODE_BIN" ]]; then
+  avisar "No encontré node para poner al día la base de Neon. El sitio no se ve afectado."
+else
+  export PATH="$(dirname "$NODE_BIN"):$PATH"
+  [[ -d db/node_modules ]] || (cd db && npm ci --silent >>"$LOG" 2>&1)
+  if (cd db && node --no-warnings sincronizar.mjs >>"$LOG" 2>&1); then
+    log "base de Neon al día"
+  else
+    avisar "No pude poner al día la base de Neon. El sitio no se ve afectado. Ver el log."
+  fi
 fi
 log "=== fin ==="

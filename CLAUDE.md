@@ -623,7 +623,10 @@ sí quedan en inglés, porque no muestran la palabra. Se coló con `YES` dos vec
 - **Etapa 1** (hecha): marcas, autos, categorías, filas, celdas (partidas en origen/valor/detalle) con su fuente, historiales de precios, concesionarios,
   promos con sus versiones, llamados, videos y ventas por marca. **Etapa 2** (hecha el 2026-11-05): colores, fotos (vista y crédito), fotos descartadas, logos, service oficial,
   gastos para patentarlo y tasas del BCRA; falta normalizar `fotos-fuentes.tsv` y `fichas-fuentes.tsv` (mezclan formatos); `RED_OFICIAL` es derivado y no se guarda.
-  **Etapa 3**: la rutina escribe en la base y el build exporta.
+  **Etapa 3** (2026-11-05): `db/sincronizar.mjs` rehace el esquema de Neon desde lo que quedó en `main` y comprueba (`db/verificar.mjs`, la misma comparación de la prueba de
+  ida y vuelta) que la base exporta idéntico a `index.html` y a los JSON. La rutina semanal lo corre al final (paso 5; si falla, avisa y el sitio no se ve afectado).
+  **La fuente de verdad sigue siendo el repo**: la base es hoy un espejo verificado. Invertirlo (que la rutina escriba en la base y un build regenere `index.html`) exige
+  que el exportador reproduzca **byte a byte** el texto de cada constante de `index.html`, y hoy lo reproduce solo como estructura; queda para cuando haga falta.
 - **Neon vive en Vercel** (se creó desde Storage, integración de Marketplace): la cadena directa está en el Keychain, servicio `neon-autolofy-db`, cuenta `cadena-conexion`
   (skill `crear-base-neon`). Se carga con `AUTOLOFY_DB_URL=… node db/cargar.mjs` (base vacía) o `node db/cargar.mjs --etapa2` (sobre una base que ya tiene la etapa 1).
 - El proyecto de Neon es propio (`autolofy`), nunca `neondb` ni los de gimnasio o mensajeria.
