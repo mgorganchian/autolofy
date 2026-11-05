@@ -291,12 +291,21 @@ sí quedan en inglés, porque no muestran la palabra. Se coló con `YES` dos vec
   «≈ $ N M»), las promos siguen sin convertir. **Desde el 2026-11-01 (pedido de Mati) los 77 precios en pesos también entran al ranking por precio, las barras y «Mayores diferencias», pasados a dólares al BNA** (`pctlValor` convierte `precioPesosPub`; el ranking los marca «de $ N al BNA»; `SIM_PRECIO` sigue siendo solo lo publicado en dólares y `PRECIO_CMP` ya los incluía): ninguno queda aislado por publicarse en pesos.
   La cotización va en `DOLAR_BNA`, entre `/*dolar:inicio*/` y `/*dolar:fin*/`, con su fecha y fuente:
   la del día la trae la página al cargar (2026-10-30, pedido de Mati: sin PRs diarios): `api/dolar.js`, una función
-  de Vercel, lee la tabla «Billetes» de bna.com.ar (el banco no permite leerla desde otra página: sin CORS) y
-  devuelve `window.DOLAR_VIVO`; `index.html` la carga con `<script src="/api/dolar">` justo antes del script
-  principal, porque todo lo que depende del dólar se calcula al cargar. Vercel la guarda 30 minutos. Si no llega
+  de Vercel, devuelve `window.DOLAR_VIVO`; `index.html` la carga con `<script src="/api/dolar">` justo antes del script
+  principal, porque todo lo que depende del dólar se calcula al cargar. Vercel la guarda una hora. Si no llega
   o la cifra no es razonable, se usa `DOLAR_BNA_EMBEBIDO` (el bloque entre `/*dolar:inicio*/` y `/*dolar:fin*/`),
-  que `herramientas-dolar.py` pone al día. El servidor de la suite responde `/api/dolar` sin cotización, así los
+  que `uv run herramientas-dolar.py` pone al día. El servidor de la suite responde `/api/dolar` sin cotización, así los
   tests usan la embebida; `mejoras.spec.js` cubre los dos casos.
+  **De dónde sale** (2026-11-05, pedido de Mati: que cada repo lea la base compartida en lugar de bajar lo mismo): la
+  función y la herramienta leen la serie `ar.dolar.oficial.venta` del esquema `v1` de la base **macroeconomia**
+  (repo `mgorganchian/macroeconomia`), el dólar oficial minorista vendedor que ArgentinaDatos toma de la tabla
+  «Billetes» del BNA: los mismos valores que antes se leían de bna.com.ar. La base lo carga dos veces por día (09:00 y
+  19:00 de Argentina), así que entre la apertura del banco y las 19:00 la página muestra el cierre del día anterior.
+  ArgentinaDatos fecha cada valor el día en que lo toma: un sábado dice «del sábado» con el cierre del viernes.
+  Se lee con un rol de solo lectura, `lector_autolofy`: en Vercel es la variable `MACRO_DATABASE_URL` (sensible,
+  Production y Preview, host con `-pooler`); en la Mac, el Keychain (servicio `neon-macroeconomia`, cuenta
+  `lector_autolofy`). `api/package.json` trae `pg` solo para la función. Ni la respuesta pública ni el log dicen
+  el motivo de un error (podría nombrar el host): solo el código.
 - **Letra en el celular** (2026-10-10, pedido del usuario: con presbicia no se leía): hasta
   640 px de ancho la base es `html{font-size:130%}` (con 115% los datos quedaban en 15 px y no
   alcanzó; con 130% van en 17 px y casi nada baja de 15). El título grande del encabezado no sube.
@@ -650,7 +659,9 @@ sí quedan en inglés, porque no muestran la palabra. Se coló con `YES` dos vec
   titular. La investigación está en `plan-negocio/investigacion-patentamiento.md`.
 - **¿Cuánto pagarías por mes?** (plegado): sistema francés con la **TEA máxima** que cada banco informa
   al BCRA (`TASAS_BCRA`, entre `/*tasas:inicio*/` y `/*tasas:fin*/`, lo escribe
-  `herramientas-tasas.py`; la rutina lo corre, tarea K). Solo líneas para 0 km de bancos, en pesos o
+  `herramientas-tasas.py`; la rutina lo corre, tarea K). **Sigue bajando del BCRA** (Régimen de Transparencia): la base
+  macroeconomia no tiene las líneas de cada banco, solo tasas promedio del sistema (BADLAR, TAMAR, préstamos
+  personales), que no sirven para esta cuenta. Solo líneas para 0 km de bancos, en pesos o
   UVA, informadas en los últimos 200 días; la del Banco Nación es la +Autos (el BCRA la lista como
   personal). La página dice que es la tasa máxima y que el CFT suma seguros y gastos.
   `tests/e2e/costos.spec.js` cubre los dos.

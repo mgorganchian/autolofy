@@ -2901,9 +2901,10 @@ function pctlValor(v, nombre){
 // pesos. Es la única conversión de moneda del sitio: la celda sigue diciendo el precio como lo publica
 // la marca. Desde el 2026-11-01 el ranking por precio también los incluye, pasados a dólares al BNA (pctlValor).
 // La cotización es la de billetes que publica el Banco Nación. La del día llega de /api/dolar
-// (window.DOLAR_VIVO, cargado antes de este script); si no llega o no es razonable, se usa la embebida,
-// que herramientas-dolar.py pone al día.
-/*dolar:inicio*/const DOLAR_BNA_EMBEBIDO = { venta: 1570, fecha: '2026-11-03', fuente: 'https://www.bna.com.ar/Personas' };/*dolar:fin*/
+// (window.DOLAR_VIVO, cargado antes de este script), que la lee de la base macroeconomia (serie
+// ar.dolar.oficial.venta); si no llega o no es razonable, se usa la embebida, que herramientas-dolar.py
+// pone al día desde la misma serie.
+/*dolar:inicio*/const DOLAR_BNA_EMBEBIDO = { venta: 1570, fecha: '2026-11-04', fuente: 'https://www.bna.com.ar/Personas' };/*dolar:fin*/
 const DOLAR_BNA = (v => v && typeof v.venta === 'number' && v.venta >= 100 && v.venta <= 100000 && /^\d{4}-\d{2}-\d{2}$/.test(v.fecha || '')
   ? { venta: v.venta, fecha: v.fecha, fuente: DOLAR_BNA_EMBEBIDO.fuente } : DOLAR_BNA_EMBEBIDO)(window.DOLAR_VIVO);
 const DOLAR_TXT = 'dólar BNA vendedor del ' + DOLAR_BNA.fecha.split('-').reverse().join('/') + ' ($ ' + DOLAR_BNA.venta.toLocaleString('es-AR') + ')';
