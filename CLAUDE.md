@@ -621,7 +621,11 @@ sí quedan en inglés, porque no muestran la palabra. Se coló con `YES` dos vec
   exportado no es **idéntico** a `DATA`, `LLAMADOS`, `VIDEOS`, `HISTORIAL_PRECIOS`, `precios-historial.json` y las promos de `concesionarios.json`. Corre en el
   job `db` de GitHub Actions. Con `AUTOLOFY_DB_URL` (cadena de Neon, del Keychain, nunca a un archivo) los mismos scripts cargan Neon.
 - **Etapa 1** (hecha): marcas, autos, categorías, filas, celdas (partidas en origen/valor/detalle) con su fuente, historiales de precios, concesionarios,
-  promos con sus versiones, llamados, videos y ventas por marca. **Etapa 2**: colores, fotos, service, impuestos, tasas, red oficial. **Etapa 3**: la rutina escribe en la base.
+  promos con sus versiones, llamados, videos y ventas por marca. **Etapa 2** (hecha el 2026-11-05): colores, fotos (vista y crédito), fotos descartadas, logos, service oficial,
+  gastos para patentarlo y tasas del BCRA; falta normalizar `fotos-fuentes.tsv` y `fichas-fuentes.tsv` (mezclan formatos); `RED_OFICIAL` es derivado y no se guarda.
+  **Etapa 3**: la rutina escribe en la base y el build exporta.
+- **Neon vive en Vercel** (se creó desde Storage, integración de Marketplace): la cadena directa está en el Keychain, servicio `neon-autolofy-db`, cuenta `cadena-conexion`
+  (skill `crear-base-neon`). Se carga con `AUTOLOFY_DB_URL=… node db/cargar.mjs` (base vacía) o `node db/cargar.mjs --etapa2` (sobre una base que ya tiene la etapa 1).
 - El proyecto de Neon es propio (`autolofy`), nunca `neondb` ni los de gimnasio o mensajeria.
 
 ## Gastos para patentarlo y cuota (2026-10-11)
