@@ -40,6 +40,8 @@ function vigilarErrores(page) {
     // El navegador pide /favicon.ico por su cuenta y la página no declara ninguno:
     // ese 404 no es un error de la página.
     if (/\/favicon\.ico$/.test(m.location().url)) return;
+    // Clarity está bloqueado en los tests (playwright.config.js): su script no carga, a propósito.
+    if (/\.clarity\.ms\//.test(m.location().url)) return;
     errores.push(`console: ${m.text()} (${m.location().url})`);
   });
   return errores;

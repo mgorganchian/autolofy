@@ -42,7 +42,11 @@ Ese principio es deliberado — **no agregar dependencias externas ni partir el
 archivo.** Las únicas excepciones, servidas junto a la página y bajadas cuando hacen
 falta: `fotos/` (con `fotos/mini/`, las miniaturas del encabezado), `logos/`, `og.jpg`,
 `fichas-fuentes.tsv`, `logos-fuentes.tsv`, `concesionarios.json` y `/api/dolar` (la cotización del
-día, del mismo sitio; ver "Precios en pesos y dólar BNA"). Aparte, `autos/*.html`,
+día, del mismo sitio; ver "Precios en pesos y dólar BNA").
+**Excepción de JS externo: Microsoft Clarity** (2026-11-04, decisión de Mati): el script de
+`clarity.ms` mide visitas, clics y scroll. Está en el `<head>` de `index.html` y en las plantillas de
+`herramientas-paginas.py` (`CLARITY_ID`, `CLARITY`); el ID tiene que ser el mismo en los dos. La
+sección «Privacidad» de `quien-hace-esto` lo cuenta. No se suma otra medición sin cambiar esa sección. Aparte, `autos/*.html`,
 `sitemap.xml` y `robots.txt` son páginas generadas para Google (ver "Páginas por auto").
 
 El contexto largo (el *porqué* de cada decisión, orden de columnas, estado del research,

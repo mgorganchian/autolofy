@@ -22,6 +22,9 @@ module.exports = defineConfig({
     headless: true,
     actionTimeout: 5_000,
     navigationTimeout: 15_000,
+    // Microsoft Clarity no se carga en los tests: las corridas ensuciarían las métricas del sitio
+    // y su script cambia los tiempos (los tests del botón Atrás fallaban en celular).
+    launchOptions: { args: ['--host-resolver-rules=MAP *.clarity.ms ~NOTFOUND'] },
   },
   webServer: {
     command: `python3 "${path.join(__dirname, 'servidor.py')}" ${PUERTO} "${RAIZ}"`,
