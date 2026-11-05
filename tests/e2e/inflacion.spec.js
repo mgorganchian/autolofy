@@ -84,3 +84,41 @@ test('historial: la suba en pesos al dólar de fin de mes contra el IPC de los m
     await expect(page.locator('.ficha-hist-inflacion')).toHaveCount(0);
   }
 });
+
+// Listas en pesos (2026-11-05): la ficha baja precios-historial.json (el sitio lo sirve) y compara la suba de la lista con
+// la inflación de los meses en que empezaron las listas nuevas; los meses sin IPC publicado van con el REM repartido por mes.
+test('historial en pesos: la lista nueva contra la anterior y contra la inflación de su mes (IPC o, si falta, REM)', async ({ page }) => {
+  const fs = require('fs'), path = require('path');
+  const PH = JSON.parse(fs.readFileSync(path.join(__dirname, '..', '..', 'precios-historial.json'), 'utf8')).autos;
+  const MESES = ['enero', 'febrero', 'marzo', 'abril', 'mayo', 'junio', 'julio', 'agosto', 'septiembre', 'octubre', 'noviembre', 'diciembre'];
+  const mesTxt = m => MESES[+m.slice(5, 7) - 1] + ' de ' + m.slice(0, 4);
+  const serieDe = h => { let k = h.length; while (k > 0 && h[k - 1].moneda === 'ARS') k--; return h.slice(k); };
+  const con = Object.entries(PH).find(([s, h]) => !HIST[s] && serieDe(h).length === 2 && serieDe(h)[0].desde === null);
+  test.skip(!con, 'ningún auto en pesos tiene dos listas registradas');
+  const s = serieDe(con[1]), ult = s[1], m = ult.desde.slice(0, 7), ipc = Object.fromEntries(MACRO.ipc);
+  const suba = (ult.monto / s[0].monto - 1) * 100;
+  await page.goto('/index.html?auto=' + con[0]);
+  const sec = page.locator('.ficha-hist-pesos');
+  await expect(sec.locator('.ficha-hist-lista li')).toHaveCount(2);
+  await expect(sec.locator('.ficha-hist-lista li').last()).toContainText('$ ' + ult.monto.toLocaleString('es-AR'));
+  const p = sec.locator('.ficha-hist-inflacion');
+  await expect(p).toContainText('la lista del ' + ult.desde.split('-').reverse().join('/') + ' está ' + pct1(Math.abs(suba)) + (suba > 0 ? ' arriba' : ' abajo') + ' de la anterior');
+  if (m in ipc){
+    await expect(p).toContainText('La inflación de ' + mesTxt(m) + ' fue ' + pct1(ipc[m]));
+    await expect(p).toContainText(/(subió (más|menos|lo mismo) que la inflación|bajó|no cambió)\.$/);
+  } else {
+    const remMes = (Math.pow(1 + MACRO.rem12[1] / 100, 1 / 12) - 1) * 100;
+    await expect(p).toContainText('El INDEC todavía no publicó la inflación de ' + mesTxt(m));
+    await expect(p).toContainText('espera ' + pct1(MACRO.rem12[1]) + ' para los próximos 12 meses, unos ' + pct1(remMes) + ' por mes');
+    await expect(p).toContainText(/(subió (más|menos|lo mismo) que la inflación esperada|bajó|no cambió)\.$/);
+  }
+  await expect(p.locator('a')).toHaveCount(1);
+
+  // Con una sola lista en pesos registrada no hay historial ni comparación.
+  const sola = Object.entries(PH).find(([sl, h]) => !HIST[sl] && h.length === 1 && h[0].moneda === 'ARS');
+  if (sola){
+    await page.goto('/index.html?auto=' + sola[0]);
+    await expect(page.locator('#fichaHistPesos')).toHaveCount(1);
+    await expect(page.locator('.ficha-hist')).toHaveCount(0);
+  }
+});

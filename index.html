@@ -6004,6 +6004,68 @@ function historialContraInflacion(serie){
     ' a ' + pesosCorto(p1) + ' a fin de ' + mesTxt(m1) + ' (' + (suba > 0 ? '+' : '') + pct1(suba) + '). La inflación ' + cuando + ' fue ' + pct1(inf) +
     ' (<a href="' + rkEsc(MACRO.fuentes.ipc) + '" target="_blank" rel="noopener">IPC del INDEC</a>): ' + veredicto + '.</p>';
 }
+// Historial de las listas en pesos (2026-11-05, pedido de Mati): HISTORIAL_PRECIOS solo guarda dólares, así que los autos
+// con lista en pesos lo toman de precios-historial.json (lo escribe herramientas-precios.py y el sitio lo sirve). Se baja
+// una sola vez, al abrir la primera ficha que lo necesita. Con una sola lista registrada no hay nada que comparar.
+let historialPesosP = null;
+const cargarHistorialPesos = () => historialPesosP || (historialPesosP = fetch('precios-historial.json', { cache: 'no-cache' })
+  .then(r => r.ok ? r.json() : {}).then(j => (j && j.autos) || {}).catch(() => ({})));
+async function pintarHistorialPesos(i){
+  const h = (await cargarHistorialPesos())[SLUG_AUTO[i]], el = document.getElementById('fichaHistPesos');
+  if (fichaActual !== i || !el) return;
+  const html = historialPesosHTML(h);
+  if (html) el.outerHTML = html;
+}
+function historialPesosHTML(h){
+  if (!Array.isArray(h)) return '';
+  let k = h.length;
+  while (k > 0 && h[k - 1] && h[k - 1].moneda === 'ARS' && Number.isFinite(h[k - 1].monto) && h[k - 1].monto > 0) k--;
+  const serie = h.slice(k), ult = serie[serie.length - 1], iso = /^\d{4}-\d{2}-\d{2}$/;
+  if (serie.length < 2 || serie.slice(1).some(x => !iso.test(x.desde || '')) || (serie[0].desde && !iso.test(serie[0].desde))) return '';
+  const fecha = f => f.split('-').reverse().join('/'), pesos = n => '$ ' + n.toLocaleString('es-AR');
+  const diaAntes = f => new Date(Date.parse(f) - 864e5).toISOString().slice(0, 10);
+  // La primera lista no tiene fecha de inicio (es la que tenía la tabla cuando empezó el historial): se sabe hasta cuándo rigió.
+  const cuando = (x, j) => x.desde ? 'desde el ' + fecha(x.desde) : 'hasta el ' + fecha(diaAntes(serie[j + 1].desde));
+  const d = ult.monto - serie[0].monto, pct = pct1(Math.abs(100 * d / serie[0].monto));
+  const con = serie.length === 2 ? ' con la lista del ' : ' desde la primera lista registrada hasta la del ';
+  return '<section class="ficha-hist ficha-hist-pesos"><h3>Historial del precio</h3>' +
+    (cambioChico(serie[0].monto, ult.monto) ? '' : '<p class="ficha-hist-res ' + (d < 0 ? 'baja' : 'sube') + '">' + (d < 0 ? 'Bajó ' : 'Subió ') + pesos(Math.abs(d)) +
+      ' (' + (d < 0 ? '-' : '+') + pct + ')' + con + fecha(ult.desde) + '</p>') +
+    '<ol class="ficha-hist-lista">' + serie.map((x, j) => '<li><span>' + cuando(x, j) + '</span><b>' + pesos(x.monto) + '</b></li>').join('') + '</ol>' +
+    '<p class="ficha-nota">Precio de lista oficial en pesos, cada vez que cambió en las listas que cargamos.</p>' +
+    historialPesosContraInflacion(serie) + '</section>';
+}
+// Las listas en pesos rigen por mes: la que empieza en un mes se compara con la inflación de ese mes (de la primera lista
+// nueva a la actual). Los meses que el INDEC todavía no publicó se cuentan con la inflación que espera el REM del BCRA
+// para los próximos 12 meses, repartida por mes, y el texto lo dice.
+function historialPesosContraInflacion(serie){
+  if (!MACRO.ipc.length) return '';
+  const ipc = Object.fromEntries(MACRO.ipc), ultIpc = MACRO.ipc[MACRO.ipc.length - 1][0], ult = serie[serie.length - 1];
+  const siguiente = m => { const [a, mm] = m.split('-').map(Number); return mm === 12 ? (a + 1) + '-01' : a + '-' + String(mm + 1).padStart(2, '0'); };
+  const desde = serie[0].desde ? siguiente(serie[0].desde.slice(0, 7)) : serie[1].desde.slice(0, 7), hasta = ult.desde.slice(0, 7);
+  const meses = [];
+  for (let m = desde; m <= hasta; m = siguiente(m)) meses.push(m);
+  const pub = meses.filter(m => m in ipc), est = meses.filter(m => !(m in ipc));
+  // Un mes sin IPC anterior al último publicado queda fuera de MACRO (más de dos años): no se inventa.
+  if (!meses.length || est.some(m => m <= ultIpc)) return '';
+  const remMes = (Math.pow(1 + MACRO.rem12[1] / 100, 1 / 12) - 1) * 100;
+  const infPub = (pub.reduce((a, m) => a * (1 + ipc[m] / 100), 1) - 1) * 100;
+  const inf = ((1 + infPub / 100) * Math.pow(1 + remMes / 100, est.length) - 1) * 100;
+  const suba = (ult.monto / serie[0].monto - 1) * 100, r1 = x => Math.round(x * 10) / 10;
+  const rango = ms => ms.length === 1 ? mesTxt(ms[0]) : (ms[0].slice(0, 4) === ms[ms.length - 1].slice(0, 4) ? MESES_NOMBRE[+ms[0].slice(5, 7) - 1] : mesTxt(ms[0])) + ' a ' + mesTxt(ms[ms.length - 1]);
+  const link = (url, txt) => '<a href="' + rkEsc(url) + '" target="_blank" rel="noopener">' + txt + '</a>';
+  const rem = 'el ' + link(MACRO.fuentes.rem, 'REM del BCRA') + ' de ' + mesTxt(MACRO.rem12[0]) + ' espera ' + pct1(MACRO.rem12[1]) + ' para los próximos 12 meses, unos ' + pct1(remMes) + ' por mes';
+  const ipcTxt = '(' + link(MACRO.fuentes.ipc, 'IPC del INDEC') + ')';
+  const inflacion = !est.length ? 'La inflación de ' + rango(pub) + ' fue ' + pct1(inf) + ' ' + ipcTxt
+    : !pub.length ? 'El INDEC todavía no publicó la inflación de ' + rango(est) + '; ' + rem + (est.length > 1 ? ' (' + pct1(inf) + ' en ' + est.length + ' meses)' : '')
+    : 'La inflación de ' + rango(pub) + ' fue ' + pct1(infPub) + ' ' + ipcTxt + '; la de ' + rango(est) + ' todavía no se publicó y ' + rem + '. En total, unos ' + pct1(inf);
+  const esp = est.length ? ' esperada' : '';
+  const veredicto = r1(suba) < 0 ? 'bajó' : r1(suba) === 0 ? 'no cambió' : r1(suba) > r1(inf) ? 'subió más que la inflación' + esp
+    : r1(suba) < r1(inf) ? 'subió menos que la inflación' + esp : 'subió lo mismo que la inflación' + esp;
+  const contra = serie.length === 2 ? 'la anterior' : 'la primera registrada';
+  return '<p class="ficha-nota ficha-hist-inflacion"><b>Contra la inflación:</b> la lista del ' + ult.desde.split('-').reverse().join('/') + ' está ' +
+    (r1(suba) === 0 ? 'igual que ' + contra : pct1(Math.abs(suba)) + (suba > 0 ? ' arriba' : ' abajo') + ' de ' + contra) + '. ' + inflacion + ': ' + veredicto + '.</p>';
+}
 // Tipo de cada video (2026-10-09; sin tipo = prueba): las presentaciones, informes, adelantos y
 // contactos con otra versión también van, con su etiqueta, porque el usuario los pidió.
 const VIDEO_TIPO = { 'prueba': 'Prueba', 'adelanto': 'Adelanto, sin prueba a fondo', 'presentación': 'Presentación, sin manejo',
@@ -6216,7 +6278,7 @@ async function abrirFicha(i){
     '<dl class="ficha-datos">' + FICHA_DATOS.filter(n => FILA_POR_NOMBRE[n] && aplica(n)).map(n =>
       '<div><dt>' + rkEsc(rkTitulo(n) + (rkUnidad(n) ? ' (' + rkUnidad(n) + ')' : '')) + '</dt><dd>' + val(n) + '</dd></div>').join('') +
     '</dl>' + cocheraFichaHTML(i) +
-    historialHTML(SLUG_AUTO[i]) +
+    (historialHTML(SLUG_AUTO[i]) || '<div id="fichaHistPesos" hidden></div>') +
     patentarHTML(i) + cuotaHTML(i) +
     '<section class="ficha-donde" id="fichaDondeSec"><h3>Dónde comprarlo</h3><div id="fichaDonde"><p class="ficha-vacio">Cargando la red de concesionarios…</p></div></section>' +
     '<div class="ficha-cols"><section><h3>Dónde se destaca</h3>' + lista(fuertes, 'fuerte') + '</section>' +
@@ -6245,6 +6307,7 @@ async function abrirFicha(i){
   document.getElementById('fichaCerrar').focus();
   urlGuardar('paso'); actualizarTitulo();
   pintarDondeVerlo(i);
+  pintarHistorialPesos(i);
   const fuentes = (await cargarManifiesto()).get(c.name) || [];
   if (fichaActual !== i) return;
   document.getElementById('fichaFuentes').outerHTML = fuentes.length

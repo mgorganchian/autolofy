@@ -318,8 +318,12 @@ sí quedan en inglés, porque no muestran la palabra. Se coló con `YES` dos vec
     compara con la inflación esperada porque es la del préstamo que se toma hoy; la de los últimos 12 meses va al lado.
   - **Historial del precio** (`historialContraInflacion`): el precio en dólares pasado a pesos al dólar de fin de mes,
     del fin del mes del primer precio registrado al fin del último mes que publicó el INDEC, contra el IPC de esos
-    mismos meses. Si entre los dos no hay un mes entero, no se muestra (no se estima ninguna inflación). Los autos con
-    lista en pesos no tienen historial en la página (`precios-historial.json` no se sirve), así que todavía no se comparan.
+    mismos meses. Si entre los dos no hay un mes entero, no se muestra (no se estima ninguna inflación).
+  - **Historial en pesos** (`historialPesosHTML` y `historialPesosContraInflacion`): los autos con lista en pesos no están en
+    `HISTORIAL_PRECIOS`, así que la ficha baja `precios-historial.json` (Vercel lo sirve) la primera vez que lo necesita y muestra
+    cada lista. Las listas rigen por mes: la suba de la primera lista a la actual se compara con la inflación de los meses en que
+    empezaron las listas nuevas. Si el INDEC todavía no publicó un mes, ese mes va con el REM repartido por mes
+    `(1 + REM)^(1/12) − 1`, y el texto dice que es la inflación esperada. Con una sola lista registrada no se muestra nada.
   Si a `MACRO` le falta un dato, esa comparación no aparece. `tests/e2e/inflacion.spec.js` lo cubre.
 - **Letra en el celular** (2026-10-10, pedido del usuario: con presbicia no se leía): hasta
   640 px de ancho la base es `html{font-size:130%}` (con 115% los datos quedaban en 15 px y no
@@ -690,12 +694,12 @@ sí quedan en inglés, porque no muestran la palabra. Se coló con `YES` dos vec
   vista "Concesionarios" o "Dónde verlo" en la página de un auto. **No renombrarlo ni
   moverlo** (lo sirve Vercel). Si falta, la página avisa y no rompe.
 - **Historial de promos** (2026-11-04, pedido de Mati: «que los cambios de precios y promos queden persistidos»): `promos-historial.json`
-  (no se sirve; lo escribe `herramientas-promos.py`, que se corre **siempre** después de tocar las promos de `concesionarios.json`). Compara lo
+  (Vercel lo sirve, pero la página no lo lee; lo escribe `herramientas-promos.py`, que se corre **siempre** después de tocar las promos de `concesionarios.json`). Compara lo
   publicado hoy (de cada marca y de cada local) con lo guardado y registra primera vez que se vio, cada cambio de texto, precio, descuento o
   vigencia (`versiones`), última vez y cuándo se retiró. Las promos vencidas siguen saliendo de `concesionarios.json`, pero quedan en el
   historial.
 - **Historial de precios en cualquier moneda** (2026-11-04): `HISTORIAL_PRECIOS` (en `index.html`) sigue siendo solo dólares de la misma versión y
-  alimenta Novedades y los RSS. `precios-historial.json` (no se sirve; lo escribe `herramientas-precios.py --desde AAAA-MM-DD`, que lee la fila de
+  alimenta Novedades y los RSS. `precios-historial.json` (Vercel lo sirve y la ficha lo lee para el historial en pesos; lo escribe `herramientas-precios.py --desde AAAA-MM-DD`, que lee la fila de
   precio de `DATA`) guarda además los precios en pesos: por auto, cada precio con moneda, monto, versión y desde cuándo rige; la primera entrada
   de cada auto es la línea base (`desde: null`). Se corre **siempre** después de tocar un precio (tarea D). `tests/e2e/precios-historial.spec.js` falla si falta registrar uno. `tests/e2e/promos-historial.spec.js` falla si el historial no está al día.
 - **Solo la red oficial** que publica cada marca o su importador en su sitio (buscador,
