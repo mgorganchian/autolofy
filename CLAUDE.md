@@ -207,6 +207,7 @@ sí quedan en inglés, porque no muestran la palabra. Se coló con `YES` dos vec
   sigue siendo la clave de todo**: el código busca filas por `tr.dataset.nombre`, nunca
   por el texto visible ni por `data-search` (que suma el corto para la búsqueda). El
   filtro de asientos dejó de andar en silencio cuando se buscaba por `data-search`.
+- **El mejor se marca con una copa y la palabra «Mejor»**, no con una estrella (2026-11-05, pedido de Mati: la estrella se lee como puntaje o favorito). Sale de `MEJOR_HTML` en `index.html`; la clase sigue siendo `.mejor-sel` (la usan los tests) y la explicación de cada caso va en el `title`. Donde estos textos dicen «★» se lee la copa.
 - **La barra resumen NO es sticky** — decisión explícita del usuario.
 - **El header grande se oculta** tras el primer "Comparar" (`hasComparedOnce`).
 - **Dropdown de Marca/Modelo en `position:static`**, no `absolute` (quedaba recortado).
