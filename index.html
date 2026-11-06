@@ -1069,6 +1069,7 @@ if(!location.search&&!location.hash)document.documentElement.classList.add('arra
   .ficha-puntos-lista.fuerte b{color:var(--yes)} .ficha-puntos-lista.debil b{color:var(--no)}
   .ficha-nota,.ficha-vacio{font-size:.7rem;color:var(--ink-3);margin:8px 0 14px;line-height:1.4}
   .precio-pesos{display:block;font-size:.8rem;color:var(--ink-3);margin-top:2px}
+  .wltp-est{display:block;font-size:.8rem;color:var(--ink-3);margin-top:2px}
   .ficha-sim ul,.ficha-links{list-style:none;margin:0 0 14px;padding:0;display:flex;flex-direction:column;gap:6px}
   .ficha-sim li{display:flex;gap:8px;align-items:center;position:relative}
   .ficha-sim li > .minicar{position:absolute;left:9px;top:50%;transform:translateY(-50%);z-index:1;cursor:pointer}
@@ -2938,6 +2939,38 @@ function pesosCeldaHTML(v){
   return u == null || precioPesosPub(v) != null ? '' : '<span class="precio-pesos" data-tip="Al ' + DOLAR_TXT + '.">≈ ' + pesosCorto(aPesos(u)) + '</span>';
 }
 
+const CICLO_RE = /\((NEDC|WLTP|WLTC|CLTC|EPA|etiqueta AR|ciclo no informado)\b/;
+function cicloDe(v){
+  if (typeof v !== 'string') return null;
+  const m = CICLO_RE.exec(v.replace(/^(NOTE|EXT|DET):/, '').split('|')[0]);
+  return m ? m[1] : null;
+}
+// Factores a WLTP. Fuentes: JRC 2017 (Tsiakmakis y otros, EUR 28724), ICCT 2020 y 2021,
+// evdb.nz y pares de BYD con cifra oficial en dos ciclos. La etiqueta AR es NEDC
+// (Res. 85/2018). WLTC de fichas chinas o chilenas es el ciclo del WLTP (×1).
+const WLTP_AUT = { NEDC: 0.85, 'etiqueta AR': 0.85, CLTC: 0.81, WLTP: 1, WLTC: 1, EPA: 1.15 };
+const WLTP_CONS = {
+  ice:  { NEDC: 1.20, 'etiqueta AR': 1.20, WLTP: 1, WLTC: 1 },
+  mhev: { NEDC: 1.20, 'etiqueta AR': 1.20, WLTP: 1, WLTC: 1 },   // supuesto: no hay factor propio
+  hev:  { NEDC: 1.33, 'etiqueta AR': 1.33, WLTP: 1, WLTC: 1 },
+};
+const redondear = (n, paso) => Math.round(n / paso) * paso;
+
+// Estimado WLTP en la celda (2026-11-06, pedido de Mati): bajo la cifra de la ficha, solo cuando su ciclo no es WLTP/WLTC y hay factor
+// publicado (los mismos WLTP_AUT y WLTP_CONS del Ranking). Va marcado «estimado»: la cifra de la ficha sigue siendo el dato.
+function wltpCeldaHTML(v, nombre, i){
+  if (nombre !== 'Autonomía eléctrica (km)' && nombre !== 'Consumo de combustible (L/100km)') return '';
+  const n = pctlValor(v, nombre), ciclo = cicloDe(v);
+  if (n == null || !ciclo || ciclo === 'ciclo no informado') return '';
+  const aut = nombre === 'Autonomía eléctrica (km)';
+  const f = aut ? WLTP_AUT[ciclo] : (WLTP_CONS[CARS[i].type] || {})[ciclo];
+  if (!f || f === 1) return '';
+  const est = aut ? redondear(n * f, 10) : redondear(n * f, 0.1);
+  const txt = aut ? est.toLocaleString('es-AR') + ' km' : est.toLocaleString('es-AR', { minimumFractionDigits: 1, maximumFractionDigits: 1 }) + ' L/100 km';
+  const tip = 'Estimado a WLTP: ' + n.toLocaleString('es-AR') + ' (' + ciclo + ') × ' + String(f).replace('.', ',') + '. No es una cifra de ficha: el error típico es de 5 a 10% por auto.';
+  return '<span class="wltp-est" data-tip="' + tip + '">≈ ' + txt + ' WLTP estimado</span>';
+}
+
 // Devuelve, por auto, {c: cuadrados 0-4, p: percentil} o null si no hay dato.
 function pctlFila(row){
   var dir = PCTL_DIR[row[0]];
@@ -3019,7 +3052,7 @@ DATA.forEach((cat,ci)=>{
       : '';
     tr.dataset.vals=JSON.stringify(row.slice(1));
     tr.innerHTML = '<td class="feat">'+featIco+'<span class="feat-label" data-tip="'+((corta ? row[0] + '. ' : '') + (GLOSSARY[row[0]]||'')).replace(/"/g,'&quot;')+'"'+(cel ? ' data-cel="'+cel+'" data-largo="'+(corta||row[0]).replace(/"/g,'&quot;')+'"' : '')+'>'+(corta||row[0])+'</span></td>' +
-      row.slice(1).map((v,i)=>'<td data-col="'+i+'">'+renderVal(v)+(row[0]===FILA_PRECIO?pesosCeldaHTML(v):'')+(pctl?pctlHTML(pctl[i]):'')+'</td>').join('');
+      row.slice(1).map((v,i)=>'<td data-col="'+i+'">'+renderVal(v)+(row[0]===FILA_PRECIO?pesosCeldaHTML(v):'')+wltpCeldaHTML(v,row[0],i)+(pctl?pctlHTML(pctl[i]):'')+'</td>').join('');
     tbody.appendChild(tr);
     allRows.push(tr);
   });
@@ -4257,27 +4290,11 @@ const FILA_COMB = 'Autonomía combinada (km)';
 const FILA_POT = 'Potencia total del sistema (kW)';
 
 // Ciclo de cada cifra: va en el valor visible, entre paréntesis, tal como lo dice su fuente.
-const CICLO_RE = /\((NEDC|WLTP|WLTC|CLTC|EPA|etiqueta AR|ciclo no informado)\b/;
-function cicloDe(v){
-  if (typeof v !== 'string') return null;
-  const m = CICLO_RE.exec(v.replace(/^(NOTE|EXT|DET):/, '').split('|')[0]);
-  return m ? m[1] : null;
-}
-// Factores a WLTP. Fuentes: JRC 2017 (Tsiakmakis y otros, EUR 28724), ICCT 2020 y 2021,
-// evdb.nz y pares de BYD con cifra oficial en dos ciclos. La etiqueta AR es NEDC
-// (Res. 85/2018). WLTC de fichas chinas o chilenas es el ciclo del WLTP (×1).
-const WLTP_AUT = { NEDC: 0.85, 'etiqueta AR': 0.85, CLTC: 0.81, WLTP: 1, WLTC: 1, EPA: 1.15 };
-const WLTP_CONS = {
-  ice:  { NEDC: 1.20, 'etiqueta AR': 1.20, WLTP: 1, WLTC: 1 },
-  mhev: { NEDC: 1.20, 'etiqueta AR': 1.20, WLTP: 1, WLTC: 1 },   // supuesto: no hay factor propio
-  hev:  { NEDC: 1.33, 'etiqueta AR': 1.33, WLTP: 1, WLTC: 1 },
-};
 const WLTP_TEXTO = {
   [FILA_AUT]: 'Se ordena por un estimado WLTP: NEDC × 0,85; CLTC × 0,81; EPA × 1,15; WLTP y WLTC × 1. Es una estimación, no una cifra de ficha: el error típico es de 5 a 10% por auto, así que diferencias menores a eso no dicen cuál rinde más. Fuentes: JRC 2017 (EUR 28724), ICCT 2021, evdb.nz y autos de BYD con cifra oficial en dos ciclos.',
   [FILA_CONS]: 'Se ordena por un estimado WLTP: NEDC (y la etiqueta argentina, que es NEDC) × 1,20 en nafteros y mild-hybrid, × 1,33 en híbridos; WLTP y WLTC × 1. El factor de los mild-hybrid es un supuesto (no hay uno publicado). Fuentes: JRC 2017 (EUR 28724), ICCT 2020, Res. 85/2018.',
   [FILA_COMB]: 'La autonomía combinada no tiene un factor de conversión publicado ni defendible: cada marca la calcula distinto. Por eso no se estima: hay un ranking por ciclo.',
 };
-const redondear = (n, paso) => Math.round(n / paso) * paso;
 
 // Filas del ranking: las de PCTL_DIR, dos relaciones precio/valor y dos herramientas.
 const RK_DERIVADAS = {

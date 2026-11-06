@@ -1,6 +1,7 @@
 // Páginas estáticas por auto (2026-10-06): autos/<slug>.html, sitemap.xml, robots.txt y la
 // lista de links del pie salen de index.html con herramientas-paginas.py. Si alguien cambia
 // un dato y no las regenera, Google muestra el viejo: este test lo frena.
+const fs = require('fs');
 const path = require('path');
 const { execFileSync } = require('child_process');
 const { test, expect } = require('@playwright/test');
@@ -24,7 +25,13 @@ test('la página de un auto tiene título, descripción, foto, datos estructurad
   await expect(page.locator('main table tr')).toHaveCount(104);
   await expect(page.locator('main tr', { hasText: 'Longitud (mm)' })).toContainText('4553');
   await expect(page.locator('a.cta')).toHaveAttribute('href', '/?auto=chery-tiggo-7-pro-phev');
-  expect(await page.locator('figure img').evaluate(i => i.complete && i.naturalWidth > 0)).toBe(true);
+  expect(await page.locator('figure img').first().evaluate(i => i.complete && i.naturalWidth > 0)).toBe(true);
+  // Todas las fotos del auto (2026-11-06): la portada y, debajo, las demás con su vista; la cantidad es la de FOTOS_POR_AUTO.
+  const html = fs.readFileSync(path.join(__dirname, '..', '..', 'index.html'), 'utf8');
+  const n = JSON.parse(html.match(/const FOTOS_POR_AUTO = (\{.*?\});\n/)[1])['chery-tiggo-7-pro-phev'];
+  expect(n).toBeGreaterThan(1);
+  await expect(page.locator('figure img')).toHaveCount(n);
+  await expect(page.locator('.galeria h2')).toHaveText('Más fotos');
 });
 
 // Un cambio de precio de menos del 1% no se informa nunca (2026-10-18, pedido del usuario): ni como

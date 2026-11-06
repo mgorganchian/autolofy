@@ -459,7 +459,7 @@ sí quedan en inglés, porque no muestran la palabra. Se coló con `YES` dos vec
   fila. La etiqueta argentina (IRAM/AITA 10274-2) es NEDC (Res. 85/2018).
 - El ranking ordena autonomía eléctrica y consumo por un **estimado WLTP** (`WLTP_AUT`,
   `WLTP_CONS`, fuentes en `WLTP_TEXTO`), pero muestra grande la cifra de la ficha. La
-  tabla nunca muestra estimados. La **autonomía combinada no se estima**: no hay factor
+  tabla muestra el estimado **solo debajo de la cifra de la ficha**, marcado «WLTP estimado» y con su cuenta en el tooltip (`wltpCeldaHTML`, 2026-11-06, pedido de Mati; antes no lo mostraba): nunca en lugar de ella, y nada si el ciclo es WLTP/WLTC, no se informa o no hay factor. La **autonomía combinada no se estima**: no hay factor
   defendible; se rankea por ciclo. Decisión del usuario: no cambiar sin preguntarle.
 - **Potencia total del sistema (kW)**: naftero = motor; eléctrico = motor(es); híbrido =
   la combinada que declara la fuente. **Nunca sumar motores a mano**. Si la "combinada"
@@ -801,6 +801,8 @@ sí quedan en inglés, porque no muestran la palabra. Se coló con `YES` dos vec
   título y descripción propios, datos estructurados schema.org `Car`, la ficha completa y
   los colores; además `sitemap.xml`, `robots.txt` y la lista de links del pie del
   comparativo (entre `<!-- autos:inicio -->` y `<!-- autos:fin -->`).
+- **Todas las fotos** (2026-11-06, pedido de Mati): la página muestra la portada y debajo «Más fotos» con las demás (`galeria_html`), cada una con su vista y su
+  crédito, tomados de `FOTOS_POR_AUTO`, `VISTAS_POR_FOTO` y `CREDITOS_POR_FOTO`.
 - Existen porque la página de cada auto del comparador se arma en el navegador (`?auto=`):
   Google no la indexa y al compartirla se veía siempre la misma vista previa.
 - **RSS de cada auto** (`autos/<slug>.xml`, 2026-10-11): sus cambios de precio de lista (misma
