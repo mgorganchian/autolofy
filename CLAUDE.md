@@ -670,7 +670,7 @@ sí quedan en inglés, porque no muestran la palabra. Se coló con `YES` dos vec
   San Luis, Neuquén, Catamarca) van en la nota de esa provincia (`sn`), a la vista. Santiago del
   Estero no tiene sellado consolidado: "s/d". Jujuy, Chubut y Neuquén cobran distinto a eléctricos
   e híbridos (`sev`, `shev`); un mild-hybrid paga como naftero y su patente lo aclara.
-- **¿Dónde cuesta menos?** (2026-10-31, pedido de Mati; plegado dentro de Gastos para patentarlo,
+- **¿Dónde cuesta menos patentar?** (2026-10-31, pedido de Mati; plegado dentro de Gastos para patentarlo,
   `#fichaMenos`, porque `#fichaDonde` es Dónde comprarlo): las 24 jurisdicciones ordenadas por alta
   (Registro 1% + sellado) más 5 años de patente, sobre el precio de lista. La patente es `pa` (% por año
   para un 0 km a combustión de unos $ 50 millones, 2026) con su calidad `pac` (`ley`, `estimada` por el
