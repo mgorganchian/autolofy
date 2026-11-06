@@ -223,7 +223,7 @@ test.describe('impresión', () => {
 });
 
 test.describe('mayores diferencias', () => {
-  test('con 2 a 6 autos: quién gana y dónde más se separan; ★ en la tabla', async ({ page }) => {
+  test('con 2 a 6 autos: quién gana y dónde más se separan; copa «Mejor» en la tabla', async ({ page }) => {
     await abrir(page, '?autos=byd-shark,maxus-t60,jac-t8');
     const box = page.locator('#difBox');
     await expect(box).toBeVisible();

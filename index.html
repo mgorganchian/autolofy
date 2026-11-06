@@ -1342,14 +1342,16 @@ if(!location.search&&!location.hash)document.documentElement.classList.add('arra
   .ficha-cochera b.no{color:var(--etq-e)}
   .dif-margen{font-weight:700;font-variant-numeric:tabular-nums;background:var(--note-bg);color:var(--note-text);border-radius:4px;padding:0 4px}
   .dif-vacio{margin:0;color:var(--ink-2)}
-  .mejor-sel{color:var(--opt);font-size:.68rem;margin-left:3px}
+  .mejor-sel{color:var(--opt);font-size:.68rem;font-weight:700;letter-spacing:.02em;margin-left:3px;display:inline-flex;align-items:center;gap:2px;white-space:nowrap;vertical-align:middle}
+  .mejor-sel svg{width:1.05em;height:1.05em;flex:none}
+  .th-precio .mejor-sel{margin:0 4px 0 0}
   /* Barras de comparación (2 a 6 autos elegidos): el largo es qué tan bueno es cada auto
      contra el mejor de la fila (el mejor llena la barra), y el color sale de una escala
      rojo → amarillo → verde fija a todo el ancho, así la punta dice dónde quedó. Van
      al pie de la celda, todas a la misma altura aunque el texto ocupe distintas líneas
      (pedido del usuario, 2026-10-07). */
   /* En esas filas el texto arranca a la misma altura en todas las celdas: arriba queda un
-     lugar fijo para la ★ (el mejor) y abajo, para la barra. */
+     lugar fijo para la copa «Mejor» y abajo, para la barra. */
   #mainTable tr.cmp-fila > td[data-col]{vertical-align:top;position:relative;padding-top:18px;padding-bottom:20px}
   #mainTable tr.cmp-fila .mejor-sel{position:absolute;top:2px;left:50%;transform:translateX(-50%);margin:0}
   /* Recalibración (2026-10-09, pedido del usuario): con 2 o más autos elegidos, la misma barra
@@ -5250,6 +5252,9 @@ function recalibrarBarras(vis){
 }
 function renderDiferencias(){
   const box = document.getElementById('difBox');
+// Copa con la palabra «Mejor» (2026-11-05, pedido de Mati: la estrella se lee como puntaje o favorito). El texto va a la vista y
+// la explicación de cada caso, al pasar el mouse. La clase sigue siendo .mejor-sel.
+const MEJOR_HTML = (titulo, aria) => '<span class="mejor-sel" title="' + titulo + '" aria-label="' + aria + '"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 3h10v5a5 5 0 0 1-10 0V3z"/><path d="M7 5H4v1a3 3 0 0 0 3 3M17 5h3v1a3 3 0 0 1-3 3M12 13v4M9 21h6M10 17h4"/></svg>Mejor</span>';
   document.querySelectorAll('#mainTable .mejor-sel').forEach(s => s.remove());
   const vis = CARS.map((_, i) => i).filter(i => colVisible[i]);
   recalibrarBarras(vis);
@@ -5265,7 +5270,7 @@ function renderDiferencias(){
     vals.filter(x => x.n === mejor).forEach(x => {
       gana.set(x.i, gana.get(x.i) + 1);
       const td = document.querySelector('#mainTable tr[data-nombre="' + CSS.escape(nombre) + '"] td[data-col="' + x.i + '"]');
-      if (td) td.insertAdjacentHTML('beforeend', '<span class="mejor-sel" title="El mejor de los elegidos en esta fila" aria-label="el mejor de los elegidos">★</span>');
+      if (td) td.insertAdjacentHTML('beforeend', MEJOR_HTML('El mejor de los elegidos en esta fila', 'el mejor de los elegidos'));
     });
     const a = Math.max(mejor, peor), b = Math.min(mejor, peor);
     filas.push({ nombre, orden, rel: b > 0 ? a / b - 1 : Infinity, est: vals.some(x => x.r.est) });
@@ -5280,7 +5285,7 @@ function renderDiferencias(){
     fab.filter(x => x.f).forEach(x => {
       gana.set(x.i, gana.get(x.i) + 1);
       const td = document.querySelector('#mainTable tr[data-nombre="Importador en Argentina"] td[data-col="' + x.i + '"]');
-      if (td) td.insertAdjacentHTML('beforeend', '<span class="mejor-sel" title="Lo importa la propia casa matriz" aria-label="lo importa la casa matriz">★</span>');
+      if (td) td.insertAdjacentHTML('beforeend', MEJOR_HTML('Lo importa la propia casa matriz', 'lo importa la casa matriz'));
     });
   }
   // La fábrica de la marca en el Mercosur cuenta como otra fila (2026-10-10), con el mismo criterio.
@@ -5290,7 +5295,7 @@ function renderDiferencias(){
     mer.filter(x => x.f).forEach(x => {
       gana.set(x.i, gana.get(x.i) + 1);
       const td = document.querySelector('#mainTable tr[data-nombre="Importador en Argentina"] td[data-col="' + x.i + '"]');
-      if (td) td.insertAdjacentHTML('beforeend', '<span class="mejor-sel" title="La marca fabrica en el Mercosur" aria-label="la marca fabrica en el Mercosur">★</span>');
+      if (td) td.insertAdjacentHTML('beforeend', MEJOR_HTML('La marca fabrica en el Mercosur', 'la marca fabrica en el Mercosur'));
     });
   }
   const nComp = filas.length + extraImp;
@@ -5303,7 +5308,7 @@ function renderDiferencias(){
   box.hidden = false;
   box.innerHTML = '<div class="dif-gana"><b>Gana en más filas</b> ' +
     ranking.map(([i, n]) => '<span class="dif-chip">' + nom(i) + ' <b>' + n + '</b></span>').join('') +
-    '<small>de ' + nComp + ' fila' + (nComp === 1 ? '' : 's') + ' con cifra en los ' + vis.length + ' autos' + (extraImp ? ', contando quién lo importa y si la marca fabrica en el Mercosur' : '') + ' (★ en la tabla)</small></div>' +
+    '<small>de ' + nComp + ' fila' + (nComp === 1 ? '' : 's') + ' con cifra en los ' + vis.length + ' autos' + (extraImp ? ', contando quién lo importa y si la marca fabrica en el Mercosur' : '') + ' (copa «Mejor» en la tabla)</small></div>' +
     (top.length ? '<div class="dif-lista"><b>Mayores diferencias</b><ul>' + top.map(f => {
       const m = f.orden[0], p = f.orden[f.orden.length - 1];
       return '<li><span class="dif-fila">' + rkEsc(rkTitulo(f.nombre)) + '</span> ' +
@@ -6153,7 +6158,7 @@ function fechasDePrecio(){
 }
 fechasDePrecio();
 // Las marcas de comparación de la fila de precio (oculta) se copian al precio del encabezado: ▲▼ contra el auto de referencia y
-// el ★ del mejor entre los elegidos. Se vuelve a copiar cada vez que esa fila cambia.
+// la copa del mejor entre los elegidos. Se vuelve a copiar cada vez que esa fila cambia.
 (function espejarPrecio(){
   const tr = document.querySelector('#mainTable tr[data-oculta]');
   if (!tr) return;
