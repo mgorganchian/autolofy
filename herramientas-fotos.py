@@ -6,6 +6,9 @@
     python3 herramientas-fotos.py descartar ID "motivo"
     python3 herramientas-fotos.py reorganizar PLAN.tsv    # vistas, repetidas y orden de lo instalado
     python3 herramientas-fotos.py instalar-oficial LISTA.tsv  # fotos de sitios oficiales AR de la marca
+    node herramientas-galeria.js SLUG URL...               # baja la galería oficial con el navegador
+    python3 herramientas-fotos.py galeria-hoja SLUG       # filtra esas imágenes y arma la hoja para mirarlas
+    python3 herramientas-fotos.py descartar-oficial SLUG N "motivo"  # anota por qué no va una de la hoja
     python3 herramientas-fotos.py portada SLUG carrusel N VISTA
     python3 herramientas-fotos.py portada SLUG IMAGEN VISTA "crédito" "fila de fichas-fuentes.tsv" [sin-recorte]
                                                           # cambia la portada (foto 1, miniatura y crédito)
@@ -45,6 +48,7 @@ INDEX = os.path.join(RAIZ, 'index.html')
 FOTOS = os.path.join(RAIZ, 'fotos')
 MANIFIESTO = os.path.join(RAIZ, 'fotos-fuentes.tsv')
 DESCARTADAS = os.path.join(RAIZ, 'fotos-descartadas.tsv')
+DESCARTADAS_OFICIAL = os.path.join(RAIZ, 'fotos-oficiales-descartadas.tsv')   # rechazos de las galerías de marca
 PORTADAS = os.path.join(RAIZ, 'fichas-fuentes.tsv')
 CAND = os.path.join(RAIZ, '.fotos-candidatas')      # está en .gitignore
 SWIFT = os.path.join(RAIZ, 'herramientas-recortar-fotos.swift')
@@ -74,6 +78,30 @@ INTERIOR = re.compile(r'interior|dashboard|cockpit|innenraum|cabin|interieur', r
 # Detalles que no sirven como foto del auto.
 DETALLE = re.compile(r'\bengine\b|motor bay|badge|emblem|logo|wheel detail|taillight|headlamp|'
                      r'charging port|\bplate\b|steering wheel|camouflage|prototype|spy', re.I)
+
+
+def imagen(origen, destino, calidad, lado=None, caja=None):
+    """Escala a JPEG: con `lado`, el lado mayor a ese tamaño (sips -Z); con `caja` (alto, ancho),
+    recortada al centro y llevada a ese tamaño. sips en macOS; Pillow en Windows y Linux
+    (2026-11-05: sin sips, la herramienta no corría fuera de la Mac)."""
+    if shutil.which('sips'):
+        args = ['-Z', str(lado)] if lado else ['-z', str(caja[0]), str(caja[1])]
+        r = subprocess.run(['sips', '-s', 'format', 'jpeg', '-s', 'formatOptions', str(calidad)] + args +
+                           [origen, '--out', destino], capture_output=True)
+        return r.returncode == 0 and os.path.exists(destino) and os.path.getsize(destino) > 0
+    from PIL import Image, ImageOps
+    try:
+        im = Image.open(origen)
+        im = ImageOps.exif_transpose(im)
+        if im.mode in ('RGBA', 'LA', 'P'):
+            im = im.convert('RGBA'); fondo = Image.new('RGB', im.size, 'white'); fondo.paste(im, mask=im.split()[3]); im = fondo
+        else: im = im.convert('RGB')
+        if lado: im.thumbnail((lado, lado), Image.LANCZOS)
+        else: im = ImageOps.fit(im, (caja[1], caja[0]), Image.LANCZOS)
+        im.save(destino, 'JPEG', quality=calidad, optimize=True)
+        return True
+    except Exception as e:
+        print(f'{origen}: {e}'); return False
 
 
 def vista(nombre):
@@ -142,8 +170,7 @@ def procesar(crudo, salida, es_interior):
     if es_interior:
         # Los interiores NO pasan por Vision: el recorte por sujeto les saca el
         # tablero y deja el volante flotando en blanco.
-        r = subprocess.run(['sips', '-s', 'format', 'jpeg', '-s', 'formatOptions', '62', '-Z', '900',
-                            crudo, '--out', salida], capture_output=True)
+        return imagen(crudo, salida, 62, lado=900)
     else:
         binario = os.path.join(CAND, 'recortar')
         if not os.path.exists(binario):
@@ -304,7 +331,7 @@ def escribir(html, cambios, nuevas_descartadas=()):
     for origen, destino, f in renombres:
         if f['fila'] and not destino.endswith('-1.jpg'): filas.append([destino, f['vista']] + f['fila'][2:])
     filas.sort(key=lambda c: (c[0].rsplit('-', 1)[0], int(c[0].rsplit('-', 1)[1][:-4])))
-    with open(MANIFIESTO, 'w', encoding='utf-8') as fh:
+    with open(MANIFIESTO, 'w', encoding='utf-8', newline='\n') as fh:
         fh.writelines(cab); fh.writelines('\t'.join(c) + '\n' for c in filas)
     for nombre, valor in (('FOTOS_POR_AUTO', fpa), ('CREDITOS_POR_FOTO', cred)):
         m, _ = mapa(html, nombre)
@@ -316,9 +343,9 @@ def escribir(html, cambios, nuevas_descartadas=()):
         m, _ = mapa(html, 'FOTOS_POR_AUTO')
         fin = html.index('\n', m.end())
         html = html[:fin + 1] + '// Vista de cada foto, en orden (la 0 es la portada). La escribe herramientas-fotos.py.\n' + js + '\n' + html[fin + 1:]
-    open(INDEX, 'w', encoding='utf-8').write(html)
+    open(INDEX, 'w', encoding='utf-8', newline='\n').write(html)
     if nuevas_descartadas:
-        with open(DESCARTADAS, 'a', encoding='utf-8') as fh:
+        with open(DESCARTADAS, 'a', encoding='utf-8', newline='\n') as fh:
             for fila in nuevas_descartadas: fh.write('\t'.join(fila) + '\n')
 
 
@@ -402,14 +429,12 @@ def portada(slug, args):
     tmp = tempfile.mkdtemp()
     shutil.copyfile(origen, os.path.join(tmp, 'p.jpg'))
     miniatura = os.path.join(tmp, 'm.jpg')
-    subprocess.run(['sips', '-s', 'format', 'jpeg', '-s', 'formatOptions', '70', '-z', '190', '300',
-                    os.path.join(tmp, 'p.jpg'), '--out', miniatura], check=True, capture_output=True)
+    if not imagen(os.path.join(tmp, 'p.jpg'), miniatura, 70, caja=(190, 300)): sys.exit('no se pudo armar la miniatura')
     # La miniatura vive en fotos/mini/<slug>.jpg (2026-10-06: embebidas pesaban 1,3 MB).
     shutil.copyfile(miniatura, os.path.join(FOTOS, 'mini', slug + '.jpg'))
     # Y la mediana de 480 px, la que se ve en el celular (2026-10-10: la de 900 px pesaba de más).
     mediana = os.path.join(tmp, 'med.jpg')
-    subprocess.run(['sips', '-s', 'format', 'jpeg', '-s', 'formatOptions', '72', '-z', '304', '480',
-                    os.path.join(tmp, 'p.jpg'), '--out', mediana], check=True, capture_output=True)
+    if not imagen(os.path.join(tmp, 'p.jpg'), mediana, 72, caja=(304, 480)): sys.exit('no se pudo armar la mediana')
     os.makedirs(os.path.join(FOTOS, 'med'), exist_ok=True)
     shutil.copyfile(mediana, os.path.join(FOTOS, 'med', slug + '.jpg'))
     m = re.search(r'<img class="car-photo" data-slug="%s"[^>]*>' % re.escape(slug), html)
@@ -417,7 +442,7 @@ def portada(slug, args):
     tag = re.sub(r' data-credito="[^"]*"', '', m.group(0))
     if credito: tag = tag.replace(' alt=""', ' alt="" data-credito="' + credito.replace('"', '&quot;') + '"', 1)
     html = html[:m.start()] + tag + html[m.end():]
-    open(INDEX, 'w', encoding='utf-8').write(html)
+    open(INDEX, 'w', encoding='utf-8', newline='\n').write(html)
     # La portada nueva entra como foto 1; el carrusel se reescribe sin la que subió.
     nueva = {'archivo': None, 'origen': os.path.join(tmp, 'p.jpg'), 'vista': v, 'cred': '', 'fila': None}
     escribir(html, {slug: [nueva] + [dict(x) for x in resto]})
@@ -429,7 +454,7 @@ def portada(slug, args):
     if '# PORTADAS CAMBIADAS DESPUÉS (herramientas-fotos.py portada)' not in quedan:
         quedan += ['', '# PORTADAS CAMBIADAS DESPUÉS (herramientas-fotos.py portada)']
     quedan.append('\t'.join(fila))
-    open(PORTADAS, 'w', encoding='utf-8').write('\n'.join(quedan) + '\n')
+    open(PORTADAS, 'w', encoding='utf-8', newline='\n').write('\n'.join(quedan) + '\n')
     print(f'{slug}: portada nueva ({v}); {len(lineas) - len(quedan) + 1 + (0 if len(lineas) else 0)} fila(s) de portada vieja quitadas')
 
 
@@ -438,7 +463,7 @@ LICENCIA_OFICIAL = 'material oficial de la marca'
 
 def instalar_oficial(lista):
     """LISTA.tsv: slug, vista, archivo_local, url_imagen, pagina_donde_aparece, marca_credito
-    (con encabezado). Fotos de los sitios oficiales argentinos de la marca o del importador,
+    y, opcional, nota (con encabezado). Fotos de los sitios oficiales argentinos de la marca o del importador,
     autorizadas por el usuario el 2026-10-06 con la marca como crédito. Se escalan a 900 px
     sin recorte (son cabinas o baúles) y se anotan en fotos-fuentes.tsv con la URL de la
     imagen y la página donde aparece. Una vista que el auto ya tiene se saltea."""
@@ -455,23 +480,91 @@ def instalar_oficial(lista):
         if not r['url_imagen'].startswith('https://') or not r['pagina_donde_aparece'].startswith('https://'):
             sys.exit(f'{slug}/{v}: la imagen y la página tienen que ser https')
         destino = os.path.join(tmp, f'{slug}-{v}.jpg')
-        ok = subprocess.run(['sips', '-s', 'format', 'jpeg', '-s', 'formatOptions', '62', '-Z', '900',
-                             r['archivo_local'], '--out', destino], capture_output=True).returncode == 0
-        if not ok or not os.path.getsize(destino): sys.exit(f'no se pudo procesar {r["archivo_local"]}')
+        if not imagen(r['archivo_local'], destino, 62, lado=900): sys.exit(f'no se pudo procesar {r["archivo_local"]}')
         marca = r['marca_credito'].strip()
+        # Columna opcional `nota`: lo que el que mira la foto tiene que saber, como «imagen generada
+        # con IA» (2026-11-05: valen si las publica el sitio oficial argentino, pero se dice).
+        nota = (r.get('nota') or '').strip()
         fotos.append({'archivo': None, 'origen': destino, 'vista': v,
-                      'cred': f'Foto: {marca} · {LICENCIA_OFICIAL} · sitio oficial',
+                      'cred': f'Foto: {marca} · {LICENCIA_OFICIAL} · sitio oficial' + (f' · {nota}' if nota else ''),
                       'fila': ['', v, r['url_imagen'], LICENCIA_OFICIAL, marca, r['pagina_donde_aparece']]})
     cambios = {k: f for k, f in cambios.items() if len(f) != len(est[k])}
     escribir(html, cambios)
     print(f'{sum(len(f) - len(est[k]) for k, f in cambios.items())} fotos en {len(cambios)} autos; {saltadas} vistas que ya tenían')
 
 
+def _huella(im):
+    """Huella de 64 bits (promedio de grises 8x8): dos fotos casi iguales dan huellas cercanas."""
+    from PIL import Image
+    g = im.convert('L').resize((8, 8), Image.LANCZOS)
+    px = list(g.tobytes()); m = sum(px) / 64
+    return sum(1 << i for i, v in enumerate(px) if v > m)
+
+
+def galeria_hoja(slug):
+    """Después de `node herramientas-galeria.js SLUG URL...`: descarta las imágenes chicas (lado
+    menor de 400 px), las tiras de banner (más de 3 a 1) y las repetidas (entre sí y contra las
+    fotos ya instaladas del auto), y arma hoja.jpg con un número sobre cada una para MIRARLAS.
+    Escribe hoja.tsv (n, ancho, alto, url_imagen, pagina). Ninguna se instala sola: se elige
+    vista por vista y se pasa a instalar-oficial."""
+    import csv
+    from PIL import Image, ImageDraw, ImageOps
+    d = os.path.join(CAND, 'oficial', slug)
+    filas = list(csv.DictReader(open(os.path.join(d, 'candidatas.tsv'), encoding='utf-8'), delimiter='\t'))
+    vistas = [_huella(Image.open(os.path.join(FOTOS, a))) for a in os.listdir(FOTOS)
+              if re.fullmatch(re.escape(slug) + r'-\d+\.jpg', a)]
+    rechazadas = {c[1] for c in filas_tsv(DESCARTADAS_OFICIAL) if len(c) > 1 and c[0] == slug}
+    quedan, motivos = [], {}
+    for r in filas:
+        if r['url_imagen'] in rechazadas: motivos[r['n']] = 'descartada antes'; continue
+        ruta = next((os.path.join(d, a) for a in os.listdir(d) if a.startswith(r['n'] + '.')), None)
+        try: im = ImageOps.exif_transpose(Image.open(ruta)); im.load()
+        except Exception: motivos[r['n']] = 'no abre'; continue
+        w, h = im.size
+        if min(w, h) < 400: motivos[r['n']] = f'chica ({w}x{h})'; continue
+        if max(w, h) / min(w, h) > 3: motivos[r['n']] = f'banner ({w}x{h})'; continue
+        hu = _huella(im)
+        if any(bin(hu ^ x).count('1') <= 6 for x in vistas): motivos[r['n']] = 'repetida'; continue
+        vistas.append(hu)
+        quedan.append((r, ruta, im))
+    with open(os.path.join(d, 'hoja.tsv'), 'w', encoding='utf-8', newline='\n') as f:
+        f.write('n\tancho\talto\turl_imagen\tpagina\n')
+        for r, ruta, im in quedan: f.write(f"{r['n']}\t{im.size[0]}\t{im.size[1]}\t{r['url_imagen']}\t{r['pagina']}\n")
+    if quedan:
+        col, ancho, alto = 4, 420, 280
+        hoja = Image.new('RGB', (col * ancho, ((len(quedan) + col - 1) // col) * (alto + 26)), 'white')
+        dib = ImageDraw.Draw(hoja)
+        for k, (r, ruta, im) in enumerate(quedan):
+            t = im.convert('RGB'); t.thumbnail((ancho - 8, alto - 8))
+            x, y = (k % col) * ancho, (k // col) * (alto + 26)
+            hoja.paste(t, (x + 4, y + 4))
+            dib.text((x + 6, y + alto + 4), f"{r['n']}  {im.size[0]}x{im.size[1]}  {os.path.basename(r['url_imagen'])[:38]}", fill='black')
+        hoja.save(os.path.join(d, 'hoja.jpg'), quality=80)
+    print(f'{slug}: {len(quedan)} para mirar de {len(filas)} ({len(motivos)} fuera: '
+          + ', '.join(sorted({m.split(' ')[0] for m in motivos.values()})) + ')')
+
+
+def descartar_oficial(slug, n, motivo):
+    """Anota en fotos-oficiales-descartadas.tsv por qué una imagen de la galería oficial no va
+    (2026-11-05: antes solo se anotaban los rechazos de Commons y no se sabía por qué el DFSK E5
+    Plus tenía 2 fotos). galeria-hoja no la vuelve a mostrar."""
+    import csv
+    hoja = {r['n']: r for r in csv.DictReader(open(os.path.join(CAND, 'oficial', slug, 'hoja.tsv'), encoding='utf-8'), delimiter='\t')}
+    if n not in hoja: sys.exit(f'{slug}: {n} no está en la hoja')
+    nuevo = not os.path.exists(DESCARTADAS_OFICIAL)
+    with open(DESCARTADAS_OFICIAL, 'a', encoding='utf-8', newline='\n') as f:
+        if nuevo:
+            f.write('# Imágenes de las galerías oficiales que se miraron y NO van (herramientas-fotos.py descartar-oficial).\n'
+                    '# auto <TAB> url de la imagen <TAB> página <TAB> motivo <TAB> fecha\n')
+        f.write('\t'.join([slug, hoja[n]['url_imagen'], hoja[n]['pagina'], motivo.replace('\t', ' '), date.today().isoformat()]) + '\n')
+    print(f'descartada {slug} {n}: {motivo}')
+
+
 def descartar(cid, motivo):
     cands = candidatas()
     if cid not in cands: sys.exit(f'{cid}: no es una candidata de esta corrida')
     nuevo = not os.path.exists(DESCARTADAS)
-    with open(DESCARTADAS, 'a', encoding='utf-8') as f:
+    with open(DESCARTADAS, 'a', encoding='utf-8', newline='\n') as f:
         if nuevo:
             f.write('# Fotos de Commons que se miraron y NO sirven. "buscar" no las vuelve a proponer.\n'
                     '# archivo en Commons <TAB> auto <TAB> motivo <TAB> fecha\n')
@@ -487,4 +580,6 @@ if __name__ == '__main__':
     elif a[:1] == ['portada'] and len(a) >= 4: portada(a[1], a[2:])
     elif a[:1] == ['instalar-oficial'] and len(a) == 2: instalar_oficial(a[1])
     elif a[:1] == ['descartar'] and len(a) == 3: descartar(a[1], a[2])
+    elif a[:1] == ['galeria-hoja'] and len(a) == 2: galeria_hoja(a[1])
+    elif a[:1] == ['descartar-oficial'] and len(a) == 4: descartar_oficial(a[1], a[2], a[3])
     else: sys.exit(__doc__)
