@@ -928,8 +928,14 @@ portada primero y el resto en el orden de las vistas.
   Se instalan con `instalar-oficial LISTA.tsv` (slug, vista, archivo, URL de la imagen,
   página donde aparece, marca), sin recorte, y en `fotos-fuentes.tsv` llevan la URL de la
   imagen y la página del sitio en vez de las de Commons. Así entraron 180 fotos de cabina y
-  baúl el 2026-10-06. Solo de la versión de la tabla, con volante a la izquierda y sin
-  renders armados (se descartó un baúl con un telescopio sobre un cielo estrellado).
+  baúl el 2026-10-06. Solo de la versión de la tabla y con volante a la izquierda.
+- **Criterio vigente para sumar fotos: la skill `fotos-oficiales`** (`.claude/skills/fotos-oficiales/SKILL.md`;
+  decisión de Sebastián del 2026-11-05, issue #143: más cantidad y calidad, más vistas por auto). En corto:
+  la galería oficial se abre **con el navegador** (`node herramientas-galeria.js`; con `curl` se perdían las
+  imágenes que la página carga con JavaScript: el DFSK E5 Plus quedó con 2 fotos por eso); **una imagen con IA
+  o un render publicado en el sitio oficial argentino vale** (el crédito lo dice); Commons se puede relajar a
+  la misma generación de otro mercado si no hay diferencias visibles; y **todo rechazo se anota**, también
+  los de las galerías oficiales (`descartar-oficial` → `fotos-oficiales-descartadas.tsv`).
 - **La portada tiene que ser la versión que vende el importador argentino** (frente,
   rótulos, generación): se compara con la tapa de la ficha AR o el sitio oficial AR. Se
   cambia con `herramientas-fotos.py portada SLUG …`, que reescribe juntos la foto 1, la

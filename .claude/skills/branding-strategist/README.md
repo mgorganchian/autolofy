@@ -5,7 +5,9 @@ Esta skill configura a Claude para trabajar como estratega de marca, con foco en
 ## Contenido
 
 - SKILL.md: instrucciones y metodología de trabajo.
-- references/contexto-proyecto-automotor.md: antecedentes y preferencias del proyecto automotor, incluido el estado no aprobado de AUTOLOFY.
+- references/rubrica.md: pesos, reglas de cada criterio (escala de 1 a 10) y fórmula de la nota.
+- references/verificacion-dominios-y-redes.md: cómo consultar dominios y redes con evidencia.
+- references/contexto-proyecto-automotor.md: antecedentes, filtros acordados con el equipo, territorios ya agotados y estado de la búsqueda de nombre, incluido el estado no aprobado de AUTOLOFY.
 
 ## Uso en Claude Code
 
@@ -22,3 +24,5 @@ El archivo ZIP que acompaña esta entrega puede importarse como una Skill person
 ## Nota
 
 Los ejemplos históricos son antecedentes, no decisiones finales. No se ha verificado disponibilidad legal ni registral de AUTOLOFY ni de los nombres alternativos. Nunca se debe afirmar disponibilidad de dominios o marcas sin una consulta actual y documentada.
+
+La lista corta y los nombres descartados no se guardan en este repositorio, que es público: quedan en un lugar privado hasta que sus dominios y usuarios estén reservados.
