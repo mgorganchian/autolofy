@@ -11,6 +11,7 @@ previa. Estas páginas salen de los mismos datos de index.html (CARS, DATA, COLO
 CREDITOS de las portadas) y no agregan ninguno: si index.html cambia, se regeneran.
 Nunca editarlas a mano. tests/e2e/paginas.spec.js falla si quedaron desactualizadas.
 """
+import ast
 import html as H
 import json
 from urllib.parse import quote
@@ -57,6 +58,11 @@ def leer():
     extra = {k: json.loads(re.search(r'const ' + k + r' = (\{.*?\});\n', s).group(1))
              for k in ('SERVICE_MARCAS', 'SERVICE_OFICIAL', 'LLAMADOS', 'LLAMADOS_FUENTE')}
     assert len(cars) == len(slugs) == len(data[0][1][0]) - 1
+    # Galería (2026-11-06, pedido de Mati): la página de cada auto muestra todas sus fotos, no solo la portada.
+    global GALERIA
+    GALERIA = {k: json.loads(re.search(r'const ' + k + r' = (\{.*?\});\n', s).group(1))
+               for k in ('FOTOS_POR_AUTO', 'VISTAS_POR_FOTO', 'CREDITOS_POR_FOTO')}
+    GALERIA['VISTA_NOMBRE'] = ast.literal_eval(re.search(r'const VISTA_NOMBRE = (\{.*?\});', s, re.S).group(1))
     return data, cars, slugs, creditos, colores, videos, extra
 
 
@@ -101,6 +107,27 @@ def service_llamados_html(slug, extra):
         '<ul class="vs">' + ''.join(f'<li><b>{fecha_corta(x["f"])}{" (fecha por confirmar)" if x.get("dud") else ""}, {e(x["mod"])}:</b> {e(x["d"])}</li>' for x in ll) + f'</ul><p class="nota">Cada llamado alcanza solo a unidades de ciertos lotes o años: el registro no siempre aclara cuáles. Del {fuente}.</p>'
         if ll else f'<p class="nota">No figura ninguno en el {fuente}.</p>') + '</section>')
     return out
+
+
+GALERIA = {}
+
+
+def galeria_html(slug, nombre):
+    """Las fotos 2 en adelante de un auto (la 1 es la portada, que va arriba), cada una con su vista y su crédito."""
+    n = GALERIA.get('FOTOS_POR_AUTO', {}).get(slug, 0)
+    if n < 2 or not tiene_foto(slug): return ''
+    vistas = GALERIA['VISTAS_POR_FOTO'].get(slug, [])
+    creditos = GALERIA['CREDITOS_POR_FOTO'].get(slug, [])
+    e = H.escape
+    figs = []
+    for k in range(1, n):
+        if not os.path.exists(os.path.join(RAIZ, 'fotos', f'{slug}-{k + 1}.jpg')): continue
+        vista = GALERIA['VISTA_NOMBRE'].get(vistas[k], vistas[k]) if k < len(vistas) else ''
+        cred = creditos[k] if k < len(creditos) else ''
+        pie = ' · '.join(p for p in (vista, cred) if p)
+        figs.append(f'<figure><img src="/fotos/{slug}-{k + 1}.jpg" alt="{e(nombre)}{(": " + e(vista)) if vista else ""}" '
+                    f'loading="lazy">{f"<figcaption>{e(pie)}</figcaption>" if pie else ""}</figure>')
+    return f'<section class="galeria"><h2>Más fotos</h2>{"".join(figs)}</section>' if figs else ''
 
 
 def pagina(i, data, car, slug, credito, colores, videos, vs=(), extra=None):
@@ -166,7 +193,7 @@ body{{margin:0;background:var(--paper);color:var(--ink);font:1rem/1.5 system-ui,
 main{{max-width:880px;margin:0 auto;padding:16px}}
 a{{color:var(--accent)}} h1{{font-size:2rem;line-height:1.1;margin:8px 0 4px;text-wrap:balance}}
 .sub{{color:var(--ink2);margin:0 0 12px}} figure{{margin:0}} figure img{{width:100%;height:auto;background:#fff;border-radius:2px}}
-figcaption{{font-size:.75rem;color:var(--ink2)}} .cta{{display:inline-block;margin:12px 0;padding:8px 14px;border-radius:4px;background:var(--accent);color:#fff;text-decoration:none;font-weight:600}}
+figcaption{{font-size:.75rem;color:var(--ink2)}} .galeria{{display:grid;gap:14px;margin:18px 0}} .galeria h2{{margin:0}} .cta{{display:inline-block;margin:12px 0;padding:8px 14px;border-radius:4px;background:var(--accent);color:#fff;text-decoration:none;font-weight:600}}
 h2{{font-size:1.15rem;margin:24px 0 6px;border-bottom:2px solid var(--ink)}} table{{width:100%;table-layout:fixed;border-collapse:collapse;font-variant-numeric:tabular-nums}}
 th,td{{text-align:left;vertical-align:top;padding:5px 6px;border-bottom:1px solid var(--line);overflow-wrap:anywhere}} th{{font-weight:500;width:42%;color:var(--ink2)}}
 td small{{display:block;font-size:.75rem;color:var(--ink2)}} .colores{{list-style:none;padding:0;display:flex;flex-wrap:wrap;gap:6px}}
@@ -180,6 +207,7 @@ td small{{display:block;font-size:.75rem;color:var(--ink2)}} .colores{{list-styl
 <p class="sub">{e(tipo.capitalize())}, {e(car.get('body', ''))}. {e(ESTADO.get(car['status'], ''))}. Precio de lista: {e(precio)}.</p>
 <figure><img src="{img_auto(slug)}" alt="{e(nombre)}" width="900" height="570">{f'<figcaption>{e(credito)}</figcaption>' if credito else ''}</figure>
 <a class="cta" href="/?auto={slug}">Compararlo con otros autos</a>
+{galeria_html(slug, nombre)}
 <p class="nota">Para enterarte cuando cambie su precio o salga una promoción, sumá <a href="/autos/{slug}.xml">su RSS</a> a tu lector de noticias.</p>
 {vs_html(vs)}
 {service_llamados_html(slug, extra) if extra else ''}

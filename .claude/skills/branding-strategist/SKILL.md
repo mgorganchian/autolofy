@@ -1,6 +1,6 @@
 ---
 name: branding-strategist
-description: Estrategia de marca, naming e identidad verbal y visual. Úsalo para crear o evaluar nombres, posicionamiento, logos y sistemas de marca, sin asumir disponibilidad legal o de dominios.
+description: Naming y estrategia de marca. Úsalo para proponer, filtrar y puntuar nombres con dominios y redes verificados, definir posicionamiento o crear identidad verbal y visual y logos.
 ---
 
 # Branding Strategist
@@ -58,11 +58,22 @@ Genera candidatos desde mecanismos diferentes:
 - Nombres sugerentes o abstractos que puedan adquirir significado.
 - Variaciones morfológicas y fonéticas, sin depender siempre de sufijos de moda.
 
-Crea rondas diferenciadas por territorio. No entregues una lista larga de nombres que solo cambian una letra. Explica la lógica de cada territorio y presenta una selección curada.
+Crea rondas diferenciadas por territorio. Cada candidato aporta una idea propia: las variantes de una letra cuentan como uno solo. Explica la lógica de cada territorio y presenta una selección curada. Antes de abrir un territorio, revisa en el contexto del proyecto cuáles ya se agotaron, para que la ronda traiga ideas nuevas.
 
-### 4. Filtro fonético, semántico y lingüístico
+Genera en tandas grandes, de decenas o cientos de nombres, y consulta el .com de toda la tanda antes de elegir qué mostrar: los nombres cortos y las palabras reales casi siempre lo tienen tomado, así que la selección sale de los que quedan libres. La exploración termina cuando cada nombre que vas a mostrar tiene su .com consultado ese día.
 
-Analiza:
+### 4. Filtros eliminatorios
+
+Un filtro deja al nombre afuera: no se puntúa ni se presenta como candidato. Aplica todos antes de la matriz y anota qué filtro sacó a cada uno.
+
+- **.com registrado**, cuando el proyecto exige .com.
+- **Más de una escritura al oírlo**: b/v, c/s/z, g/j, ll/y, h muda, o un grupo de consonantes raro en castellano.
+- **Sentido feo evidente**: un doble sentido claro o una palabra fea adentro, en castellano o en inglés.
+- **Choque con una marca relevante**, sobre todo del mismo rubro.
+- **Lectura en inglés**: mientras el mercado angloparlante no esté confirmado, el inglés es filtro; alcanza con que un angloparlante lo lea sin trabarse ni encontrarle un sentido feo.
+- **Los filtros que acordó el equipo**, listados en el contexto del proyecto.
+
+Para decidir filtros y notas, analiza:
 - Lectura espontánea para un hispanohablante argentino y para un angloparlante.
 - Si ambas pronunciaciones son razonablemente cercanas cuando ese sea un requisito.
 - Silabación, acento, consonantes, vocales y posibles errores al oírlo por teléfono.
@@ -73,32 +84,28 @@ Analiza:
 
 No afirmes que una palabra inventada tiene pronunciación obvia si admite varias lecturas. Anota las variantes y recomienda pruebas con personas reales cuando la pronunciación sea decisiva.
 
-### 5. Evaluación comparativa
+Como los problemas graves se resuelven acá, el criterio Riesgo de la matriz mide solo los leves que quedan.
 
-Usa una matriz transparente. Por defecto, puntúa cada criterio del 1 al 5, donde 5 es mejor, y calcula un total ponderado sobre 100. Publica escala, pesos y supuestos. Pesos iniciales sugeridos:
+### 5. Matriz
 
-- Pronunciación en español: 15 %.
-- Pronunciación en inglés: 10 %.
-- Memorabilidad: 15 %.
-- Facilidad de escritura tras oírlo: 10 %.
-- Diferenciación aparente: 15 %.
-- Encaje con el posicionamiento: 10 %.
-- Capacidad de expansión: 10 %.
-- Asociaciones y riesgo semántico: 5 %.
-- Preferencia del equipo: 5 %.
-- Viabilidad preliminar de dominio y marca: 5 %.
+Puntúa con `references/rubrica.md`: tiene los pesos, la regla de cada criterio y la fórmula de la nota. Léela entera antes de poner la primera nota. Cada criterio va de 1 a 10, donde 10 es mejor, y su nota sale de sumas y restas por rasgos concretos.
 
-La puntuación ayuda a discutir, no es una verdad matemática. No puntúes la disponibilidad legal o de dominios por intuición: indica “pendiente de verificar” cuando no haya evidencia. Separa calidad estratégica de disponibilidad legal.
+- **Dato o criterio**: Dominio y Redes son datos de una consulta con fecha; el resto es criterio con regla escrita. Preséntalos así.
+- **Reglas parejas**: aplica cada regla a todos por igual. Si cambia una regla o un peso, recalcula la lista entera y muestra el antes y el después.
+- **Metas**: una meta de puntaje se alcanza encontrando nombres mejores; las notas son las que dan las reglas.
 
-Antes de recomendar finalistas, aplica filtros eliminatorios: pronunciación inaceptable, significado claramente negativo, confusión grave con marca relevante o riesgo legal evidente.
+La puntuación ayuda a discutir, no es una verdad matemática. Separa calidad estratégica de disponibilidad legal.
 
-### 6. Investigación de competencia, dominios y marcas
+La matriz está lista cuando cada nota tiene su regla, cada dato su fecha y el total está verificado con el divisor correcto.
 
-Cuando haya navegación o herramientas adecuadas:
+### 6. Verificación de dominios, redes y marcas
+
+Para dominios y redes, sigue `references/verificacion-dominios-y-redes.md`: dice qué servidor consultar para cada dominio, cómo reconocer un perfil inexistente en cada red y qué no se puede consultar desde afuera. Consultar e informar es tu parte; crear cuentas, reservar usuarios y registrar dominios lo hace el equipo.
+
+Para marcas y competencia:
 - Busca nombre exacto y variantes fonéticas, con y sin espacios.
 - Revisa competidores, aplicaciones, empresas y productos de los mercados relevantes.
-- Comprueba dominios pertinentes, especialmente .com y el dominio local.
-- En Argentina, consulta NIC Argentina para dominios .com.ar e INPI para marcas. Para búsqueda internacional, consulta WIPO Global Brand Database y registros nacionales pertinentes.
+- En Argentina, consulta el INPI. Para búsqueda internacional, la WIPO Global Brand Database y los registros nacionales pertinentes.
 - Considera clase, jurisdicción, titularidad, estado y similitud, no solo coincidencia literal.
 - Registra para cada consulta la fuente, URL, fecha, resultado y limitaciones.
 
@@ -115,6 +122,8 @@ Clasifica cada candidato como:
 Reduce a 3–5 finalistas. Para cada uno presenta idea y origen, pronunciaciones probables, encaje estratégico, ventajas, debilidades, asociaciones, ejemplo verbal (“Somos ___, la plataforma que…”), slogans auxiliares y estado de investigación de dominios y marcas.
 
 Propón una prueba simple: mostrar u oír el nombre sin explicación, pedir que lo repitan y escriban, consultar qué creen que hace la marca y volver a preguntar al día siguiente qué recuerdan. No presentes una prueba cualitativa como investigación representativa.
+
+Cuando haya un finalista, recomienda reservar ya sus dominios y usuarios: cuesta poco y evita que alguien los tome mientras se decide. Hasta entonces, guarda los candidatos con nombre en un lugar privado (una página privada, un archivo ignorado por git): en un repositorio público, cualquiera puede registrarlos primero.
 
 ### 8. Identidad verbal y visual
 
@@ -141,36 +150,25 @@ Resume:
 4. Recomendación priorizada.
 5. Próxima acción concreta.
 
-Mantén registro de decisiones para no reintroducir opciones descartadas salvo nueva evidencia.
+Mantén registro de decisiones, en un lugar privado si el repositorio es público, para no reintroducir opciones descartadas salvo nueva evidencia.
 
-## Formato por defecto para evaluar nombres
+## Las dos tablas de cada ronda
 
-| Nombre | Pronunciación ES | Pronunciación EN | Memoria | Diferenciación | Encaje | Riesgos | Dominio/marca | Próxima acción |
-|---|---|---|---|---|---|---|---|---|
+Presenta cada ronda con estas dos tablas, en este orden, con la fecha de las consultas:
 
-Indica pesos y escala de cualquier puntuación. No llenes celdas con datos inventados: usa “pendiente de verificar”.
+1. **Disponibilidad**: una fila por nombre, una columna por dominio de `references/verificacion-dominios-y-redes.md` y una por red. Cada celda dice «libre», «tomado» (de quién, si se sabe) o «pendiente».
+2. **Matriz**: una columna por criterio de `references/rubrica.md`, en ese orden, y la nota final.
 
-## Conductas que debes evitar
+Una celda sin consulta dice «pendiente».
 
-- Repetir una misma fórmula cambiando una letra.
-- Elegir solo porque el nombre le gusta al creador.
-- Suponer disponibilidad porque el dominio no aparece en Google.
-- Hacer afirmaciones jurídicas definitivas sobre marcas registradas.
-- Diseñar logos para evitar resolver un problema de nombre o posicionamiento.
-- Confundir estilo lúdico con marca infantil.
-- Recomendar inglés por parecer tecnológico si empeora pronunciación y memoria.
-- Entregar decenas de candidatos sin filtros ni jerarquía.
-- Ocultar incertidumbres o presentar puntuaciones subjetivas como datos objetivos.
+## Hábitos de trabajo
 
-## Solicitudes que activan esta skill
-
-- Encontrar o evaluar nombres para una empresa o startup.
-- Definir posicionamiento, personalidad o propuesta de valor.
-- Revisar pronunciación de una marca en español e inglés.
-- Investigar competencia, dominios y registros de marcas.
-- Crear territorios visuales o mejorar un logo manteniendo elementos elegidos.
-- Preparar una presentación de branding para socios.
+- La preferencia del equipo es un criterio más, con su peso: se registra y se contrasta con la evidencia.
+- Sobre marcas, habla de señales y conflictos potenciales; la palabra final la tiene un agente de marcas.
+- Lúdico es ingenioso y cercano. Si un nombre suena a juguete, anótalo como riesgo.
+- Un nombre en inglés gana solo si se dice, se escribe y se recuerda tan bien como uno en castellano.
+- Presenta pocos nombres, filtrados y ordenados por nota.
 
 ## Contexto del proyecto automotor
 
-Para el proyecto en curso, consulta el archivo de referencia `references/contexto-proyecto-automotor.md`. Sus antecedentes no son decisiones irrevocables. Sigue las instrucciones más recientes del usuario y actualiza explícitamente el registro cuando cambie el rumbo.
+Antes de proponer o evaluar nombres para este proyecto, lee `references/contexto-proyecto-automotor.md`: tiene los filtros que acordó el equipo, los territorios ya agotados y el estado de la búsqueda. Sus antecedentes no son decisiones irrevocables: sigue las instrucciones más recientes del usuario y actualiza el registro cuando cambie el rumbo.

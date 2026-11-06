@@ -207,6 +207,7 @@ sí quedan en inglés, porque no muestran la palabra. Se coló con `YES` dos vec
   sigue siendo la clave de todo**: el código busca filas por `tr.dataset.nombre`, nunca
   por el texto visible ni por `data-search` (que suma el corto para la búsqueda). El
   filtro de asientos dejó de andar en silencio cuando se buscaba por `data-search`.
+- **El mejor se marca con una copa y la palabra «Mejor»**, no con una estrella (2026-11-05, pedido de Mati: la estrella se lee como puntaje o favorito). Sale de `MEJOR_HTML` en `index.html`; la clase sigue siendo `.mejor-sel` (la usan los tests) y la explicación de cada caso va en el `title`. Donde estos textos dicen «★» se lee la copa.
 - **La barra resumen NO es sticky** — decisión explícita del usuario.
 - **El header grande se oculta** tras el primer "Comparar" (`hasComparedOnce`).
 - **Dropdown de Marca/Modelo en `position:static`**, no `absolute` (quedaba recortado).
@@ -459,7 +460,7 @@ sí quedan en inglés, porque no muestran la palabra. Se coló con `YES` dos vec
   fila. La etiqueta argentina (IRAM/AITA 10274-2) es NEDC (Res. 85/2018).
 - El ranking ordena autonomía eléctrica y consumo por un **estimado WLTP** (`WLTP_AUT`,
   `WLTP_CONS`, fuentes en `WLTP_TEXTO`), pero muestra grande la cifra de la ficha. La
-  tabla nunca muestra estimados. La **autonomía combinada no se estima**: no hay factor
+  tabla muestra el estimado **solo debajo de la cifra de la ficha**, marcado «WLTP estimado» y con su cuenta en el tooltip (`wltpCeldaHTML`, 2026-11-06, pedido de Mati; antes no lo mostraba): nunca en lugar de ella, y nada si el ciclo es WLTP/WLTC, no se informa o no hay factor. La **autonomía combinada no se estima**: no hay factor
   defendible; se rankea por ciclo. Decisión del usuario: no cambiar sin preguntarle.
 - **Potencia total del sistema (kW)**: naftero = motor; eléctrico = motor(es); híbrido =
   la combinada que declara la fuente. **Nunca sumar motores a mano**. Si la "combinada"
@@ -650,7 +651,7 @@ sí quedan en inglés, porque no muestran la palabra. Se coló con `YES` dos vec
   job `db` de GitHub Actions. Con `AUTOLOFY_DB_URL` (cadena de Neon, del Keychain, nunca a un archivo) los mismos scripts cargan Neon.
 - **Etapa 1** (hecha): marcas, autos, categorías, filas, celdas (partidas en origen/valor/detalle) con su fuente, historiales de precios, concesionarios,
   promos con sus versiones, llamados, videos y ventas por marca. **Etapa 2** (hecha el 2026-11-05): colores, fotos (vista y crédito), fotos descartadas, logos, service oficial,
-  gastos para patentarlo y tasas del BCRA; falta normalizar `fotos-fuentes.tsv` y `fichas-fuentes.tsv` (mezclan formatos); `RED_OFICIAL` es derivado y no se guarda.
+  gastos para patentarlo y tasas del BCRA; `fotos-fuentes.tsv` y `fichas-fuentes.tsv` se cargaron el 2026-11-05 (etapa 2b, `schema-etapa2b.sql`: `foto_fuente`, `ficha_fuente`, `portada_commons`, `portada_oficial`; `fichas-fuentes.tsv` mezcla tres clases de fila y la base las separa, con `linea` para reconstruir el orden); `RED_OFICIAL` es derivado y no se guarda.
   **Etapa 3** (2026-11-05): `db/sincronizar.mjs` rehace el esquema de Neon desde lo que quedó en `main` y comprueba (`db/verificar.mjs`, la misma comparación de la prueba de
   ida y vuelta) que la base exporta idéntico a `index.html` y a los JSON. La rutina semanal lo corre al final (paso 5; si falla, avisa y el sitio no se ve afectado).
   **La fuente de verdad sigue siendo el repo**: la base es hoy un espejo verificado. Invertirlo (que la rutina escriba en la base y un build regenere `index.html`) exige
@@ -801,6 +802,8 @@ sí quedan en inglés, porque no muestran la palabra. Se coló con `YES` dos vec
   título y descripción propios, datos estructurados schema.org `Car`, la ficha completa y
   los colores; además `sitemap.xml`, `robots.txt` y la lista de links del pie del
   comparativo (entre `<!-- autos:inicio -->` y `<!-- autos:fin -->`).
+- **Todas las fotos** (2026-11-06, pedido de Mati): la página muestra la portada y debajo «Más fotos» con las demás (`galeria_html`), cada una con su vista y su
+  crédito, tomados de `FOTOS_POR_AUTO`, `VISTAS_POR_FOTO` y `CREDITOS_POR_FOTO`.
 - Existen porque la página de cada auto del comparador se arma en el navegador (`?auto=`):
   Google no la indexa y al compartirla se veía siempre la misma vista previa.
 - **RSS de cada auto** (`autos/<slug>.xml`, 2026-10-11): sus cambios de precio de lista (misma
@@ -927,8 +930,14 @@ portada primero y el resto en el orden de las vistas.
   Se instalan con `instalar-oficial LISTA.tsv` (slug, vista, archivo, URL de la imagen,
   página donde aparece, marca), sin recorte, y en `fotos-fuentes.tsv` llevan la URL de la
   imagen y la página del sitio en vez de las de Commons. Así entraron 180 fotos de cabina y
-  baúl el 2026-10-06. Solo de la versión de la tabla, con volante a la izquierda y sin
-  renders armados (se descartó un baúl con un telescopio sobre un cielo estrellado).
+  baúl el 2026-10-06. Solo de la versión de la tabla y con volante a la izquierda.
+- **Criterio vigente para sumar fotos: la skill `fotos-oficiales`** (`.claude/skills/fotos-oficiales/SKILL.md`;
+  decisión de Sebastián del 2026-11-05, issue #143: más cantidad y calidad, más vistas por auto). En corto:
+  la galería oficial se abre **con el navegador** (`node herramientas-galeria.js`; con `curl` se perdían las
+  imágenes que la página carga con JavaScript: el DFSK E5 Plus quedó con 2 fotos por eso); **una imagen con IA
+  o un render publicado en el sitio oficial argentino vale** (el crédito lo dice); Commons se puede relajar a
+  la misma generación de otro mercado si no hay diferencias visibles; y **todo rechazo se anota**, también
+  los de las galerías oficiales (`descartar-oficial` → `fotos-oficiales-descartadas.tsv`).
 - **La portada tiene que ser la versión que vende el importador argentino** (frente,
   rótulos, generación): se compara con la tapa de la ficha AR o el sitio oficial AR. Se
   cambia con `herramientas-fotos.py portada SLUG …`, que reescribe juntos la foto 1, la
