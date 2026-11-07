@@ -1151,7 +1151,9 @@ if(!location.search&&!location.hash)document.documentElement.classList.add('arra
   .elegir-ops{display:grid;grid-template-columns:repeat(auto-fill,minmax(7.5rem,1fr));gap:5px}
   /* Botones del mismo tamaño en cada pregunta (2026-10-30, pedido de Mati): grilla de columnas iguales. */
   /* Las preguntas de tres opciones van de a tres en el celular, en una sola fila (2026-11-01, pedido de Mati). */
-  @media (max-width:640px){ .elegir-ops[data-n="3"]{grid-template-columns:repeat(3,1fr)} .elegir-ops[data-n="3"] span{padding:4px 2px} }
+  @media (max-width:640px){ .elegir-ops[data-n="3"]{grid-template-columns:repeat(3,1fr)} .elegir-ops[data-n="3"] span{padding:4px 2px}
+    .elegir-ops[data-n="4"]{grid-template-columns:repeat(4,1fr)} .elegir-ops[data-n="4"] span{padding:4px 2px} }
+  .elegir-ops[data-q="seg"] b{display:block;font-size:1.25em;line-height:1.1}
   .elegir-ops label{cursor:pointer;display:flex}
   /* «Silla de ruedas» es un círculo chico en el título de «Quiénes viajan seguido» (2026-11-01, pedido de Mati). */
   .quien-leyenda{display:flex;align-items:center;justify-content:space-between;width:100%}
@@ -6886,7 +6888,7 @@ const ELEGIR_PREG = [
   // 2026-11-07, pedido de Mati: tres filtros que las respuestas de arriba dejan armados y que se pueden cambiar a mano.
   // Tamaño (segmento A a D, lo arma «¿Quiénes viajan seguido?» y las plazas), tipo de auto (casillas; «Me da igual» las apaga) y
   // propulsión (EV, PHEV, HEV…, la arman el uso y el enchufe). Se guardan como lista separada por comas; '' = me da igual.
-  { k: 'seg', t: '¿De qué tamaño?', multi: true, sug: 'seg', ops: [['A', 'A urbano'], ['B', 'B chico'], ['C', 'C compacto'], ['D', 'D mediano o grande']] },
+  { k: 'seg', t: '¿De qué tamaño?', multi: true, sug: 'seg', ops: [['A', 'A urbano'], ['B', 'B chico'], ['C', 'C compacto'], ['D', 'D grande']] },
   { k: 'prop', t: '¿Qué propulsión?', multi: true, igual: true, sug: 'prop', ops: [['ev', 'Eléctrico (EV)'], ['phev', 'Enchufable (PHEV)'], ['hev', 'Híbrido (HEV)'], ['mhev', 'Mild-hybrid'], ['ice', 'Nafta o diésel']] },
   { k: 'carro', t: '¿Qué tipo de auto preferís?', multi: true, igual: true, ops: [['suv', 'SUV o crossover'], ['sedan', 'Sedán'], ['hatch', 'Hatchback'], ['pickup', 'Pickup'], ['minivan', 'Minivan'], ['coupe', 'Coupé o descapotable']] },
 ];
@@ -6953,7 +6955,7 @@ const ELEGIR_TIP = {
     A: 'Autos urbanos: hatchbacks de menos de 2,45 m entre ejes y los más chicos.',
     B: 'Chicos: SUV de menos de 4,40 m de largo; hatchbacks y sedanes de menos de 2,60 y 2,66 m entre ejes.',
     C: 'Compactos: SUV de 4,40 a 4,70 m de largo; hatchbacks y sedanes de hasta 2,80 m entre ejes.',
-    D: 'Medianos y grandes: SUV de 4,70 m o más, sedanes de más de 2,80 m entre ejes, y los muy grandes (6 o 7 asientos y pickups).',
+    D: 'Medianos y grandes (D): SUV de más de 4,70 m de largo, sedanes de más de 2,80 m entre ejes, y los muy grandes (6 o 7 asientos y pickups). Los metros son del largo del auto o de la distancia entre ejes, no del habitáculo.',
   },
   prop: {
     '': 'Entran todas las propulsiones.',
@@ -7265,7 +7267,7 @@ function elegirMultiHTML(q, r){
     : '<p class="filtro-nota">' + (q.k === 'seg' ? 'Sugerido según quiénes viajan y las plazas.' : 'Sugerido según el uso y si podés cargarlo.') + ' Cambialo si querés.</p>';
   return '<fieldset role="group" aria-label="' + q.t + '"><div class="elegir-leyenda">' + q.t + '</div><div class="elegir-ops" data-n="' + ops.length + '" data-q="' + q.k + '" style="--n:' + ops.length + '">' +
     ops.map(([v, t]) => { const on = v === '__igual' ? todos : q.k === 'seg' ? sel.includes(v) : !todos && sel.includes(v), tip = v === '__igual' ? cart[''] : cart[v];
-      return '<label><input type="checkbox" name="elm-' + q.k + '" value="' + v + '"' + (on ? ' checked' : '') + '><span' + (tip ? ' data-tip="' + tip + '"' : '') + '>' + t + '</span></label>'; }).join('') +
+      return '<label><input type="checkbox" name="elm-' + q.k + '" value="' + v + '"' + (on ? ' checked' : '') + '><span' + (tip ? ' data-tip="' + tip + '"' : '') + '>' + (q.k === 'seg' ? '<b>' + t.charAt(0) + '</b>' + t.slice(2) : t) + '</span></label>'; }).join('') +
     '</div>' + nota + '</fieldset>';
 }
 // Por qué salió cada auto (2026-10-30, pedido de Mati): el puntaje desglosado en un cartel.

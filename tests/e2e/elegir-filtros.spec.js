@@ -96,3 +96,13 @@ test('el tamaño de al lado queda como «casi» y las respuestas viejas se migra
   await page.reload();
   expect(await page.evaluate(() => elegirResp.carro)).toBe('sedan,hatch,coupe');
 });
+
+test('los cuatro tamaños (A a D) van en una sola fila, también en el celular, sin partir las palabras', async ({ page }) => {
+  const r = await page.locator('.elegir-ops[data-q="seg"] label').evaluateAll(ls => ({ tops: [...new Set(ls.map(l => Math.round(l.getBoundingClientRect().top)))], n: ls.length,
+    textos: ls.map(l => l.textContent.trim()) }));
+  expect(r.n).toBe(4);
+  expect(r.tops.length).toBe(1);
+  expect(r.textos).toEqual(['Aurbano', 'Bchico', 'Ccompacto', 'Dgrande']);
+  const anchos = await page.locator('.elegir-ops[data-q="seg"] span').evaluateAll(ss => ss.map(s => [Math.round(s.scrollWidth), Math.round(s.clientWidth)]));
+  for (const [sw, cw] of anchos) expect(sw).toBeLessThanOrEqual(cw + 1);
+});
