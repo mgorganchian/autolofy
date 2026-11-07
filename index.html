@@ -7017,7 +7017,7 @@ const ELEGIR_TIP = {
     silla: 'Entran los de baúl al menos tan grande como el del BYD Song Pro, donde la silla entra de costado con los asientos sin plegar (referencia de Mati). Ningún dato dice qué tan alto es el piso del baúl: probala en el auto.',
   },
   quien: {
-    ninos: 'Piden ISOFIX: sin él no entran, y si no informan, quedan como «casi». El tamaño se arma con los segmentos B, C y D. Con 3 chicos, el del medio va sin ISOFIX.',
+    ninos: 'Piden ISOFIX: sin él no entran, y si no informan, quedan como «casi». El tamaño no se achica: entran todos los segmentos que tengan las plazas y el ISOFIX. Con 3 chicos, el del medio va sin ISOFIX.',
     adultos: 'Si va algún adulto atrás, el tamaño se arma con los segmentos C y D (los chicos pueden quedar justos). Lo cambiás en «¿De qué tamaño?».',
   },
 };
@@ -7061,13 +7061,13 @@ const siNoDe = (fila, i) => { const v = String(FILA_POR_NOMBRE[fila][i + 1]).rep
   return /^(YES|S[ií])\b/.test(v) ? true : /^(NO|No)\b/.test(v) ? false : null; };
 const isofixDe = i => { const v = String(FILA_POR_NOMBRE['Anclajes ISO-FIX'][i + 1]).replace(/^(DET|NOTE|EXT):/, '');
   return /^(YES|S[ií])\b/.test(v) ? true : /^(NO|No)\b/.test(v) ? false : null; };
-// Lo que dejan armado las respuestas (2026-11-07, pedido de Mati). Tamaño: con niños B, C y D; con adulto atrás C y D; con 6 o 7 plazas solo D
+// Lo que dejan armado las respuestas (2026-11-07, pedido de Mati). Tamaño: con niños los cuatro (los límites los ponen las plazas y el ISOFIX); con adulto atrás C y D; con 6 o 7 plazas solo D
 // (el segmento D incluye los muy grandes). Propulsión: con dónde cargar, EV si es ciudad y PHEV si hay ruta; sin carga o sin saber, HEV
 // (no depende de cargadores). Nunca sugiere mild-hybrid ni nafta. Tierra y trabajo: me da igual, porque casi no hay híbridos 4x4 ni pickups.
 const SEG_ABCD = { mini: 'A', compact: 'B', mid: 'C', big: 'D', xl: 'D' };
 const CARRO_GRUPO = { SUV: 'suv', Crossover: 'suv', 'Sedán': 'sedan', Hatchback: 'hatch', Pickup: 'pickup', Minivan: 'minivan', 'Coupé': 'coupe', Convertible: 'coupe' };
 const elegirLista = v => (v || '').split(',').filter(Boolean);
-const elegirSugSeg = r => +r.plazas >= 6 ? 'D' : r.quien === 'ninos' ? 'B,C,D' : r.quien === 'adultos' ? 'C,D' : 'A,B,C,D';
+const elegirSugSeg = r => +r.plazas >= 6 ? 'D' : r.quien === 'ninos' ? 'A,B,C,D' : r.quien === 'adultos' ? 'C,D' : 'A,B,C,D';
 const elegirSugProp = r => r.uso === 'tierra' || r.uso === 'carga' ? '' : r.enchufe === 'no' ? 'hev' : r.enchufe === 'si' && r.uso === 'ciudad' ? 'ev' : 'phev';
 // Aplica lo sugerido a los filtros que la persona no tocó a mano.
 const elegirNorm = r => Object.assign({}, r, r.segMan ? {} : { seg: elegirSugSeg(r) }, r.propMan ? {} : { prop: elegirSugProp(r) });

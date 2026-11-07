@@ -11,12 +11,12 @@ test.beforeEach(async ({ page }) => {
 const marcados = (page, k) => page.locator('input[name="elm-' + k + '"]:checked').evaluateAll(l => l.map(x => x.value));
 
 test('el tamaño sale de quiénes viajan y de las plazas, y se puede cambiar', async ({ page }) => {
-  // Desde el 2026-11-07 arranca «Con niños» (pedido de Mati): el tamaño sugerido es B, C y D.
-  expect(await marcados(page, 'seg')).toEqual(['B', 'C', 'D']);
+  // Arranca «Con niños» (2026-11-07): el tamaño no se achica, los límites los ponen las plazas y el ISOFIX. Solo «Adulto atrás» saca la A y la B.
+  expect(await marcados(page, 'seg')).toEqual(['A', 'B', 'C', 'D']);
   await page.locator('label:has(input[name="el-quien"][value=""])').click();
   expect(await marcados(page, 'seg')).toEqual(['A', 'B', 'C', 'D']);
   await page.locator('label:has(input[name="el-quien"][value="ninos"])').click();
-  expect(await marcados(page, 'seg')).toEqual(['B', 'C', 'D']);
+  expect(await marcados(page, 'seg')).toEqual(['A', 'B', 'C', 'D']);
   await page.locator('label:has(input[name="el-quien"][value="adultos"])').click();
   expect(await marcados(page, 'seg')).toEqual(['C', 'D']);
   await page.locator('label:has(input[name="el-plazas"][value="6"])').click();

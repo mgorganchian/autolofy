@@ -4,7 +4,7 @@ Autos a la venta: **248**. Todos los conteos son sin presupuesto (me da igual el
 
 ## 1. Qué sugiere cada respuesta
 
-Tamaño (`elegirSugSeg`), en orden de prioridad: 6 o 7 plazas → **D**; si no, «Con niños» → **B·C·D**; «Adulto atrás» → **C·D**; «Me da igual» → **A–D**.
+Tamaño (`elegirSugSeg`), en orden de prioridad: 6 o 7 plazas → **D**; si no, «Con niños» → **A–D** (los límites los ponen las plazas y el ISOFIX); «Adulto atrás» → **C·D**; «Me da igual» → **A–D**.
 
 Propulsión (`elegirSugProp`), en orden: uso Tierra o Trabajo → **me da igual**; enchufe «No» → **HEV**; enchufe «Sí» y uso Ciudad → **EV**; todo lo demás (Sí con ciudad y ruta o mucha ruta, y «No sé») → **PHEV**.
 
@@ -19,14 +19,13 @@ Propulsión (`elegirSugProp`), en orden: uso Tierra o Trabajo → **me da igual*
 ## 2. Producto cardinal
 
 - Respuestas que mueven los filtros: plazas (3) × quiénes viajan (3) × uso (5) × enchufe (3) = **135 combinaciones**. Silla de ruedas (2) y presupuesto no tocan estos filtros (la silla filtra por baúl; el presupuesto es aparte).
-- Salidas posibles: tamaño **4 conjuntos** (A–D, B·C·D, C·D, D) × propulsión **4 valores** (EV, PHEV, HEV, me da igual) = **16 pares**. Los 135 casos caen en los 16 (ninguno queda vacío de caso).
+- Salidas posibles: tamaño **3 conjuntos** (A–D, C·D, D) × propulsión **4 valores** (EV, PHEV, HEV, me da igual) = **12 pares** sugeridos. Los 135 casos caen en los 12 (B·C·D sigue disponible a mano).
 - Lo que la persona puede elegir a mano: tamaño 2⁴−1 = 15 subconjuntos (vacío = todos), propulsión 2⁵ = 32 (vacío = me da igual), tipo de auto 2⁶ = 64 (vacío = me da igual). Total teórico a mano: 15 × 32 × 64 = **30.720** combinaciones de filtros.
 - Cuántas de las 135 combinaciones dan cada par:
 
 | Tamaño \ Propulsión | EV | PHEV | HEV | Me da igual |
 |---|---|---|---|---|
-| A–D (todos) | 2 | 10 | 6 | 12 |
-| B·C·D | 2 | 10 | 6 | 12 |
+| A–D (todos) | 4 | 20 | 12 | 24 |
 | C·D | 2 | 10 | 6 | 12 |
 | D | 3 | 15 | 9 | 18 |
 
