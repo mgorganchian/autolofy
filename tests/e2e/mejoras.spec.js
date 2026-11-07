@@ -25,6 +25,7 @@ test('ayudame a elegir: la franja de precio es piso y techo, y con enchufe en ca
   // no sugiere híbridos comunes.
   await abrir(page);
   await page.locator('#vistaElegir').click();
+  await page.locator('label:has(input[name="el-quien"][value=""])').click();   // desde el 2026-11-07 arranca «Con niños»: acá se prueba sin ese filtro
   await fijarPresu(page, '35501-39800');
   await page.locator('label:has(input[name="el-enchufe"][value="si"])').click();
   const res = page.locator('.elegir-res > li');
@@ -59,6 +60,8 @@ test('ayudame a elegir: comparar todos los que cumplen, y sumando los que no pub
   // que cumplen todo menos el precio (no lo publican en dólares).
   await abrir(page);
   await page.locator('#vistaElegir').click();
+  await page.locator('label:has(input[name="el-quien"][value=""])').click();   // desde el 2026-11-07 arranca «Con niños»: acá se prueba sin ese filtro
+  await page.locator('label:has(input[name="elm-prop"][value="__igual"])').click();
   await fijarPresu(page, '32001-35500');
   const todos = page.locator('[data-elegir-comparar="todos"]');
   const n = Number(/Los (\d+)/.exec(await todos.textContent())[1]);
@@ -780,6 +783,7 @@ test('ayudame a elegir: siempre N sugeridos, con los «casi» marcados, 2 por ma
   expect(r.coupeEntra).toBe(true);
   // En pantalla, el «casi» va arriba de los motivos y cada auto tiene su porqué.
   await page.locator('#vistaElegir').click();
+  await page.locator('label:has(input[name="el-quien"][value=""])').click();   // desde el 2026-11-07 arranca «Con niños»: acá se prueba sin ese filtro
   await fijarPresu(page, '0-28000');
   // SUV del segmento D (tilda «SUV» y deja solo la D) y sin filtro de propulsión.
   await page.locator('label:has(input[name="elm-carro"][value="suv"])').click();

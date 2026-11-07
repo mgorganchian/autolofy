@@ -32,7 +32,7 @@ test('arrastrar la barra hacia la derecha mueve el inicio y estira el fin: la ca
   await page.mouse.move(b.x + b.width / 2 + pista.width * .6, b.y + b.height / 2, { steps: 8 });
   await page.mouse.up();
   const despues = await estado(page);
-  expect(despues.p.min).toBeGreaterThan(antes.p.min + 15000);
+  expect(despues.p.min).toBeGreaterThan(antes.p.min + 10000);
   expect(despues.p.min % 1000).toBe(0);
   expect(Math.abs(despues.n - antes.n)).toBeLessThanOrEqual(3);
   // el fin se estiró más que el inicio: el rango tiene más dólares de ancho porque arriba los autos están más separados

@@ -1170,6 +1170,9 @@ if(!location.search&&!location.hash)document.documentElement.classList.add('arra
   @media (max-width:640px){ .elegir-ops[data-n="3"]{grid-template-columns:repeat(3,1fr)} .elegir-ops[data-n="3"] span{padding:4px 2px}
     .elegir-ops[data-n="4"]{grid-template-columns:repeat(4,1fr)} .elegir-ops[data-n="4"] span{padding:4px 2px} }
   .elegir-ops[data-q="seg"] b{display:block;font-size:1.25em;line-height:1.1}
+  .elegir-leyenda.con-igual{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:2px 10px}
+  .leyenda-igual{display:inline-flex;align-items:center;gap:6px;font-weight:400;font-size:.84rem;cursor:pointer;white-space:nowrap}
+  .leyenda-igual input{width:20px;height:20px}
   .elegir-ops label{cursor:pointer;display:flex}
   /* «Silla de ruedas» es un círculo chico en el título de «Quiénes viajan seguido» (2026-11-01, pedido de Mati). */
   .quien-leyenda{display:flex;align-items:center;justify-content:space-between;width:100%}
@@ -6941,7 +6944,7 @@ const ELEGIR_ANCHO = window.matchMedia('(min-width: 900px)');
 const ELEGIR_N = ELEGIR_ANCHO.matches ? 5 : 4;
 const elegirN = () => ELEGIR_N;
 // Sin presupuesto elegido de entrada (2026-10-10): lo que viene marcado se lee como recomendación.
-let elegirResp = { presu: null, plazas: '5', quien: '', movilidad: '', uso: 'mixto', enchufe: 'nose', carro: '', seg: 'A,B,C,D', prop: '', segMan: false, propMan: false };
+let elegirResp = { presu: null, plazas: '5', quien: 'ninos', movilidad: '', uso: 'mixto', enchufe: 'nose', carro: '', seg: 'A,B,C,D', prop: '', segMan: false, propMan: false };
 try { const g = JSON.parse(localStorage.getItem('elegir') || 'null'); if (g) elegirResp = Object.assign(elegirResp, g); } catch (e) {}
 // Respuestas guardadas con opciones que ya no existen (topes o franjas anteriores, "suv"): se reinician.
 // Respuestas viejas de «tipo de auto» (una sola opción, con el SUV partido por tamaño): pasan a las casillas nuevas.
@@ -7304,13 +7307,15 @@ function pintarElegir(cambio){
 // Filtros de casillas (tamaño, propulsión, tipo de auto). «Me da igual» es una casilla que apaga las demás; los que arman las
 // respuestas dicen de dónde salió lo sugerido y, si la persona lo tocó, dejan volver a la sugerencia.
 function elegirMultiHTML(q, r){
-  const sel = elegirLista(r[q.k]), todos = q.k === 'seg' ? sel.length === 4 : !sel.length, ops = q.igual ? [['__igual', 'Me da igual']].concat(q.ops) : q.ops;
+  const sel = elegirLista(r[q.k]), todos = q.k === 'seg' ? sel.length === 4 : !sel.length, ops = q.ops;
   const man = q.k === 'seg' ? r.segMan : q.k === 'prop' ? r.propMan : false;
   const cart = (q.k === 'seg' ? ELEGIR_TIP.seg : q.k === 'prop' ? ELEGIR_TIP.prop : ELEGIR_TIP.carro);
   const nota = !q.sug ? '' : man ? '<p class="filtro-nota">Lo cambiaste vos. <button type="button" class="mini-btn" data-sugerir="' + q.k + '">Volver a la sugerencia</button></p>'
     : '<p class="filtro-nota">' + (q.k === 'seg' ? 'Sugerido según quiénes viajan y las plazas.' : 'Sugerido según el uso y si podés o podrías cargarlo.') + ' Cambialo si querés.</p>';
-  return '<fieldset role="group" aria-label="' + q.t + '"><div class="elegir-leyenda">' + q.t + '</div><div class="elegir-ops" data-n="' + ops.length + '" data-q="' + q.k + '" style="--n:' + ops.length + '">' +
-    ops.map(([v, t]) => { const on = v === '__igual' ? todos : q.k === 'seg' ? sel.includes(v) : !todos && sel.includes(v), tip = v === '__igual' ? cart[''] : cart[v];
+  // «Me da igual» va como casilla al costado del título (2026-11-07, pedido de Mati: así sale un renglón).
+  const igual = q.igual ? '<label class="leyenda-igual"><input type="checkbox" name="elm-' + q.k + '" value="__igual"' + (todos ? ' checked' : '') + '> Me da igual</label>' : '';
+  return '<fieldset role="group" aria-label="' + q.t + '"><div class="elegir-leyenda' + (q.igual ? ' con-igual' : '') + '"><span>' + q.t + '</span>' + igual + '</div><div class="elegir-ops" data-n="' + ops.length + '" data-q="' + q.k + '" style="--n:' + ops.length + '">' +
+    ops.map(([v, t]) => { const on = q.k === 'seg' ? sel.includes(v) : !todos && sel.includes(v), tip = cart[v];
       return '<label><input type="checkbox" name="elm-' + q.k + '" value="' + v + '"' + (on ? ' checked' : '') + '><span' + (tip ? ' data-tip="' + tip + '"' : '') + '>' + (q.k === 'seg' ? '<b>' + t.charAt(0) + '</b>' + t.slice(2) : t) + '</span></label>'; }).join('') +
     '</div>' + nota + '</fieldset>';
 }
