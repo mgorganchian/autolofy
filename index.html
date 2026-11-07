@@ -7021,7 +7021,7 @@ const SEG_ABCD = { mini: 'A', compact: 'B', mid: 'C', big: 'D', xl: 'D' };
 const CARRO_GRUPO = { SUV: 'suv', Crossover: 'suv', 'Sedán': 'sedan', Hatchback: 'hatch', Pickup: 'pickup', Minivan: 'minivan', 'Coupé': 'coupe', Convertible: 'coupe' };
 const elegirLista = v => (v || '').split(',').filter(Boolean);
 const elegirSugSeg = r => +r.plazas >= 6 ? 'D' : r.quien === 'ninos' ? 'B,C,D' : r.quien === 'adultos' ? 'C,D' : 'A,B,C,D';
-const elegirSugProp = r => r.uso === 'tierra' || r.uso === 'carga' ? '' : r.enchufe === 'si' ? (r.uso === 'ciudad' ? 'ev' : 'phev') : 'hev';
+const elegirSugProp = r => r.uso === 'tierra' || r.uso === 'carga' ? '' : r.enchufe === 'no' ? 'hev' : r.enchufe === 'si' && r.uso === 'ciudad' ? 'ev' : 'phev';
 // Aplica lo sugerido a los filtros que la persona no tocó a mano.
 const elegirNorm = r => Object.assign({}, r, r.segMan ? {} : { seg: elegirSugSeg(r) }, r.propMan ? {} : { prop: elegirSugProp(r) });
 function elegirDesvio(i, r){

@@ -566,7 +566,7 @@ sí quedan en inglés, porque no muestran la palabra. Se coló con `YES` dos vec
   sugerido a los que no se tocaron, `segMan` y `propMan` marcan los tocados y «Volver a la sugerencia» los suelta).
   **Tamaño (A a D)**: «Me da igual» deja los cuatro; «Con niños» B, C y D; «Adulto atrás» C y D; 6 o 7 plazas solo D (la D incluye los muy grandes, `SEG_ABCD`). El
   segmento de al lado queda como «casi» («Otro tamaño (B)»); sin segmento en la tabla, «No informa su tamaño». **Propulsión**: con dónde cargar, ciudad = EV y
-  ciudad y ruta o mucha ruta = PHEV; sin carga o «No sé», HEV (no depende de cargadores); tierra y trabajo, me da igual (casi no hay híbridos 4x4 ni pickups híbridas).
+  ciudad y ruta o mucha ruta = PHEV; «No sé» (el valor de entrada) PHEV, que sirve con o sin enchufe; sin carga, HEV (no depende de cargadores); tierra y trabajo, me da igual (casi no hay híbridos 4x4 ni pickups híbridas).
   **Nunca se sugiere mild-hybrid ni nafta**, pero se pueden tildar a mano. La propulsión elegida **excluye**, no solo prioriza (el puntaje por propulsión sigue
   contando entre los que quedan). **Tipo de auto**: SUV o crossover (juntos), sedán, hatchback, pickup, minivan, coupé o descapotable; «Me da igual» apaga las demás.
   Las opciones viejas «SUV chico/compacto/mediano» desaparecieron (las cubre el tamaño) y las respuestas guardadas se migran. `tests/e2e/elegir-filtros.spec.js`.

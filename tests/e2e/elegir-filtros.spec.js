@@ -41,7 +41,9 @@ test('la propulsión sale del uso y del enchufe: EV, PHEV o HEV, y nunca mild ni
   expect(await caso('ciudad', 'si')).toEqual(['ev']);
   expect(await caso('mixto', 'si')).toEqual(['phev']);
   expect(await caso('ruta', 'si')).toEqual(['phev']);
-  for (const u of ['ciudad', 'mixto', 'ruta']) for (const e of ['no', 'nose']) expect(await caso(u, e), u + '/' + e).toEqual(['hev']);
+  // «No sé» (el valor de entrada) sugiere PHEV: sirve con o sin enchufe. Sin dónde cargar, HEV.
+  for (const u of ['ciudad', 'mixto', 'ruta']) expect(await caso(u, 'nose'), u + '/nose').toEqual(['phev']);
+  for (const u of ['ciudad', 'mixto', 'ruta']) expect(await caso(u, 'no'), u + '/no').toEqual(['hev']);
   // Tierra y trabajo: me da igual (casi no hay híbridos 4x4 ni pickups híbridas).
   expect(await caso('tierra', 'si')).toEqual(['__igual']);
   expect(await page.locator('input[name="elm-prop"][value="__igual"]').isChecked()).toBe(true);
