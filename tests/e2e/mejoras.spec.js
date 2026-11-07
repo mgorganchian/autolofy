@@ -468,7 +468,10 @@ test('ayudame a elegir: sin presupuesto preelegido, resumen con "Cambiar" y, si 
   await expect(page.locator('#presuIgual')).not.toBeChecked();
   await fijarPresu(page, '0-28000');
   // Desde el 2026-10-29 las pickups en pesos entran en «Hasta USD 28.000» (issue #60): un SUV grande no.
-  await page.locator('label:has(input[name="el-carro"][value="suv-d"])').click();
+  // SUV del segmento D (tilda «SUV» y deja solo la D) y sin filtro de propulsión.
+  await page.locator('label:has(input[name="elm-carro"][value="suv"])').click();
+  for (const l of ['A', 'B', 'C']) await page.locator('label:has(input[name="elm-seg"][value="' + l + '"])').click();
+  await page.locator('label:has(input[name="elm-prop"][value="__igual"])').click();
   await expect(page.locator('[data-aflojar]').first()).toBeVisible();
   await page.locator('[data-aflojar="presu"]').click();
   await expect(page.locator('.elegir-res > li').first()).toBeVisible();
@@ -687,7 +690,7 @@ test('precios en pesos: la lista en pesos entra en las franjas y los de dólares
     const i = CARS.findIndex(c => /Cronos/.test(c.name));
     // El rango del deslizador que contiene su precio pasado a dólares.
     const presu = Math.floor(PRECIO_CMP[i] / 1000) * 1000 + '-' + Math.ceil(PRECIO_CMP[i] / 1000) * 1000;
-    const r = elegirCalcular({ presu, plazas: '5', uso: 'mixto', enchufe: 'nose', carro: 'auto' });
+    const r = elegirCalcular({ presu, plazas: '5', uso: 'mixto', enchufe: 'nose', carro: 'sedan,hatch,coupe' });
     return { i, usd: SIM_PRECIO[i], pesos: SIM_PESOS[i], cmp: PRECIO_CMP[i], venta: DOLAR_BNA.venta, entra: r.todos.includes(i) };
   });
   expect(d.usd).toBeNull();
@@ -754,7 +757,7 @@ test('ayudame a elegir: siempre N sugeridos, con los «casi» marcados, 2 por ma
   const r = await page.evaluate(() => {
     const N = elegirN(), casos = [];
     for (const presu of ['', '17000-28000', '30000-40000', '50000-66000', '77000-'])
-      for (const carro of ['', 'suv-b', 'suv-c', 'suv-d', 'auto', 'pickup'])
+      for (const carro of ['', 'suv', 'sedan,hatch,coupe', 'pickup'])
         for (const plazas of ['4', '5', '6']){
           const o = elegirCalcular({ presu, plazas, uso: 'mixto', enchufe: 'nose', carro });
           const marcas = {}; o.top.forEach(x => { marcas[CARS[x.i].brand] = (marcas[CARS[x.i].brand] || 0) + 1; });
@@ -764,7 +767,7 @@ test('ayudame a elegir: siempre N sugeridos, con los «casi» marcados, 2 por ma
             respaldo: Math.max(...o.top.map(x => x.parte.respaldo)) });
         }
     const coupe = CARS.findIndex(c => c.body === 'Coupé' && c.status === 'venta');
-    return { N, casos, coupeEntra: coupe < 0 || elegirDesvio(coupe, { presu: '', plazas: '4', carro: 'auto' }) === 0 };
+    return { N, casos, coupeEntra: coupe < 0 || elegirDesvio(coupe, { presu: '', plazas: '4', carro: 'coupe' }) === 0 };
   });
   for (const c of r.casos){
     expect(c.n, c.k).toBeLessThanOrEqual(r.N);
@@ -778,9 +781,12 @@ test('ayudame a elegir: siempre N sugeridos, con los «casi» marcados, 2 por ma
   // En pantalla, el «casi» va arriba de los motivos y cada auto tiene su porqué.
   await page.locator('#vistaElegir').click();
   await fijarPresu(page, '0-28000');
-  await page.locator('label:has(input[name="el-carro"][value="suv-d"])').click();
+  // SUV del segmento D (tilda «SUV» y deja solo la D) y sin filtro de propulsión.
+  await page.locator('label:has(input[name="elm-carro"][value="suv"])').click();
+  for (const l of ['A', 'B', 'C']) await page.locator('label:has(input[name="elm-seg"][value="' + l + '"])').click();
+  await page.locator('label:has(input[name="elm-prop"][value="__igual"])').click();
   await expect(page.locator('.elegir-res > li')).toHaveCount(r.N);
-  await expect(page.locator('.elegir-res > li.casi .elegir-casi').first()).toHaveText(/sobre tu franja|Otro tamaño de SUV|asientos/);
+  await expect(page.locator('.elegir-res > li.casi .elegir-casi').first()).toHaveText(/sobre tu franja|Otro tamaño|asientos/);
   await expect(page.locator('.elegir-res .elegir-porque').first()).toHaveAttribute('data-tip', /^Por qué lo sugerimos\. .*Total: /);
   // Los botones de una misma pregunta miden lo mismo.
   const anchos = await page.locator('fieldset:has(input[name="el-uso"]) .elegir-ops span').evaluateAll(s => s.map(e => Math.round(e.getBoundingClientRect().width)));

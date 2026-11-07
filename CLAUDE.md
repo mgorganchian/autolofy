@@ -557,11 +557,19 @@ sí quedan en inglés, porque no muestran la palabra. Se coló con `YES` dos vec
   exacto («De USD 28.001 a 32.000.») va en el cartel (`usdExacto`). El valor de la franja no cambia. `rangos-precio.spec.js`.
 - **¿Quiénes viajan seguido?** (2026-11-01, pedido de Mati; issue #101): pregunta de Ayudame a elegir después de las plazas,
   con «Me da igual» marcada. «Adultos con niños» pide ISOFIX (`isofixDe`): sin él el auto no entra y si no informa queda
-  como «casi» («No informa ISOFIX»). «Todos adultos» deja como «casi» a los de segmento A o B (`size` mini o compact), sin
-  umbrales nuevos. Un solo «casi» por auto. Las opciones se llaman «Con niños» y «Adulto atrás» (si va algún adulto en una plaza trasera; con 6 o 7 plazas el dibujo tiene tres hileras). En el celular, toda pregunta
+  como «casi» («No informa ISOFIX»). el «casi» fijo para A y B del 2026-11-01 se reemplazó el 2026-11-07 por el filtro de tamaño (ver «Tres filtros que se arman solos»). Un solo «casi» por auto. Las opciones se llaman «Con niños» y «Adulto atrás» (si va algún adulto en una plaza trasera; con 6 o 7 plazas el dibujo tiene tres hileras). En el celular, toda pregunta
   de tres opciones va de a tres en una fila (`data-n="3"`: plazas, quiénes viajan, enchufe). `quien-viaja.spec.js` lo cubre.
   Cada opción de «¿Quiénes viajan seguido?» lleva el dibujo del auto visto desde arriba con quién va en cada asiento (`quienSVG`: con
   niños, 2 adultos adelante y 2 o 3 chicos atrás según las plazas) y la elegida explica el supuesto debajo (`.quien-nota`). Es un dibujo, no un dato.
+- **Tres filtros que se arman solos** (2026-11-07, pedido de Mati): en Ayudame a elegir, debajo del uso y el enchufe, hay tres filtros de casillas que las
+  respuestas dejan armados y que se pueden cambiar a mano (`elegirResp.seg`, `.prop`, `.carro`; lista separada por comas, `''` = me da igual; `elegirNorm` aplica lo
+  sugerido a los que no se tocaron, `segMan` y `propMan` marcan los tocados y «Volver a la sugerencia» los suelta).
+  **Tamaño (A a D)**: «Me da igual» deja los cuatro; «Con niños» B, C y D; «Adulto atrás» C y D; 6 o 7 plazas solo D (la D incluye los muy grandes, `SEG_ABCD`). El
+  segmento de al lado queda como «casi» («Otro tamaño (B)»); sin segmento en la tabla, «No informa su tamaño». **Propulsión**: con dónde cargar, ciudad = EV y
+  ciudad y ruta o mucha ruta = PHEV; sin carga o «No sé», HEV (no depende de cargadores); tierra y trabajo, me da igual (casi no hay híbridos 4x4 ni pickups híbridas).
+  **Nunca se sugiere mild-hybrid ni nafta**, pero se pueden tildar a mano. La propulsión elegida **excluye**, no solo prioriza (el puntaje por propulsión sigue
+  contando entre los que quedan). **Tipo de auto**: SUV o crossover (juntos), sedán, hatchback, pickup, minivan, coupé o descapotable; «Me da igual» apaga las demás.
+  Las opciones viejas «SUV chico/compacto/mediano» desaparecieron (las cubre el tamaño) y las respuestas guardadas se migran. `tests/e2e/elegir-filtros.spec.js`.
 - **¿Viaja alguien en silla de ruedas?** (2026-11-01, issue #112; opción 1): **círculo chico con el símbolo de accesibilidad** (dibujado a mano,
   `SVG_ACCESO`) en el título de «¿Quiénes viajan seguido?», que se toca para sumar o sacar (opción C elegida por Mati, `movilidadBtnHTML`); no es una pregunta aparte. Con «Sí» solo entran los de **baúl al menos tan grande como el del BYD Song Pro** (`baulGrande()`): referencia de Mati del 2026-11-01, en el Song Pro
   con los asientos traseros en su posición recta (sin plegarlos) la silla de ruedas entra de costado; se toma el litraje que la tabla trae
