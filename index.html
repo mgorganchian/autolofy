@@ -6918,7 +6918,7 @@ const ELEGIR_PREG = [
   // traseros que se pliegan); no dice si la silla entra ni qué tan alto es el piso del baúl: ninguna fila lo tiene.
   { k: 'movilidad', t: '¿Viaja alguien en silla de ruedas?', ops: [['', 'No'], ['silla', 'Sí']], interruptor: true },
   { k: 'uso', t: '¿Para qué lo vas a usar más?', ops: [['ciudad', 'Ciudad'], ['mixto', 'Ciudad y ruta'], ['ruta', 'Mucha ruta'], ['tierra', 'Tierra o campo'], ['carga', 'Trabajo o carga']] },
-  { k: 'enchufe', t: '¿Vas a poder cargarlo en tu casa o en el trabajo?', ops: [['si', 'Sí'], ['no', 'No'], ['nose', 'No sé']] },
+  { k: 'enchufe', t: '¿Podés o podrías cargarlo en tu casa o en el trabajo?', ops: [['si', 'Sí'], ['no', 'No'], ['nose', 'No sé']] },
   // 2026-11-07, pedido de Mati: tres filtros que las respuestas de arriba dejan armados y que se pueden cambiar a mano.
   // Tamaño (segmento A a D, lo arma «¿Quiénes viajan seguido?» y las plazas), tipo de auto (casillas; «Me da igual» las apaga) y
   // propulsión (EV, PHEV, HEV…, la arman el uso y el enchufe). Se guardan como lista separada por comas; '' = me da igual.
@@ -6976,7 +6976,7 @@ const ELEGIR_TIP = {
     carga: 'Suman más las pickups, y los de más baúl o caja de carga y más potencia. Los eléctricos e híbridos suman menos.',
   },
   enchufe: {
-    si: 'Van primero los eléctricos y los enchufables. Elegí «Sí» también si hoy no podés pero vas a poder instalar un cargador.',
+    si: 'Van primero los eléctricos y los enchufables. Elegí «Sí» también si hoy no podés pero podrías instalar un cargador.',
     no: 'Van primero los híbridos; un eléctrico casi no suma.',
     nose: 'Los enchufables e híbridos suman parejo; un eléctrico, algo menos.',
   },
@@ -7299,7 +7299,7 @@ function elegirMultiHTML(q, r){
   const man = q.k === 'seg' ? r.segMan : q.k === 'prop' ? r.propMan : false;
   const cart = (q.k === 'seg' ? ELEGIR_TIP.seg : q.k === 'prop' ? ELEGIR_TIP.prop : ELEGIR_TIP.carro);
   const nota = !q.sug ? '' : man ? '<p class="filtro-nota">Lo cambiaste vos. <button type="button" class="mini-btn" data-sugerir="' + q.k + '">Volver a la sugerencia</button></p>'
-    : '<p class="filtro-nota">' + (q.k === 'seg' ? 'Sugerido según quiénes viajan y las plazas.' : 'Sugerido según el uso y si vas a poder cargarlo.') + ' Cambialo si querés.</p>';
+    : '<p class="filtro-nota">' + (q.k === 'seg' ? 'Sugerido según quiénes viajan y las plazas.' : 'Sugerido según el uso y si podés o podrías cargarlo.') + ' Cambialo si querés.</p>';
   return '<fieldset role="group" aria-label="' + q.t + '"><div class="elegir-leyenda">' + q.t + '</div><div class="elegir-ops" data-n="' + ops.length + '" data-q="' + q.k + '" style="--n:' + ops.length + '">' +
     ops.map(([v, t]) => { const on = v === '__igual' ? todos : q.k === 'seg' ? sel.includes(v) : !todos && sel.includes(v), tip = v === '__igual' ? cart[''] : cart[v];
       return '<label><input type="checkbox" name="elm-' + q.k + '" value="' + v + '"' + (on ? ' checked' : '') + '><span' + (tip ? ' data-tip="' + tip + '"' : '') + '>' + t + '</span></label>'; }).join('') +
