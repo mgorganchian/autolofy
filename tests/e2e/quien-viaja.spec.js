@@ -22,16 +22,19 @@ test('con niños, un auto sin ISOFIX no entra y uno que no informa queda como ca
   expect(r.sin && r.con && r.nd).toBe(true);
 });
 
-test('con un adulto atrás, un auto de segmento A o B queda como casi y lo dice', async ({ page }) => {
+test('con un adulto atrás el tamaño sugerido es C y D: los A no entran, los B quedan como casi y lo dicen', async ({ page }) => {
+  // 2026-11-07, pedido de Mati: «¿Quiénes viajan?» arma el filtro de tamaño (segmento A a D); antes era un «casi» fijo para A y B.
   const r = await page.evaluate(b => {
-    const q = { ...b, quien: 'adultos' }, o = { ...b, quien: '' };
-    const chicos = CARS.map((c, i) => i).filter(i => ['mini', 'compact'].includes(CARS[i].size) && CARS[i].status === 'venta' && elegirDesvio(i, o) === 0);
-    const otros = CARS.map((c, i) => i).filter(i => !['mini', 'compact'].includes(CARS[i].size) && CARS[i].status === 'venta' && elegirDesvio(i, o) === 0);
-    return { chicos: chicos.length, textos: [...new Set(chicos.map(i => (elegirDesvio(i, q) || {}).txt))], otros: otros.every(i => elegirDesvio(i, q) === 0) };
+    const q = { ...b, quien: 'adultos', seg: elegirSugSeg({ plazas: '5', quien: 'adultos' }) }, o = { ...b, quien: '' };
+    const ven = i => CARS[i].status === 'venta' && elegirDesvio(i, o) === 0;
+    const por = t => CARS.map((c, i) => i).filter(i => CARS[i].size === t && ven(i));
+    return { seg: q.seg, a: por('mini').map(i => elegirDesvio(i, q)), b: [...new Set(por('compact').map(i => (elegirDesvio(i, q) || {}).txt))],
+      cd: [...por('mid'), ...por('big'), ...por('xl')].every(i => elegirDesvio(i, q) === 0) };
   }, base);
-  expect(r.chicos).toBeGreaterThan(20);
-  expect(r.textos.every(t => /^Chico para adultos \(segmento [AB]\)$/.test(t))).toBe(true);
-  expect(r.otros).toBe(true);
+  expect(r.seg).toBe('C,D');
+  expect(r.a.every(d => d === null)).toBe(true);
+  expect(r.b).toEqual(['Otro tamaño (B)']);
+  expect(r.cd).toBe(true);
 });
 
 test('la pregunta está en la hoja con «me da igual» marcada y el resumen la nombra', async ({ page }) => {

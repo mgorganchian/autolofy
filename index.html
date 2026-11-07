@@ -1160,7 +1160,7 @@ if(!location.search&&!location.hash)document.documentElement.classList.add('arra
   .movilidad-ico.on{background:var(--byd-blue);border-color:var(--byd-blue);color:var(--sobre-verde)}
   .movilidad-ico:focus-visible{outline:2px solid var(--link);outline-offset:2px}
   .quien-ico{width:3rem;height:auto;margin:2px auto 3px;display:block}
-  .quien-nota{font-size:.8rem;color:var(--text-secondary);margin:6px 0 0}
+  .quien-nota,.filtro-nota{font-size:.8rem;color:var(--text-secondary);margin:6px 0 0}
   .elegir-ops input{position:absolute;opacity:0;pointer-events:none}
   .elegir-ops span{display:flex;flex-direction:column;justify-content:center;flex:1;text-align:center;border:1px solid var(--border-strong);border-radius:3px;padding:4px 6px;font-size:.76rem}
   .elegir-ops input:checked + span{background:var(--byd-blue);border-color:var(--byd-blue);color:var(--sobre-verde)}
@@ -6883,10 +6883,12 @@ const ELEGIR_PREG = [
   { k: 'movilidad', t: '¿Viaja alguien en silla de ruedas?', ops: [['', 'No'], ['silla', 'Sí']], interruptor: true },
   { k: 'uso', t: '¿Para qué lo vas a usar más?', ops: [['ciudad', 'Ciudad'], ['mixto', 'Ciudad y ruta'], ['ruta', 'Mucha ruta'], ['tierra', 'Tierra o campo'], ['carga', 'Trabajo o carga']] },
   { k: 'enchufe', t: '¿Podés cargarlo en tu casa o en el trabajo?', ops: [['si', 'Sí'], ['no', 'No'], ['nose', 'No sé']] },
-  // Los SUV (y los 4 que la tabla llama crossover) se parten por tamaño, con el segmento que sale
-  // del largo: casi todos los SUV chinos son crossovers (carrocería autoportante) y juntos eran 76
-  // de 111. Así cada opción tiene una cantidad pareja (pedido del 2026-10-09).
-  { k: 'carro', t: '¿Qué tipo de auto preferís?', ops: [['', 'Me da igual'], ['suv-b', 'SUV chico (B)'], ['suv-c', 'SUV compacto (C)'], ['suv-d', 'SUV mediano o grande (D)'], ['auto', 'Sedán o hatchback'], ['pickup', 'Pickup']] },
+  // 2026-11-07, pedido de Mati: tres filtros que las respuestas de arriba dejan armados y que se pueden cambiar a mano.
+  // Tamaño (segmento A a D, lo arma «¿Quiénes viajan seguido?» y las plazas), tipo de auto (casillas; «Me da igual» las apaga) y
+  // propulsión (EV, PHEV, HEV…, la arman el uso y el enchufe). Se guardan como lista separada por comas; '' = me da igual.
+  { k: 'seg', t: '¿De qué tamaño?', multi: true, sug: 'seg', ops: [['A', 'A urbano'], ['B', 'B chico'], ['C', 'C compacto'], ['D', 'D mediano o grande']] },
+  { k: 'prop', t: '¿Qué propulsión?', multi: true, igual: true, sug: 'prop', ops: [['ev', 'Eléctrico (EV)'], ['phev', 'Enchufable (PHEV)'], ['hev', 'Híbrido (HEV)'], ['mhev', 'Mild-hybrid'], ['ice', 'Nafta o diésel']] },
+  { k: 'carro', t: '¿Qué tipo de auto preferís?', multi: true, igual: true, ops: [['suv', 'SUV o crossover'], ['sedan', 'Sedán'], ['hatch', 'Hatchback'], ['pickup', 'Pickup'], ['minivan', 'Minivan'], ['coupe', 'Coupé o descapotable']] },
 ];
 // Cuántos sugiere (pedido del 2026-10-09): 5 en escritorio, donde entran en una fila, y 4 en
 // el celular; o los que haya si cumplen menos. Si la ventana cruza el corte, se repinta.
@@ -6895,10 +6897,16 @@ const ELEGIR_ANCHO = window.matchMedia('(min-width: 900px)');
 const ELEGIR_N = ELEGIR_ANCHO.matches ? 5 : 4;
 const elegirN = () => ELEGIR_N;
 // Sin presupuesto elegido de entrada (2026-10-10): lo que viene marcado se lee como recomendación.
-let elegirResp = { presu: presuInicial(), plazas: '5', quien: '', movilidad: '', uso: 'mixto', enchufe: 'nose', carro: '' };
+let elegirResp = { presu: presuInicial(), plazas: '5', quien: '', movilidad: '', uso: 'mixto', enchufe: 'nose', carro: '', seg: 'A,B,C,D', prop: '', segMan: false, propMan: false };
 try { const g = JSON.parse(localStorage.getItem('elegir') || 'null'); if (g) elegirResp = Object.assign(elegirResp, g); } catch (e) {}
 // Respuestas guardadas con opciones que ya no existen (topes o franjas anteriores, "suv"): se reinician.
-const elegirVale = (k, v) => k === 'presu' ? v === '' || /^\d+-(\d+)?$/.test(v) : ELEGIR_PREG.find(q => q.k === k).ops.some(o => o[0] === v);
+// Respuestas viejas de «tipo de auto» (una sola opción, con el SUV partido por tamaño): pasan a las casillas nuevas.
+if (typeof elegirResp.carro === 'string') elegirResp.carro = elegirResp.carro.split(',').map(v => /^suv-/.test(v) ? 'suv' : v === 'auto' ? 'sedan,hatch,coupe' : v).filter(Boolean).join(',');
+const elegirVale = (k, v) => { const q = ELEGIR_PREG.find(x => x.k === k);
+  return k === 'presu' ? v === '' || /^\d+-(\d+)?$/.test(v) : q.multi ? typeof v === 'string' && v.split(',').filter(Boolean).every(x => q.ops.some(o => o[0] === x)) : q.ops.some(o => o[0] === v); };
+if (!elegirVale('seg', elegirResp.seg)) elegirResp.seg = 'A,B,C,D';
+if (!elegirVale('prop', elegirResp.prop)) elegirResp.prop = '';
+elegirResp.segMan = elegirResp.segMan === true; elegirResp.propMan = elegirResp.propMan === true;
 if (!elegirVale('presu', elegirResp.presu)) elegirResp.presu = presuInicial();
 else if (elegirResp.presu){ const p = presuLeer(elegirResp.presu); elegirResp.presu = presuTexto(Math.max(PRESU_PISO, Math.floor(p.min / 1000) * 1000), p.max); }
 if (!elegirVale('carro', elegirResp.carro)) elegirResp.carro = '';
@@ -6936,14 +6944,22 @@ const ELEGIR_TIP = {
     no: 'Van primero los híbridos; un eléctrico casi no suma.',
     nose: 'Los enchufables e híbridos suman parejo; un eléctrico, algo menos.',
   },
-  // Los largos son los de SEG_LETRA y CARS (B < 4,40 m ≤ C < 4,70 m ≤ D).
   carro: {
     '': 'Entran todos los tipos de auto.',
-    'suv-b': 'SUV y crossovers de menos de 4,40 m de largo.',
-    'suv-c': 'SUV y crossovers de 4,40 a 4,70 m de largo.',
-    'suv-d': 'SUV y crossovers de 4,70 m de largo o más.',
-    auto: 'Sedanes y hatchbacks, y también los coupés y descapotables.',
-    pickup: 'Pickups con caja de carga.',
+    suv: 'SUV y crossovers.', sedan: 'Sedanes.', hatch: 'Hatchbacks.', pickup: 'Pickups con caja de carga.',
+    minivan: 'Minivans.', coupe: 'Coupés y descapotables.',
+  },
+  seg: {
+    A: 'Autos urbanos: hatchbacks de menos de 2,45 m entre ejes y los más chicos.',
+    B: 'Chicos: SUV de menos de 4,40 m de largo; hatchbacks y sedanes de menos de 2,60 y 2,66 m entre ejes.',
+    C: 'Compactos: SUV de 4,40 a 4,70 m de largo; hatchbacks y sedanes de hasta 2,80 m entre ejes.',
+    D: 'Medianos y grandes: SUV de 4,70 m o más, sedanes de más de 2,80 m entre ejes, y los muy grandes (6 o 7 asientos y pickups).',
+  },
+  prop: {
+    '': 'Entran todas las propulsiones.',
+    ev: '100% eléctricos: se cargan en un enchufe.', phev: 'Híbridos enchufables: se cargan y además llevan nafta.',
+    hev: 'Híbridos que no se enchufan: se cargan solos al manejar.', mhev: 'Mild-hybrid: un motor a nafta o diésel con un apoyo eléctrico chico.',
+    ice: 'Solo nafta o diésel.',
   },
   plazas: {
     4: 'Entran los de 4 asientos o más. Los que no informan cuántos tienen se estiman por su tamaño.',
@@ -6954,8 +6970,8 @@ const ELEGIR_TIP = {
     silla: 'Entran los de baúl al menos tan grande como el del BYD Song Pro, donde la silla entra de costado con los asientos sin plegar (referencia de Mati). Ningún dato dice qué tan alto es el piso del baúl: probala en el auto.',
   },
   quien: {
-    ninos: 'Piden ISOFIX: sin él no entran, y si no informan, quedan como «casi». Con 3 chicos, el del medio va sin ISOFIX.',
-    adultos: 'Si va algún adulto atrás, los autos chicos (segmento A o B) quedan como «casi»: pueden quedar justos.',
+    ninos: 'Piden ISOFIX: sin él no entran, y si no informan, quedan como «casi». El tamaño se arma con los segmentos B, C y D. Con 3 chicos, el del medio va sin ISOFIX.',
+    adultos: 'Si va algún adulto atrás, el tamaño se arma con los segmentos C y D (los chicos pueden quedar justos). Lo cambiás en «¿De qué tamaño?».',
   },
 };
 const elegirFit = (tipo, r) => (ELEGIR_ENCHUFE[r.enchufe][tipo] ?? .5) * (ELEGIR_USO[r.uso][tipo] ?? .5);
@@ -6998,23 +7014,41 @@ const siNoDe = (fila, i) => { const v = String(FILA_POR_NOMBRE[fila][i + 1]).rep
   return /^(YES|S[ií])\b/.test(v) ? true : /^(NO|No)\b/.test(v) ? false : null; };
 const isofixDe = i => { const v = String(FILA_POR_NOMBRE['Anclajes ISO-FIX'][i + 1]).replace(/^(DET|NOTE|EXT):/, '');
   return /^(YES|S[ií])\b/.test(v) ? true : /^(NO|No)\b/.test(v) ? false : null; };
+// Lo que dejan armado las respuestas (2026-11-07, pedido de Mati). Tamaño: con niños B, C y D; con adulto atrás C y D; con 6 o 7 plazas solo D
+// (el segmento D incluye los muy grandes). Propulsión: con dónde cargar, EV si es ciudad y PHEV si hay ruta; sin carga o sin saber, HEV
+// (no depende de cargadores). Nunca sugiere mild-hybrid ni nafta. Tierra y trabajo: me da igual, porque casi no hay híbridos 4x4 ni pickups.
+const SEG_ABCD = { mini: 'A', compact: 'B', mid: 'C', big: 'D', xl: 'D' };
+const CARRO_GRUPO = { SUV: 'suv', Crossover: 'suv', 'Sedán': 'sedan', Hatchback: 'hatch', Pickup: 'pickup', Minivan: 'minivan', 'Coupé': 'coupe', Convertible: 'coupe' };
+const elegirLista = v => (v || '').split(',').filter(Boolean);
+const elegirSugSeg = r => +r.plazas >= 6 ? 'D' : r.quien === 'ninos' ? 'B,C,D' : r.quien === 'adultos' ? 'C,D' : 'A,B,C,D';
+const elegirSugProp = r => r.uso === 'tierra' || r.uso === 'carga' ? '' : r.enchufe === 'no' ? 'hev' : r.enchufe === 'si' && r.uso === 'ciudad' ? 'ev' : 'phev';
+// Aplica lo sugerido a los filtros que la persona no tocó a mano.
+const elegirNorm = r => Object.assign({}, r, r.segMan ? {} : { seg: elegirSugSeg(r) }, r.propMan ? {} : { prop: elegirSugProp(r) });
 function elegirDesvio(i, r){
   const c = CARS[i];
   if (c.status !== 'venta') return null;
   const fallas = [];
-  const esSuv = ['SUV', 'Crossover'].includes(c.body);
-  // Segmentos de SUV del mercado (2026-10-30, pedido de Mati): B < 4,40 m ≤ C < 4,70 m ≤ D. Ver CARS.
-  const pedido = { 'suv-b': 'B', 'suv-c': 'C', 'suv-d': 'D' }[r.carro];
-  if (pedido){
-    const l = esSuv ? SEG_LETRA[c.size] : null;
-    if (l !== pedido){
-      if (!l || Math.abs('BCD'.indexOf(l) - 'BCD'.indexOf(pedido)) !== 1) return null;
-      fallas.push({ d: .12, txt: 'Otro tamaño de SUV (' + l + ')' });
+  // Tipo de auto: casillas. Vacío = me da igual.
+  const carros = elegirLista(r.carro);
+  if (carros.length && !carros.includes(CARRO_GRUPO[c.body])) return null;
+  // Propulsión: casillas, y excluye. Vacío = me da igual.
+  const props = elegirLista(r.prop);
+  if (props.length && !props.includes(c.type)){
+    // Vecina: EV, PHEV y HEV se tocan entre sí (se enchufan, o se enchufan y llevan nafta, o no se enchufan). Mild y nafta no cuentan.
+    const orden = ['ev', 'phev', 'hev'], k = orden.indexOf(c.type);
+    if (k < 0 || !props.some(x => Math.abs(orden.indexOf(x) - k) === 1)) return null;
+    fallas.push({ d: .12, txt: { ev: 'Es eléctrico (EV)', phev: 'Es enchufable (PHEV)', hev: 'Es híbrido (HEV)' }[c.type] });
+  }
+  // Tamaño (segmento A a D): el de al lado queda como «casi»; sin segmento en la tabla, también.
+  const segs = elegirLista(r.seg);
+  if (segs.length && segs.length < 4){
+    const l = SEG_ABCD[c.size];
+    if (!l) fallas.push({ d: .1, txt: 'No informa su tamaño' });
+    else if (!segs.includes(l)){
+      if (Math.min(...segs.map(s => Math.abs('ABCD'.indexOf(l) - 'ABCD'.indexOf(s)))) !== 1) return null;
+      fallas.push({ d: .12, txt: 'Otro tamaño (' + l + ')' });
     }
   }
-  // Coupés y descapotables van con los sedanes y hatchbacks (2026-10-30, pedido de Mati).
-  if (r.carro === 'auto' && !['Sedán', 'Hatchback', 'Coupé', 'Convertible'].includes(c.body)) return null;
-  if (r.carro === 'pickup' && c.body !== 'Pickup') return null;
   const isofix = isofixDe(i);
   if (r.movilidad === 'silla'){
     const b = rkValor(i, 'Volumen de baúl/carga (L)');
@@ -7023,8 +7057,6 @@ function elegirDesvio(i, r){
   if (r.quien === 'ninos'){
     if (isofix === false) return null;
     if (isofix == null) fallas.push({ d: .1, txt: 'No informa ISOFIX' });
-  } else if (r.quien === 'adultos' && ['mini', 'compact'].includes(c.size)){
-    fallas.push({ d: .12, txt: 'Chico para adultos (segmento ' + SEG_LETRA_AB[c.size] + ')' });
   }
   const plazas = +r.plazas, dato = SIM_ASIENTOS[i];
   // Hasta 5 plazas, el que no tiene el dato entra con su estimación; para 6 o 7 sigue sin entrar.
@@ -7164,6 +7196,7 @@ function elegirCalcular(r){
   return { top, todos: cumplen.map(x => x.i), total: cumplen.length, casi: top.filter(x => x.casi).length, sinPrecio: sinPrecioIdx.length, sinPrecioIdx };
 }
 function pintarElegir(cambio){
+  Object.assign(elegirResp, elegirNorm(elegirResp));
   const r = elegirResp, out = elegirCalcular(r);
   const hoja = document.getElementById('elegirHoja');
   // Si una respuesta no mueve las sugerencias, se dice: si no, parece que no recalculó.
@@ -7171,9 +7204,9 @@ function pintarElegir(cambio){
   // Es una vista de la página, como Tabla y Ranking (2026-10-09): el título del sitio es el de la
   // página, y acá va el de la sección.
   hoja.innerHTML = '<h2 id="elegirTitulo" class="elegir-titulo">Ayudame a elegir</h2>' +
-    '<p class="ficha-nota">5 preguntas y te sugerimos ' + elegirN() + ' autos. ' +
+    '<p class="ficha-nota">5 preguntas, 3 filtros que se arman solos y te sugerimos ' + elegirN() + ' autos. ' +
       '<button type="button" class="mini-btn" id="elegirTabla">Ver la tabla</button></p>' +
-    '<div class="elegir-cuerpo"><div class="elegir-preg">' + ELEGIR_PREG.map(q => q.deslizador ? presuHTML(r) : q.interruptor ? '' : '<fieldset role="group" aria-label="' + q.t + '"><div class="elegir-leyenda' + (q.k === 'quien' ? ' quien-leyenda' : '') + '">' + q.t + (q.k === 'quien' ? movilidadBtnHTML(r) : '') + '</div><div class="elegir-ops" data-n="' + q.ops.length + '" data-q="' + q.k + '" style="--n:' + q.ops.length + '">' +
+    '<div class="elegir-cuerpo"><div class="elegir-preg">' + ELEGIR_PREG.map(q => q.deslizador ? presuHTML(r) : q.interruptor ? '' : q.multi ? elegirMultiHTML(q, r) : '<fieldset role="group" aria-label="' + q.t + '"><div class="elegir-leyenda' + (q.k === 'quien' ? ' quien-leyenda' : '') + '">' + q.t + (q.k === 'quien' ? movilidadBtnHTML(r) : '') + '</div><div class="elegir-ops" data-n="' + q.ops.length + '" data-q="' + q.k + '" style="--n:' + q.ops.length + '">' +
       q.ops.map(([v, t, pesos]) => '<label><input type="radio" name="el-' + q.k + '" value="' + v + '"' + (r[q.k] === v ? ' checked' : '') + '><span' +
         ((ELEGIR_TIP[q.k] || {})[v] ? ' data-tip="' + ELEGIR_TIP[q.k][v] + '"' : q.k === 'presu' && v ? ' data-tip="' + usdExacto(v) + ' Los autos con la lista en pesos entran por su precio pasado a dólares al ' + DOLAR_TXT + '."' : '') + '>' + (q.k === 'quien' ? quienSVG(v, r.plazas) : q.k === 'movilidad' && v ? SVG_ACCESO : '') + t +
         (pesos ? '<small class="precio-pesos">' + pesos + '</small>' : '') + '</span></label>').join('') + '</div>' +
@@ -7222,6 +7255,19 @@ function pintarElegir(cambio){
   hoja.dataset.todos = out.todos.join(',');
   hoja.dataset.sinprecio = out.sinPrecioIdx.join(',');
 }
+// Filtros de casillas (tamaño, propulsión, tipo de auto). «Me da igual» es una casilla que apaga las demás; los que arman las
+// respuestas dicen de dónde salió lo sugerido y, si la persona lo tocó, dejan volver a la sugerencia.
+function elegirMultiHTML(q, r){
+  const sel = elegirLista(r[q.k]), todos = q.k === 'seg' ? sel.length === 4 : !sel.length, ops = q.igual ? [['__igual', 'Me da igual']].concat(q.ops) : q.ops;
+  const man = q.k === 'seg' ? r.segMan : q.k === 'prop' ? r.propMan : false;
+  const cart = (q.k === 'seg' ? ELEGIR_TIP.seg : q.k === 'prop' ? ELEGIR_TIP.prop : ELEGIR_TIP.carro);
+  const nota = !q.sug ? '' : man ? '<p class="filtro-nota">Lo cambiaste vos. <button type="button" class="mini-btn" data-sugerir="' + q.k + '">Volver a la sugerencia</button></p>'
+    : '<p class="filtro-nota">' + (q.k === 'seg' ? 'Sugerido según quiénes viajan y las plazas.' : 'Sugerido según el uso y si podés cargarlo.') + ' Cambialo si querés.</p>';
+  return '<fieldset role="group" aria-label="' + q.t + '"><div class="elegir-leyenda">' + q.t + '</div><div class="elegir-ops" data-n="' + ops.length + '" data-q="' + q.k + '" style="--n:' + ops.length + '">' +
+    ops.map(([v, t]) => { const on = v === '__igual' ? todos : q.k === 'seg' ? sel.includes(v) : !todos && sel.includes(v), tip = v === '__igual' ? cart[''] : cart[v];
+      return '<label><input type="checkbox" name="elm-' + q.k + '" value="' + v + '"' + (on ? ' checked' : '') + '><span' + (tip ? ' data-tip="' + tip + '"' : '') + '>' + t + '</span></label>'; }).join('') +
+    '</div>' + nota + '</fieldset>';
+}
 // Por qué salió cada auto (2026-10-30, pedido de Mati): el puntaje desglosado en un cartel.
 function elegirPorqueHTML(x){
   const f = n => n.toLocaleString('es-AR', { minimumFractionDigits: 1, maximumFractionDigits: 1 });
@@ -7258,21 +7304,24 @@ function quienSVG(v, plazas){
 function elegirResumenHTML(r){
   const txt = q => { const o = q.ops.find(([v]) => v === r[q.k]); return o ? o[1] : ''; };
   const partes = [];
-  const presu = ELEGIR_PREG.find(q => q.k === 'presu'), carro = ELEGIR_PREG.find(q => q.k === 'carro'), uso = ELEGIR_PREG.find(q => q.k === 'uso');
+  const presu = ELEGIR_PREG.find(q => q.k === 'presu'), uso = ELEGIR_PREG.find(q => q.k === 'uso');
+  const multiTxt = k => { const q = ELEGIR_PREG.find(x => x.k === k); return elegirLista(r[k]).map(v => (q.ops.find(o => o[0] === v) || [])[1]).filter(Boolean); };
   if (r.presu) partes.push(presuCorto(r.presu));
   partes.push(r.plazas === '6' ? '6 o 7 plazas' : r.plazas === '4' ? 'hasta 4 plazas' : '5 plazas');
   if (r.movilidad === 'silla') partes.push('con silla de ruedas');
   if (r.quien) partes.push(r.quien === 'ninos' ? 'con niños' : 'con adulto atrás');
   if (uso) partes.push(txt(uso).toLowerCase());
-  if (r.carro && carro) partes.push(txt(carro));
+  if (elegirLista(r.seg).length && elegirLista(r.seg).length < 4) partes.push('segmento ' + elegirLista(r.seg).join(' o '));
+  if (r.prop) partes.push(multiTxt('prop').join(' o ').toLowerCase());
+  if (r.carro) partes.push(multiTxt('carro').join(' o '));
   if (r.enchufe === 'si') partes.push('con dónde cargar');
   return '<p class="elegir-tus">Para ' + rkEsc(partes.join(', ')) + '. <button type="button" class="mini-btn" id="elegirCambiar">Cambiar</button></p>';
 }
 // Cero resultados: qué respuesta aflojar, con cuántos autos daría (GOV.UK: decir cómo salir).
 function elegirAflojarHTML(r){
-  const pruebas = [['presu', '', 'cualquier presupuesto'], ['carro', '', 'cualquier tipo de auto'], ['plazas', '5', '5 plazas'], ['quien', '', 'me da igual quiénes viajen'], ['movilidad', '', 'sin silla de ruedas'], ['uso', 'mixto', 'ciudad y ruta']]
+  const pruebas = [['presu', '', 'cualquier presupuesto'], ['carro', '', 'cualquier tipo de auto'], ['prop', '', 'cualquier propulsión'], ['seg', 'A,B,C,D', 'cualquier tamaño'], ['plazas', '5', '5 plazas'], ['quien', '', 'me da igual quiénes viajen'], ['movilidad', '', 'sin silla de ruedas'], ['uso', 'mixto', 'ciudad y ruta']]
     .filter(([k, v]) => r[k] !== v)
-    .map(([k, v, t]) => { const o = elegirCalcular(Object.assign({}, r, { [k]: v })); return [k, v, t, o.total]; })
+    .map(([k, v, t]) => { const o = elegirCalcular(elegirNorm(Object.assign({}, r, { [k]: v }, k === 'seg' ? { segMan: true } : k === 'prop' ? { propMan: true } : {}))); return [k, v, t, o.total]; })
     .filter(x => x[3] > 0);
   return '<p class="ficha-nota">' + (pruebas.length ? 'Probá con:' : 'Probá con otro presupuesto o con otro tipo de auto.') + '</p>' +
     (pruebas.length ? '<p class="elegir-aflojar">' + pruebas.map(([k, v, t, n]) => '<button type="button" class="ficha-btn" data-aflojar="' + k + '" data-valor="' + v + '">' + rkEsc(t) + ' (' + n + ')</button>').join('') + '</p>' : '');
@@ -7381,6 +7430,22 @@ elegirHoja.addEventListener('keydown', e => {
 });
 elegirHoja.addEventListener('change', e => {
   if (e.target.id === 'presuIgual'){ presuGuardar(e.target.checked ? '' : presuInicial()); return; }
+  const mc = /^elm-(\w+)$/.exec(e.target.name || '');
+  if (mc){
+    const k = mc[1], v = e.target.value, q = ELEGIR_PREG.find(x => x.k === k);
+    let sel = elegirLista(elegirResp[k]);
+    if (k === 'seg' && sel.length === 0) sel = ['A', 'B', 'C', 'D'];
+    if (v === '__igual') sel = [];
+    else sel = e.target.checked ? sel.concat(v) : sel.filter(x => x !== v);
+    if (k === 'seg' && !sel.length) sel = ['A', 'B', 'C', 'D'];
+    elegirResp[k] = q.ops.map(o => o[0]).filter(x => sel.includes(x)).join(',');
+    if (k === 'seg') elegirResp.segMan = true; else if (k === 'prop') elegirResp.propMan = true;
+    try { localStorage.setItem('elegir', JSON.stringify(elegirResp)); } catch (er) {}
+    const y = window.scrollY; pintarElegir(true); window.scrollTo(0, y);
+    const barra = document.querySelector('.elegir-barra');
+    if (barra){ barra.classList.remove('cambio'); void barra.offsetWidth; barra.classList.add('cambio'); }
+    return;
+  }
   const m = /^el-(\w+)$/.exec(e.target.name || ''); if (!m) return;
   elegirResp[m[1]] = e.target.value;
   try { localStorage.setItem('elegir', JSON.stringify(elegirResp)); } catch (er) {}
@@ -7390,11 +7455,16 @@ elegirHoja.addEventListener('change', e => {
 });
 elegirHoja.addEventListener('click', e => {
   if (e.target.closest('#movilidadBtn')){ presuGuardarCampo('movilidad', elegirResp.movilidad === 'silla' ? '' : 'silla'); return; }
+  const sg = e.target.closest('[data-sugerir]');
+  if (sg){ elegirResp[sg.dataset.sugerir === 'seg' ? 'segMan' : 'propMan'] = false;
+    try { localStorage.setItem('elegir', JSON.stringify(elegirResp)); } catch (er) {}
+    const y = window.scrollY; pintarElegir(true); window.scrollTo(0, y); return; }
   if (e.target.closest('#elegirTabla')) return irAVista('tabla');
   if (e.target.closest('#elegirCambiar')){ const f = elegirHoja.querySelector('.elegir-preg'); if (f) f.scrollIntoView({ behavior: suave(), block: 'start' }); return; }
   const af = e.target.closest('[data-aflojar]');
   if (af){
     elegirResp[af.dataset.aflojar] = af.dataset.valor;
+    if (af.dataset.aflojar === 'seg') elegirResp.segMan = true; else if (af.dataset.aflojar === 'prop') elegirResp.propMan = true;
     try { localStorage.setItem('elegir', JSON.stringify(elegirResp)); } catch (er) {}
     pintarElegir(true); return;
   }
