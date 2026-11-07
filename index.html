@@ -6848,9 +6848,15 @@ const PRESU_INICIAL_AUTOS = 30;   // cuántos autos entran en el rango de arranq
 const presuLeer = s => { const [a, b] = s.split('-'); return { min: +a, max: b === '' || b == null ? null : +b }; };
 const presuTexto = (min, max) => min + '-' + (max == null || max >= PRESU_TOPE ? '' : max);
 const presuCuenta = (min, max) => PRESU_PRECIOS.filter(p => p >= min && (max == null || p <= max)).length;
-function presuInicial(){
-  const max = Math.ceil(PRESU_PRECIOS[PRESU_INICIAL_AUTOS - 1] / PRESU_PASO) * PRESU_PASO;
-  return presuTexto(PRESU_PISO, max);
+// Rango de arranque (2026-11-07, pedido de Mati): desde el piso hasta el precio del 12.º auto más barato que cumple todo lo demás que dejan armado las
+// respuestas (propulsión, tamaño, plazas…), para que la primera pantalla ya muestre autos que cumplen. Si cumplen menos que las sugerencias, el rango de
+// siempre (los 30 más baratos). Se calcula con las respuestas del momento, así que se usa recién al dibujar (no al cargar el script).
+const PRESU_INICIAL_CUMPLEN = 12;
+function presuInicial(r){
+  const base = elegirNorm(Object.assign({}, r || elegirResp, { presu: '' }));
+  const precios = CARS.map((c, i) => i).filter(i => elegirDesvio(i, base) === 0 && PRECIO_CMP[i] != null).map(i => PRECIO_CMP[i]).sort((a, b) => a - b);
+  const todos = precios.length >= elegirN() ? precios : PRESU_PRECIOS, k = todos === precios ? Math.min(precios.length, PRESU_INICIAL_CUMPLEN) : PRESU_INICIAL_AUTOS;
+  return presuTexto(PRESU_PISO, Math.ceil(todos[k - 1] / PRESU_PASO) * PRESU_PASO);
 }
 const usdMiles = n => { const k = n / 1000; return Number.isInteger(k) ? String(k) : k.toLocaleString('es-AR', { maximumFractionDigits: 1 }); };
 // «USD 28 a 35,5 mil», «hasta USD 28 mil», «desde USD 77 mil, sin tope» (para resúmenes) y su versión larga con pesos.
@@ -6933,7 +6939,7 @@ const ELEGIR_ANCHO = window.matchMedia('(min-width: 900px)');
 const ELEGIR_N = ELEGIR_ANCHO.matches ? 5 : 4;
 const elegirN = () => ELEGIR_N;
 // Sin presupuesto elegido de entrada (2026-10-10): lo que viene marcado se lee como recomendación.
-let elegirResp = { presu: presuInicial(), plazas: '5', quien: '', movilidad: '', uso: 'mixto', enchufe: 'nose', carro: '', seg: 'A,B,C,D', prop: '', segMan: false, propMan: false };
+let elegirResp = { presu: null, plazas: '5', quien: '', movilidad: '', uso: 'mixto', enchufe: 'nose', carro: '', seg: 'A,B,C,D', prop: '', segMan: false, propMan: false };
 try { const g = JSON.parse(localStorage.getItem('elegir') || 'null'); if (g) elegirResp = Object.assign(elegirResp, g); } catch (e) {}
 // Respuestas guardadas con opciones que ya no existen (topes o franjas anteriores, "suv"): se reinician.
 // Respuestas viejas de «tipo de auto» (una sola opción, con el SUV partido por tamaño): pasan a las casillas nuevas.
@@ -6943,7 +6949,7 @@ const elegirVale = (k, v) => { const q = ELEGIR_PREG.find(x => x.k === k);
 if (!elegirVale('seg', elegirResp.seg)) elegirResp.seg = 'A,B,C,D';
 if (!elegirVale('prop', elegirResp.prop)) elegirResp.prop = '';
 elegirResp.segMan = elegirResp.segMan === true; elegirResp.propMan = elegirResp.propMan === true;
-if (!elegirVale('presu', elegirResp.presu)) elegirResp.presu = presuInicial();
+if (elegirResp.presu !== null && !elegirVale('presu', elegirResp.presu)) elegirResp.presu = null;   // se arma al dibujar (presuInicial usa las respuestas)
 else if (elegirResp.presu){ const p = presuLeer(elegirResp.presu); elegirResp.presu = presuTexto(Math.max(PRESU_PISO, Math.floor(p.min / 1000) * 1000), p.max); }
 if (!elegirVale('carro', elegirResp.carro)) elegirResp.carro = '';
 if (!elegirVale('quien', elegirResp.quien)) elegirResp.quien = '';
@@ -7233,6 +7239,7 @@ function elegirCalcular(r){
 }
 function pintarElegir(cambio){
   Object.assign(elegirResp, elegirNorm(elegirResp));
+  if (elegirResp.presu === null) elegirResp.presu = presuInicial();
   const r = elegirResp, out = elegirCalcular(r);
   const hoja = document.getElementById('elegirHoja');
   // Si una respuesta no mueve las sugerencias, se dice: si no, parece que no recalculó.

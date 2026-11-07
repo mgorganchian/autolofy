@@ -14,8 +14,12 @@ test('arranca en el rango más bajo, con dólares, pesos y la cantidad de autos'
   const e = await estado(page);
   expect(e.p.min).toBe(await page.evaluate(() => PRESU_PISO));
   expect(e.p.max % 1000).toBe(0);
-  expect(e.n).toBeGreaterThanOrEqual(30);
-  expect(e.n).toBeLessThanOrEqual(33);
+  // 2026-11-07: el rango de arranque llega hasta el 12.º auto más barato que cumple la propulsión sugerida (y lo demás armado), no hasta el 30.º de todos.
+  const r = await page.evaluate(() => { const o = elegirCalcular(elegirResp); return { cumplen: o.total, n: o.top.length, casi: o.casi, N: elegirN(), prop: elegirResp.prop }; });
+  expect(r.prop).toBe('phev');
+  expect(r.cumplen).toBeGreaterThanOrEqual(r.N);
+  expect(r.casi).toBe(0);
+  expect(e.n).toBeGreaterThan(r.cumplen);
   expect(e.usd).toMatch(/^USD [\d.]+ a [\d.]+$/);
   expect(e.pesos).toMatch(/^\$ [\d,]+ M a \$ [\d,]+ M$/);
 });
