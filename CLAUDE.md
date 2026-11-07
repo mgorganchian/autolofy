@@ -564,7 +564,7 @@ sí quedan en inglés, porque no muestran la palabra. Se coló con `YES` dos vec
 - **Tres filtros que se arman solos** (2026-11-07, pedido de Mati): en Ayudame a elegir, debajo del uso y el enchufe, hay tres filtros de casillas que las
   respuestas dejan armados y que se pueden cambiar a mano (`elegirResp.seg`, `.prop`, `.carro`; lista separada por comas, `''` = me da igual; `elegirNorm` aplica lo
   sugerido a los que no se tocaron, `segMan` y `propMan` marcan los tocados y «Volver a la sugerencia» los suelta).
-  **Tamaño (A a D)**: «Me da igual» deja los cuatro; «Con niños» B, C y D; «Adulto atrás» C y D; 6 o 7 plazas solo D (la D incluye los muy grandes, `SEG_ABCD`). El
+  **Tamaño (A a D)**: «Me da igual» deja los cuatro; «Con niños» los cuatro (decisión de Mati del 2026-11-07: los límites los ponen las plazas y el ISOFIX, como en la regla del 1/11); «Adulto atrás» C y D; 6 o 7 plazas solo D (la D incluye los muy grandes, `SEG_ABCD`). El
   segmento de al lado queda como «casi» («Otro tamaño (B)»); sin segmento en la tabla, «No informa su tamaño». **Propulsión**: con dónde cargar, ciudad = EV y
   ciudad y ruta o mucha ruta = PHEV; «No sé» (el valor de entrada) PHEV, que sirve con o sin enchufe; sin carga, HEV (no depende de cargadores); tierra y trabajo, me da igual (casi no hay híbridos 4x4 ni pickups híbridas).
   **Nunca se sugiere mild-hybrid ni nafta**, pero se pueden tildar a mano. La propulsión elegida **excluye**, no solo prioriza (el puntaje por propulsión sigue
