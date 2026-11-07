@@ -53,6 +53,11 @@ test('la propulsión sale del uso y del enchufe: EV, PHEV o HEV, y nunca mild ni
   const tipos = await page.evaluate(() => elegirCalcular(elegirResp).todos.map(i => CARS[i].type));
   expect(tipos.length).toBeGreaterThan(0);
   expect(new Set(tipos)).toEqual(new Set(['hev']));
+  // Los vecinos (PHEV o EV) entran solo como «casi» y lo dicen; el mild y la nafta no entran nunca.
+  const v = await page.evaluate(() => { const r = Object.assign({}, elegirResp, { presu: '', seg: 'A,B,C,D', carro: '' }), t = tipo => { const i = CARS.findIndex(c => c.type === tipo && c.status === 'venta'); return elegirDesvio(i, r); };
+    return { phev: t('phev'), ev: t('ev'), mhev: t('mhev'), ice: t('ice') }; });
+  expect(v.phev.txt).toBe('Es enchufable (PHEV)');
+  expect(v.ev).toBeNull(); expect(v.mhev).toBeNull(); expect(v.ice).toBeNull();
   // A mano: tilda el mild-hybrid y entra.
   await page.locator('label:has(input[name="elm-prop"][value="mhev"])').click();
   expect(await marcados(page, 'prop')).toEqual(['hev', 'mhev']);

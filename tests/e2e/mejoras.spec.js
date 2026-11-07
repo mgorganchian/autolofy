@@ -327,7 +327,7 @@ test('ayudame a elegir: cada sugerido tiene a lo sumo 4 renglones y en el celula
   const items = page.locator('.elegir-res > li');
   // «Flojo en …» (solo en la computadora) es una línea extra, aparte de las 4.
   for (const n of await items.locator('ul').evaluateAll(us => us.map(u => [...u.children].filter(l => !l.classList.contains('elegir-flojo')).length))) expect(n).toBeLessThanOrEqual(4);
-  await expect(items.first().locator('ul > li').nth(1)).toHaveText(/\d,\d m/);   // el renglón de cómo es el auto
+  await expect(items.first().locator('ul > li:not(.elegir-casi)').nth(1)).toHaveText(/\d,\d m/);   // el renglón de cómo es el auto
   if (page.viewportSize().width > 640) return;
   const dobles = await page.locator('.elegir-res ul > li').evaluateAll(ls => ls.filter(li => li.getBoundingClientRect().height > 1.5 * parseFloat(getComputedStyle(li).lineHeight)).map(li => li.textContent));
   expect(dobles).toEqual([]);

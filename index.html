@@ -7033,7 +7033,12 @@ function elegirDesvio(i, r){
   if (carros.length && !carros.includes(CARRO_GRUPO[c.body])) return null;
   // Propulsión: casillas, y excluye. Vacío = me da igual.
   const props = elegirLista(r.prop);
-  if (props.length && !props.includes(c.type)) return null;
+  if (props.length && !props.includes(c.type)){
+    // Vecina: EV, PHEV y HEV se tocan entre sí (se enchufan, o se enchufan y llevan nafta, o no se enchufan). Mild y nafta no cuentan.
+    const orden = ['ev', 'phev', 'hev'], k = orden.indexOf(c.type);
+    if (k < 0 || !props.some(x => Math.abs(orden.indexOf(x) - k) === 1)) return null;
+    fallas.push({ d: .12, txt: { ev: 'Es eléctrico (EV)', phev: 'Es enchufable (PHEV)', hev: 'Es híbrido (HEV)' }[c.type] });
+  }
   // Tamaño (segmento A a D): el de al lado queda como «casi»; sin segmento en la tabla, también.
   const segs = elegirLista(r.seg);
   if (segs.length && segs.length < 4){
