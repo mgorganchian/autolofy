@@ -11,6 +11,9 @@ test.beforeEach(async ({ page }) => {
 const marcados = (page, k) => page.locator('input[name="elm-' + k + '"]:checked').evaluateAll(l => l.map(x => x.value));
 
 test('el tamaño sale de quiénes viajan y de las plazas, y se puede cambiar', async ({ page }) => {
+  // Desde el 2026-11-07 arranca «Con niños» (pedido de Mati): el tamaño sugerido es B, C y D.
+  expect(await marcados(page, 'seg')).toEqual(['B', 'C', 'D']);
+  await page.locator('label:has(input[name="el-quien"][value=""])').click();
   expect(await marcados(page, 'seg')).toEqual(['A', 'B', 'C', 'D']);
   await page.locator('label:has(input[name="el-quien"][value="ninos"])').click();
   expect(await marcados(page, 'seg')).toEqual(['B', 'C', 'D']);
@@ -54,7 +57,7 @@ test('la propulsión sale del uso y del enchufe: EV, PHEV o HEV, y nunca mild ni
   expect(tipos.length).toBeGreaterThan(0);
   expect(new Set(tipos)).toEqual(new Set(['hev']));
   // Los vecinos (PHEV o EV) entran solo como «casi» y lo dicen; el mild y la nafta no entran nunca.
-  const v = await page.evaluate(() => { const r = Object.assign({}, elegirResp, { presu: '', seg: 'A,B,C,D', carro: '' }), t = tipo => { const i = CARS.findIndex(c => c.type === tipo && c.status === 'venta'); return elegirDesvio(i, r); };
+  const v = await page.evaluate(() => { const r = Object.assign({}, elegirResp, { presu: '', seg: 'A,B,C,D', carro: '', quien: '' }), t = tipo => { const i = CARS.findIndex(c => c.type === tipo && c.status === 'venta'); return elegirDesvio(i, r); };
     return { phev: t('phev'), ev: t('ev'), mhev: t('mhev'), ice: t('ice') }; });
   expect(v.phev.txt).toBe('Es enchufable (PHEV)');
   expect(v.ev).toBeNull(); expect(v.mhev).toBeNull(); expect(v.ice).toBeNull();
@@ -105,4 +108,15 @@ test('los cuatro tamaños (A a D) van en una sola fila, también en el celular, 
   expect(r.textos).toEqual(['Aurbano', 'Bchico', 'Ccompacto', 'Dgrande']);
   const anchos = await page.locator('.elegir-ops[data-q="seg"] span').evaluateAll(ss => ss.map(s => [Math.round(s.scrollWidth), Math.round(s.clientWidth)]));
   for (const [sw, cw] of anchos) expect(sw).toBeLessThanOrEqual(cw + 1);
+});
+
+test('«Me da igual» es una casilla al costado del título (tipo de auto y propulsión), no un botón más', async ({ page }) => {
+  for (const k of ['carro', 'prop']){
+    const r = await page.evaluate(k => { const f = document.querySelector('.elegir-ops[data-q="' + k + '"]').closest('fieldset'), l = f.querySelector('.elegir-leyenda'), c = l.querySelector('label.leyenda-igual input[type="checkbox"]');
+      return { dentro: !!c, enOpciones: !!f.querySelector('.elegir-ops input[value="__igual"]'), mismaFila: c && Math.abs(c.getBoundingClientRect().top - l.querySelector('span').getBoundingClientRect().top) < 30 }; }, k);
+    expect(r.dentro, k).toBe(true);
+    expect(r.enOpciones, k).toBe(false);
+  }
+  const n = await page.locator('.elegir-ops[data-q="carro"] label').count();
+  expect(n).toBe(6);
 });

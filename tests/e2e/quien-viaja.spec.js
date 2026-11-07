@@ -40,6 +40,9 @@ test('con un adulto atrás el tamaño sugerido es C y D: los A no entran, los B 
 test('la pregunta está en la hoja con «me da igual» marcada y el resumen la nombra', async ({ page }) => {
   await page.goto('/index.html');
   await expect(page.locator('input[name="el-quien"]')).toHaveCount(3);
+  // Desde el 2026-11-07 arranca «Con niños» (pedido de Mati); «Me da igual» se elige a mano.
+  await expect(page.locator('input[name="el-quien"][value="ninos"]')).toBeChecked();
+  await page.locator('label:has(input[name="el-quien"][value=""])').click();
   await expect(page.locator('input[name="el-quien"][value=""]')).toBeChecked();
   await page.locator('label:has(input[name="el-quien"][value="ninos"])').click();
   await expect(page.locator('#elegirHoja')).toContainText('Con niños');
@@ -61,6 +64,7 @@ test('cada opción de «quiénes viajan» lleva su dibujo del auto y la elegida 
   const ops = page.locator('input[name="el-quien"] + span');
   await expect(ops).toHaveCount(3);
   for (let i = 0; i < 3; i++) await expect(ops.nth(i).locator('svg.quien-ico[aria-hidden="true"]')).toHaveCount(1);
+  await page.locator('label:has(input[name="el-quien"][value=""])').click();   // arranca «Con niños» desde el 2026-11-07
   await expect(page.locator('.quien-nota')).toHaveCount(0);
   await page.locator('label:has(input[name="el-quien"][value="ninos"])').click();
   await expect(page.locator('.quien-nota')).toContainText('dos adultos');
