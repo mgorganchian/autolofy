@@ -1759,6 +1759,12 @@
     "moneda": "ARS",
     "monto": 261033300,
     "version": "Land Cruiser 300 VX HEV, precio sugerido al público publicado en toyota.com.ar (consultado el 04/11/2026); Toyota lo muestra junto a US$168.300. La GR-S figurab"
+   },
+   {
+    "desde": "2026-11-07",
+    "moneda": "ARS",
+    "monto": 260107700,
+    "version": "Land Cruiser 300 VX HEV, precio sugerido al público publicado en toyota.com.ar (consultado el 04/11/2026); Toyota lo muestra junto a US$168.300. La GR-S figurab"
    }
   ],
   "bmw-118-sportline": [
@@ -1812,6 +1818,12 @@
     "desde": "2026-11-04",
     "moneda": "ARS",
     "monto": 111361800,
+    "version": "GR Yaris AT (GR-DAT 8 velocidades), precio sugerido al público publicado en toyota.com.ar (consultado el 04/11/2026); Toyota lo muestra junto a US$71.800."
+   },
+   {
+    "desde": "2026-11-07",
+    "moneda": "ARS",
+    "monto": 110966900,
     "version": "GR Yaris AT (GR-DAT 8 velocidades), precio sugerido al público publicado en toyota.com.ar (consultado el 04/11/2026); Toyota lo muestra junto a US$71.800."
    }
   ],
