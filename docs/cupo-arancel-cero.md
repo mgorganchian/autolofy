@@ -54,4 +54,4 @@ Segunda ronda 22.998 unidades (6.458 terminales, 16.540 importadores), 18 marcas
 
 ## Qué no dice ninguna fuente
 - El cupo se asigna a una **empresa para un modelo**, con tope FOB por unidad: no dice que cada auto de ese modelo se importe sin arancel ni que el precio de lista lo refleje.
-- El anexo de la Resolución 295/2025 (cupo 2025) todavía no se leyó en su texto oficial; el de la 513/2025 sí (sección 2).
+- Los anexos oficiales de la Resolución 295/2025 (BO 28/07/2025, aviso 328938, `idAnexo=7424791`) se leyeron el 2026-11-07; sus renglones y el cruce con los autos de la tabla están en `docs/cupo-cruce-autos.md`.
