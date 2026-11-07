@@ -57,7 +57,7 @@ test('arrastrar el mango del máximo hasta el final deja el rango sin tope y «M
   await page.mouse.up();
   const e = await estado(page);
   expect(e.s).toMatch(/^\d+-$/);
-  expect(e.usd).toMatch(/ o más$/);
+  expect(e.usd).toMatch(/, sin tope$/);
   await page.locator('#presuIgual').check();
   expect(await page.evaluate(() => elegirResp.presu)).toBe('');
   await expect(page.locator('#presu')).toHaveClass(/apagado/);

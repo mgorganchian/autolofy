@@ -991,15 +991,31 @@ if(!location.search&&!location.hash)document.documentElement.classList.add('arra
   .presu-fila{display:flex;align-items:center;gap:4px}
   .presu-paso{flex:0 0 44px;width:44px;height:44px;border-radius:50%;border:1px solid var(--border-strong);background:var(--surface);color:var(--ink);font-size:1.4rem;line-height:1;padding:0;cursor:pointer;touch-action:manipulation}
   .presu-paso:active{background:var(--byd-blue);border-color:var(--byd-blue);color:var(--sobre-verde)}
-  .presu-pista{position:relative;flex:1;height:56px;margin:0 20px;touch-action:none;cursor:pointer;--a:0%;--b:100%;--mid:calc((var(--a) + var(--b)) / 2);--med:max(14px, calc((var(--b) - var(--a)) / 2))}
-  .presu-riel{position:absolute;left:0;right:0;top:25px;height:6px;border-radius:3px;background:var(--border-strong)}
-  .presu-barra{position:absolute;top:12px;height:32px;left:calc(var(--mid) - var(--med));width:max(28px, calc(var(--b) - var(--a)));border-radius:8px;background-color:var(--byd-blue);background-image:radial-gradient(circle,rgba(255,255,255,.85) 1.6px,transparent 2px);background-size:8px 8px;background-position:center;cursor:grab;outline-offset:2px}
+  /* Método del selector de período de mati-gym (2026-11-07, pedido de Mati): silueta de todos los precios detrás del rango, manijas en forma de
+     corchetes [ ], el valor debajo de cada corchete y la zona marcada arrastrable (48 px como mínimo) que corre todo el rango. */
+  .presu-fila{align-items:flex-start}
+  .presu-fila .presu-paso{margin-top:33px}
+  .presu-pista{position:relative;flex:1;height:96px;margin:0 20px;touch-action:none;cursor:pointer;--a:0%;--b:100%;--mid:calc((var(--a) + var(--b)) / 2);--med:max(24px, calc((var(--b) - var(--a)) / 2))}
+  .presu-sil{position:absolute;left:0;top:0;width:100%;height:44px;pointer-events:none;overflow:visible}
+  .presu-sil .a{fill:var(--border-strong);opacity:.5}
+  .presu-sil .l{fill:none;stroke:var(--text-secondary);stroke-width:1;vector-effect:non-scaling-stroke}
+  .presu-sil.sel{clip-path:inset(0 calc(100% - var(--b)) 0 var(--a))}
+  .presu-sil.sel .a{fill:var(--byd-blue);opacity:.65}
+  .presu-sil.sel .l{stroke:var(--byd-blue);stroke-width:1.6}
+  .presu-riel{position:absolute;left:0;right:0;top:52px;height:6px;border-radius:3px;background:var(--border-strong)}
+  .presu-riel i{position:absolute;top:0;bottom:0;left:var(--a);width:calc(var(--b) - var(--a));background:var(--byd-blue);border-radius:3px}
+  .presu-barra{position:absolute;top:0;height:66px;left:calc(var(--mid) - var(--med));width:max(48px, calc(var(--b) - var(--a)));border-radius:4px;background:color-mix(in srgb, var(--byd-blue) 14%, transparent);cursor:grab;outline-offset:2px}
   .presu-barra:active{cursor:grabbing}
-  .presu-mango{position:absolute;top:8px;width:18px;height:40px;padding:0;border-radius:9px;border:2px solid var(--byd-blue);background:var(--surface);cursor:ew-resize;box-shadow:0 1px 3px rgba(0,0,0,.35)}
+  .presu-mango{position:absolute;top:41px;width:14px;height:28px;padding:0;border:0;background:none;cursor:ew-resize}
+  .presu-mango::before{content:'';position:absolute;inset:0;background:var(--byd-blue)}
+  .presu-mango.min::before{-webkit-mask:url("data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='28' viewBox='0 0 14 28'%3E%3Cpath d='M11 2.5H4V25.5H11' fill='none' stroke='%23000' stroke-width='3.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") center/14px 28px no-repeat;mask:url("data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='28' viewBox='0 0 14 28'%3E%3Cpath d='M11 2.5H4V25.5H11' fill='none' stroke='%23000' stroke-width='3.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") center/14px 28px no-repeat}
+  .presu-mango.max::before{-webkit-mask:url("data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='28' viewBox='0 0 14 28'%3E%3Cpath d='M3 2.5H10V25.5H3' fill='none' stroke='%23000' stroke-width='3.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") center/14px 28px no-repeat;mask:url("data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='28' viewBox='0 0 14 28'%3E%3Cpath d='M3 2.5H10V25.5H3' fill='none' stroke='%23000' stroke-width='3.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") center/14px 28px no-repeat}
+  .presu-mango::after{content:'';position:absolute;inset:-8px -10px}
   .presu-mango.min{left:calc(var(--mid) - var(--med));transform:translateX(-100%)} .presu-mango.max{left:calc(var(--mid) + var(--med))}
+  .presu-burb{position:absolute;top:72px;box-sizing:border-box;font-size:.8rem;font-weight:600;color:var(--text-primary);background:var(--surface);border:1px solid var(--border-strong);border-radius:6px;padding:1px 6px;white-space:nowrap;pointer-events:none;transform:translateX(-50%)}
   .presu-mango:focus-visible,.presu-barra:focus-visible,.presu-paso:focus-visible{outline:2px solid var(--link)}
-  .presu.apagado .presu-barra,.presu.apagado .presu-mango{opacity:.4;filter:grayscale(1)}
-  .presu-ejes{margin:0;display:flex;justify-content:space-between;font-size:.8rem;color:var(--text-secondary)}
+  .presu.apagado .presu-barra,.presu.apagado .presu-mango,.presu.apagado .presu-sil.sel,.presu.apagado .presu-riel i{opacity:.4;filter:grayscale(1)}
+  .presu-ejes{margin:0;font-size:.8rem;color:var(--text-secondary)}
   .presu-igual{display:flex;align-items:center;gap:8px;font-size:.84rem;cursor:pointer}
   .presu-igual input{width:20px;height:20px}
   .th-precio{display:block;margin:2px 0 1px;font-family:var(--fuente-tabla);font-weight:600;font-size:.84rem;line-height:1.2}
@@ -6837,17 +6853,36 @@ function presuInicial(){
   return presuTexto(PRESU_PISO, max);
 }
 const usdMiles = n => { const k = n / 1000; return Number.isInteger(k) ? String(k) : k.toLocaleString('es-AR', { maximumFractionDigits: 1 }); };
-// «USD 28 a 35,5 mil», «hasta USD 28 mil», «USD 77 mil o más» (para resúmenes) y su versión larga con pesos.
+// «USD 28 a 35,5 mil», «hasta USD 28 mil», «desde USD 77 mil, sin tope» (para resúmenes) y su versión larga con pesos.
 const presuCorto = s => { const { min, max } = presuLeer(s);
-  return max == null ? 'USD ' + usdMiles(min) + ' mil o más' : min <= PRESU_PISO ? 'hasta USD ' + usdMiles(max) + ' mil' : 'USD ' + usdMiles(min) + ' a ' + usdMiles(max) + ' mil'; };
-const presuUsdLargo = (min, max) => max == null ? 'USD ' + min.toLocaleString('es-AR') + ' o más' : 'USD ' + min.toLocaleString('es-AR') + ' a ' + max.toLocaleString('es-AR');
-const presuPesosLargo = (min, max) => max == null ? pesosCorto(aPesos(min)) + ' o más' : pesosCorto(aPesos(min)) + ' a ' + pesosCorto(aPesos(max));
+  return max == null ? 'desde USD ' + usdMiles(min) + ' mil, sin tope' : min <= PRESU_PISO ? 'hasta USD ' + usdMiles(max) + ' mil' : 'USD ' + usdMiles(min) + ' a ' + usdMiles(max) + ' mil'; };
+const presuUsdLargo = (min, max) => max == null ? 'USD ' + min.toLocaleString('es-AR') + ', sin tope' : 'USD ' + min.toLocaleString('es-AR') + ' a ' + max.toLocaleString('es-AR');
+const presuPesosLargo = (min, max) => max == null ? pesosCorto(aPesos(min)) + ', sin tope' : pesosCorto(aPesos(min)) + ' a ' + pesosCorto(aPesos(max));
 const presuPct = usd => ((Math.min(Math.max(usd, PRESU_PISO), PRESU_TOPE) - PRESU_PISO) / (PRESU_TOPE - PRESU_PISO) * 100).toFixed(2) + '%';
 // «Silla de ruedas» como un ícono chico en el título de «¿Quiénes viajan seguido?» (2026-11-01, pedido de Mati: opción C): un círculo con el
 // símbolo de accesibilidad que se toca para sumar o sacar. No es una pregunta aparte.
 function movilidadBtnHTML(r){
   const on = r.movilidad === 'silla';
   return '<button type="button" class="movilidad-ico' + (on ? ' on' : '') + '" id="movilidadBtn" aria-pressed="' + on + '" aria-label="Viaja alguien en silla de ruedas" data-tip="' + rkEsc('¿Viaja alguien en silla de ruedas? ' + ELEGIR_TIP.movilidad.silla) + '">' + SVG_ACCESO + '</button>';
+}
+// Silueta de todos los precios (como la de mati-gym): cuántos autos hay en cada tramo de USD 2.000, suavizada; el 5% más caro va en el último.
+function presuSiluetaHTML(){
+  const bin = 2000, n = Math.ceil((PRESU_TOPE - PRESU_PISO) / bin), cu = new Array(n).fill(0);
+  PRESU_PRECIOS.forEach(p => { cu[Math.min(n - 1, Math.floor((Math.min(p, PRESU_TOPE - 1) - PRESU_PISO) / bin))]++; });
+  const s = cu.map((v, i) => (cu[i - 1] ?? v) * .25 + v * .5 + (cu[i + 1] ?? v) * .25), mx = Math.max(...s, 1);
+  const linea = 'M0,30 L' + s.map((v, i) => ((i + .5) / n * 100).toFixed(2) + ',' + (30 - v / mx * 28).toFixed(2)).join(' L') + ' L100,30';
+  const svg = cls => '<svg class="presu-sil' + cls + '" viewBox="0 0 100 32" preserveAspectRatio="none" aria-hidden="true" focusable="false"><path class="a" d="' + linea + ' L100,32 L0,32 Z"/><path class="l" d="' + linea + '"/></svg>';
+  return svg('') + svg(' sel');
+}
+// El valor debajo de cada corchete; si quedan muy cerca, una sola etiqueta «desde – hasta». Nunca se salen del recuadro.
+function presuBurbujas(min, max){
+  const pista = document.getElementById('presuPista'), bi = document.getElementById('presuBMin'), bx = document.getElementById('presuBMax'); if (!pista || !bi || !bx) return;
+  const W = pista.clientWidth || 300, tope = max == null || max >= PRESU_TOPE, m = tope ? PRESU_TOPE : max, esc = v => (v - PRESU_PISO) / (PRESU_TOPE - PRESU_PISO) * W;
+  const pa = esc(Math.max(min, PRESU_PISO)), pb = esc(m), med = Math.max(24, (pb - pa) / 2), mid = (pa + pb) / 2, xa = mid - med - 7, xb = mid + med + 7;
+  const ta = 'USD ' + usdMiles(min) + ' mil', tb = tope ? 'sin tope' : 'USD ' + usdMiles(m) + ' mil';
+  const poner = (el, x, t) => { el.hidden = false; el.textContent = t; const w = el.offsetWidth; el.style.left = Math.min(Math.max(x, w / 2 - 20), W + 20 - w / 2) + 'px'; };
+  if (xb - xa < 190){ poner(bi, (xa + xb) / 2, tope ? 'USD ' + usdMiles(min) + ' mil, sin tope' : 'USD ' + usdMiles(min) + ' – ' + usdMiles(m) + ' mil'); bx.hidden = true; }
+  else { poner(bi, xa, ta); poner(bx, xb, tb); }
 }
 function presuHTML(r){
   const on = !!r.presu, p = presuLeer(on ? r.presu : presuInicial()), max = p.max == null ? PRESU_TOPE : p.max;
@@ -6857,11 +6892,12 @@ function presuHTML(r){
       '<small id="presuN">' + presuCuenta(p.min, p.max) + ' autos con precio</small></p>' +
     '<div class="presu-fila"><button type="button" class="presu-paso" id="presuIzq" aria-label="Mover todo el rango hacia abajo, de a USD 1.000">‹</button>' +
     '<div class="presu-pista" id="presuPista" style="--a:' + presuPct(p.min) + ';--b:' + presuPct(max) + '">' +
-      '<span class="presu-riel"></span><span class="presu-barra" id="presuBarra" role="slider" tabindex="0" aria-label="Mover el rango de precio sin cambiar la cantidad de autos" aria-valuemin="' + PRESU_PISO + '" aria-valuemax="' + PRESU_TOPE + '" aria-valuenow="' + p.min + '" aria-valuetext="' + rkEsc(presuUsdLargo(p.min, p.max)) + '"></span>' +
+      presuSiluetaHTML() + '<span class="presu-riel"><i></i></span><span class="presu-barra" id="presuBarra" role="slider" tabindex="0" aria-label="Mover el rango de precio sin cambiar la cantidad de autos" aria-valuemin="' + PRESU_PISO + '" aria-valuemax="' + PRESU_TOPE + '" aria-valuenow="' + p.min + '" aria-valuetext="' + rkEsc(presuUsdLargo(p.min, p.max)) + '"></span>' +
       '<button type="button" class="presu-mango min" id="presuMin" role="slider" aria-label="Precio mínimo" aria-valuemin="' + PRESU_PISO + '" aria-valuemax="' + (PRESU_TOPE - PRESU_PASO) + '" aria-valuenow="' + p.min + '"></button>' +
       '<button type="button" class="presu-mango max" id="presuMax" role="slider" aria-label="Precio máximo" aria-valuemin="' + (PRESU_PISO + PRESU_PASO) + '" aria-valuemax="' + PRESU_TOPE + '" aria-valuenow="' + max + '"></button>' +
+      '<span class="presu-burb" id="presuBMin"></span><span class="presu-burb" id="presuBMax"></span>' +
     '</div><button type="button" class="presu-paso" id="presuDer" aria-label="Mover todo el rango hacia arriba, de a USD 1.000">›</button></div>' +
-    '<p class="presu-ejes"><span>USD ' + usdMiles(PRESU_PISO) + ' mil</span><span>USD ' + usdMiles(PRESU_TOPE) + ' mil o más</span></p>' +
+    '<p class="presu-ejes">Arrastrá la zona marcada para correr todo el rango; los corchetes cambian el mínimo o el máximo. Al final de la barra no hay tope: entran también los autos de más de USD ' + usdMiles(PRESU_TOPE) + ' mil.</p>' +
     '<label class="presu-igual"><input type="checkbox" id="presuIgual"' + (on ? '' : ' checked') + '> Me da igual el precio</label></div></fieldset>';
 }
 const ELEGIR_PREG = [
@@ -6882,7 +6918,7 @@ const ELEGIR_PREG = [
   // traseros que se pliegan); no dice si la silla entra ni qué tan alto es el piso del baúl: ninguna fila lo tiene.
   { k: 'movilidad', t: '¿Viaja alguien en silla de ruedas?', ops: [['', 'No'], ['silla', 'Sí']], interruptor: true },
   { k: 'uso', t: '¿Para qué lo vas a usar más?', ops: [['ciudad', 'Ciudad'], ['mixto', 'Ciudad y ruta'], ['ruta', 'Mucha ruta'], ['tierra', 'Tierra o campo'], ['carga', 'Trabajo o carga']] },
-  { k: 'enchufe', t: '¿Podés cargarlo en tu casa o en el trabajo?', ops: [['si', 'Sí'], ['no', 'No'], ['nose', 'No sé']] },
+  { k: 'enchufe', t: '¿Vas a poder cargarlo en tu casa o en el trabajo?', ops: [['si', 'Sí'], ['no', 'No'], ['nose', 'No sé']] },
   // 2026-11-07, pedido de Mati: tres filtros que las respuestas de arriba dejan armados y que se pueden cambiar a mano.
   // Tamaño (segmento A a D, lo arma «¿Quiénes viajan seguido?» y las plazas), tipo de auto (casillas; «Me da igual» las apaga) y
   // propulsión (EV, PHEV, HEV…, la arman el uso y el enchufe). Se guardan como lista separada por comas; '' = me da igual.
@@ -6940,7 +6976,7 @@ const ELEGIR_TIP = {
     carga: 'Suman más las pickups, y los de más baúl o caja de carga y más potencia. Los eléctricos e híbridos suman menos.',
   },
   enchufe: {
-    si: 'Van primero los eléctricos y los enchufables.',
+    si: 'Van primero los eléctricos y los enchufables. Elegí «Sí» también si hoy no podés pero vas a poder instalar un cargador.',
     no: 'Van primero los híbridos; un eléctrico casi no suma.',
     nose: 'Los enchufables e híbridos suman parejo; un eléctrico, algo menos.',
   },
@@ -7254,6 +7290,7 @@ function pintarElegir(cambio){
   hoja.dataset.top = out.top.map(x => x.i).join(',');
   hoja.dataset.todos = out.todos.join(',');
   hoja.dataset.sinprecio = out.sinPrecioIdx.join(',');
+  const pp = presuLeer(r.presu || presuInicial()); presuBurbujas(pp.min, pp.max);
 }
 // Filtros de casillas (tamaño, propulsión, tipo de auto). «Me da igual» es una casilla que apaga las demás; los que arman las
 // respuestas dicen de dónde salió lo sugerido y, si la persona lo tocó, dejan volver a la sugerencia.
@@ -7262,7 +7299,7 @@ function elegirMultiHTML(q, r){
   const man = q.k === 'seg' ? r.segMan : q.k === 'prop' ? r.propMan : false;
   const cart = (q.k === 'seg' ? ELEGIR_TIP.seg : q.k === 'prop' ? ELEGIR_TIP.prop : ELEGIR_TIP.carro);
   const nota = !q.sug ? '' : man ? '<p class="filtro-nota">Lo cambiaste vos. <button type="button" class="mini-btn" data-sugerir="' + q.k + '">Volver a la sugerencia</button></p>'
-    : '<p class="filtro-nota">' + (q.k === 'seg' ? 'Sugerido según quiénes viajan y las plazas.' : 'Sugerido según el uso y si podés cargarlo.') + ' Cambialo si querés.</p>';
+    : '<p class="filtro-nota">' + (q.k === 'seg' ? 'Sugerido según quiénes viajan y las plazas.' : 'Sugerido según el uso y si vas a poder cargarlo.') + ' Cambialo si querés.</p>';
   return '<fieldset role="group" aria-label="' + q.t + '"><div class="elegir-leyenda">' + q.t + '</div><div class="elegir-ops" data-n="' + ops.length + '" data-q="' + q.k + '" style="--n:' + ops.length + '">' +
     ops.map(([v, t]) => { const on = v === '__igual' ? todos : q.k === 'seg' ? sel.includes(v) : !todos && sel.includes(v), tip = v === '__igual' ? cart[''] : cart[v];
       return '<label><input type="checkbox" name="elm-' + q.k + '" value="' + v + '"' + (on ? ' checked' : '') + '><span' + (tip ? ' data-tip="' + tip + '"' : '') + '>' + t + '</span></label>'; }).join('') +
@@ -7351,6 +7388,7 @@ function presuMostrar(min, max){
   document.getElementById('presuPesos').textContent = presuPesosLargo(min, mx);
   document.getElementById('presuN').textContent = presuCuenta(min, mx) + ' autos con precio';
   document.getElementById('presuMin').setAttribute('aria-valuenow', min); document.getElementById('presuMax').setAttribute('aria-valuenow', m);
+  presuBurbujas(min, mx);
   const b = document.getElementById('presuBarra'); b.setAttribute('aria-valuenow', min); b.setAttribute('aria-valuetext', presuUsdLargo(min, mx));
 }
 // El rango movido de lugar manteniendo la cantidad de autos: el inicio avanza en USD y el fin se estira lo que haga falta.
