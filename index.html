@@ -995,7 +995,7 @@ if(!location.search&&!location.hash)document.documentElement.classList.add('arra
      corchetes [ ], el valor debajo de cada corchete y la zona marcada arrastrable (48 px como mínimo) que corre todo el rango. */
   .presu-fila{align-items:flex-start}
   .presu-fila .presu-paso{margin-top:33px}
-  .presu-pista{position:relative;flex:1;height:96px;margin:0 20px;touch-action:none;cursor:pointer;--a:0%;--b:100%;--mid:calc((var(--a) + var(--b)) / 2);--med:max(24px, calc((var(--b) - var(--a)) / 2))}
+  .presu-pista{position:relative;flex:1;height:96px;margin:0 20px;touch-action:none;cursor:pointer;--a:0%;--b:100%;--mid:calc((var(--a) + var(--b)) / 2);--med:max(14px, calc((var(--b) - var(--a)) / 2))}
   .presu-sil{position:absolute;left:0;top:0;width:100%;height:44px;pointer-events:none;overflow:visible}
   .presu-sil .a{fill:var(--border-strong);opacity:.5}
   .presu-sil .l{fill:none;stroke:var(--text-secondary);stroke-width:1;vector-effect:non-scaling-stroke}
@@ -1004,7 +1004,7 @@ if(!location.search&&!location.hash)document.documentElement.classList.add('arra
   .presu-sil.sel .l{stroke:var(--byd-blue);stroke-width:1.6}
   .presu-riel{position:absolute;left:0;right:0;top:52px;height:6px;border-radius:3px;background:var(--border-strong)}
   .presu-riel i{position:absolute;top:0;bottom:0;left:var(--a);width:calc(var(--b) - var(--a));background:var(--byd-blue);border-radius:3px}
-  .presu-barra{position:absolute;top:0;height:66px;left:calc(var(--mid) - var(--med));width:max(48px, calc(var(--b) - var(--a)));border-radius:4px;background:color-mix(in srgb, var(--byd-blue) 14%, transparent);cursor:grab;outline-offset:2px}
+  .presu-barra{position:absolute;top:0;height:66px;left:calc(var(--mid) - var(--med));width:max(28px, calc(var(--b) - var(--a)));border-radius:4px;background:color-mix(in srgb, var(--byd-blue) 14%, transparent);cursor:grab;outline-offset:2px}
   .presu-barra:active{cursor:grabbing}
   .presu-mango{position:absolute;top:41px;width:14px;height:28px;padding:0;border:0;background:none;cursor:ew-resize}
   .presu-mango::before{content:'';position:absolute;inset:0;background:var(--byd-blue)}
