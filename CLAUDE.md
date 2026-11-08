@@ -585,8 +585,11 @@ sí quedan en inglés, porque no muestran la palabra. Se coló con `YES` dos vec
   Lenguaje: «silla de ruedas», nunca «discapacitado». `movilidad.spec.js`.
 - **Presupuesto con deslizador** (2026-11-01, pedido de Mati): «¿Cuánto querés gastar?» ya no son franjas sino un deslizador de dos mangos
   (de a USD 1.000, con los pesos al BNA al lado y la cantidad de autos con precio). Arranca en el rango más bajo (`presuInicial()`, unos 30
-  autos). **Arrastrar la barra del medio hacia la derecha mueve el inicio y estira el fin para seguir capturando la misma cantidad de autos**
-  (`presuMoverCentro`: los de arriba están más separados en precio); los extremos se ajustan aparte, y las flechas mueven de a USD 1.000.
+  autos). **Arrastrar la barra del medio traslada todo el rango con el ancho en dólares fijo** (`presuTrasladar`; hasta el 2026-11-08 estiraba
+  el fin para mantener la cantidad de autos y el máximo avanzaba a tirones de 1.000, 2.000 o nada: decisión de Mati, opción A; la cantidad de autos sí cambia al arrastrar);
+  los extremos se ajustan aparte, y las flechas corren los dos extremos lo mismo (se frenan contra los bordes sin achicar el rango).
+  **Escala por tramos** (2026-11-08): el riel no es lineal; el tramo donde se concentran los autos (hoy USD 21.000 a 43.000, 60% de los autos) se lleva el 64% del riel
+  (`PRESU_CORTE`, `presuPos`, `presuUsdDe`; los cortes salen de percentiles al cargar), y desde el último corte (USD 60.000) el salto es de USD 5.000.
   La pista llega a `PRESU_TOPE` (el 5% más caro, «o más», sin tope). El valor guardado es `mín-máx` en USD, `mín-` sin tope y `''` es
   «Me da igual el precio». Cuenta `PRECIO_CMP`, así que los de lista en pesos entran. `presupuesto-deslizador.spec.js`.
   **Mangos y flechas** (2026-11-01, opción C de Mati): los mangos van por **fuera** de la barra (cada uno junto a su extremo) para que la barra del medio, con
