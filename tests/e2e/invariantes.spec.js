@@ -10,9 +10,9 @@ const N = CARS.length;
 test.describe('invariantes del index.html', () => {
   test.beforeEach(({ }, info) => test.skip(info.project.name !== 'escritorio', 'no dependen del viewport'));
 
-  test('DATA parsea y tiene 104 filas en 17 categorías (la de Precio no se dibuja en la tabla: 16 y 103 filas en el cuerpo)', () => {
+  test('DATA parsea y tiene 105 filas en 17 categorías (la de Precio no se dibuja en la tabla: 16 y 104 filas en el cuerpo)', () => {
     expect(DATA).toHaveLength(17);   // 14 hasta el 2026-11-01: + Respaldo, Origen y Ventas en Argentina (issue #89)
-    expect(filas).toHaveLength(104);   // 101 hasta el 2026-10-29: + patentamientos 2025, 2024 y 2023; 92 hasta el 2026-10-04: + potencia total, garantías, origen, grupo e importador; 98 hasta el 2026-10-08: + patentamientos y NCAP; 100 hasta el 2026-10-11: + tracción
+    expect(filas).toHaveLength(105);   // 104 hasta el 2026-11-07: + cupo de importación con arancel 0%; 101 hasta el 2026-10-29: + patentamientos 2025, 2024 y 2023; 92 hasta el 2026-10-04: + potencia total, garantías, origen, grupo e importador; 98 hasta el 2026-10-08: + patentamientos y NCAP; 100 hasta el 2026-10-11: + tracción
   });
 
   test('CARS: cada auto tiene los 7 campos con valores válidos', () => {

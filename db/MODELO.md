@@ -36,7 +36,7 @@ erDiagram
 | Relación | Mín/Máx lado A | Mín/Máx lado B | Puede cambiar | Nota |
 |---|---|---|---|---|
 | marca → auto | 1/1 | 0/N | no | un auto tiene una sola marca |
-| auto × fila → celda | 0/1 | 0/1 | sí | a lo sumo una celda por auto y fila; **no se carga celda 'ND' implícita**: la tabla es completa (265 × 104) |
+| auto × fila → celda | 0/1 | 0/1 | sí | a lo sumo una celda por auto y fila; **no se carga celda 'ND' implícita**: la tabla es completa (265 × 105) |
 | celda → fuente_celda | 0/1 | 0/1 | sí | solo las celdas cargadas desde 2026-11-01 |
 | auto → precio_lista | 0/N | — | sí, con fecha | uno por moneda y fecha de vigencia |
 | concesionario ↔ marca | N/M | N/M | sí | un local puede vender varias marcas |

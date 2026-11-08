@@ -79,7 +79,7 @@ Con `N = CARS.length`:
 2. **`<th>`** en el `<thead>`, en el mismo índice — con su silueta de carrocería y su
    ícono de propulsión.
 3. **`<col class="col-data">`** en los **DOS** `<colgroup>` (`#theadTable` y `#mainTable`).
-4. **Cada una de las 104 filas de `DATA`**, en la posición correcta.
+4. **Cada una de las 105 filas de `DATA`**, en la posición correcta.
 5. **`colspan="N+1"`** de las filas de categoría — está hardcodeado.
 
 Además hay 3 conteos en texto: `#headerSubtitle`, `#summaryText` y el comentario arriba
@@ -135,7 +135,7 @@ se coló dos veces.
 **Trampas al medir:** `grep '<th'` también matchea `<thead>`; `grep 'col-data'` también
 cuenta las 2 definiciones del `<style>`.
 
-**Verificación cruzada:** renderizar de verdad y contar 104 filas en 14 categorías, con
+**Verificación cruzada:** renderizar de verdad y contar 105 filas en 17 categorías (la tabla dibuja 16 y 104), con
 cero errores de consola. Con el script roto la tabla queda en **0 filas** y el archivo
 igual "parece" bien.
 
@@ -388,7 +388,7 @@ sí quedan en inglés, porque no muestran la palabra. Se coló con `YES` dos vec
   la fecha de la lista (`fechasDePrecio`); `espejarPrecio()` copia a ese lugar la ★ y las ▲▼ de la fila oculta. **El precio ya no tiene
   barra de percentil visible.** Las 9 filas que estaban en «Precio» pasaron a tres categorías al final, con el vocabulario del sitio:
   **Respaldo** (garantía general, garantía de la batería, importador), **Origen** (fabricado en, grupo automotriz) y **Ventas en
-  Argentina** (patentamientos 2026 a 2023). `DATA` tiene 17 categorías y 104 filas; la tabla dibuja 16 y 103 (`N_FILAS` en los tests).
+  Argentina** (patentamientos 2026 a 2023). `DATA` tiene 17 categorías y 105 filas; la tabla dibuja 16 y 104 (`N_FILAS` en los tests).
   `herramientas-paginas.py` sigue leyendo el precio como la primera fila de la primera categoría.
 - **Encabezado compacto** (2026-10-10): `#theadWrap` se pega con `top` negativo igual al alto de las
   fotos (`compactarThead`), así al bajar las fotos salen de la pantalla y quedan nombre, descripción
@@ -468,6 +468,12 @@ sí quedan en inglés, porque no muestran la palabra. Se coló con `YES` dos vec
   valor visible: `PCTL_VETO` la deja fuera del ranking (BJ30, GAC S7, Jetour G700).
 - **Garantía general / de la batería / Fabricado en** (fila de Precio). "Marca china" no
   alcanza para poner "China": hay modelos armados en Brasil o Uruguay.
+- **Cupo de importación con arancel 0%** (2026-11-07, fila de Origen; delegado por Mati): `EXT:Figura en el cupo` solo si el modelo tiene
+  coincidencia **exacta** en un cupo **asignado** (Res. 295/2025, Res. 513/2025 o reasignación de la Disp. 375/2026); `NOTE:No concluyente` si la
+  coincidencia es dudosa; `NR:s/d` si no figura. **Nunca `No`**: el cupo es de la empresa para un modelo y no prueba que el precio salga sin
+  arancel ni que la versión de la tabla sea la importada. Pedidos rechazados (375/2026), listas de espera (anexos IV y V de la 513/2025) y la
+  primera ronda de 2025 (Disp. 32/2025: sus anexos nombran solo marcas) **no cuentan como cupo**. No está en `PCTL_DIR`: nunca se rankea. El cruce,
+  las fuentes y cómo regenerar la columna están en `docs/cupo-cruce-autos.md`; cada celda en `datos-fuentes.tsv`.
 
 ## Grupos, página de cada auto y vista previa (2026-10-04)
 

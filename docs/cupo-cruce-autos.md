@@ -1,7 +1,8 @@
 # Cupo con arancel 0%: cruce con los autos de la tabla
 
 Hecho el 2026-11-07 a partir de `docs/cupo-arancel-cero.md` y de los anexos oficiales, contra los 265 autos de `CARS` en `index.html`.
-**No se cargó nada en `DATA`**: es material para decidir si va como fila (por ejemplo, `EXT`).
+**Desde el 2026-11-07 el cruce está cargado como la fila «Cupo de importación con arancel 0%»** de la categoría Origen (ver «Cómo se cargó en la tabla»,
+más abajo). La fila es informativa: no entra al ranking ni a ninguna comparación de mejor o peor.
 
 > **Advertencia que va con cualquier uso de este cruce.** El cupo se asigna a una **empresa** para un **modelo** (sin versión, en
 > la mayoría de los renglones), con un tope de unidades y de valor FOB por unidad. Que un modelo figure **no prueba** que la unidad
@@ -13,11 +14,14 @@ Hecho el 2026-11-07 a partir de `docs/cupo-arancel-cero.md` y de los anexos ofic
 | Norma | Qué es | Cómo se leyó |
 |---|---|---|
 | Resolución SIyC 295/2025 ([BO 28/07/2025, aviso 328938](https://www.boletinoficial.gob.ar/detalleAviso/primera/328938/20250728)) | Cupo 2025, segunda ronda: Anexo I terminales (6.458) y Anexo II importadores (16.540) | **Anexos oficiales leídos** el 2026-11-07: `POST /pdf/download_anexo` con `seccion=primera`, `nroAnexo=1` y `2`, `idAnexo=7424791`, `fechaPublicacion=20250728`; texto con `herramientas-pdftxt.swift`. Las cantidades suman exactamente 6.458 y 16.540. |
-| Resolución SIyC 513/2025 ([BO 03/12/2025, aviso 335472](https://www.boletinoficial.gob.ar/detalleAviso/primera/335472/20251203)) | Cupo 2026 (Anexo I terminales 19.280, Anexo II importadores 30.720) y remanente 2025 (Anexo III, 9.856) | Anexos I a III releídos el 2026-11-07 (`idAnexo=7525280`). |
+| Resolución SIyC 513/2025 ([BO 03/12/2025, aviso 335472](https://www.boletinoficial.gob.ar/detalleAviso/primera/335472/20251203)) | Cupo 2026 (Anexo I terminales 19.280, Anexo II importadores 30.720), remanente 2025 (Anexo III, 9.856) y listas de espera (Anexo IV, 31.573 pedidas en la subconvocatoria 2025; Anexo V, 85.670 pedidas para 2026) | Anexos I a V releídos el 2026-11-07 (`idAnexo=7525280`). Los totales de los Anexos IV y V se verificaron: la suma de los renglones da 31.573 y 85.670. |
 | Disposición 375/2026 (31/08/2026, anexos en [cira.org.ar](https://www.cira.org.ar/es/servicios/normativas-servicios/disposicion/disposicion-375-2026/)) | Reasignación de 865 unidades de 2026: asignadas (Anexos I y II) y rechazadas (Anexo III) | Según `docs/cupo-arancel-cero.md` (no se releyó). |
+| Disposición 32/2025, Dirección Nacional de Gestión de Política Industrial ([BO 16/04/2025, aviso 324120](https://www.boletinoficial.gob.ar/detalleAviso/primera/324120/20250416)) | **Primera ronda de 2025** (primera convocatoria, Disposición 30/2025 del 14/03/2025): Anexo I terminales (inciso a, 11.563 unidades) y Anexo II importadores (inciso b, 21.464) | **Anexos oficiales leídos** el 2026-11-07: `POST /pdf/download_anexo` con `seccion=primera`, `nroAnexo=1` y `2`, `idAnexo=7347700`, `fechaPublicacion=20250416`; texto con `herramientas-pdftxt.swift`. Las cantidades suman exactamente 11.563 y 21.464. **Los anexos traen solo marca, posición NCM y unidades: no nombran modelos.** |
 
-**Pendiente:** la primera ronda de 2025 (27.002 unidades según la prensa) es otra resolución, que no se buscó. Tampoco se cruzaron los
-pedidos en lista de espera (Anexos IV y V de la 513/2025): son pedidos, no cupo.
+Contexto de la primera ronda: el primer llamado fue la Disposición 30/2025 (14/03/2025, solicitudes del 17 al 31/03/2025) y la
+asignación es la Disposición 32/2025 (15/04/2025). La [Resolución 210/2025](https://www.boletinoficial.gob.ar/detalleAviso/primera/326797/20250611) (10/06/2025) abrió la
+segunda convocatoria diciendo que de esa asignación «a la fecha» quedaban asignadas 28.262 unidades. La [Resolución 295/2025](https://www.boletinoficial.gob.ar/detalleAviso/primera/328938/20250728)
+(segunda ronda) es la de la tabla de arriba.
 
 ### Cómo se atribuye la empresa
 Los PDF se leen como texto, sin la grilla, y a veces la razón social queda separada de su renglón. En la 513/2025 la empresa se
@@ -46,6 +50,89 @@ Arcfox), Oriente Motors S.R.L. 30719017009 (Forthing), Minarelli S.A. 3070861051
 - **5 autos** que solo aparecen en pedidos **rechazados** de la 375/2026 (BYD Atto 2 DM-i, Omoda E5, Leapmotor B03X, Kaiyi X7
   Hybrid y, dudoso, Omoda 5).
 - 15 autos de la tabla tienen el mismo nombre que un modelo del cupo pero son **nafteros**: no coinciden (lista al final).
+- **Primera ronda de 2025 (Disposición 32/2025): no suma ningún auto**, porque sus anexos oficiales nombran marca y no modelo (ver su sección).
+- **Fila cargada** (2026-11-07): 41 autos `EXT:Figura en el cupo`, 13 `NOTE:No concluyente` y 211 `NR:s/d` (los 5 que solo figuran
+  en pedidos rechazados y los 15 nafteros de igual nombre están entre estos 211). Nunca `No`.
+
+## Primera ronda de 2025: Disposición 32/2025 (anexos oficiales, solo marcas)
+
+Se encontró y se leyó. Las cifras de prensa (27.002 unidades en la primera ronda, 22.998 en la segunda) **no se usan**: no coinciden con
+ningún anexo. Lo que dicen los anexos oficiales, tal como los imprime el Boletín Oficial:
+
+| Anexo | Empresa (por orden de CUIT; el orden coincide uno a uno) | Marca y posición NCM | Unidades |
+|---|---|---|---|
+| I (inciso a, terminales) | Volt S.R.L. | «ENOREVE» 8703.60 (así lo imprime el anexo) | 5.006 |
+| I | General Motors de Argentina S.R.L. | Chevrolet 8703.60 (1.250) y 8703.80 (500) | 1.750 |
+| I | FCA Automobiles Argentina S.A. | Fiat 8703.40 (2.000); Leapmotor 8703.60 (160) | 2.160 |
+| I | Ford Argentina S.C.A. | Ford 8703.40 | 2.500 |
+| I | Ralitor S.A. | Shineray 8703.60 (50) y 8703.80 (20) | 70 |
+| I | Renault Argentina S.A. | Renault 8703.80 | 77 |
+| | | **Total Anexo I** | **11.563** |
+| II (inciso b, importadores) | 14 empresas (el PDF las separa de los renglones y no se atribuyen) | Geely 500; Great Wall 50; Haval 2.950; Dongfeng 500; Changan 500; JMEV 500; GAC 223; Chery 2.075; DFSK 75; JAC 300; Hyundai 600; Lynk & Co 2.487; BYD 1.300; BAIC 6.080; Alfa Romeo 300; MG 3.024 | **21.464** |
+
+- **No hay modelos.** Cada renglón es marca + NCM + unidades, así que no se puede decir qué modelo recibió cupo. Por eso la primera ronda
+  **no produce coincidencias exactas ni dudosas**: solo «la marca figura». La fila de la tabla lo dice en la explicación de los autos de esas marcas.
+- Las posiciones NCM son la clase de motorización del Decreto 49/2025: 8703.40 híbridos, 8703.60 híbridos enchufables, 8703.80 eléctricos.
+- **La suma de los anexos es 33.027, no 28.262.** La Resolución 210/2025 dice que la Disposición 32/2025 había asignado «a la fecha» 28.262
+  unidades. La diferencia (4.765) puede ser cupo liberado por renuncia o vencimiento (la 210/2025 lo menciona), pero ninguna fuente leída lo confirma.
+- Los listados por modelo de la primera ronda que circulan en la prensa **no son un anexo oficial**; no se encontró un listado oficial de la
+  primera ronda con modelos. El «Drive» que enlaza la Secretaría (`2° Convocatoria asignación cupo vehículos híbridos y eléctricos`, julio de 2025) es de la **segunda**
+  ronda y trae los modelos de la Resolución 295/2025.
+
+## Listas de espera (Resolución 513/2025, Anexos IV y V): son pedidos, no cupo
+
+**No entran a la fila.** Son el orden de prelación de lo que se pidió y no se asignó. Cruce solo para documentar (la empresa de cada
+renglón del Anexo V sale por el orden del PDF y no se atribuye acá; en el IV cada renglón trae su marca y su razón social).
+
+**Anexo IV, subconvocatoria 2025 (31.573 unidades pedidas):** BYD Dolphin Mini 4.287; Arcfox T1 2.464; BAIC EU5 464; Chery Tiggo 4 482; BYD Yuan Pro 183;
+Bestune T77 498 y T99 500; Arcfox Kaola S 525; Chery Tiggo 7 2.531; DFSK E5 539; BAIC BJ30 5.552 y X55 Hybrid 5.552; BYD Song Pro 1.961; Arcfox T5 105;
+Skywell HT-i 105; Arcfox S5 108; BAIC X7 Hybrid 5.608; Skywell ET5 109.
+
+**Anexo V, 2026 (85.670 unidades pedidas):** JMEV Eveasy 206; BYD Dolphin Mini 1.286, Dolphin G 1.711, Dolphin 873, Seal 5 603, Yuan Pro 7.403, Song Pro 3.499;
+Suzuki Swift 487; MG MG3 2.338 y ZS 3.404; Chery Tiggo 2 72, Tiggo 4 4.002, Tiggo 5 114, Tiggo 7 7.262, Arrizo 8 87, Tiggo 8 233; Arcfox T1 2.381, Kaola S 454,
+T5 49, S5 52; BAIC EU5 381, BJ30 5.487, X55 Hybrid 5.487, X7 Hybrid 5.552; DFSK Glory 500 389 y E5 1.471; Great Wall Ora 1.812, H7 206, V7 222; Haval Jolion 3.615 y H6 3.189;
+Changan Eado 921 y CS55 1.922; Bestune T77 421 y T99 425; Lynk & Co 06 1.823, 02 57 y 01 23; Kaiyi X7 52; JAC JS6 2.695; Dongfeng Mage 1.663 y Huge 801;
+Soueast S06 965 y S07 465; Deepal S05 1.482; Jetour S06 2.484 y T1 2.487; GAC GS4 1.022; XPeng D03 1.531; Skywell HT-i 49 y ET5 55.
+
+| Auto de la tabla | En la lista de espera | Lectura |
+|---|---|---|
+| byd-dolphin-mini, byd-song-pro, byd-yuan-pro | IV y V | Exacta de modelo (BYD además tiene cupo asignado para ellos) |
+| byd-seal-5-dm-i | V (603) | Exacta |
+| arcfox-t1, arcfox-t5, arcfox-s5, arcfox-koala-s, baic-eu5, skywell-be11 (Skywell ET5) | IV y V | Exacta de modelo |
+| chery-tiggo-4-hybrid | IV y V | Por descarte (la `chery-tiggo-4-pro` es naftera) |
+| chery-arrizo-8 | V (87) | Exacta |
+| suzuki-swift-hybrid-glx-cvt, mg-3-hev, mg-zs-hev | V | Por descarte (las de igual nombre son nafteras) |
+| jetour-t1-i-dm | V (Jetour T1, 2.487) | Por descarte (la `jetour-t1` es naftera) |
+| jac-js6-phev, deepal-s05, soueast-s06, dongfeng-mage, dongfeng-huge, lynk-co-06, lynk-co-01 | V | Exacta |
+| gwm-haval-h7-hev | V (H7, 206) | Por descarte (la `gwm-haval-h7-4wd` es naftera) |
+| chery-tiggo-7-pro-mhev, chery-tiggo-7-pro-phev | IV y V (Tiggo 7) | Dudosa («Tiggo 7» contra «Tiggo 7 Pro») |
+| baic-bj30-4x2, baic-bj30-4x4, baic-x55-ii-hybrid | IV y V | Dudosa (como en el cupo) |
+| dfsk-e5-plus | IV y V (E5) | Dudosa («E5» contra «E5 Plus») |
+| changan-cs55-plus, changan-eado-plus-phev, jmev-easy-3 | V (CS55, Eado, Eveasy) | Dudosa (nombre incompleto) |
+| gwm-haval-h6-pro-hev, gwm-haval-jolion-hev, gwm-haval-jolion-pro-hev, gwm-ora-03, gwm-ora-5-hev | V (H6, Jolion, Ora) | Dudosa |
+| kaiyi-x7-hybrid | V (Kaiyi X7, 52) | Dudosa: la lista no dice si es la naftera o la híbrida |
+
+Sin auto en la tabla: Bestune T77 y T99, Skywell HT-i, BAIC X7 Hybrid, Chery Tiggo 2 y 5 (el 2 de la tabla es naftero), Dolphin y Dolphin G, Tiggo 8 (naftero), DFSK Glory 500 (naftero), Jetour S06,
+GAC GS4, Great Wall V7, Lynk & Co 02, Soueast S07, XPeng D03.
+
+## Cómo se cargó en la tabla (2026-11-07)
+
+Fila **«Cupo de importación con arancel 0%»** (corta: «Cupo 0% arancel»; en el celular, «Cupo 0%»), en la categoría **Origen**, después de «Grupo automotriz».
+Es una fila informativa: **no está en `PCTL_DIR`** (sin barra, copa ni ▲▼) y no entra al ranking.
+
+| Valor | Cuándo | Autos |
+|---|---|---|
+| `EXT:Figura en el cupo` | Coincidencia **exacta** en un cupo **asignado** (295/2025, 513/2025 o reasignación de la 375/2026) | 41 |
+| `NOTE:No concluyente` | Solo coincidencia **dudosa** en un cupo asignado | 13 |
+| `NR:s/d` | Sin coincidencia en los anexos leídos | 211 |
+
+- **Nunca `No`**: el cupo es por empresa y modelo, y que un auto no figure no prueba que pague arancel.
+- **No cuentan como cupo**: los pedidos rechazados de la Disposición 375/2026 (5 autos solo figuran ahí: BYD Atto 2 DM-i, Omoda E5, Omoda 5, Leapmotor B03X y
+  Kaiyi X7 Hybrid, y la explicación lo dice), las listas de espera (Anexos IV y V de la 513/2025) y la primera ronda de 2025, cuyos anexos nombran solo marcas.
+- La explicación de cada celda trae norma, empresa y unidades **por renglón** (un renglón agrupa varios modelos), la advertencia del principio de este documento y, si la
+  marca figura en la primera ronda de 2025, sus unidades por marca y posición NCM (informativo, sin modelo).
+- Los 15 nafteros de igual nombre llevan `NR:s/d` con la aclaración de que el modelo del cupo es otra versión.
+- Fuente de cada celda en `datos-fuentes.tsv` (norma y aviso del Boletín Oficial). Cuando haya una asignación nueva: leer sus anexos, sumar los renglones al cruce de este documento y volver a generar la columna.
 
 ## Coincidencia exacta
 
