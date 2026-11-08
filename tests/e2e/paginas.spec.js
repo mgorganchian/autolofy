@@ -22,7 +22,7 @@ test('la página de un auto tiene título, descripción, foto, datos estructurad
   const ld = JSON.parse(await page.locator('script[type="application/ld+json"]').textContent());
   expect(ld['@type']).toBe('Car');
   expect(ld.brand.name).toBe('Chery');
-  await expect(page.locator('main table tr')).toHaveCount(104);
+  await expect(page.locator('main table tr')).toHaveCount(105);
   await expect(page.locator('main tr', { hasText: 'Longitud (mm)' })).toContainText('4553');
   await expect(page.locator('a.cta')).toHaveAttribute('href', '/?auto=chery-tiggo-7-pro-phev');
   expect(await page.locator('figure img').first().evaluate(i => i.complete && i.naturalWidth > 0)).toBe(true);

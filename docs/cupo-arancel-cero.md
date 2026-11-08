@@ -1,6 +1,7 @@
 # Cupo de importación con arancel 0% (híbridos y eléctricos): qué marcas y modelos lo pidieron o lo recibieron
 
-Investigado el 2026-11-07. **Todavía no se usa en el sitio**: ninguna fuente dice qué modelo de la tabla entra al cupo ni a qué FOB lo importa cada empresa.
+Investigado el 2026-11-07. Desde ese día el sitio tiene la fila **«Cupo de importación con arancel 0%»** (categoría Origen), con el cruce de los anexos oficiales contra los autos de la tabla:
+ver `docs/cupo-cruce-autos.md` (tablas por auto, primera ronda de 2025 y listas de espera). **Ninguna fuente dice a qué FOB importa cada empresa ni que el precio de lista refleje el cupo**: la fila es informativa.
 
 ## Régimen
 - [Decreto 49/2025](https://www.boletinoficial.gob.ar/detalleAviso/primera/320367/20250131) (BO 31/01/2025): arancel de Derecho de Importación Extrazona 0% (en lugar de 35%) para 50.000 unidades por año.
@@ -51,6 +52,11 @@ Prensa que se desmiente con los anexos: el remanente de BYD es 1.569 (no 1.596) 
 
 ## 3. Cupo 2025 (Resolución 295/2025, julio 2025)
 Segunda ronda 22.998 unidades (6.458 terminales, 16.540 importadores), 18 marcas; primera ronda 27.002 (Ciudadano da 31.142). Marcas y modelos según [Parabrisas](https://parabrisas.perfil.com/noticias/novedades/a31-estos-son-50000-vehiculos-llegaran-argentina-con-valores-mas-competitivos-autos.phtml) y [Ciudadano](https://ciudadano.news/economia/estos-modelos-completan-cupo-2025-autos-electricos-e-hibridos-llegaran-impuestos-n105336), sin unidades por marca: Chevrolet (Spark, Captiva), Ford (Territory SEL), Renault (Arkana E-Tech, Kwid E-Tech), BYD (Dolphin, Dolphin Mini, Song Pro, Yuan Pro), BMW X1, Changan CS55 Plus, Chery (Arrizo 8, Tiggo 4, Tiggo 7), Dayun Yuehu, Geely EX5, Ora 03, Haval (H6, Jolion), JAC (E30X, HFC7000WEV10, J56 o JS6), Jetour T1, Lynk & Co (02, 06), MINI Countryman, MG (MG3, ZS), Suzuki Swift, Venucia (V DD-i, VX6 EV). El listado de modelos oficial es un [Drive](http://drive.google.com/file/d/15V59dpdJOzZdy0b2OKrOZbvun54D4Gbr/view) que enlaza argentina.gob.ar (no se abrió).
+
+## Primera ronda de 2025 (actualización del 2026-11-07)
+Es la [Disposición 32/2025](https://www.boletinoficial.gob.ar/detalleAviso/primera/324120/20250416) (BO 16/04/2025, Dirección Nacional de Gestión de Política Industrial; la convocatoria fue la Disposición 30/2025).
+Sus anexos oficiales se leyeron: **solo traen marca, posición NCM y unidades (11.563 terminales y 21.464 importadores), sin modelos**. Las cifras de prensa de la sección 3 (27.002 y 22.998) no coinciden con ellos
+y la Resolución 210/2025 habla de 28.262 asignadas «a la fecha». Detalle y cruce en `docs/cupo-cruce-autos.md`.
 
 ## Qué no dice ninguna fuente
 - El cupo se asigna a una **empresa para un modelo**, con tope FOB por unidad: no dice que cada auto de ese modelo se importe sin arancel ni que el precio de lista lo refleje.
