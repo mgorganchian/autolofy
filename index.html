@@ -6850,6 +6850,34 @@ const PRESU_PASO = 1000;
 const PRESU_PRECIOS = CARS.map((c, i) => c.status === 'venta' ? PRECIO_CMP[i] : null).filter(p => p != null).sort((a, b) => a - b);
 const PRESU_PISO = Math.floor(PRESU_PRECIOS[0] / PRESU_PASO) * PRESU_PASO;
 const PRESU_TOPE = Math.ceil(PRESU_PRECIOS[Math.floor((PRESU_PRECIOS.length - 1) * .95)] / 10000) * 10000;   // el 5% más caro va como «o más»
+// Escala por tramos (2026-11-08, pedido de Mati): el riel no es lineal. Los autos se concentran entre unos USD 21.000 y 43.000 (60% de los autos), así que ese
+// tramo se lleva el 64% del riel (unos 6 px por USD 1.000 en un celular, contra 2,3 con la escala lineal); el resto, mucho menos. Los tres cortes salen de
+// la distribución de precios al cargar (percentiles 1,5, 62 y 80, a USD 1.000; el último a USD 5.000), así siguen donde están los autos si cambian los precios.
+// Desde el último corte los mangos saltan de a USD 5.000 (ahí USD 1.000 serían menos de un píxel).
+const presuRedondear = (v, paso) => Math.round(v / paso) * paso;
+const PRESU_CORTE = (() => {
+  const n = PRESU_PRECIOS.length - 1, q = f => PRESU_PRECIOS[Math.floor(n * f)];
+  const c = [PRESU_PISO, Math.floor(q(.015) / 1000) * 1000, presuRedondear(q(.62), 1000), presuRedondear(q(.80), 5000), PRESU_TOPE];
+  return c.every((v, i) => i === 0 || v > c[i - 1]) ? c : [PRESU_PISO, PRESU_PISO + (PRESU_TOPE - PRESU_PISO) / 4, PRESU_PISO + (PRESU_TOPE - PRESU_PISO) / 2, PRESU_PISO + (PRESU_TOPE - PRESU_PISO) * .75, PRESU_TOPE];
+})();
+const PRESU_FRAC = [0, .04, .68, .84, 1];
+// De dólares a posición en el riel (0 a 1) y al revés: lineales dentro de cada tramo.
+function presuPos(usd){
+  const u = Math.min(Math.max(usd, PRESU_PISO), PRESU_TOPE);
+  for (let i = 1; i < 5; i++) if (u <= PRESU_CORTE[i]) return PRESU_FRAC[i - 1] + (u - PRESU_CORTE[i - 1]) / (PRESU_CORTE[i] - PRESU_CORTE[i - 1]) * (PRESU_FRAC[i] - PRESU_FRAC[i - 1]);
+  return 1;
+}
+function presuUsdDe(f){
+  const t = Math.min(Math.max(f, 0), 1);
+  for (let i = 1; i < 5; i++) if (t <= PRESU_FRAC[i]) return PRESU_CORTE[i - 1] + (t - PRESU_FRAC[i - 1]) / (PRESU_FRAC[i] - PRESU_FRAC[i - 1]) * (PRESU_CORTE[i] - PRESU_CORTE[i - 1]);
+  return PRESU_TOPE;
+}
+// El salto en un valor, y hacia dónde se va: al bajar desde el corte se usa el salto de abajo.
+const presuPaso = usd => usd >= PRESU_CORTE[3] ? 5000 : PRESU_PASO;
+const presuPasoDir = (usd, dir) => dir > 0 ? presuPaso(usd) : presuPaso(usd - 1);
+const presuSnap = v => presuRedondear(v, presuPaso(v));
+const presuAbajo = v => Math.floor(v / presuPaso(v)) * presuPaso(v);
+const presuArriba = v => Math.ceil(v / presuPaso(v)) * presuPaso(v);
 const PRESU_INICIAL_AUTOS = 30;   // cuántos autos entran en el rango de arranque (como las franjas de antes: 30 a 33)
 const presuLeer = s => { const [a, b] = s.split('-'); return { min: +a, max: b === '' || b == null ? null : +b }; };
 const presuTexto = (min, max) => min + '-' + (max == null || max >= PRESU_TOPE ? '' : max);
@@ -6862,7 +6890,7 @@ function presuInicial(r){
   const base = elegirNorm(Object.assign({}, r || elegirResp, { presu: '' }));
   const precios = CARS.map((c, i) => i).filter(i => elegirDesvio(i, base) === 0 && PRECIO_CMP[i] != null).map(i => PRECIO_CMP[i]).sort((a, b) => a - b);
   const todos = precios.length >= elegirN() ? precios : PRESU_PRECIOS, k = todos === precios ? Math.min(precios.length, PRESU_INICIAL_CUMPLEN) : PRESU_INICIAL_AUTOS;
-  return presuTexto(PRESU_PISO, Math.ceil(todos[k - 1] / PRESU_PASO) * PRESU_PASO);
+  return presuTexto(PRESU_PISO, presuArriba(todos[k - 1]));
 }
 const usdMiles = n => { const k = n / 1000; return Number.isInteger(k) ? String(k) : k.toLocaleString('es-AR', { maximumFractionDigits: 1 }); };
 // «USD 28 a 35,5 mil», «hasta USD 28 mil», «desde USD 77 mil, sin tope» (para resúmenes) y su versión larga con pesos.
@@ -6870,27 +6898,27 @@ const presuCorto = s => { const { min, max } = presuLeer(s);
   return max == null ? 'desde USD ' + usdMiles(min) + ' mil, sin tope' : min <= PRESU_PISO ? 'hasta USD ' + usdMiles(max) + ' mil' : 'USD ' + usdMiles(min) + ' a ' + usdMiles(max) + ' mil'; };
 const presuUsdLargo = (min, max) => max == null ? 'USD ' + min.toLocaleString('es-AR') + ', sin tope' : 'USD ' + min.toLocaleString('es-AR') + ' a ' + max.toLocaleString('es-AR');
 const presuPesosLargo = (min, max) => max == null ? pesosCorto(aPesos(min)) + ', sin tope' : pesosCorto(aPesos(min)) + ' a ' + pesosCorto(aPesos(max));
-const presuPct = usd => ((Math.min(Math.max(usd, PRESU_PISO), PRESU_TOPE) - PRESU_PISO) / (PRESU_TOPE - PRESU_PISO) * 100).toFixed(2) + '%';
+const presuPct = usd => (presuPos(usd) * 100).toFixed(2) + '%';
 // «Silla de ruedas» como un ícono chico en el título de «¿Quiénes viajan seguido?» (2026-11-01, pedido de Mati: opción C): un círculo con el
 // símbolo de accesibilidad que se toca para sumar o sacar. No es una pregunta aparte.
 function movilidadBtnHTML(r){
   const on = r.movilidad === 'silla';
   return '<button type="button" class="movilidad-ico' + (on ? ' on' : '') + '" id="movilidadBtn" aria-pressed="' + on + '" aria-label="Viaja alguien en silla de ruedas" data-tip="' + rkEsc('¿Viaja alguien en silla de ruedas? ' + ELEGIR_TIP.movilidad.silla) + '">' + SVG_ACCESO + '</button>';
 }
-// Silueta de todos los precios (como la de mati-gym): cuántos autos hay en cada tramo de USD 2.000, suavizada; el 5% más caro va en el último.
+// Silueta de todos los precios (como la de mati-gym): autos por dólar en cada punto del riel (suavizada con una campana de USD 1.500); el 5% más caro va en el último.
 function presuSiluetaHTML(){
-  const bin = 2000, n = Math.ceil((PRESU_TOPE - PRESU_PISO) / bin), cu = new Array(n).fill(0);
-  PRESU_PRECIOS.forEach(p => { cu[Math.min(n - 1, Math.floor((Math.min(p, PRESU_TOPE - 1) - PRESU_PISO) / bin))]++; });
-  const s = cu.map((v, i) => (cu[i - 1] ?? v) * .25 + v * .5 + (cu[i + 1] ?? v) * .25), mx = Math.max(...s, 1);
-  const linea = 'M0,30 L' + s.map((v, i) => ((i + .5) / n * 100).toFixed(2) + ',' + (30 - v / mx * 28).toFixed(2)).join(' L') + ' L100,30';
+  const n = 120, sg = 1500, tope = PRESU_TOPE - 1, cu = [];
+  for (let i = 0; i < n; i++){ const u = presuUsdDe((i + .5) / n); let d = 0; for (const p of PRESU_PRECIOS) d += Math.exp(-.5 * ((Math.min(p, tope) - u) / sg) ** 2); cu.push(d); }
+  const mx = Math.max(...cu, 1);
+  const linea = 'M0,30 L' + cu.map((v, i) => ((i + .5) / n * 100).toFixed(2) + ',' + (30 - v / mx * 28).toFixed(2)).join(' L') + ' L100,30';
   const svg = cls => '<svg class="presu-sil' + cls + '" viewBox="0 0 100 32" preserveAspectRatio="none" aria-hidden="true" focusable="false"><path class="a" d="' + linea + ' L100,32 L0,32 Z"/><path class="l" d="' + linea + '"/></svg>';
   return svg('') + svg(' sel');
 }
 // El valor debajo de cada corchete; si quedan muy cerca, una sola etiqueta «desde – hasta». Nunca se salen del recuadro.
 function presuBurbujas(min, max){
   const pista = document.getElementById('presuPista'), bi = document.getElementById('presuBMin'), bx = document.getElementById('presuBMax'); if (!pista || !bi || !bx) return;
-  const W = pista.clientWidth || 300, tope = max == null || max >= PRESU_TOPE, m = tope ? PRESU_TOPE : max, esc = v => (v - PRESU_PISO) / (PRESU_TOPE - PRESU_PISO) * W;
-  const pa = esc(Math.max(min, PRESU_PISO)), pb = esc(m), med = Math.max(24, (pb - pa) / 2), mid = (pa + pb) / 2, xa = mid - med - 7, xb = mid + med + 7;
+  const W = pista.clientWidth || 300, tope = max == null || max >= PRESU_TOPE, m = tope ? PRESU_TOPE : max, esc = v => presuPos(v) * W;
+  const pa = esc(Math.max(min, PRESU_PISO)), pb = esc(m), med = Math.max(14, (pb - pa) / 2), mid = (pa + pb) / 2, xa = mid - med - 7, xb = mid + med + 7;
   const ta = 'USD ' + usdMiles(min) + ' mil', tb = tope ? 'sin tope' : 'USD ' + usdMiles(m) + ' mil';
   const poner = (el, x, t) => { el.hidden = false; el.textContent = t; const w = el.offsetWidth; el.style.left = Math.min(Math.max(x, w / 2 - 20), W + 20 - w / 2) + 'px'; };
   if (xb - xa < 190){ poner(bi, (xa + xb) / 2, tope ? 'USD ' + usdMiles(min) + ' mil, sin tope' : 'USD ' + usdMiles(min) + ' – ' + usdMiles(m) + ' mil'); bx.hidden = true; }
@@ -6902,13 +6930,13 @@ function presuHTML(r){
     '<p class="presu-txt" aria-live="polite"><b id="presuUsd">' + presuUsdLargo(p.min, p.max) + '</b>' +
       '<small class="precio-pesos" id="presuPesos">' + presuPesosLargo(p.min, p.max) + '</small>' +
       '<small id="presuN">' + presuCuenta(p.min, p.max) + ' autos con precio</small></p>' +
-    '<div class="presu-fila"><button type="button" class="presu-paso" id="presuIzq" aria-label="Mover todo el rango hacia abajo, de a USD 1.000">‹</button>' +
+    '<div class="presu-fila"><button type="button" class="presu-paso" id="presuIzq" aria-label="Mover todo el rango hacia abajo, de a USD 1.000 (de a 5.000 desde USD ' + (PRESU_CORTE[3] / 1000) + ' mil)">‹</button>' +
     '<div class="presu-pista" id="presuPista" style="--a:' + presuPct(p.min) + ';--b:' + presuPct(max) + '">' +
       presuSiluetaHTML() + '<span class="presu-riel"><i></i></span><span class="presu-barra" id="presuBarra" role="slider" tabindex="0" aria-label="Mover el rango de precio sin cambiar la cantidad de autos" aria-valuemin="' + PRESU_PISO + '" aria-valuemax="' + PRESU_TOPE + '" aria-valuenow="' + p.min + '" aria-valuetext="' + rkEsc(presuUsdLargo(p.min, p.max)) + '"></span>' +
-      '<button type="button" class="presu-mango min" id="presuMin" role="slider" aria-label="Precio mínimo" aria-valuemin="' + PRESU_PISO + '" aria-valuemax="' + (PRESU_TOPE - PRESU_PASO) + '" aria-valuenow="' + p.min + '"></button>' +
+      '<button type="button" class="presu-mango min" id="presuMin" role="slider" aria-label="Precio mínimo" aria-valuemin="' + PRESU_PISO + '" aria-valuemax="' + (PRESU_TOPE - 5000) + '" aria-valuenow="' + p.min + '"></button>' +
       '<button type="button" class="presu-mango max" id="presuMax" role="slider" aria-label="Precio máximo" aria-valuemin="' + (PRESU_PISO + PRESU_PASO) + '" aria-valuemax="' + PRESU_TOPE + '" aria-valuenow="' + max + '"></button>' +
       '<span class="presu-burb" id="presuBMin"></span><span class="presu-burb" id="presuBMax"></span>' +
-    '</div><button type="button" class="presu-paso" id="presuDer" aria-label="Mover todo el rango hacia arriba, de a USD 1.000">›</button></div>' +
+    '</div><button type="button" class="presu-paso" id="presuDer" aria-label="Mover todo el rango hacia arriba, de a USD 1.000 (de a 5.000 desde USD ' + (PRESU_CORTE[3] / 1000) + ' mil)">›</button></div>' +
     '<p class="presu-ejes">Arrastrá la zona marcada para correr todo el rango; los corchetes cambian el mínimo o el máximo. Al final de la barra no hay tope: entran también los autos de más de USD ' + usdMiles(PRESU_TOPE) + ' mil.</p>' +
     '<label class="presu-igual"><input type="checkbox" id="presuIgual"' + (on ? '' : ' checked') + '> Me da igual el precio</label></div></fieldset>';
 }
@@ -7409,18 +7437,18 @@ function presuMostrar(min, max){
 // El rango movido de lugar manteniendo la cantidad de autos: el inicio avanza en USD y el fin se estira lo que haga falta.
 function presuMoverCentro(min0, k, nuevoMin){
   const n = PRESU_PRECIOS.length, ult = PRESU_PRECIOS[Math.max(0, n - k)];
-  let min = Math.max(PRESU_PISO, Math.min(nuevoMin, Math.floor(ult / PRESU_PASO) * PRESU_PASO));
-  min = Math.round(min / PRESU_PASO) * PRESU_PASO;
-  const a = Math.min(PRESU_PRECIOS.findIndex(p => p >= min), n - k);
-  // El fin, redondeado a USD 1.000 para arriba o para abajo, el que deje más cerca de k la cantidad de autos (hay precios repetidos).
-  const x = PRESU_PRECIOS[a + k - 1], arriba = Math.ceil(x / PRESU_PASO) * PRESU_PASO, abajo = Math.floor(x / PRESU_PASO) * PRESU_PASO;
-  const fin = abajo >= min + PRESU_PASO && Math.abs(presuCuenta(min, abajo) - k) < Math.abs(presuCuenta(min, arriba) - k) ? abajo : arriba;
-  return { min, max: Math.max(fin, min + PRESU_PASO) };
+  let min = Math.max(PRESU_PISO, Math.min(nuevoMin, presuAbajo(ult)));
+  min = Math.max(PRESU_PISO, presuSnap(min));
+  const a = Math.min(PRESU_PRECIOS.findIndex(p => p >= min), n - k), paso = presuPaso(min);
+  // El fin, redondeado al salto para arriba o para abajo, el que deje más cerca de k la cantidad de autos (hay precios repetidos).
+  const x = PRESU_PRECIOS[a + k - 1], arriba = presuArriba(x), abajo = presuAbajo(x);
+  const fin = abajo >= min + paso && Math.abs(presuCuenta(min, abajo) - k) < Math.abs(presuCuenta(min, arriba) - k) ? abajo : arriba;
+  return { min, max: Math.max(fin, min + paso) };
 }
-// Flechas: mueven todo el rango de a USD 1.000 (como arrastrar la barra: el fin se estira para mantener la cantidad de autos). Mantenidas, repiten.
+// Flechas: mueven todo el rango de a un salto (USD 1.000, o 5.000 desde el último corte) (como arrastrar la barra: el fin se estira para mantener la cantidad de autos). Mantenidas, repiten.
 let presuHold = null;
 function presuPasoTick(h){
-  const o = presuMoverCentro(h.min, h.k, h.min + h.dir * PRESU_PASO);
+  const o = presuMoverCentro(h.min, h.k, h.min + h.dir * presuPasoDir(h.min, h.dir));
   h.min = o.min; h.max = Math.min(o.max, PRESU_TOPE);
   presuMostrar(h.min, h.max >= PRESU_TOPE ? null : h.max);
 }
@@ -7437,7 +7465,7 @@ document.addEventListener('pointerup', presuHoldSoltar); document.addEventListen
 // Con el teclado (Enter o espacio) el clic llega sin puntero: un solo paso.
 elegirHoja.addEventListener('click', e => {
   const b = e.target.closest ? e.target.closest('#presuIzq, #presuDer') : null; if (!b || e.detail !== 0) return;
-  const p = presuLeer(elegirResp.presu || presuInicial()), o = presuMoverCentro(p.min, Math.max(1, presuCuenta(p.min, p.max)), p.min + (b.id === 'presuDer' ? 1 : -1) * PRESU_PASO);
+  const p = presuLeer(elegirResp.presu || presuInicial()), o = presuMoverCentro(p.min, Math.max(1, presuCuenta(p.min, p.max)), p.min + (b.id === 'presuDer' ? 1 : -1) * presuPasoDir(p.min, b.id === 'presuDer' ? 1 : -1));
   presuGuardar(presuTexto(o.min, Math.min(o.max, PRESU_TOPE)));
   const n = document.getElementById(b.id); if (n) n.focus();
 });
@@ -7447,7 +7475,7 @@ elegirHoja.addEventListener('pointerdown', e => {
   const apagado = document.getElementById('presu').classList.contains('apagado');
   const p = presuLeer(elegirResp.presu || presuInicial());
   const modo = e.target.closest('#presuMin') ? 'min' : e.target.closest('#presuMax') ? 'max' : e.target.closest('#presuBarra') ? 'centro' : null;
-  const r = pista.getBoundingClientRect(), usd = x => PRESU_PISO + (x - r.left) / r.width * (PRESU_TOPE - PRESU_PISO);
+  const r = pista.getBoundingClientRect(), usd = x => presuUsdDe((x - r.left) / r.width);
   let m = modo;
   if (!m){   // tocar el riel: lleva al mango más cercano
     const u = usd(e.clientX), c = (p.min + (p.max == null ? PRESU_TOPE : p.max)) / 2; m = u < c ? 'min' : 'max';
@@ -7459,10 +7487,10 @@ elegirHoja.addEventListener('pointerdown', e => {
 });
 function presuMover(e){
   const a = presuArrastre; if (!a) return;
-  const snap = v => Math.round(v / PRESU_PASO) * PRESU_PASO;
-  if (a.modo === 'min') a.min = Math.max(PRESU_PISO, Math.min(snap(a.usd(e.clientX)), a.max - PRESU_PASO));
-  else if (a.modo === 'max') a.max = Math.min(PRESU_TOPE, Math.max(snap(a.usd(e.clientX)), a.min + PRESU_PASO));
-  else { const d = (e.clientX - a.x0) / a.r.width * (PRESU_TOPE - PRESU_PISO), o = presuMoverCentro(a.p.min, a.k, a.p.min + d); a.min = o.min; a.max = Math.min(o.max, PRESU_TOPE); }
+  const snap = presuSnap;
+  if (a.modo === 'min') a.min = Math.max(PRESU_PISO, Math.min(snap(a.usd(e.clientX)), a.max - presuPaso(a.max - 1)));
+  else if (a.modo === 'max') a.max = Math.min(PRESU_TOPE, Math.max(snap(a.usd(e.clientX)), a.min + presuPaso(a.min)));
+  else { const o = presuMoverCentro(a.p.min, a.k, presuUsdDe(presuPos(a.p.min) + (e.clientX - a.x0) / a.r.width)); a.min = o.min; a.max = Math.min(o.max, PRESU_TOPE); }
   presuMostrar(a.min, a.max >= PRESU_TOPE ? null : a.max);
 }
 elegirHoja.addEventListener('pointermove', presuMover);
@@ -7473,11 +7501,11 @@ elegirHoja.addEventListener('keydown', e => {
   const t = e.target.closest ? e.target.closest('#presuMin, #presuMax, #presuBarra') : null;
   if (!t || !/^Arrow(Left|Right|Down|Up)$/.test(e.key)) return;
   e.preventDefault();
-  const dir = /Right|Up/.test(e.key) ? 1 : -1, paso = (e.shiftKey ? 5 : 1) * PRESU_PASO * dir, p = presuLeer(elegirResp.presu || presuInicial()), mx = p.max == null ? PRESU_TOPE : p.max;
+  const dir = /Right|Up/.test(e.key) ? 1 : -1, p = presuLeer(elegirResp.presu || presuInicial()), mx = p.max == null ? PRESU_TOPE : p.max, veces = e.shiftKey ? 5 : 1;
   let min = p.min, max = mx;
-  if (t.id === 'presuMin') min = Math.max(PRESU_PISO, Math.min(min + paso, max - PRESU_PASO));
-  else if (t.id === 'presuMax') max = Math.min(PRESU_TOPE, Math.max(max + paso, min + PRESU_PASO));
-  else { const o = presuMoverCentro(min, Math.max(1, presuCuenta(p.min, p.max)), min + paso); min = o.min; max = Math.min(o.max, PRESU_TOPE); }
+  if (t.id === 'presuMin') min = Math.max(PRESU_PISO, Math.min(presuSnap(min + veces * dir * presuPasoDir(min, dir)), max - presuPaso(max - 1)));
+  else if (t.id === 'presuMax') max = Math.min(PRESU_TOPE, Math.max(presuSnap(max + veces * dir * presuPasoDir(max, dir)), min + presuPaso(min)));
+  else { const o = presuMoverCentro(min, Math.max(1, presuCuenta(p.min, p.max)), min + veces * dir * presuPasoDir(min, dir)); min = o.min; max = Math.min(o.max, PRESU_TOPE); }
   presuGuardar(presuTexto(min, max));
   const nuevo = document.getElementById(t.id); if (nuevo) nuevo.focus();
 });

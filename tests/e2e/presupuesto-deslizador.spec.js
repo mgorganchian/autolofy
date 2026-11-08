@@ -40,6 +40,7 @@ test('arrastrar la barra hacia la derecha mueve el inicio y estira el fin: la ca
 });
 
 test('los mangos mueven cada extremo de a USD 1.000 y las flechas también', async ({ page }) => {
+  await page.evaluate(() => { elegirResp.presu = '25000-35000'; pintarElegir(true); });
   const antes = await estado(page);
   await page.locator('#presuMax').focus();
   await page.keyboard.press('ArrowRight');
@@ -106,4 +107,45 @@ test('mantener apretada la flecha repite el paso', async ({ page }) => {
   const d = await estado(page);
   expect(d.p.min).toBeGreaterThanOrEqual(antes.p.min + 4000);
   expect(Math.abs(d.n - antes.n)).toBeLessThanOrEqual(4);
+});
+
+// Escala por tramos (2026-11-08, pedido de Mati): casi todos los autos están entre unos USD 21.000 y 43.000, así que ese tramo se lleva la mayor parte del riel.
+test('el tramo donde se concentran los autos tiene al menos el doble de píxeles por USD 1.000 que el resto del riel', async ({ page }) => {
+  const r = await page.evaluate(() => { const W = document.getElementById('presuPista').getBoundingClientRect().width, px = (a, b) => (presuPos(b) - presuPos(a)) * W / ((b - a) / 1000);
+    const [, c1, c2, c3] = PRESU_CORTE; return { W, c: PRESU_CORTE, denso: px(c1, c2), antes: px(PRESU_PISO, c1), medio: px(c2, c3), alto: px(c3, PRESU_TOPE), lineal: W / ((PRESU_TOPE - PRESU_PISO) / 1000),
+      autosDenso: PRESU_PRECIOS.filter(p => p >= c1 && p < c2).length, n: PRESU_PRECIOS.length }; });
+  expect(r.c[1]).toBeGreaterThanOrEqual(20000); expect(r.c[1]).toBeLessThanOrEqual(22000);
+  expect(r.c[2]).toBeGreaterThanOrEqual(40000); expect(r.c[2]).toBeLessThanOrEqual(46000);
+  expect(r.autosDenso / r.n).toBeGreaterThan(.55);
+  expect(r.denso).toBeGreaterThanOrEqual(r.lineal * 2.5);
+  expect(r.denso).toBeGreaterThanOrEqual(r.antes * 2); expect(r.denso).toBeGreaterThanOrEqual(r.medio * 2);
+  // idas y vueltas entre dólares y posición, y el borde derecho
+  const ida = await page.evaluate(() => [17000, 21000, 33000, 43000, 60000, 110000].map(u => Math.round(presuUsdDe(presuPos(u)))));
+  expect(ida).toEqual([17000, 21000, 33000, 43000, 60000, 110000]);
+});
+
+test('desde el último corte los mangos saltan de a USD 5.000 y hasta ahí de a 1.000', async ({ page }) => {
+  const corte = await page.evaluate(() => PRESU_CORTE[3]);
+  await page.evaluate(c => { elegirResp.presu = (c - 5000) + '-' + (c + 10000); pintarElegir(true); }, corte);
+  await page.locator('#presuMax').focus();
+  await page.keyboard.press('ArrowRight');
+  expect((await estado(page)).p.max).toBe(corte + 15000);
+  await page.locator('#presuMin').focus();
+  await page.keyboard.press('ArrowRight');
+  expect((await estado(page)).p.min).toBe(corte - 4000);
+  await page.evaluate(c => { elegirResp.presu = c + '-' + (c + 20000); pintarElegir(true); }, corte);
+  await page.locator('#presuMin').focus();
+  await page.keyboard.press('ArrowLeft');
+  expect((await estado(page)).p.min).toBe(corte - 1000);
+});
+
+test('arrastrar el mango del mínimo con el dedo lo deja donde está el dedo en el riel por tramos', async ({ page }) => {
+  await page.evaluate(() => { elegirResp.presu = '17000-60000'; pintarElegir(true); });
+  const m = await page.locator('#presuMin').boundingBox(), pista = await page.locator('#presuPista').boundingBox();
+  const x = pista.x + pista.width * .36;   // a mitad del tramo denso
+  await page.mouse.move(m.x + m.width / 2, m.y + m.height / 2);
+  await page.mouse.down(); await page.mouse.move(x, m.y + m.height / 2, { steps: 8 }); await page.mouse.up();
+  const e = await estado(page), esperado = await page.evaluate(() => Math.round(presuUsdDe(.36) / 1000) * 1000);
+  expect(e.p.min).toBe(esperado);
+  expect(e.p.min).toBeGreaterThan(30000); expect(e.p.min).toBeLessThan(36000);
 });
