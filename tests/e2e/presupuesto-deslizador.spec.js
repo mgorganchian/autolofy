@@ -86,15 +86,22 @@ test('con un rango angosto la barra del medio sigue libre: los mangos quedan por
   expect(r.ancho).toBeGreaterThanOrEqual(28);
 });
 
-test('las flechas mueven todo el rango de a USD 1.000 y mantienen la cantidad de autos', async ({ page }) => {
-  const antes = await estado(page);
-  await page.locator('#presuDer').click();
-  const a = await estado(page);
-  expect(a.p.min).toBe(antes.p.min + 1000);
-  expect(Math.abs(a.n - antes.n)).toBeLessThanOrEqual(2);
-  await page.locator('#presuIzq').click();
-  const b = await estado(page);
-  expect(b.p.min).toBe(antes.p.min);
+test('las flechas corren los dos extremos lo mismo, de a USD 1.000', async ({ page }) => {
+  await page.evaluate(() => { elegirResp.presu = '25000-35000'; pintarElegir(true); });
+  for (const [id, dir] of [['#presuDer', 1], ['#presuDer', 1], ['#presuIzq', -1], ['#presuIzq', -1], ['#presuIzq', -1]]) {
+    const antes = (await estado(page)).p;
+    await page.locator(id).click();
+    const d = (await estado(page)).p;
+    expect(d.min - antes.min).toBe(dir * 1000);
+    expect(d.max - antes.max).toBe(dir * 1000);
+  }
+});
+
+test('las flechas frenan contra el borde sin achicar el rango', async ({ page }) => {
+  await page.evaluate(() => { elegirResp.presu = (PRESU_PISO + 1000) + '-' + (PRESU_PISO + 11000); pintarElegir(true); });
+  await page.locator('#presuIzq').click(); await page.locator('#presuIzq').click();
+  const e = (await estado(page)).p, piso = await page.evaluate(() => PRESU_PISO);
+  expect(e.min).toBe(piso); expect(e.max).toBe(piso + 10000);
 });
 
 test('mantener apretada la flecha repite el paso', async ({ page }) => {
@@ -106,7 +113,7 @@ test('mantener apretada la flecha repite el paso', async ({ page }) => {
   await page.mouse.up();
   const d = await estado(page);
   expect(d.p.min).toBeGreaterThanOrEqual(antes.p.min + 4000);
-  expect(Math.abs(d.n - antes.n)).toBeLessThanOrEqual(4);
+  expect(d.p.max - d.p.min).toBe(antes.p.max - antes.p.min);
 });
 
 // Escala por tramos (2026-11-08, pedido de Mati): casi todos los autos están entre unos USD 21.000 y 43.000, así que ese tramo se lleva la mayor parte del riel.

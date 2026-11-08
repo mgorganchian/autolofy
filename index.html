@@ -7445,11 +7445,20 @@ function presuMoverCentro(min0, k, nuevoMin){
   const fin = abajo >= min + paso && Math.abs(presuCuenta(min, abajo) - k) < Math.abs(presuCuenta(min, arriba) - k) ? abajo : arriba;
   return { min, max: Math.max(fin, min + paso) };
 }
-// Flechas: mueven todo el rango de a un salto (USD 1.000, o 5.000 desde el último corte) (como arrastrar la barra: el fin se estira para mantener la cantidad de autos). Mantenidas, repiten.
+// Flechas (2026-11-08, pedido de Mati: con la cantidad de autos fija el máximo se movía a saltos de 1.000, 2.000 o nada): corren los dos extremos lo mismo,
+// con el ancho en dólares fijo. El salto es el del extremo que va adelante (USD 1.000, o 5.000 desde el último corte). Mantenidas, repiten. Contra un borde
+// del riel el rango se frena sin achicarse. Arrastrar la barra del medio sí mantiene la cantidad de autos.
+function presuTrasladar(min, max, dir){
+  const ancho = max - min, d = presuPasoDir(dir > 0 ? max : min, dir);
+  let a = min + dir * d, b = max + dir * d;
+  if (a < PRESU_PISO){ a = PRESU_PISO; b = a + ancho; }
+  if (b > PRESU_TOPE){ b = PRESU_TOPE; a = b - ancho; }
+  return { min: a, max: b };
+}
 let presuHold = null;
 function presuPasoTick(h){
-  const o = presuMoverCentro(h.min, h.k, h.min + h.dir * presuPasoDir(h.min, h.dir));
-  h.min = o.min; h.max = Math.min(o.max, PRESU_TOPE);
+  const o = presuTrasladar(h.min, h.max, h.dir);
+  h.min = o.min; h.max = o.max;
   presuMostrar(h.min, h.max >= PRESU_TOPE ? null : h.max);
 }
 elegirHoja.addEventListener('pointerdown', e => {
@@ -7465,8 +7474,8 @@ document.addEventListener('pointerup', presuHoldSoltar); document.addEventListen
 // Con el teclado (Enter o espacio) el clic llega sin puntero: un solo paso.
 elegirHoja.addEventListener('click', e => {
   const b = e.target.closest ? e.target.closest('#presuIzq, #presuDer') : null; if (!b || e.detail !== 0) return;
-  const p = presuLeer(elegirResp.presu || presuInicial()), o = presuMoverCentro(p.min, Math.max(1, presuCuenta(p.min, p.max)), p.min + (b.id === 'presuDer' ? 1 : -1) * presuPasoDir(p.min, b.id === 'presuDer' ? 1 : -1));
-  presuGuardar(presuTexto(o.min, Math.min(o.max, PRESU_TOPE)));
+  const p = presuLeer(elegirResp.presu || presuInicial()), o = presuTrasladar(p.min, p.max == null ? PRESU_TOPE : p.max, b.id === 'presuDer' ? 1 : -1);
+  presuGuardar(presuTexto(o.min, o.max));
   const n = document.getElementById(b.id); if (n) n.focus();
 });
 let presuArrastre = null;
@@ -7505,7 +7514,7 @@ elegirHoja.addEventListener('keydown', e => {
   let min = p.min, max = mx;
   if (t.id === 'presuMin') min = Math.max(PRESU_PISO, Math.min(presuSnap(min + veces * dir * presuPasoDir(min, dir)), max - presuPaso(max - 1)));
   else if (t.id === 'presuMax') max = Math.min(PRESU_TOPE, Math.max(presuSnap(max + veces * dir * presuPasoDir(max, dir)), min + presuPaso(min)));
-  else { const o = presuMoverCentro(min, Math.max(1, presuCuenta(p.min, p.max)), min + veces * dir * presuPasoDir(min, dir)); min = o.min; max = Math.min(o.max, PRESU_TOPE); }
+  else for (let i = 0; i < veces; i++){ const o = presuTrasladar(min, max, dir); min = o.min; max = o.max; }
   presuGuardar(presuTexto(min, max));
   const nuevo = document.getElementById(t.id); if (nuevo) nuevo.focus();
 });
