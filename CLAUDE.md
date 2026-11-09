@@ -866,8 +866,10 @@ sí quedan en inglés, porque no muestran la palabra. Se coló con `YES` dos vec
   **Lo único que no se hace es recortar, recolorear ni redibujar un logo** (a un SVG sin `viewBox` solo se le agrega). Ese día entraron 33 de las 40 marcas que
   faltaban (24 de Commons y 9 oficiales: GAC, Changan, Skywell, Chevrolet, Nissan, Stelato, DFSK, Forthing y JMC, más Maxus). Los blancos o claros llevan `osc: true` (placa oscura).
   Dudas: Peugeot, Porsche y DS solo tienen el logotipo con letras (no el escudo); Honda, el logotipo y no la H; Fiat, el roundel de 2006; JMC trae un cartel de
-  «15 años en Argentina»; Skywell, solo el símbolo. **Siguen sin logo:** Arcfox, JMEV, Rely, SWM, smart (el de Commons, `Smart_2022.svg`, no se pudo bajar por el límite
-  de pedidos de Wikimedia) y Subaru (los SVG vigentes de Commons traen 13 imágenes embebidas y pesan 1,6 MB).
+  «15 años en Argentina»; Skywell, solo el símbolo. **Siguen sin logo:** solo JMEV (sin logo en Commons ni sitio argentino). El 2026-11-09 (pedido de Mati) entraron Arcfox (vertical del sitio oficial, arcfox.com.ar), Rely
+  (relyargentina.com.ar; es blanco, `osc`), smart y Subaru (Commons, dominio público; el vigente de Subaru con 13 imágenes embebidas sigue descartado: va `Subaru logo.svg`) y SWM, con el
+  **emblema de Shineray** de shineray.com.ar (SWM no publica un logo propio en su importador: dudoso, cambiarlo si aparece). **Las marcas salen en orden alfabético** (filtro Marca,
+  Grupos y Concesionarios; los grupos siguen por cantidad de autos y las ventas por unidades).
 - Un grupo usa el logo de su marca solo si es el mismo logo. Los logos van sobre placa
   blanca en los dos temas (`--logo-fondo`); los blancos (Soueast), sobre `--logo-fondo-osc`.
 - Un SVG sin `viewBox` no escala dentro de `<img>`: se le agrega con su ancho y alto.
