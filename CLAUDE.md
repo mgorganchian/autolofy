@@ -1004,6 +1004,12 @@ si esos tres lugares no coinciden o si una foto queda sin autor.
 
 ## Fuentes de datos
 
+- **Fuentes no oficiales con aclaración** (2026-11-09, pedido de Mati: «no quiero tener datos faltantes»): un dato que **no sale de una fuente oficial argentina** se carga igual si
+  aparece en **3 o más fuentes independientes de sitios distintos que coinciden** (ficha oficial de otro país para la misma generación y mecánica, prensa especializada, pruebas,
+  bases como auto-data.net, manuales). Va como `EXT:valor|No oficial: coincide en N fuentes (…)` y su fila de `datos-fuentes.tsv` dice «No oficial, coincide en N fuentes». La regla de oro
+  no cambia: **nada de deducir por ausencia, por analogía ni con datos de otra generación, motor o versión**; una sola fuente no oficial o fuentes que se contradicen no se cargan.
+  Dos fuentes que copian la misma ficha no son independientes. La búsqueda se hace con un agente por auto y un script que valida (≥3 sitios distintos, la celda estaba sin dato, formato de la fila) antes de escribir en `DATA`.
+
 - **Fuente de cada dato** (2026-11-01, pedido de Mati): todo dato que se carga o se mejora desde esa fecha va en
   `datos-fuentes.tsv`, una fila por celda (slug, fila, valor visible, `dato` o `motivo de s/d`, fuente, URL,
   sha256 o «leída en línea, sin hash», fecha). `tests/e2e/fuentes-celdas.spec.js` lo cruza contra `DATA`: el valor
