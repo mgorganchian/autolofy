@@ -380,7 +380,7 @@ test.describe('grupos automotrices', () => {
 
   test('GWM: en Argentina todos se venden como GWM; las submarcas quedan en el grupo', async ({ page }) => {
     const gwm = CARS.filter(c => c.brand === 'GWM').map(c => c.name);
-    expect(gwm).toHaveLength(11);   // Haval (6), Ora (2), Tank y Poer
+    expect(gwm).toHaveLength(12);   // Haval (7), Ora (2), Tank y Poer
     expect(CARS.some(c => /^GWM \(|^Haval$/.test(c.brand))).toBe(false);
     await abrir(page);
     await page.click('#gruposBtn');
