@@ -3642,6 +3642,17 @@ const SEATS = [...new Set(seatOfCar)].sort((a,b)=>{
   return parseInt(a,10) - parseInt(b,10);
 });
 
+// Regla de orden de Mati (2026-11-09): una lista de más de 5 elementos va alfabética; con 5 o menos, por popularidad
+// (unidades patentadas en 2026 según VENTAS_MARCAS; si no hay cifra, la cantidad de autos de la tabla).
+function popularidadMarca(m){
+  let n = 0;
+  try { const f = (VENTAS_MARCAS['2026'] || []).find(x => x[0] === m); n = f ? f[1] : 0; } catch (e) {}
+  return n * 1000 + CARS.filter((c, i) => submarcaDe(i) === m || c.brand === m).length;
+}
+function ordenarLista(items, nombre, pop){
+  const alfa = (a, b) => nombre(a).localeCompare(nombre(b), 'es', { sensitivity: 'base' });
+  return items.slice().sort(items.length > 5 ? alfa : (a, b) => pop(b) - pop(a) || alfa(a, b));
+}
 let selectedBrands = new Set(BRANDS);
 let selectedSegments = new Set(SEGMENTS);
 let selectedBodies = new Set(BODIES);
@@ -3748,6 +3759,7 @@ document.addEventListener('click', e => {
 });
 
 function onFacetChange(){
+  renderBrandList();
   renderModelList();
 }
 
@@ -3797,7 +3809,10 @@ setupToggleDropdown('brandDropdownBtn', 'brandPanel');
 const brandList = document.getElementById('brandList');
 function renderBrandList(){
   brandList.innerHTML = '';
-  BRANDS.forEach(b=>{
+  // Con un grupo filtrado, la lista muestra solo las marcas de esos grupos (alfabético si son más de 5; si no, por popularidad).
+  const gruposTodos = selectedGrupos.size === GRUPOS.length;
+  const visibles = gruposTodos ? BRANDS : BRANDS.filter(b => CARS.some((c, i) => c.brand === b && selectedGrupos.has(grupoDe(i))));
+  ordenarLista(visibles, b => b, popularidadMarca).forEach(b=>{
     const row = document.createElement('label');
     row.innerHTML = '<input type="checkbox" '+(selectedBrands.has(b)?'checked':'')+' data-val="'+b+'"> '+'<span class="logo-hueco">'+logoHTML(LOGO_MARCA[b], 'logo-lista', '')+'</span>'+b;
     brandList.appendChild(row);
@@ -6475,7 +6490,7 @@ function pintarGrupos(){
     marcas.get(s).push(i);
   });
   const total = g => [...porGrupo.get(g).values()].reduce((n, a) => n + a.length, 0);
-  const grupos = [...porGrupo.keys()].sort((a, b) => total(b) - total(a) || a.localeCompare(b, 'es'));
+  const grupos = ordenarLista([...porGrupo.keys()], g => g, total);
   // Una línea por marca (pedido del 2026-10-10: mucho texto): la historia, el detalle del
   // importador y las fuentes van en el tooltip (data-tip), que se abre con el mouse o tocando.
   const hosts = urls => (urls || []).slice(0, 4).map(u => { try { return new URL(u).hostname.replace(/^www\./, ''); } catch (e) { return u; } }).join(', ');
@@ -6485,7 +6500,7 @@ function pintarGrupos(){
     '<p class="ficha-nota">' + new Set(CARS.map((_, i) => submarcaDe(i))).size + ' marcas, ' + grupos.length +
     ' grupos. Tocá una marca o un importador para ver su historia. Datos de octubre de 2026.</p>' +
     grupos.map(g => {
-      const marcas = [...porGrupo.get(g).entries()].sort((a, b) => a[0].localeCompare(b[0], 'es', { sensitivity: 'base' }));
+      const marcas = (ents => ordenarLista(ents, e => e[0], e => popularidadMarca(e[0])))([...porGrupo.get(g).entries()]);   // alfabético si el grupo tiene más de 5 marcas; si no, por popularidad
       const idx = marcas.flatMap(([, a]) => a);
       return '<section class="grupo" data-grupo="' + rkEsc(g) + '"><div class="grupo-cabeza">' + logoHTML(LOGO_GRUPO[g], 'logo-grupo', 'Logo de ' + g) + '<h3>' + rkEsc(g) + '</h3><span>' + idx.length + ' auto' + (idx.length === 1 ? '' : 's') + '</span>' +
         '<button type="button" class="ficha-btn" data-comparar-grupo="' + rkEsc(g) + '">Comparar ' + (idx.length === 1 ? 'su auto' : (idx.length <= 6 ? 'sus ' + idx.length + ' autos' : 'sus autos')) + '</button></div>' +
