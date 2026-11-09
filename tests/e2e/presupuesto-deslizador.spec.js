@@ -24,19 +24,29 @@ test('arranca en el rango más bajo, con dólares, pesos y la cantidad de autos'
   expect(e.pesos).toMatch(/^\$ [\d,]+ M a \$ [\d,]+ M$/);
 });
 
-test('arrastrar la barra hacia la derecha mueve el inicio y estira el fin: la cantidad de autos casi no cambia', async ({ page }) => {
+test('arrastrar la barra traslada el rango: el mínimo avanza y el ancho en dólares no cambia', async ({ page }) => {
+  await page.evaluate(() => { elegirResp.presu = '22000-32000'; pintarElegir(true); });
   const antes = await estado(page);
   const b = await page.locator('#presuBarra').boundingBox(), pista = await page.locator('#presuPista').boundingBox();
   await page.mouse.move(b.x + b.width / 2, b.y + b.height / 2);
   await page.mouse.down();
-  await page.mouse.move(b.x + b.width / 2 + pista.width * .6, b.y + b.height / 2, { steps: 8 });
+  const vistos = [];
+  for (let i = 1; i <= 8; i++) { await page.mouse.move(b.x + b.width / 2 + pista.width * .06 * i, b.y + b.height / 2); const e = await estado(page); vistos.push(e); }
   await page.mouse.up();
   const despues = await estado(page);
-  expect(despues.p.min).toBeGreaterThan(antes.p.min + 10000);
+  expect(despues.p.min).toBeGreaterThan(antes.p.min + 5000);
   expect(despues.p.min % 1000).toBe(0);
-  expect(Math.abs(despues.n - antes.n)).toBeLessThanOrEqual(3);
-  // el fin se estiró más que el inicio: el rango tiene más dólares de ancho porque arriba los autos están más separados
-  expect((despues.p.max ?? 1e9) - despues.p.min).toBeGreaterThan(antes.p.max - antes.p.min);
+  expect(despues.p.max - despues.p.min).toBe(antes.p.max - antes.p.min);
+});
+
+test('arrastrar la barra hasta el borde derecho frena sin achicar el rango', async ({ page }) => {
+  await page.evaluate(() => { elegirResp.presu = '22000-32000'; pintarElegir(true); });
+  const b = await page.locator('#presuBarra').boundingBox(), pista = await page.locator('#presuPista').boundingBox();
+  await page.mouse.move(b.x + b.width / 2, b.y + b.height / 2);
+  await page.mouse.down(); await page.mouse.move(b.x + b.width / 2 + pista.width, b.y + b.height / 2, { steps: 10 }); await page.mouse.up();
+  const e = await estado(page), tope = await page.evaluate(() => PRESU_TOPE);
+  expect(e.p.max == null ? tope : e.p.max).toBe(tope);
+  expect(tope - e.p.min).toBe(10000);
 });
 
 test('los mangos mueven cada extremo de a USD 1.000 y las flechas también', async ({ page }) => {
