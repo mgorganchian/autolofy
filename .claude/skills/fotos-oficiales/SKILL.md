@@ -1,6 +1,6 @@
 ---
 name: fotos-oficiales
-description: Criterio y pasos para sumar fotos de un auto desde la galería oficial argentina de la marca (y desde Commons). Usar siempre que se busquen, elijan, instalen o descarten fotos de autos de Autolofy, o cuando un auto tenga pocas vistas.
+description: Criterio y pasos para sumar fotos de un auto desde la galería oficial argentina de la marca (y desde Commons), y cómo buscar el logo de una marca. Usar siempre que se busquen, elijan, instalen o descarten fotos de autos de Autolofy, cuando un auto tenga pocas vistas, o cuando falte el logo de una marca.
 ---
 
 # Fotos de los autos: criterio definido
@@ -74,3 +74,18 @@ Antes de commitear: `cd tests/e2e && npm test` (`fotos.spec.js` cruza fotos, cr�
 `herramientas-fotos.py` usa `sips` en macOS y Pillow en Windows y Linux (`pip install pillow`). El recorte
 con Vision (`herramientas-recortar-fotos.swift`) es solo de la Mac: en otro sistema, las portadas van con
 `sin-recorte`.
+
+## Logos que faltan: buscar hasta encontrarlo, sin preguntar
+
+Pedido de Mati del 2026-11-09 (caso JMEV): cuando falta el logo de una marca (o cualquier recurso parecido), **se busca con
+el navegador integrado y no se le pregunta si seguir**. Si una vía no da resultado, se prueba otra, hasta agotarlas; recién
+entonces se le cuenta qué se probó. Orden:
+1. Commons (búsqueda por nombre de marca y de la empresa matriz).
+2. **El sitio argentino oficial de la marca o del importador, abierto con el navegador integrado** (con `curl` o `WebFetch`
+   se pierde lo que carga la página con JavaScript): listar los `<img>`, `<link rel=icon>` y `svg` de la página con
+   `javascript_tool` y buscar nombres con `logo`; el original suele estar sin el sufijo `_next/image?...&w=`.
+   Con la URL del archivo, bajarlo con `curl` (para JMEV, `jmevargentina.com.ar/JMEV-Logo.png` bajó sin problema).
+3. Sitio de la casa matriz en otro país, kit de prensa o página de prensa del importador. Se puede buscar **fuera de Argentina**.
+4. Wikipedia de la marca (infobox) y la Wikipedia en el idioma del país de origen.
+Si un sitio no abre (certificado inválido, bloqueo), no se fuerza: se pasa al siguiente. Un logo oficial o de Commons se instala
+sin recortarlo, recolorearlo ni redibujarlo (ver `CLAUDE.md`, sección Logos); cada uno se anota en `logos-fuentes.tsv`.
