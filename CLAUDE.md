@@ -869,7 +869,7 @@ sí quedan en inglés, porque no muestran la palabra. Se coló con `YES` dos vec
   «15 años en Argentina»; Skywell, solo el símbolo. **Siguen sin logo:** solo JMEV (sin logo en Commons ni sitio argentino). El 2026-11-09 (pedido de Mati) entraron Arcfox (vertical del sitio oficial, arcfox.com.ar), Rely
   (relyargentina.com.ar; es blanco, `osc`), smart y Subaru (Commons, dominio público; el vigente de Subaru con 13 imágenes embebidas sigue descartado: va `Subaru logo.svg`) y SWM, con el
   **emblema de Shineray** de shineray.com.ar (SWM no publica un logo propio en su importador: dudoso, cambiarlo si aparece). **Las marcas salen en orden alfabético** (filtro Marca,
-  Grupos y Concesionarios; los grupos siguen por cantidad de autos y las ventas por unidades).
+  Concesionarios, y en Grupos los grupos y las marcas de cada grupo). **Regla general** (`ordenarLista`, pedido de Mati del 2026-11-09): una lista de más de 5 elementos va alfabética; con 5 o menos, por popularidad (unidades patentadas en 2026, `popularidadMarca`). Con un grupo filtrado, la lista de Marca muestra solo las marcas de ese grupo. Las ventas siguen por unidades).
 - Un grupo usa el logo de su marca solo si es el mismo logo. Los logos van sobre placa
   blanca en los dos temas (`--logo-fondo`); los blancos (Soueast), sobre `--logo-fondo-osc`.
 - Un SVG sin `viewBox` no escala dentro de `<img>`: se le agrega con su ancho y alto.
