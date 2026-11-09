@@ -54,6 +54,8 @@ día, del mismo sitio; ver "Precios en pesos y dólar BNA").
 sección «Privacidad» de `quien-hace-esto` lo cuenta. No se suma otra medición sin cambiar esa sección. Aparte, `autos/*.html`,
 `sitemap.xml` y `robots.txt` son páginas generadas para Google (ver "Páginas por auto").
 
+**Marca de visitante en Clarity** (2026-11-09, pedido de Mati): abrir el sitio con `?soy=<nombre>` (por ejemplo `?soy=mati` o `?soy=sebas`) guarda el nombre en `localStorage` (`autolofy_soy`) y lo manda a Clarity como etiqueta `visitante` en cada visita de ese navegador; `?soy=` vacío lo borra. El script va pegado al de Clarity en `index.html`, `novedades.html`, `quien-hace-esto.html` y la constante `CLARITY` de `herramientas-paginas.py`; el parámetro se saca de la URL para que no viaje al compartir.
+
 El contexto largo (el *porqué* de cada decisión, orden de columnas, estado del research,
 metodología de búsqueda de fichas) está en **`CONTEXTO_PROYECTO_AUTOLOFY.md`**.
 Este archivo es solo lo que hay que tener presente **siempre**.

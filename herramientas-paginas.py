@@ -32,7 +32,9 @@ SIN_FOTO = 'Todavía no tenemos una foto de esta versión: es la silueta de su c
 CLARITY_ID = 'z8m6ec1hi3'
 CLARITY = ('<script>(function(c,l,a,r,i,t,y){c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};'
            't=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;y=l.getElementsByTagName(r)[0];'
-           f'y.parentNode.insertBefore(t,y);}})(window,document,"clarity","script","{CLARITY_ID}");</script>')
+           f'y.parentNode.insertBefore(t,y);}})(window,document,"clarity","script","{CLARITY_ID}");</script>'
+           # Marca de visitante (2026-11-09): ?soy=<nombre> etiqueta este navegador en Clarity; ?soy= la borra. Igual que en index.html.
+           f"<script>try{{var p=new URLSearchParams(location.search);if(p.has('soy')){{var s=(p.get('soy')||'').toLowerCase().replace(/[^a-z]/g,'').slice(0,20);s?localStorage.setItem('autolofy_soy',s):localStorage.removeItem('autolofy_soy');p.delete('soy');history.replaceState(null,'',location.pathname+(p.toString()?'?'+p:'')+location.hash)}}var v=localStorage.getItem('autolofy_soy');if(v)clarity('set','visitante',v)}}catch(e){{}}</script>")
 FORM_SUGERENCIAS = 'https://docs.google.com/forms/d/e/1FAIpQLSdytJoPO5w4I-AjJiVyj_wwnPmWQFWs9k3sfjOMgyMXEkgKyQ/viewform'
 DIR = os.path.join(RAIZ, 'autos')
 DIR_VS = os.path.join(RAIZ, 'comparar')
