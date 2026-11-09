@@ -1,6 +1,6 @@
 # Autolofy — reglas del proyecto
 
-Autolofy (https://autolofy.vercel.app) compara **265 autos** 0 km vendidos (o por llegar) en Argentina.
+Autolofy (https://autolofy.vercel.app) compara **266 autos** 0 km vendidos (o por llegar) en Argentina.
 Empezó con los chinos y electrificados; el nombre cambió el 2026-10-28 (repo `mgorganchian/autolofy`,
 proyectos de Vercel `autolofy` y `autolofy-plan`).
 Desde el 2026-10-28 también entran autos de marcas no chinas (decisión de Mati y Sebastián del
@@ -32,6 +32,11 @@ El 2026-10-29 (pedido de Mati) se sumaron **73 de los 100 modelos más patentado
   (se ve la insignia EXTREME); el Evoque S, de la imagen de su tarjeta en landroverargentina.com (640×360, la única medida que publica).
   **El sitio argentino de Land Rover es `landroverargentina.com`**; `landrover.com.ar` no existe. Los PDF de BMW y Volkswagen bajan
   con curl, y se renderizan con PDFKit (Swift) porque no hay `pdftoppm`.
+- **Haval H6 HEV (2025)** (2026-11-08, pedido de Mati): es el H6 anterior al Pro HEV de junio de 2026 (misma mecánica de 243 HP y mismas medidas;
+  el Pro lleva trompa nueva, «GWM» en el portón, pantalla de 14,6", W-HUD y cargador inalámbrico, que la ficha del HEV marca con x). Entra como `venta`
+  en su versión Supreme, con precio `EXT` de la prensa del lanzamiento (USD 35.500, 16/5/2025) porque gwm.com.ar ya no lo publica; el registro oficial
+  lo sigue inscribiendo hasta septiembre de 2026. Portada: la tapa de su ficha (`FT-H6-HEV.pdf`). Ojo: `fichas-fuentes.tsv` y `fichas-hashes.tsv`
+  siguen teniendo la fila vieja que asigna esa ficha al «Haval H6 Pro HEV» (de antes de que existiera esta columna).
 - **Bajar fotos de sitios que bloquean a curl** (Ford, Toyota, Audi, BMW; 2026-10-31): con el navegador integrado,
   como una persona. La página pide la imagen con `fetch` y la manda a un receptor local (`127.0.0.1`) con un
   formulario: el `connect-src` de esos sitios no deja hacer `fetch` a localhost, pero el formulario no pasa por ahí.
