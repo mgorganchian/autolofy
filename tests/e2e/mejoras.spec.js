@@ -764,7 +764,8 @@ test('ayudame a elegir: siempre N sugeridos, con los «casi» marcados, 2 por ma
         for (const plazas of ['4', '5', '6']){
           const o = elegirCalcular({ presu, plazas, uso: 'mixto', enchufe: 'nose', carro });
           const marcas = {}; o.top.forEach(x => { marcas[CARS[x.i].brand] = (marcas[CARS[x.i].brand] || 0) + 1; });
-          casos.push({ k: presu + '/' + carro + '/' + plazas, n: o.top.length, total: o.total, casiSinTxt: o.top.filter(x => x.d && !x.casi).length,
+          casos.push({ k: presu + '/' + carro + '/' + plazas, plazas, n: o.top.length, total: o.total, casiSinTxt: o.top.filter(x => x.d && !x.casi).length,
+            menosDe6: o.top.filter(x => !(SIM_ASIENTOS[x.i] >= 6)).length,
             cumplenPrimero: o.top.every((x, j) => !x.casi || o.top.slice(j).every(y => y.casi)),
             masDe2: Object.values(marcas).some(v => v > 2) && o.total + o.casi > o.top.length + 5,
             respaldo: Math.max(...o.top.map(x => x.parte.respaldo)) });
@@ -778,8 +779,11 @@ test('ayudame a elegir: siempre N sugeridos, con los «casi» marcados, 2 por ma
     expect(c.respaldo, c.k).toBeLessThanOrEqual(1);
     expect(c.masDe2, c.k).toBe(false);
   }
-  // Casi siempre se llega a N: solo puede faltar si ni con los «casi» alcanza.
-  expect(r.casos.filter(c => c.n === r.N).length).toBeGreaterThan(r.casos.length * .8);
+  // Casi siempre se llega a N: solo puede faltar si ni con los «casi» alcanza. Con 6 o 7 plazas no hay «casi» de asientos
+  // (issue #174): hay menos autos y se acepta mostrar menos, pero nunca uno de menos de 6 asientos.
+  const hasta5 = r.casos.filter(c => c.plazas !== '6');
+  expect(hasta5.filter(c => c.n === r.N).length).toBeGreaterThan(hasta5.length * .8);
+  for (const c of r.casos.filter(c => c.plazas === '6')) expect(c.menosDe6, c.k).toBe(0);
   expect(r.coupeEntra).toBe(true);
   // En pantalla, el «casi» va arriba de los motivos y cada auto tiene su porqué.
   await page.locator('#vistaElegir').click();

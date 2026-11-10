@@ -43,3 +43,27 @@ test('un coupé sin el dato aparece como casi para 5 plazas y dice que es estima
   expect(t.dato).toBeNull();
   expect(t.d).toBe('Tiene 4 asientos (estimado por su tamaño)');
 });
+
+test('con 6 o 7 plazas no se sugiere ningún auto de menos de 6 asientos, ni como «casi» (issue #174)', async ({ page }) => {
+  // Pedido de Mati del 2026-11-10: con «6 o 7» y «Me da igual» en quiénes viajan salían el Song Pro y el Leapmotor C10 (5 asientos).
+  const r = await page.evaluate(() => {
+    const malos = [];
+    for (const presu of ['', '30000-40000', '52500-66000']) for (const quien of ['', 'ninos', 'adulto']) for (const enchufe of ['si', 'no', 'nose'])
+      for (const uso of ['ciudad', 'mixto', 'ruta']) {
+        const o = elegirCalcular({ presu, plazas: '6', quien, uso, enchufe, carro: '' });
+        for (const x of o.top) if (!(SIM_ASIENTOS[x.i] >= 6)) malos.push(CARS[x.i].name + ' (' + SIM_ASIENTOS[x.i] + ')');
+      }
+    const song = CARS.findIndex(c => c.name === 'Song Pro');
+    const cinco = CARS.map((c, i) => i).filter(i => SIM_ASIENTOS[i] === 5);
+    const cincoEn5 = cinco.filter(i => elegirDesvio(i, { presu: '', plazas: '5', carro: '', uso: 'mixto', enchufe: 'nose' }) !== null).length;
+    const cuatroCasiEn5 = CARS.map((c, i) => i).filter(i => SIM_ASIENTOS[i] === 4)
+      .some(i => { const d = elegirDesvio(i, { presu: '', plazas: '5', carro: '', uso: 'mixto', enchufe: 'nose' }); return d && typeof d === 'object'; });
+    return { malos: [...new Set(malos)], song: song < 0 ? null : elegirDesvio(song, { presu: '', plazas: '6', quien: '', carro: '', uso: 'mixto', enchufe: 'nose' }),
+      cincoEn5, cuatroCasiEn5 };
+  });
+  expect(r.malos, r.malos.join(' · ')).toEqual([]);
+  expect(r.song).toBeNull();
+  // Hasta 5 plazas no cambia: los de 5 entran y un auto de 4 puede seguir siendo «casi».
+  expect(r.cincoEn5).toBeGreaterThan(20);
+  expect(r.cuatroCasiEn5).toBe(true);
+});

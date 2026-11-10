@@ -7095,7 +7095,7 @@ const MOTIVO_CORTO = {"Potencia total del sistema (kW)":"potencia","Volumen de b
   "Cantidad de parlantes":"parlantes","Garantía general":"garantía","Garantía de la batería de alto voltaje":"garantía de batería"};
 // Cómo se aparta un auto de lo pedido (2026-10-30, pedido de Mati: a veces sugería uno solo). 0 = cumple
 // todo; {d, txt} = falla en una sola cosa y por poco ("casi"): el precio hasta un 15% fuera de la franja,
-// el SUV del segmento de al lado o un asiento menos; null = no va. Sin precio con franja elegida: 'sinprecio'.
+// el SUV del segmento de al lado o un asiento menos (sólo hasta 5 plazas); null = no va. Sin precio con franja elegida: 'sinprecio'.
 const ELEGIR_CASI_PRECIO = .15;
 const SEG_LETRA = { compact: 'B', mid: 'C', big: 'D', xl: 'D' };
 const SEG_LETRA_AB = { mini: 'A', compact: 'B' };
@@ -7158,8 +7158,10 @@ function elegirDesvio(i, r){
   const plazas = +r.plazas, dato = SIM_ASIENTOS[i];
   // Hasta 5 plazas, el que no tiene el dato entra con su estimación; para 6 o 7 sigue sin entrar.
   const as = dato != null || plazas >= 6 ? dato : estimarAsientos(i);
+  // Con 6 o 7 plazas, un auto de 5 asientos no es «casi»: es otro auto (issue #174). «Me da igual» en quiénes viajan
+  // no afloja las plazas. Hasta 5, un asiento menos sigue siendo «casi».
   if (plazas >= 6 ? !(as >= 6) : (as != null && as < plazas)){
-    if (as == null || as < (plazas >= 6 ? 5 : plazas - 1)) return null;
+    if (plazas >= 6 || as == null || as < plazas - 1) return null;
     fallas.push({ d: .15, txt: 'Tiene ' + as + ' asientos' + (dato == null ? ' (estimado por su tamaño)' : '') });
   }
   if (r.presu){
