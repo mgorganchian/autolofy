@@ -1214,12 +1214,15 @@ if(!location.search&&!location.hash)document.documentElement.classList.add('arra
     .elegir-preg .presu .presu-igual{grid-column:2;grid-row:1}
     .elegir-preg .presu .presu-fila,.elegir-preg .presu .presu-ejes{grid-column:1 / -1}
     .elegir-resultados .elegir-res-tit{margin-top:14px}
-    .elegir-res{grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:14px 22px}
-    .elegir-res > li{grid-template-columns:150px 1fr;grid-template-areas:"nombre nombre" "foto motivos";column-gap:12px;row-gap:4px;
-      border-bottom:1px solid var(--line);padding-bottom:10px}
-    .elegir-res > li > .minicar{width:150px}
-    .elegir-res ul{margin:0;padding-left:16px}
+    /* 2026-11-10, issue #146 (pedido de Sebastián): los sugeridos van en una sola fila, con 12 px entre columnas. La grilla pedía 320 px por
+       tarjeta, para una foto al costado que la regla de más abajo (foto arriba) pisaba: en los 1.068 px del contenedor entraban 3 y quedaban 2 abajo. */
+    .elegir-res{grid-template-columns:repeat(3,minmax(0,1fr));gap:14px 12px}
+    .elegir-res > li{border-bottom:1px solid var(--line);padding-bottom:10px}
+    .elegir-res > li > .minicar{max-width:220px}   /* de a tres la tarjeta mide hasta 323 px: la foto no pasa del tamaño que tiene en la fila única */
   }
+  /* Desde 1100 px el contenedor ya mide su máximo (1.068 px) y cada tarjeta, 204 px: ahí entran los cinco sin partir nombres ni motivos.
+     Entre 900 y 1099 px van de a tres (con cinco, a 900 px se partían 4 motivos y 2 nombres). */
+  @media (min-width:1100px){ .elegir-res{grid-template-columns:repeat(5,minmax(0,1fr))} }
   /* Tarjeta: en escritorio, foto arriba y texto abajo; en el celular, nombre arriba y foto
      a la izquierda con "Ver su página" debajo, para que entren las 4 (pedido del 2026-10-09). */
   /* Sin «Ver ficha» (2026-11-01, issue #87): la ficha se abre desde el nombre, y la tarjeta queda con menos texto. */
