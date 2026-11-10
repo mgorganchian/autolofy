@@ -554,7 +554,8 @@ sí quedan en inglés, porque no muestran la palabra. Se coló con `YES` dos vec
   presenta como de bajo consumo (`RK_APARTE`).
 - **Motor de Ayudame a elegir** (2026-10-30, pedido de Mati, issue del PR «motor de sugerencias»): siempre sugiere
   `elegirN()` autos. Primero los que cumplen todo; si no alcanzan, los «casi» (`elegirDesvio`: fallan en una sola
-  cosa y por poco: precio hasta un 15% fuera de la franja, el SUV del segmento de al lado o un asiento menos), con esa
+  cosa y por poco: precio hasta un 15% fuera de la franja, el SUV del segmento de al lado o un asiento menos **sólo hasta 5 plazas**:
+  con «6 o 7» un auto de 5 asientos no entra nunca, ni con «Me da igual» en quiénes viajan; issue #174, pedido de Mati del 2026-11-10), con esa
   diferencia escrita arriba de sus motivos. Como mucho 2 autos por marca (se afloja solo si no se llega a N). Pesos:
   propulsión 3, percentiles del uso 1,5, respaldo **como mucho 1** (el bruto se divide por 2,5), extra pickup/4x4 .5,
   y dentro de una franja el equipamiento por dólar hasta .4 (`elegirEquipo`: ✓ sobre filas con dato). Cada tarjeta
