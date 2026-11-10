@@ -13,10 +13,10 @@
     python3 herramientas-fotos.py portada SLUG IMAGEN VISTA "crédito" "fila de fichas-fuentes.tsv" [sin-recorte]
                                                           # cambia la portada (foto 1, miniatura y crédito);
                                                           # con «conservar», la portada vieja pasa al carrusel
-    python3 herramientas-fotos.py espejar SLUG...         # da vuelta la portada para que la trompa mire a la izquierda
+    python3 herramientas-fotos.py espejar SLUG...         # da vuelta la portada para que la trompa mire a la derecha
 
 Todas las portadas miran al mismo lado (pedido de Mati, 2026-11-10): tres cuartos delantero con la
-trompa hacia la IZQUIERDA de la imagen. La que mira a la derecha se espeja con `espejar`, que da vuelta
+trompa hacia la DERECHA de la imagen. La que mira a la izquierda se espeja con `espejar`, que da vuelta
 la foto 1, la miniatura y la mediana, y suma «imagen espejada» al crédito (CC BY pide avisar los cambios).
 
 Cada auto tiene a lo sumo UNA foto por vista (VISTAS, abajo): frente, perfiles, cola,
@@ -421,7 +421,8 @@ def portada(slug, args):
         if not f['fila']: sys.exit(f'{slug}-{n}.jpg no tiene fila en fotos-fuentes.tsv')
         origen = os.path.join(FOTOS, f['archivo'])
         credito = f['cred']
-        fila = [nombre] + f['fila'][2:]                          # archivo de Commons, licencia, autor, página
+        # Commons: archivo, licencia, autor, página. Oficial: imagen y página (db/cargar2.mjs las lee así).
+        fila = [nombre, f['fila'][2], f['fila'][5]] if f['fila'][3] == LICENCIA_OFICIAL else [nombre] + f['fila'][2:]
         resto = [x for k, x in enumerate(est[1:], start=2) if k != n]
         if args[3:4] == ['conservar']:
             # La portada vieja no se pierde: entra al carrusel con su vista, su crédito y su fuente.
@@ -509,7 +510,7 @@ ESPEJADA = 'imagen espejada'
 
 def espejar(slugs):
     """Da vuelta horizontalmente la portada (foto 1, miniatura y mediana) para que la trompa mire a la
-    izquierda, como en el resto de las portadas, y lo dice en su crédito. No se espeja dos veces."""
+    derecha, como en el resto de las portadas, y lo dice en su crédito. No se espeja dos veces."""
     from PIL import Image, ImageOps
     html = leer_index()
     for slug in slugs:
