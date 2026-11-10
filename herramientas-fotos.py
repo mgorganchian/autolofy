@@ -9,9 +9,15 @@
     node herramientas-galeria.js SLUG URL...               # baja la galería oficial con el navegador
     python3 herramientas-fotos.py galeria-hoja SLUG       # filtra esas imágenes y arma la hoja para mirarlas
     python3 herramientas-fotos.py descartar-oficial SLUG N "motivo"  # anota por qué no va una de la hoja
-    python3 herramientas-fotos.py portada SLUG carrusel N VISTA
+    python3 herramientas-fotos.py portada SLUG carrusel N VISTA [conservar VISTA_VIEJA]
     python3 herramientas-fotos.py portada SLUG IMAGEN VISTA "crédito" "fila de fichas-fuentes.tsv" [sin-recorte]
-                                                          # cambia la portada (foto 1, miniatura y crédito)
+                                                          # cambia la portada (foto 1, miniatura y crédito);
+                                                          # con «conservar», la portada vieja pasa al carrusel
+    python3 herramientas-fotos.py espejar SLUG...         # da vuelta la portada para que la trompa mire a la izquierda
+
+Todas las portadas miran al mismo lado (pedido de Mati, 2026-11-10): tres cuartos delantero con la
+trompa hacia la IZQUIERDA de la imagen. La que mira a la derecha se espeja con `espejar`, que da vuelta
+la foto 1, la miniatura y la mediana, y suma «imagen espejada» al crédito (CC BY pide avisar los cambios).
 
 Cada auto tiene a lo sumo UNA foto por vista (VISTAS, abajo): frente, perfiles, cola,
 baúl abierto, tablero, instrumentos, consola, asientos. Dos fotos casi iguales no suman
@@ -417,6 +423,12 @@ def portada(slug, args):
         credito = f['cred']
         fila = [nombre] + f['fila'][2:]                          # archivo de Commons, licencia, autor, página
         resto = [x for k, x in enumerate(est[1:], start=2) if k != n]
+        if args[3:4] == ['conservar']:
+            # La portada vieja no se pierde: entra al carrusel con su vista, su crédito y su fuente.
+            vv = args[4]
+            if vv not in CLAVES or vv == v: sys.exit(f'vista de la portada vieja inválida: {vv!r}')
+            cred_v, fila_v = fuente_portada(html, slug, nombre)
+            resto.append({'archivo': f'{slug}-1.jpg', 'vista': vv, 'cred': cred_v, 'fila': ['', vv] + fila_v})
     else:
         img, v, credito, fila_txt = args[0], args[1], args[2], args[3]
         origen = os.path.join(CAND, 'portada-' + slug + '.jpg'); os.makedirs(CAND, exist_ok=True)
@@ -459,6 +471,63 @@ def portada(slug, args):
 
 
 LICENCIA_OFICIAL = 'material oficial de la marca'
+
+
+def es_fila_portada(c, nombre):
+    return len(c) > 1 and c[0] == nombre and re.search(r'\.(jpe?g|png|webp)$|^tapa de |^página |^foto del auto', c[1], re.I)
+
+
+def fuente_portada(html, slug, nombre):
+    """Crédito y fila de fotos-fuentes.tsv (sin archivo ni vista) de la portada actual, para pasarla al
+    carrusel. Sale de su fila en fichas-fuentes.tsv: Commons (archivo, licencia, autor, página) o
+    material oficial (la URL de la imagen, o la del PDF de donde salió la tapa)."""
+    m = re.search(r'<img class="car-photo" data-slug="%s"[^>]*>' % re.escape(slug), html)
+    cred = re.search(r'data-credito="([^"]*)"', m.group(0)) if m else None
+    cred = cred.group(1).replace('&quot;', '"') if cred else ''
+    filas = [l.split('\t') for l in open(PORTADAS, encoding='utf-8').read().split('\n')]
+    c = next((x for x in reversed(filas) if es_fila_portada(x, nombre)), None)
+    if not c: sys.exit(f'{slug}: la portada no tiene fila en fichas-fuentes.tsv')
+    if len(c) >= 5 and c[4].startswith('https://commons.wikimedia.org/'):
+        return cred or f'Foto: {c[3]} · {c[2]} · Wikimedia Commons', c[1:5]
+    url = next((x for x in c[1:] if x.startswith('https://')), None) or next(
+        (re.search(r'https://\S+', x).group(0) for x in c[1:] if re.search(r'https://\S+', x)), None)
+    if not url:
+        pdf = re.search(r'(?:^tapa de |^página \d+ de )(.+)$', c[1])
+        url = pdf and next((x[2] for x in filas if len(x) > 2 and x[1] == pdf.group(1) and x[2].startswith('https://')), None)
+    if not url: sys.exit(f'{slug}: no encontré la URL de la portada en fichas-fuentes.tsv')
+    marca = re.match(r'Foto: (.+?) · ', cred)
+    if marca: marca = marca.group(1)
+    else:
+        ini = html.index('const CARS = [')
+        b = re.search(r'name:"%s"[^}]*brand:"([^"]+)"' % re.escape(nombre), html[ini:]).group(1)
+        marca = f'{b} Argentina'
+    return cred or f'Foto: {marca} · {LICENCIA_OFICIAL} · sitio oficial', [url, LICENCIA_OFICIAL, marca, url]
+
+
+ESPEJADA = 'imagen espejada'
+
+
+def espejar(slugs):
+    """Da vuelta horizontalmente la portada (foto 1, miniatura y mediana) para que la trompa mire a la
+    izquierda, como en el resto de las portadas, y lo dice en su crédito. No se espeja dos veces."""
+    from PIL import Image, ImageOps
+    html = leer_index()
+    for slug in slugs:
+        m = re.search(r'<img class="car-photo" data-slug="%s"[^>]*>' % re.escape(slug), html)
+        if not m: sys.exit('no encontré la miniatura de ' + slug)
+        tag = m.group(0)
+        cred = re.search(r' data-credito="([^"]*)"', tag)
+        if cred and ESPEJADA in cred.group(1): sys.exit(f'{slug}: ya está espejada')
+        for ruta, calidad in ((os.path.join(FOTOS, f'{slug}-1.jpg'), 85), (os.path.join(FOTOS, 'mini', slug + '.jpg'), 70),
+                              (os.path.join(FOTOS, 'med', slug + '.jpg'), 72)):
+            if not os.path.exists(ruta): continue
+            im = Image.open(ruta); im.load()
+            ImageOps.mirror(im.convert('RGB')).save(ruta, 'JPEG', quality=calidad, optimize=True, progressive=True)
+        if cred: nuevo = tag.replace(cred.group(0), f' data-credito="{cred.group(1)} · {ESPEJADA}"', 1)
+        else: nuevo = tag.replace(' alt=""', f' alt="" data-credito="{ESPEJADA[0].upper() + ESPEJADA[1:]}"', 1)
+        html = html[:m.start()] + nuevo + html[m.end():]
+        print(f'{slug}: espejada')
+    open(INDEX, 'w', encoding='utf-8', newline='\n').write(html)
 
 
 def instalar_oficial(lista):
@@ -578,6 +647,7 @@ if __name__ == '__main__':
     elif a[:1] == ['instalar'] and len(a) > 1: instalar(a[1:])
     elif a[:1] == ['reorganizar'] and len(a) == 2: reorganizar(a[1])
     elif a[:1] == ['portada'] and len(a) >= 4: portada(a[1], a[2:])
+    elif a[:1] == ['espejar'] and len(a) > 1: espejar(a[1:])
     elif a[:1] == ['instalar-oficial'] and len(a) == 2: instalar_oficial(a[1])
     elif a[:1] == ['descartar'] and len(a) == 3: descartar(a[1], a[2])
     elif a[:1] == ['galeria-hoja'] and len(a) == 2: galeria_hoja(a[1])
