@@ -968,6 +968,13 @@ portada primero y el resto en el orden de las vistas.
   o un render publicado en el sitio oficial argentino vale** (el crédito lo dice); Commons se puede relajar a
   la misma generación de otro mercado si no hay diferencias visibles; y **todo rechazo se anota**, también
   los de las galerías oficiales (`descartar-oficial` → `fotos-oficiales-descartadas.tsv`).
+- **Todas las portadas miran para adelante y al mismo lado** (2026-11-10, pedido de Mati, issue #175): tres cuartos
+  delantero (o frente) con la **trompa hacia la izquierda** de la imagen. La que mira a la derecha se espeja con
+  `herramientas-fotos.py espejar SLUG`, que da vuelta la foto 1, la miniatura y la mediana y suma «imagen espejada» al
+  crédito (CC BY pide avisar los cambios). **No se espeja un auto con la marca escrita en grande en la trompa** (BYD
+  Shark, Bronco, Maxus eTerron, Rely R8, Kia Tasman): la marca se leería al revés; hace falta otra foto. Si la portada no
+  muestra la trompa y el carrusel tiene una que sí, se sube con `portada SLUG carrusel N VISTA conservar VISTA_VIEJA`
+  (la vieja pasa al carrusel con su fuente). Al instalar una portada nueva, mirar hacia dónde apunta la trompa.
 - **La portada tiene que ser la versión que vende el importador argentino** (frente,
   rótulos, generación): se compara con la tapa de la ficha AR o el sitio oficial AR. Se
   cambia con `herramientas-fotos.py portada SLUG …`, que reescribe juntos la foto 1, la
