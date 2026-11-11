@@ -97,27 +97,31 @@ de `CARS`.
 | campo | valores |
 |---|---|
 | `type` | `ice` `hev` `mhev` `phev` `ev` `tbd` |
-| `size` | `xl` `big` `mid` `compact` `mini` `nd` |
+| `size` | `xl` `big` `mid` `compact` `mini` `dep` `nd` |
 | `body` | `SUV` `Crossover` `Sedán` `Hatchback` `Minivan` `Pickup` `Convertible` `Coupé` (desde el 2026-10-29; se dibuja con la silueta del sedán, como el convertible) |
 | `status` | `venta` `preventa` `nolanzado` `discontinuado` |
 
-**`size` (segmento) se asigna por el largo**, con los umbrales anotados arriba de `CARS`
-(chico < 4150 mm ≤ compacto < 4515 ≤ mediano < 4714 ≤ grande; **muy grande** = 4825 mm o
-más **y además 6+ asientos o pickup**, pedido del usuario del 2026-10-04: un sedán largo
-de 5 plazas es "grande"). Al
-agregar un auto con largo cargado, su segmento sale de ahí, no "a ojo". `nd` solo si
-no hay largo. Sumar ancho y distancia entre ejes se probó y clasificaba peor (13 de 27
-contra 24 de 27). Dos autos clasificados antes no siguen la regla (los dos BJ30) y están
-listados como excepción en `tests/e2e/invariantes.spec.js`.
-**Letras del mercado** (2026-10-30, pedido de Mati, como las usan la prensa y la industria): `mini` = urbano
-(A), `compact` = chico (B), `mid` = compacto (C), `big` = mediano o grande (D), `xl` = muy grande; las etiquetas
-llevan la letra. **SUV y crossover, por largo:** B < 4400 mm ≤ C < 4700 ≤ D (los BJ30 van como C).
-**Hatchback y sedán, por distancia entre ejes**, que sigue a la cabina (el largo engaña: un sedán B como el
-Virtus mide 4,56 m porque suma el baúl): hatchback A < 2450 ≤ B < 2600 ≤ C, y B si mide menos de 4200 de
-largo (los eléctricos chicos tienen ejes largos); sedán B < 2660 ≤ C < 2800 ≤ D (el K4 y el M340i miden lo
-mismo de largo, pero 2720 y 2851 entre ejes). Pickups, minivans, coupés y descapotables siguen con los
-umbrales de largo de arriba. Ayudame a elegir ofrece «SUV chico (B)», «SUV compacto (C)» y «SUV mediano o
-grande (D)».
+**`size` (segmento): una regla por carrocería y sin excepciones** (issue #184, decidido por Mati y Sebastián el
+2026-11-11; la regla está anotada arriba de `CARS` y la aplica `tests/e2e/invariantes.spec.js`). Al agregar un auto con
+largo cargado, su segmento sale de ahí, no "a ojo"; `nd` solo si no hay largo.
+**Nombres** (los mismos en todo el sitio, con la letra al lado): `mini` = Urbano (A), `compact` = Chico (B), `mid` =
+Mediano (C), `big` = Grande (D), `xl` = Muy grande, `dep` = Deportivo. **«Compacto» no se usa**: la prensa argentina lo dice
+del segmento B (Autoweb llama «SUV compacto» al T-Cross) y el sitio lo usaba para el C.
+- **SUV y crossover, por largo:** B < 4400 mm ≤ C < 4700 ≤ D; muy grande con 4825 o más y 6+ asientos (pedido del
+  2026-10-04: un auto largo de 5 plazas es "grande"). Los BJ30 (4730) son D desde el 2026-11-11.
+- **Hatchback y sedán, por distancia entre ejes**, que sigue a la cabina (el largo engaña: un sedán B como el Virtus mide
+  4,56 m porque suma el baúl): hatchback A < 2450 ≤ B < 2600 ≤ C, y B si mide menos de 4200 de largo (los eléctricos chicos
+  tienen ejes largos); sedán B < 2660 ≤ C < 2800 ≤ D (el K4 y el M340i miden lo mismo de largo, pero 2720 y 2851 entre ejes).
+- **Pickup, por largo, con las clases de la prensa:** chica (B) < 4600 ≤ compacta (C) < 5200 ≤ mediana (D) < 5700 ≤
+  full-size (muy grande). Los cortes caen en huecos donde no hay ninguna pickup. La ficha y Ayudame a elegir dicen la clase
+  («Pickup mediana», `PICKUP_CLASE`, `tamanoTxt`); el filtro de tamaño usa el segmento, así «Grande (D)» trae la Hilux.
+- **Minivan, por largo:** B < 4515 ≤ C < 4714 ≤ D; muy grande como los SUV (la Spin de 7 asientos mide 4,42 m y es B).
+- **Coupé y descapotable: `dep`** («Deportivo», sin letra): no se eligen por tamaño y el filtro de tamaño de Ayudame a elegir
+  no los saca.
+Sumar ancho y distancia entre ejes a los SUV se probó y clasificaba peor (13 de 27 contra 24 de 27).
+`tests/e2e/segmentos-mercado.spec.js` controla la regla contra los grupos que publica Autoweb por segmento: revisar su
+lista cuando salga el cierre anual. Casos de borde aceptados: Fastback (4440, C), Compass (4404, C), Kaiyi X3 (4400, C),
+CR-V y Jetour T1 (4705, D).
 
 ---
 
@@ -561,7 +565,7 @@ sí quedan en inglés, porque no muestran la palabra. Se coló con `YES` dos vec
   tiene un «?» con el puntaje desglosado (`elegirPorqueHTML`). «Sedán o hatchback» incluye coupés y descapotables.
   Las opciones de cada pregunta son una grilla de botones del mismo ancho.
 - **Asientos estimados** (2026-11-01, pedido de Mati): el que no tiene la fila Número de asientos (32 autos) ya no pasa en
-  silencio por «¿Cuántos viajan seguido?». Hasta 5 plazas entra con `estimarAsientos()` (carrocería y distancia entre
+  silencio por «¿Cuántos pasajeros viajan seguido?». Hasta 5 plazas entra con `estimarAsientos()` (carrocería y distancia entre
   ejes: coupés y descapotables 4, sedanes, crossovers y pickups 5, hatchbacks 5 o 4 por debajo de 2,45 m, SUV de menos de
   2,80 m 5; un SUV más largo no se estima) y la tarjeta dice «(estimado por su tamaño)». Para 6 o 7 plazas no entra. La
   tabla sigue en s/d: nunca se escribe la estimación como dato. `asientos-estimados.spec.js` mide que no prometa de más.
@@ -577,8 +581,11 @@ sí quedan en inglés, porque no muestran la palabra. Se coló con `YES` dos vec
 - **Tres filtros que se arman solos** (2026-11-07, pedido de Mati): en Ayudame a elegir, debajo del uso y el enchufe, hay tres filtros de casillas que las
   respuestas dejan armados y que se pueden cambiar a mano (`elegirResp.seg`, `.prop`, `.carro`; lista separada por comas, `''` = me da igual; `elegirNorm` aplica lo
   sugerido a los que no se tocaron, `segMan` y `propMan` marcan los tocados y «Volver a la sugerencia» los suelta).
-  **Tamaño (A a D)**: «Me da igual» deja los cuatro; «Con niños» los cuatro (decisión de Mati del 2026-11-07: los límites los ponen las plazas y el ISOFIX, como en la regla del 1/11); «Adulto atrás» C y D; 6 o 7 plazas solo D (la D incluye los muy grandes, `SEG_ABCD`). El
-  segmento de al lado queda como «casi» («Otro tamaño (B)»); sin segmento en la tabla, «No informa su tamaño». **Propulsión**: con dónde cargar, ciudad = EV y
+  **Tamaño (A a D)**: «Me da igual» deja los cuatro; «Con niños» los cuatro (decisión de Mati del 2026-11-07: los límites los ponen las plazas y el ISOFIX, como en la regla del 1/11); «Adulto atrás» C y D; 6 o 7 plazas los cuatro (issue #184: hasta el 2026-11-11 era solo D y dejaba
+  afuera a la Spin y al Aircross de 7, que son B; el filtro de plazas ya garantiza los asientos). La D incluye los muy grandes (`SEG_ABCD`). Cada botón dice la palabra
+  y debajo la letra con autos de referencia («Chico / B · 208, Yaris Cross»; en el celular, solo la letra). **Tipo de auto va antes que el tamaño**: con solo
+  «Coupé o descapotable», el tamaño se grisa y no filtra (`elegirSoloDeportivos`, pedido de Sebastián). El
+  segmento de al lado queda como «casi» («Otro tamaño (chico)»); sin segmento en la tabla, «No informa su tamaño». **Propulsión**: con dónde cargar, ciudad = EV y
   ciudad y ruta o mucha ruta = PHEV; «No sé» (el valor de entrada) PHEV, que sirve con o sin enchufe; sin carga, HEV (no depende de cargadores); tierra y trabajo, me da igual (casi no hay híbridos 4x4 ni pickups híbridas).
   **Nunca se sugiere mild-hybrid ni nafta**, pero se pueden tildar a mano. La propulsión elegida **excluye**, no solo prioriza (el puntaje por propulsión sigue
   contando entre los que quedan). **Tipo de auto**: SUV o crossover (juntos), sedán, hatchback, pickup, minivan, coupé o descapotable; «Me da igual» apaga las demás.

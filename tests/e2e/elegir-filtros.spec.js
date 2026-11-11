@@ -19,17 +19,20 @@ test('el tamaño sale de quiénes viajan y de las plazas, y se puede cambiar', a
   expect(await marcados(page, 'seg')).toEqual(['A', 'B', 'C', 'D']);
   await page.locator('label:has(input[name="el-quien"][value="adultos"])').click();
   expect(await marcados(page, 'seg')).toEqual(['C', 'D']);
+  // Con 6 o 7 plazas no se fija el tamaño (issue #184): el filtro de plazas ya garantiza los asientos.
   await page.locator('label:has(input[name="el-plazas"][value="6"])').click();
-  expect(await marcados(page, 'seg')).toEqual(['D']);
+  expect(await marcados(page, 'seg')).toEqual(['A', 'B', 'C', 'D']);
+  await page.locator('label:has(input[name="el-plazas"][value="5"])').click();
+  expect(await marcados(page, 'seg')).toEqual(['C', 'D']);
   // Lo toca a mano: ya no lo pisan las respuestas, y vuelve con «Volver a la sugerencia».
   await page.locator('label:has(input[name="elm-seg"][value="C"])').click();
-  expect(await marcados(page, 'seg')).toEqual(['C', 'D']);
-  await page.locator('label:has(input[name="el-quien"][value="ninos"])').click();
-  expect(await marcados(page, 'seg')).toEqual(['C', 'D']);
-  await page.locator('[data-sugerir="seg"]').click();
   expect(await marcados(page, 'seg')).toEqual(['D']);
+  await page.locator('label:has(input[name="el-quien"][value="ninos"])').click();
+  expect(await marcados(page, 'seg')).toEqual(['D']);
+  await page.locator('label:has(input[name="el-quien"][value="adultos"])').click();
+  await page.locator('[data-sugerir="seg"]').click();
+  expect(await marcados(page, 'seg')).toEqual(['C', 'D']);
   // Destildar todo equivale a no filtrar.
-  await page.locator('label:has(input[name="el-plazas"][value="5"])').click();
   await page.locator('label:has(input[name="el-quien"][value=""])').click();
   for (const l of await marcados(page, 'seg')) await page.locator('label:has(input[name="elm-seg"][value="' + l + '"])').click();
   expect(await marcados(page, 'seg')).toEqual(['A', 'B', 'C', 'D']);
@@ -90,7 +93,7 @@ test('el tamaño de al lado queda como «casi» y las respuestas viejas se migra
     return { l, casi: elegirDesvio(i, { presu: '', plazas: '5', seg: 'C,D' }), no: elegirDesvio(i, { presu: '', plazas: '5', seg: 'D' }) };
   });
   expect(r.l).toBe('B');
-  expect(r.casi.txt).toBe('Otro tamaño (B)');
+  expect(r.casi.txt).toBe('Otro tamaño (chico)');
   expect(r.no).toBeNull();
   await page.evaluate(() => localStorage.setItem('elegir', JSON.stringify({ carro: 'suv-c' })));
   await page.reload();
@@ -105,7 +108,7 @@ test('los cuatro tamaños (A a D) van en una sola fila, también en el celular, 
     textos: ls.map(l => l.textContent.trim()) }));
   expect(r.n).toBe(4);
   expect(r.tops.length).toBe(1);
-  expect(r.textos).toEqual(['Aurbano', 'Bchico', 'Ccompacto', 'Dgrande']);
+  expect(r.textos).toEqual(['UrbanoA · Kwid, Mobi', 'ChicoB · 208, Yaris Cross', 'MedianoC · Corolla, Territory', 'GrandeD · Song Pro, Hilux']);
   const anchos = await page.locator('.elegir-ops[data-q="seg"] span').evaluateAll(ss => ss.map(s => [Math.round(s.scrollWidth), Math.round(s.clientWidth)]));
   for (const [sw, cw] of anchos) expect(sw).toBeLessThanOrEqual(cw + 1);
 });
@@ -119,4 +122,42 @@ test('«Me da igual» es una casilla al costado del título (tipo de auto y prop
   }
   const n = await page.locator('.elegir-ops[data-q="carro"] label').count();
   expect(n).toBe(6);
+});
+
+test('con solo deportivos, el tamaño queda grisado y no filtra (issue #184)', async ({ page }) => {
+  await page.locator('label:has(input[name="el-quien"][value="adultos"])').click();
+  expect(await marcados(page, 'seg')).toEqual(['C', 'D']);
+  await page.locator('label:has(input[name="elm-carro"][value="coupe"])').click();
+  const f = page.locator('.elegir-ops[data-q="seg"]').locator('xpath=..');
+  await expect(f).toHaveClass(/gris/);
+  await expect(f).toContainText('Los deportivos no se eligen por tamaño.');
+  expect(await page.locator('input[name="elm-seg"]:disabled').count()).toBe(4);
+  // Entran los deportivos de cualquier largo, sin «casi» por el tamaño.
+  const r = await page.evaluate(() => { const o = elegirCalcular(Object.assign({}, elegirNorm(elegirResp), { presu: '', prop: '', plazas: '4', quien: '' }));
+    return { cuerpos: [...new Set(o.todos.map(i => CARS[i].body))].sort(), seg: [...new Set(o.todos.map(i => CARS[i].size))],
+      dep: CARS.filter(c => c.size === 'dep' && c.status === 'venta').length, n: o.todos.length }; });
+  expect(r.cuerpos).toEqual(['Convertible', 'Coupé']);
+  expect(r.seg).toEqual(['dep']);
+  // El tamaño elegido no los saca ni los marca como «casi»: el MINI Cabrio (3,88 m) y el Mustang (4,79 m) entran igual con «Mediano».
+  const d = await page.evaluate(() => ['MINI Cooper S Cabrio', 'Ford Mustang Dark Horse 5.0L V8'].map(n =>
+    elegirDesvio(CARS.findIndex(c => c.name === n), { presu: '', plazas: '4', carro: 'coupe', seg: 'C' })));
+  expect(d).toEqual([0, 0]);
+  // Con deportivos y otro tipo, el tamaño vuelve a filtrar a los otros.
+  await page.locator('label:has(input[name="elm-carro"][value="sedan"])').click();
+  await expect(f).not.toHaveClass(/gris/);
+  expect(await page.locator('input[name="elm-seg"]:disabled').count()).toBe(0);
+});
+
+test('con 6 o 7 plazas entran los de 7 asientos de cualquier tamaño, como la Spin (issue #184)', async ({ page }) => {
+  await page.locator('label:has(input[name="el-plazas"][value="6"])').click();
+  const r = await page.evaluate(() => { const r = Object.assign({}, elegirNorm(elegirResp), { presu: '', prop: '', quien: '' }), d = n => elegirDesvio(CARS.findIndex(c => c.name === n), r);
+    return { spin: d('Chevrolet Spin 1.8 Premier AT 7A'), glb: d('Mercedes-Benz GLB 250 4MATIC Progressive') }; });
+  expect(r.spin).toBe(0);
+  expect(r.glb).toBe(0);
+});
+
+test('el BJ30 es grande (D) y con «Mediano» aparece como «casi»', async ({ page }) => {
+  const r = await page.evaluate(() => { const i = CARS.findIndex(c => c.name === 'BAIC BJ30 4x4'); return { size: CARS[i].size, d: elegirDesvio(i, { presu: '', plazas: '5', seg: 'C' }) }; });
+  expect(r.size).toBe('big');
+  expect(r.d.txt).toBe('Otro tamaño (grande)');
 });

@@ -1170,6 +1170,11 @@ if(!location.search&&!location.hash)document.documentElement.classList.add('arra
   @media (max-width:640px){ .elegir-ops[data-n="3"]{grid-template-columns:repeat(3,1fr)} .elegir-ops[data-n="3"] span{padding:4px 2px}
     .elegir-ops[data-n="4"]{grid-template-columns:repeat(4,1fr)} .elegir-ops[data-n="4"] span{padding:4px 2px} }
   .elegir-ops[data-q="seg"] b{display:block;font-size:1.25em;line-height:1.1}
+  /* Tamaño (issue #184): la palabra, y debajo la letra con autos de referencia; en el celular, solo la letra (los autos van en el cartel). */
+  .elegir-ops[data-q="seg"] small{display:block;font-size:inherit;line-height:1.2} .elegir-ops[data-q="seg"] em{font-style:normal}
+  @media (max-width:640px){ .elegir-ops[data-q="seg"] .seg-ej{display:none} }
+  /* Solo deportivos: el tamaño no aplica y se grisa. */
+  fieldset.gris .elegir-ops{opacity:.45} fieldset.gris .elegir-ops label{cursor:not-allowed}
   .elegir-leyenda.con-igual{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:2px 10px}
   .leyenda-igual{display:inline-flex;align-items:center;gap:6px;font-weight:400;font-size:.84rem;cursor:pointer;white-space:nowrap}
   .leyenda-igual input{width:20px;height:20px}
@@ -2372,23 +2377,19 @@ function renderVal(v){
   return '<span class="val-spec">'+v+'</span>';
 }
 
-// Segmento (size) de 17 autos que no lo tenían, asignado el 2026-10-03 por el LARGO,
-// con umbrales en el punto medio de cada hueco entre los autos ya clasificados:
-//   chico < 4150 mm ≤ compacto < 4515 ≤ mediano < 4714 ≤ grande < 4825 ≤ muy grande
-// Reproduce 24 de los 27 que ya estaban (no coinciden los dos BJ30, "compact" con
-// 4730 mm, y el Lynk & Co 08, "xl" con 4820 mm: clasificados antes con otro
-// criterio). Se probó sumar ancho y distancia entre ejes y reproducía solo 13 de 27.
-// "Muy grande" (xl) desde el 2026-10-04 pide además 6+ asientos o ser pickup (pedido
-// del usuario): un sedán de 5,16 m de 5 plazas es "grande", no "muy grande". Los de 7
-// asientos de menos de 4825 mm siguen en "grande". El Lynk & Co 08 dejó de ser excepción.
-// Sin largo cargado quedan "nd": hoy el Tiggo 7 Pro PHEV y la JMC Grand
-// Avenue Pro. El test de invariantes falla si un auto con largo queda sin segmento.
-// Letras del mercado desde el 2026-10-30 (pedido de Mati): mini = urbano (A), compact = chico (B),
-// mid = compacto (C), big = mediano o grande (D). SUV y crossover por largo: B < 4400 mm ≤ C < 4700 ≤ D,
-// y muy grande con la regla de 4825 mm y 6+ asientos. Hatchback por distancia entre ejes: A < 2450 ≤
-// B < 2600 ≤ C, y B si mide menos de 4200 de largo (los eléctricos chicos tienen ejes largos). Sedán por
-// distancia entre ejes: B < 2660 ≤ C < 2800 ≤ D (el largo engaña: el baúl). Los BJ30 van como C. Pickups,
-// minivans, coupés y descapotables siguen con los umbrales de arriba.
+// Segmento (size), una regla por carrocería y sin excepciones (issue #184, decidido por Mati y Sebastián el
+// 2026-11-11): mini = Urbano (A), compact = Chico (B), mid = Mediano (C), big = Grande (D), xl = Muy grande,
+// dep = Deportivo (sin tamaño), nd = sin largo cargado.
+// - SUV y crossover, por largo: B < 4400 mm ≤ C < 4700 ≤ D; Muy grande con 4825 o más y 6+ asientos.
+// - Hatchback, por distancia entre ejes: A < 2450 ≤ B < 2600 ≤ C, y B si mide menos de 4200 de largo (los
+//   eléctricos chicos tienen ejes largos).
+// - Sedán, por distancia entre ejes: B < 2660 ≤ C < 2800 ≤ D (el largo engaña: el baúl).
+// - Pickup, por largo, con las clases de la prensa: chica (B) < 4600 ≤ compacta (C) < 5200 ≤ mediana (D)
+//   < 5700 ≤ full-size (Muy grande). La ficha dice la clase («Pickup mediana»): tamanoTxt().
+// - Minivan, por largo: B < 4515 ≤ C < 4714 ≤ D; Muy grande con 4825 o más y 6+ asientos.
+// - Coupé y descapotable: dep. No se eligen por tamaño.
+// Se probó sumar ancho y distancia entre ejes a los SUV y clasificaba peor (13 de 27 contra 24 de 27).
+// El test de invariantes aplica esta regla y falla si un auto con largo queda sin segmento.
 // Metadata per column, en el mismo orden que las columnas del thead (266 autos)
 const CARS = [
   {name:"BAIC BJ60", short:"BJ60", type:"mhev", size:"xl", brand:"BAIC", body:"SUV", status:"venta"},
@@ -2408,8 +2409,8 @@ const CARS = [
   {name:"BAIC X55 II Hybrid", short:"X55 II Hybrid", type:"hev", size:"mid", brand:"BAIC", body:"SUV", status:"venta"},
   {name:"Lynk & Co 01", short:"Lynk 01", type:"phev", size:"mid", brand:"Lynk & Co", body:"SUV", status:"venta"},
   {name:"Arcfox Koala S", short:"Koala S", type:"ev", size:"compact", brand:"Arcfox", body:"Minivan", status:"venta"},
-  {name:"BAIC BJ30 4x2", short:"BJ30 4x2", type:"hev", size:"mid", brand:"BAIC", body:"SUV", status:"venta"},
-  {name:"BAIC BJ30 4x4", short:"BJ30 4x4", type:"hev", size:"mid", brand:"BAIC", body:"SUV", status:"venta"},
+  {name:"BAIC BJ30 4x2", short:"BJ30 4x2", type:"hev", size:"big", brand:"BAIC", body:"SUV", status:"venta"},
+  {name:"BAIC BJ30 4x4", short:"BJ30 4x4", type:"hev", size:"big", brand:"BAIC", body:"SUV", status:"venta"},
   {name:"Lynk & Co 06", short:"Lynk 06", type:"phev", size:"compact", brand:"Lynk & Co", body:"SUV", status:"venta"},
   {name:"Arcfox T1", short:"Arcfox T1", type:"ev", size:"compact", brand:"Arcfox", body:"Crossover", status:"venta"},
   {name:"Atto 2 DM-i", short:"Atto 2", type:"phev", size:"compact", brand:"BYD", body:"SUV", status:"venta"},
@@ -2418,36 +2419,36 @@ const CARS = [
   {name:"Dolphin Mini",short:"Dolphin Mini", type:"ev", size:"compact", brand:"BYD", body:"Hatchback", status:"venta"},
   {name:"Chery Tiggo 8 Pro", short:"Tiggo 8 Pro", type:"ice", size:"big", brand:"Chery", body:"SUV", status:"venta"},
   {name:"Haval H6 Pro HEV", short:"H6 Pro HEV", type:"hev", size:"mid", brand:"GWM", body:"SUV", status:"venta"},
-  {name:"Poer 4WD", short:"Poer 4WD", type:"ice", size:"xl", brand:"GWM", body:"Pickup", status:"venta"},
+  {name:"Poer 4WD", short:"Poer 4WD", type:"ice", size:"big", brand:"GWM", body:"Pickup", status:"venta"},
   {name:"Tank 300", short:"Tank 300", type:"ice", size:"big", brand:"GWM", body:"SUV", status:"venta"},
   {name:"Ora 03", short:"Ora 03", type:"ev", size:"mid", brand:"GWM", body:"Hatchback", status:"venta"},
   {name:"MG ZS HEV", short:"MG ZS HEV", type:"hev", size:"mid", brand:"MG", body:"SUV", status:"venta"},
   {name:"Changan CS55 Plus", short:"CS55 Plus", type:"phev", size:"mid", brand:"Changan", body:"SUV", status:"venta"},
   {name:"Geely EX5", short:"EX5", type:"ev", size:"mid", brand:"Geely", body:"SUV", status:"venta"},
-  {name:"JAC T9", short:"T9", type:"ice", size:"xl", brand:"JAC", body:"Pickup", status:"venta"},
+  {name:"JAC T9", short:"T9", type:"ice", size:"big", brand:"JAC", body:"Pickup", status:"venta"},
   {name:"Jetour T2", short:"T2", type:"ice", size:"big", brand:"Jetour", body:"SUV", status:"venta"},
   {name:"GAC S7", short:"S7", type:"phev", size:"big", brand:"GAC", body:"Sedán", status:"venta"},
   {name:"Kaiyi X7", short:"X7", type:"ice", size:"big", brand:"Kaiyi", body:"SUV", status:"venta"},
   {name:"Forthing U-Tour", short:"U-Tour", type:"hev", size:"xl", brand:"Forthing", body:"SUV", status:"venta"},
   {name:"Skywell ET5", short:"ET5", type:"ev", size:"big", brand:"Skywell", body:"SUV", status:"venta"},
-  {name:"Foton Tunland V9", short:"Tunland V9", type:"ice", size:"xl", brand:"Foton", body:"Pickup", status:"venta"},
-  {name:"Maxus eTerron", short:"eTerron", type:"ev", size:"xl", brand:"Maxus", body:"Pickup", status:"venta"},
+  {name:"Foton Tunland V9", short:"Tunland V9", type:"ice", size:"big", brand:"Foton", body:"Pickup", status:"venta"},
+  {name:"Maxus eTerron", short:"eTerron", type:"ev", size:"big", brand:"Maxus", body:"Pickup", status:"venta"},
   {name:"Omoda 5", short:"Omoda 5", type:"hev", size:"mid", brand:"Omoda", body:"SUV", status:"nolanzado"},
   {name:"Jaecoo 7", short:"Jaecoo 7", type:"phev", size:"mid", brand:"Jaecoo", body:"SUV", status:"nolanzado"},
   {name:"Leapmotor C10", short:"C10", type:"phev", size:"big", brand:"Leapmotor", body:"SUV", status:"venta"},
   {name:"Leapmotor B10", short:"B10", type:"phev", size:"mid", brand:"Leapmotor", body:"SUV", status:"venta"},
   {name:"JMEV Easy 3", short:"Easy 3", type:"ev", size:"mini", brand:"JMEV", body:"Hatchback", status:"venta"},
   {name:"Chery Arrizo 8", short:"Arrizo 8", type:"phev", size:"mid", brand:"Chery", body:"Sedán", status:"venta"},
-  {name:"MG Cyberster", short:"Cyberster", type:"ev", size:"mid", brand:"MG", body:"Convertible", status:"venta"},
+  {name:"MG Cyberster", short:"Cyberster", type:"ev", size:"dep", brand:"MG", body:"Convertible", status:"venta"},
   {name:"Stelato S9", short:"S9", type:"ev", size:"big", brand:"Stelato", body:"Sedán", status:"nolanzado"},
-  {name:"Chery Himla", short:"Himla", type:"ice", size:"xl", brand:"Chery", body:"Pickup", status:"venta"},
+  {name:"Chery Himla", short:"Himla", type:"ice", size:"big", brand:"Chery", body:"Pickup", status:"venta"},
   {name:"Chery Tiggo 2 Pro Max", short:"Tiggo 2 Pro Max", type:"ice", size:"compact", brand:"Chery", body:"SUV", status:"venta"},
   {name:"Chery Tiggo 4 Hybrid", short:"Tiggo 4 Hybrid", type:"hev", size:"compact", brand:"Chery", body:"SUV", status:"venta"},
   {name:"Chery Tiggo 4 Pro", short:"Tiggo 4 Pro", type:"ice", size:"compact", brand:"Chery", body:"SUV", status:"venta"},
   {name:"Chery Tiggo 7 Pro MHEV", short:"Tiggo 7 Pro MHEV", type:"mhev", size:"mid", brand:"Chery", body:"SUV", status:"venta"},
   {name:"Chery Tiggo 7 Pro PHEV", short:"Tiggo 7 Pro PHEV", type:"phev", size:"mid", brand:"Chery", body:"SUV", status:"venta"},
   {name:"Arcfox V9", short:"Arcfox V9", type:"phev", size:"xl", brand:"Arcfox", body:"Minivan", status:"nolanzado"},
-  {name:"BYD Shark", short:"Shark", type:"phev", size:"xl", brand:"BYD", body:"Pickup", status:"venta"},
+  {name:"BYD Shark", short:"Shark", type:"phev", size:"big", brand:"BYD", body:"Pickup", status:"venta"},
   {name:"Deepal S05", short:"S05", type:"phev", size:"mid", brand:"Deepal", body:"SUV", status:"preventa"},
   {name:"DFSK Glory 500", short:"Glory 500", type:"ice", size:"compact", brand:"DFSK", body:"SUV", status:"venta"},
   {name:"DFSK Glory 580", short:"Glory 580", type:"ice", size:"mid", brand:"DFSK", body:"SUV", status:"venta"},
@@ -2457,7 +2458,7 @@ const CARS = [
   {name:"Forthing Friday REEV", short:"Friday REEV", type:"phev", size:"mid", brand:"Forthing", body:"SUV", status:"venta"},
   {name:"Forthing S7 REEV", short:"S7 REEV", type:"phev", size:"big", brand:"Forthing", body:"Sedán", status:"venta"},
   {name:"Forthing T5 EVO", short:"T5 EVO", type:"ice", size:"mid", brand:"Forthing", body:"SUV", status:"venta"},
-  {name:"Foton Tunland G7", short:"Tunland G7", type:"ice", size:"xl", brand:"Foton", body:"Pickup", status:"venta"},
+  {name:"Foton Tunland G7", short:"Tunland G7", type:"ice", size:"big", brand:"Foton", body:"Pickup", status:"venta"},
   {name:"GAC Aion V", short:"Aion V", type:"ev", size:"mid", brand:"GAC", body:"SUV", status:"venta"},
   {name:"Ora 5 HEV", short:"Ora 5 HEV", type:"hev", size:"mid", brand:"GWM", body:"SUV", status:"venta"},
   {name:"Haval H7 4WD", short:"H7 4WD", type:"ice", size:"big", brand:"GWM", body:"SUV", status:"venta"},
@@ -2468,7 +2469,7 @@ const CARS = [
   {name:"JAC JS6 PHEV", short:"JS6 PHEV", type:"phev", size:"mid", brand:"JAC", body:"SUV", status:"venta"},
   {name:"JAC JS8 Pro", short:"JS8 Pro", type:"ice", size:"xl", brand:"JAC", body:"SUV", status:"venta"},
   {name:"JAC S2", short:"S2", type:"ice", size:"compact", brand:"JAC", body:"Crossover", status:"venta"},
-  {name:"JAC T8", short:"T8", type:"ice", size:"xl", brand:"JAC", body:"Pickup", status:"venta"},
+  {name:"JAC T8", short:"T8", type:"ice", size:"big", brand:"JAC", body:"Pickup", status:"venta"},
   {name:"Jetour Dashing", short:"Dashing", type:"ice", size:"mid", brand:"Jetour", body:"SUV", status:"venta"},
   {name:"Jetour G700", short:"G700", type:"phev", size:"xl", brand:"Jetour", body:"SUV", status:"nolanzado"},
   {name:"Jetour T1 i-DM", short:"T1 i-DM", type:"phev", size:"big", brand:"Jetour", body:"SUV", status:"venta"},
@@ -2477,13 +2478,13 @@ const CARS = [
   {name:"Jetour X50", short:"X50", type:"ice", size:"compact", brand:"Jetour", body:"SUV", status:"venta"},
   {name:"Jetour X70 Plus", short:"X70 Plus", type:"ice", size:"big", brand:"Jetour", body:"SUV", status:"venta"},
   {name:"Jetour X70", short:"X70", type:"ice", size:"big", brand:"Jetour", body:"SUV", status:"venta"},
-  {name:"JMC Grand Avenue", short:"Grand Avenue", type:"ice", size:"xl", brand:"JMC", body:"Pickup", status:"venta"},
+  {name:"JMC Grand Avenue", short:"Grand Avenue", type:"ice", size:"big", brand:"JMC", body:"Pickup", status:"venta"},
   {name:"Kaiyi X3 Pro", short:"X3 Pro", type:"ice", size:"mid", brand:"Kaiyi", body:"SUV", status:"venta"},
   {name:"Kaiyi X3", short:"X3", type:"ice", size:"mid", brand:"Kaiyi", body:"SUV", status:"venta"},
   {name:"Leapmotor B03X", short:"B03X", type:"ev", size:"compact", brand:"Leapmotor", body:"SUV", status:"nolanzado"},
   {name:"Lynk & Co 900", short:"900", type:"phev", size:"xl", brand:"Lynk & Co", body:"SUV", status:"preventa"},
   {name:"Maxus D90", short:"D90", type:"mhev", size:"xl", brand:"Maxus", body:"SUV", status:"venta"},
-  {name:"Maxus T60 Max", short:"T60 Max", type:"ice", size:"xl", brand:"Maxus", body:"Pickup", status:"venta"},
+  {name:"Maxus T60 Max", short:"T60 Max", type:"ice", size:"big", brand:"Maxus", body:"Pickup", status:"venta"},
   {name:"MG 3 HEV", short:"MG 3 HEV", type:"hev", size:"compact", brand:"MG", body:"Hatchback", status:"venta"},
   {name:"MG HS HEV", short:"MG HS HEV", type:"hev", size:"mid", brand:"MG", body:"SUV", status:"nolanzado"},
   {name:"Omoda 7", short:"Omoda 7", type:"phev", size:"mid", brand:"Omoda", body:"SUV", status:"nolanzado"},
@@ -2492,10 +2493,10 @@ const CARS = [
   {name:"DFSK E5 Plus", short:"E5 Plus", type:"phev", size:"big", brand:"DFSK", body:"SUV", status:"venta"},
   {name:"DFSK Glory 600", short:"Glory 600", type:"ice", size:"big", brand:"DFSK", body:"SUV", status:"venta"},
   {name:"Forthing T5 HEV", short:"T5 HEV", type:"hev", size:"mid", brand:"Forthing", body:"SUV", status:"venta"},
-  {name:"Foton Tunland V7", short:"Tunland V7", type:"mhev", size:"xl", brand:"Foton", body:"Pickup", status:"venta"},
+  {name:"Foton Tunland V7", short:"Tunland V7", type:"mhev", size:"big", brand:"Foton", body:"Pickup", status:"venta"},
   {name:"JMC Grand Avenue Pro", short:"Grand Avenue Pro", type:"ice", size:"nd", brand:"JMC", body:"Pickup", status:"venta"},
   {name:"Kaiyi X7 Hybrid", short:"X7 Hybrid", type:"phev", size:"big", brand:"Kaiyi", body:"SUV", status:"venta"},
-  {name:"Maxus T60", short:"T60", type:"ice", size:"xl", brand:"Maxus", body:"Pickup", status:"venta"},
+  {name:"Maxus T60", short:"T60", type:"ice", size:"big", brand:"Maxus", body:"Pickup", status:"venta"},
   {name:"MG 3", short:"MG 3", type:"ice", size:"compact", brand:"MG", body:"Hatchback", status:"venta"},
   {name:"MG ZS", short:"MG ZS", type:"ice", size:"mid", brand:"MG", body:"SUV", status:"venta"},
   {name:"SWM G03F", short:"G03F", type:"ice", size:"mid", brand:"SWM", body:"SUV", status:"venta"},
@@ -2511,7 +2512,7 @@ const CARS = [
   {name:"Haval H6 4WD", short:"H6 4WD", type:"ice", size:"mid", brand:"GWM", body:"SUV", status:"venta"},
   {name:"Haval H6 GT", short:"H6 GT", type:"ice", size:"nd", brand:"GWM", body:"SUV", status:"venta"},
   {name:"Haval Jolion HEV", short:"Jolion HEV", type:"hev", size:"nd", brand:"GWM", body:"SUV", status:"venta"},
-  {name:"Rely R8", short:"R8", type:"ice", size:"xl", brand:"Rely", body:"Pickup", status:"venta"},
+  {name:"Rely R8", short:"R8", type:"ice", size:"big", brand:"Rely", body:"Pickup", status:"venta"},
   {name:"smart #1", short:"#1", type:"ev", size:"compact", brand:"smart", body:"SUV", status:"venta"},
   {name:"smart #3", short:"#3", type:"ev", size:"mid", brand:"smart", body:"Crossover", status:"venta"},
   {name:"SWM G03F EDi", short:"G03F EDi", type:"phev", size:"mid", brand:"SWM", body:"SUV", status:"venta"},
@@ -2524,11 +2525,11 @@ const CARS = [
   {name:"Toyota Corolla Cross SEG HEV", short:"Corolla Cross HEV", type:"hev", size:"mid", brand:"Toyota", body:"SUV", status:"venta"},
   {name:"Toyota Yaris Cross SEG HEV", short:"Yaris Cross HEV", type:"hev", size:"compact", brand:"Toyota", body:"SUV", status:"venta"},
   {name:"Lexus UX 300h", short:"UX 300h", type:"hev", size:"mid", brand:"Lexus", body:"Crossover", status:"venta"},
-  {name:"Toyota Hilux GR-Sport IV", short:"Hilux GR-S", type:"ice", size:"xl", brand:"Toyota", body:"Pickup", status:"venta"},
+  {name:"Toyota Hilux GR-Sport IV", short:"Hilux GR-S", type:"ice", size:"big", brand:"Toyota", body:"Pickup", status:"venta"},
   {name:"Fiat Cronos Precision 1.3 CVT", short:"Cronos Precision", type:"ice", size:"compact", brand:"Fiat", body:"Sedán", status:"venta"},
-  {name:"Ford Ranger LTD+ 3.0L V6 4WD", short:"Ranger LTD+ V6", type:"ice", size:"xl", brand:"Ford", body:"Pickup", status:"venta"},
+  {name:"Ford Ranger LTD+ 3.0L V6 4WD", short:"Ranger LTD+ V6", type:"ice", size:"big", brand:"Ford", body:"Pickup", status:"venta"},
   {name:"Peugeot 208 GT T200", short:"208 GT", type:"ice", size:"compact", brand:"Peugeot", body:"Hatchback", status:"venta"},
-  {name:"Volkswagen Amarok V6 Black Style", short:"Amarok Black Style", type:"ice", size:"xl", brand:"Volkswagen", body:"Pickup", status:"venta"},
+  {name:"Volkswagen Amarok V6 Black Style", short:"Amarok Black Style", type:"ice", size:"big", brand:"Volkswagen", body:"Pickup", status:"venta"},
   {name:"Volkswagen Tera Outfit 170 TSI", short:"Tera Outfit", type:"ice", size:"compact", brand:"Volkswagen", body:"SUV", status:"venta"},
   {name:"Chevrolet Tracker RS AT Turbo", short:"Tracker RS", type:"ice", size:"compact", brand:"Chevrolet", body:"SUV", status:"venta"},
   {name:"Toyota Yaris Hatchback S", short:"Yaris S", type:"ice", size:"compact", brand:"Toyota", body:"Hatchback", status:"venta"},
@@ -2541,26 +2542,26 @@ const CARS = [
   {name:"Volkswagen Nivus Outfit 200 TSI", short:"Nivus Outfit", type:"ice", size:"compact", brand:"Volkswagen", body:"Crossover", status:"venta"},
   {name:"Fiat Strada Ultra T200 CVT", short:"Strada Ultra", type:"ice", size:"compact", brand:"Fiat", body:"Pickup", status:"venta"},
   {name:"Fiat Argo Drive 1.3 CVT", short:"Argo Drive CVT", type:"ice", size:"compact", brand:"Fiat", body:"Hatchback", status:"venta"},
-  {name:"Chevrolet S10 High Country", short:"S10 HC", type:"ice", size:"xl", brand:"Chevrolet", body:"Pickup", status:"venta"},
-  {name:"Fiat Toro Volcano 2.2TD AT9 4x4", short:"Toro Volcano TD", type:"ice", size:"xl", brand:"Fiat", body:"Pickup", status:"venta"},
+  {name:"Chevrolet S10 High Country", short:"S10 HC", type:"ice", size:"big", brand:"Chevrolet", body:"Pickup", status:"venta"},
+  {name:"Fiat Toro Volcano 2.2TD AT9 4x4", short:"Toro Volcano TD", type:"ice", size:"mid", brand:"Fiat", body:"Pickup", status:"venta"},
   {name:"Citroën C3 T200 Feel Pack You!", short:"C3 You!", type:"ice", size:"compact", brand:"Citroën", body:"Hatchback", status:"venta"},
   {name:"Toyota Corolla HEV SEG", short:"Corolla HEV SEG", type:"hev", size:"mid", brand:"Toyota", body:"Sedán", status:"venta"},
   {name:"Jeep Renegade Willys", short:"Renegade Willys", type:"ice", size:"compact", brand:"Jeep", body:"SUV", status:"venta"},
   {name:"Citroën Basalt T200 Dark Edition", short:"Basalt DE", type:"ice", size:"compact", brand:"Citroën", body:"SUV", status:"venta"},
   {name:"Chevrolet Onix Plus Premier AT Turbo", short:"Onix Plus Premier", type:"ice", size:"compact", brand:"Chevrolet", body:"Sedán", status:"venta"},
-  {name:"Fiat Titano Ranch AT8 AWD", short:"Titano Ranch", type:"ice", size:"xl", brand:"Fiat", body:"Pickup", status:"venta"},
+  {name:"Fiat Titano Ranch AT8 AWD", short:"Titano Ranch", type:"ice", size:"big", brand:"Fiat", body:"Pickup", status:"venta"},
   {name:"Citroën Aircross T200 Shine 7", short:"Aircross Shine 7", type:"ice", size:"compact", brand:"Citroën", body:"SUV", status:"venta"},
   {name:"Toyota SW4 GR-Sport", short:"SW4 GR-S", type:"ice", size:"big", brand:"Toyota", body:"SUV", status:"venta"},
   {name:"Fiat Pulse Impetus 1.0T CVT", short:"Pulse Impetus", type:"ice", size:"compact", brand:"Fiat", body:"SUV", status:"venta"},
   {name:"Nissan Kicks Exclusive", short:"Kicks Exclusive", type:"ice", size:"compact", brand:"Nissan", body:"SUV", status:"venta"},
-  {name:"Chevrolet Montana 1.2T RS AT", short:"Montana RS", type:"ice", size:"big", brand:"Chevrolet", body:"Pickup", status:"venta"},
+  {name:"Chevrolet Montana 1.2T RS AT", short:"Montana RS", type:"ice", size:"mid", brand:"Chevrolet", body:"Pickup", status:"venta"},
   {name:"Hyundai HB20 Platinum Safety AT", short:"HB20 Platinum Safety", type:"ice", size:"compact", brand:"Hyundai", body:"Hatchback", status:"venta"},
   {name:"Fiat Fastback Turbo 270 AT6", short:"Fastback T270", type:"ice", size:"mid", brand:"Fiat", body:"SUV", status:"venta"},
   {name:"Fiat Mobi Trekking 1.0 MT5", short:"Mobi Trekking", type:"ice", size:"mini", brand:"Fiat", body:"Hatchback", status:"venta"},
-  {name:"RAM Dakota Laramie Night Edition", short:"Dakota Laramie NE", type:"ice", size:"xl", brand:"RAM", body:"Pickup", status:"venta"},
-  {name:"Ford Maverick Tremor 2.0L 4WD", short:"Maverick Tremor", type:"ice", size:"xl", brand:"Ford", body:"Pickup", status:"venta"},
-  {name:"Nissan Frontier PRO-4X 4x4 AT", short:"Frontier PRO-4X", type:"ice", size:"xl", brand:"Nissan", body:"Pickup", status:"venta"},
-  {name:"RAM Rampage R/T", short:"Rampage R/T", type:"ice", size:"xl", brand:"RAM", body:"Pickup", status:"venta"},
+  {name:"RAM Dakota Laramie Night Edition", short:"Dakota Laramie NE", type:"ice", size:"big", brand:"RAM", body:"Pickup", status:"venta"},
+  {name:"Ford Maverick Tremor 2.0L 4WD", short:"Maverick Tremor", type:"ice", size:"mid", brand:"Ford", body:"Pickup", status:"venta"},
+  {name:"Nissan Frontier PRO-4X 4x4 AT", short:"Frontier PRO-4X", type:"ice", size:"big", brand:"Nissan", body:"Pickup", status:"venta"},
+  {name:"RAM Rampage R/T", short:"Rampage R/T", type:"ice", size:"mid", brand:"RAM", body:"Pickup", status:"venta"},
   {name:"Honda WR-V EXL", short:"WR-V EXL", type:"ice", size:"compact", brand:"Honda", body:"SUV", status:"venta"},
   {name:"Honda New HR-V EXL", short:"HR-V EXL", type:"ice", size:"compact", brand:"Honda", body:"SUV", status:"venta"},
   {name:"Renault Duster Iconic 1.3T 4WD", short:"Duster Iconic 4x4", type:"ice", size:"compact", brand:"Renault", body:"SUV", status:"venta"},
@@ -2571,7 +2572,7 @@ const CARS = [
   {name:"Nissan Kait Exclusive", short:"Kait Exclusive", type:"ice", size:"compact", brand:"Nissan", body:"SUV", status:"venta"},
   {name:"Ford Everest Titanium 2.3L EcoBoost", short:"Everest Titanium", type:"ice", size:"xl", brand:"Ford", body:"SUV", status:"venta"},
   {name:"Renault Arkana E-Tech Hybrid Esprit Alpine", short:"Arkana Esprit Alpine", type:"mhev", size:"mid", brand:"Renault", body:"SUV", status:"venta"},
-  {name:"Renault Oroch Outsider 1.3 TCe 4WD", short:"Oroch Outsider", type:"ice", size:"big", brand:"Renault", body:"Pickup", status:"venta"},
+  {name:"Renault Oroch Outsider 1.3 TCe 4WD", short:"Oroch Outsider", type:"ice", size:"mid", brand:"Renault", body:"Pickup", status:"venta"},
   {name:"Volkswagen Virtus Exclusive 250 TSI", short:"Virtus Exclusive", type:"ice", size:"compact", brand:"Volkswagen", body:"Sedán", status:"venta"},
   {name:"Renault Kangoo Stepway 1.6 SCe", short:"Kangoo Stepway", type:"ice", size:"compact", brand:"Renault", body:"Minivan", status:"venta"},
   {name:"Nissan Versa Exclusive CVT", short:"Versa Exclusive", type:"ice", size:"compact", brand:"Nissan", body:"Sedán", status:"venta"},
@@ -2598,25 +2599,25 @@ const CARS = [
   {name:"Suzuki Swift Hybrid GLX CVT", short:"Swift Hybrid GLX", type:"mhev", size:"compact", brand:"Suzuki", body:"Hatchback", status:"venta"},
   {name:"BMW M135 xDrive", short:"M135 xDrive", type:"ice", size:"mid", brand:"BMW", body:"Hatchback", status:"venta"},
   {name:"Peugeot 2008 GT T200", short:"2008 GT", type:"ice", size:"compact", brand:"Peugeot", body:"SUV", status:"venta"},
-  {name:"Mitsubishi L200 GLS 6AT 4WD Full", short:"L200", type:"ice", size:"xl", brand:"Mitsubishi", body:"Pickup", status:"venta"},
+  {name:"Mitsubishi L200 GLS 6AT 4WD Full", short:"L200", type:"ice", size:"big", brand:"Mitsubishi", body:"Pickup", status:"venta"},
   {name:"Audi A3 Sportback 2.0 S line TFSI", short:"A3 Sportback S line", type:"ice", size:"mid", brand:"Audi", body:"Hatchback", status:"venta"},
   {name:"Audi A5 Sedán S line quattro", short:"A5", type:"mhev", size:"big", brand:"Audi", body:"Sedán", status:"venta"},
-  {name:"BMW M240i xDrive Coupé", short:"M240i xDrive", type:"mhev", size:"mid", brand:"BMW", body:"Coupé", status:"venta"},
+  {name:"BMW M240i xDrive Coupé", short:"M240i xDrive", type:"mhev", size:"dep", brand:"BMW", body:"Coupé", status:"venta"},
   {name:"Chevrolet Silverado High Country", short:"Silverado HC", type:"ice", size:"xl", brand:"Chevrolet", body:"Pickup", status:"venta"},
   {name:"Chevrolet Spark EUV Activ", short:"Spark EUV", type:"ev", size:"compact", brand:"Chevrolet", body:"SUV", status:"venta"},
   {name:"Chevrolet Trailblazer High Country", short:"Trailblazer HC", type:"ice", size:"xl", brand:"Chevrolet", body:"SUV", status:"venta"},
   {name:"Citroën C4 Hybrid MAX", short:"C4 Hybrid MAX", type:"mhev", size:"compact", brand:"Citroën", body:"Crossover", status:"venta"},
-  {name:"Ford Mustang Dark Horse 5.0L V8", short:"Mustang Dark Horse", type:"ice", size:"big", brand:"Ford", body:"Coupé", status:"venta"},
+  {name:"Ford Mustang Dark Horse 5.0L V8", short:"Mustang Dark Horse", type:"ice", size:"dep", brand:"Ford", body:"Coupé", status:"venta"},
   {name:"Mercedes-Benz C 300 AMG-Line", short:"C 300", type:"mhev", size:"big", brand:"Mercedes-Benz", body:"Sedán", status:"venta"},
   {name:"Mercedes-Benz CLA 200 Progressive", short:"CLA 200", type:"ice", size:"mid", brand:"Mercedes-Benz", body:"Sedán", status:"venta"},
   {name:"Mercedes-Benz GLB 250 4MATIC Progressive", short:"GLB 250", type:"mhev", size:"mid", brand:"Mercedes-Benz", body:"SUV", status:"venta"},
   {name:"Mercedes-Benz GLC 300 4MATIC Coupé AMG-Line", short:"GLC 300 Coupé", type:"mhev", size:"big", brand:"Mercedes-Benz", body:"SUV", status:"venta"},
-  {name:"Renault Alaskan Iconic 2.3 dCi 190 4WD AT", short:"Alaskan Iconic", type:"ice", size:"xl", brand:"Renault", body:"Pickup", status:"discontinuado"},
+  {name:"Renault Alaskan Iconic 2.3 dCi 190 4WD AT", short:"Alaskan Iconic", type:"ice", size:"big", brand:"Renault", body:"Pickup", status:"discontinuado"},
   {name:"Subaru Crosstrek Hybrid Limited ES", short:"Crosstrek HEV", type:"hev", size:"mid", brand:"Subaru", body:"SUV", status:"venta"},
   {name:"Audi A1 Sportback 30 TFSI", short:"A1 Sportback", type:"ice", size:"compact", brand:"Audi", body:"Hatchback", status:"venta"},
   {name:"DS 7 Plug-in Hybrid AWD 300 Pallas", short:"DS 7 PHEV", type:"phev", size:"mid", brand:"DS", body:"SUV", status:"venta"},
   {name:"MINI Countryman S ALL4 Favoured", short:"Countryman S ALL4", type:"ice", size:"mid", brand:"MINI", body:"SUV", status:"venta"},
-  {name:"MINI Cooper S Cabrio", short:"Cooper S Cabrio", type:"ice", size:"mini", brand:"MINI", body:"Convertible", status:"venta"},
+  {name:"MINI Cooper S Cabrio", short:"Cooper S Cabrio", type:"ice", size:"dep", brand:"MINI", body:"Convertible", status:"venta"},
   {name:"Volvo XC60 T8 AWD Plus", short:"XC60 T8 Plus", type:"phev", size:"big", brand:"Volvo", body:"SUV", status:"venta"},
   {name:"Mitsubishi Outlander 2.5L GLS AT Full", short:"Outlander", type:"ice", size:"big", brand:"Mitsubishi", body:"SUV", status:"venta"},
   {name:"Audi Q2 40 TFSI quattro", short:"Q2 40 TFSI quattro", type:"ice", size:"compact", brand:"Audi", body:"SUV", status:"venta"},
@@ -2629,7 +2630,7 @@ const CARS = [
   {name:"Kia Sportage X-Line 2.0 CRDi AWD", short:"Sportage X-Line", type:"ice", size:"mid", brand:"Kia", body:"SUV", status:"venta"},
   {name:"Peugeot 408 GT", short:"408 GT", type:"ice", size:"mid", brand:"Peugeot", body:"Crossover", status:"venta"},
   {name:"RAM 1500 Laramie Night Edition", short:"1500 Laramie NE", type:"ice", size:"xl", brand:"RAM", body:"Pickup", status:"venta"},
-  {name:"Porsche 911 Turbo S Cabriolet", short:"911 Turbo S Cabrio", type:"hev", size:"mid", brand:"Porsche", body:"Convertible", status:"venta"},
+  {name:"Porsche 911 Turbo S Cabriolet", short:"911 Turbo S Cabrio", type:"hev", size:"dep", brand:"Porsche", body:"Convertible", status:"venta"},
   {name:"Porsche Cayenne Turbo GT", short:"Cayenne Turbo GT", type:"ice", size:"big", brand:"Porsche", body:"SUV", status:"venta"},
   {name:"Porsche Macan GTS", short:"Macan GTS", type:"ice", size:"big", brand:"Porsche", body:"SUV", status:"discontinuado"},
   {name:"Subaru All New WRX 2.4T Performance ES", short:"WRX", type:"ice", size:"mid", brand:"Subaru", body:"Sedán", status:"venta"},
@@ -2640,19 +2641,19 @@ const CARS = [
   {name:"Hyundai Santa Fe 2.5 T-GDI 4WD", short:"Santa Fe 2.5T 4WD", type:"ice", size:"xl", brand:"Hyundai", body:"SUV", status:"venta"},
   {name:"Honda Civic Advanced Hybrid", short:"Civic Hybrid", type:"hev", size:"mid", brand:"Honda", body:"Sedán", status:"venta"},
   {name:"Lexus NX 450h+", short:"NX 450h+", type:"phev", size:"mid", brand:"Lexus", body:"SUV", status:"venta"},
-  {name:"BMW M2 Coupé", short:"M2", type:"ice", size:"mid", brand:"BMW", body:"Coupé", status:"venta"},
+  {name:"BMW M2 Coupé", short:"M2", type:"ice", size:"dep", brand:"BMW", body:"Coupé", status:"venta"},
   {name:"BMW X6 xDrive40i M Sport Pro", short:"X6 xDrive40i", type:"mhev", size:"big", brand:"BMW", body:"SUV", status:"venta"},
   {name:"Volkswagen T-Cross Highline 200 TSI", short:"T-Cross Highline", type:"ice", size:"compact", brand:"Volkswagen", body:"SUV", status:"venta"},
   {name:"Mercedes-Benz GLE 450 4MATIC AMG-Line", short:"GLE 450", type:"mhev", size:"xl", brand:"Mercedes-Benz", body:"SUV", status:"venta"},
   {name:"Renault Sandero Intens 1.6", short:"Sandero Intens", type:"ice", size:"compact", brand:"Renault", body:"Hatchback", status:"discontinuado"},
-  {name:"Kia Tasman X-Pro 2.5 TGDI 4x4 AT", short:"Tasman X-Pro", type:"ice", size:"xl", brand:"Kia", body:"Pickup", status:"venta"},
+  {name:"Kia Tasman X-Pro 2.5 TGDI 4x4 AT", short:"Tasman X-Pro", type:"ice", size:"big", brand:"Kia", body:"Pickup", status:"venta"},
   {name:"Audi S3 Sportback TFSI quattro", short:"S3 Sportback", type:"ice", size:"mid", brand:"Audi", body:"Hatchback", status:"venta"},
-  {name:"BMW 430i Coupé M Sport", short:"430i Coupé", type:"ice", size:"big", brand:"BMW", body:"Coupé", status:"venta"},
+  {name:"BMW 430i Coupé M Sport", short:"430i Coupé", type:"ice", size:"dep", brand:"BMW", body:"Coupé", status:"venta"},
   {name:"Range Rover Evoque S", short:"Evoque S", type:"mhev", size:"compact", brand:"Land Rover", body:"SUV", status:"venta"},
   {name:"Toyota GR Yaris AT", short:"GR Yaris", type:"ice", size:"compact", brand:"Toyota", body:"Hatchback", status:"venta"},
   {name:"Toyota Land Cruiser 300 VX HEV", short:"Land Cruiser 300 HEV", type:"hev", size:"xl", brand:"Toyota", body:"SUV", status:"venta"},
   {name:"BMW 118 Sportline", short:"118", type:"ice", size:"mid", brand:"BMW", body:"Hatchback", status:"venta"},
-  {name:"BMW 220i Coupé", short:"220i Coupé", type:"ice", size:"mid", brand:"BMW", body:"Coupé", status:"venta"},
+  {name:"BMW 220i Coupé", short:"220i Coupé", type:"ice", size:"dep", brand:"BMW", body:"Coupé", status:"venta"},
   {name:"Ford Bronco Sport Badlands 2.0L 4WD", short:"Bronco Sport Badlands", type:"ice", size:"mid", brand:"Ford", body:"SUV", status:"venta"},
   {name:"Toyota RAV4 PHEV XSE", short:"RAV4 PHEV XSE", type:"phev", size:"mid", brand:"Toyota", body:"SUV", status:"venta"},
   {name:"Volkswagen T-Cross Extreme 200 TSI", short:"T-Cross Extreme", type:"ice", size:"compact", brand:"Volkswagen", body:"SUV", status:"venta"},
@@ -3617,9 +3618,11 @@ const textoFabrica = f => 'Fábrica de la marca en ' + f.planta + ', ' + f.pais 
   ', desde ' + f.desde + (f.produce ? ': ' + f.produce : '') + '.' + (f.nota ? ' ' + f.nota : '');
 const grupoDe = i => (infoMarca(i) || {}).grupo || 'Sin dato';
 const BRANDS = [...new Set(CARS.map(c=>c.brand))].sort((a, b) => a.localeCompare(b, 'es', { sensitivity: 'base' }));
-// Con la letra del segmento del mercado (2026-10-30, pedido de Mati): A urbano, B chico, C compacto, D mediano o
-// grande. Pickups, minivans, coupés y descapotables siguen la regla de largo de arriba, con las mismas etiquetas.
-const SEGMENT_LABELS = {xl:"Muy grande", big:"Mediano o grande (D)", mid:"Compacto (C)", compact:"Chico (B)", mini:"Urbano (A)", nd:"Sin dato"};
+// Un solo nombre por segmento en todo el sitio, con la letra al lado (issue #184): «compacto» no se usa porque la
+// prensa lo dice del segmento B. Los filtros usan el segmento; la ficha nombra la clase de las pickups (tamanoTxt).
+const SEGMENT_LABELS = {xl:"Muy grande", big:"Grande (D)", mid:"Mediano (C)", compact:"Chico (B)", mini:"Urbano (A)", dep:"Deportivo", nd:"Sin dato"};
+const PICKUP_CLASE = {compact:"Pickup chica", mid:"Pickup compacta", big:"Pickup mediana", xl:"Pickup full-size"};
+const tamanoTxt = c => (c.body === 'Pickup' && PICKUP_CLASE[c.size]) || SEGMENT_LABELS[c.size] || 'Sin dato';
 const SEGMENTS = [...new Set(CARS.map(c=>SEGMENT_LABELS[c.size]||"Sin dato"))];
 const BODIES = [...new Set(CARS.map(c=>c.body))];
 const PROP_LABELS = {phev:"Híbrido enchufable (PHEV)", hev:"Híbrido (HEV)", mhev:"Mild-Hybrid", ev:"100% Eléctrico", ice:"100% Nafta", tbd:"Aún no disponible"};
@@ -5221,7 +5224,7 @@ let barrasRecalibradas = false;
 // vista general: al comparar 2 o más autos las barras se miden contra el mejor de los elegidos, y
 // el desplegable se esconde.
 const PCTL_MIN_SEG = 5;
-const SEG_PLURAL = { xl: 'muy grandes', big: 'medianos o grandes (D)', mid: 'compactos (C)', compact: 'chicos (B)', mini: 'urbanos (A)' };
+const SEG_PLURAL = { xl: 'muy grandes', big: 'grandes (D)', mid: 'medianos (C)', compact: 'chicos (B)', mini: 'urbanos (A)', dep: 'deportivos' };
 function pctlFilaSeg(row){
   const dir = PCTL_DIR[row[0]];
   if (!dir) return null;
@@ -6327,7 +6330,7 @@ async function abrirFicha(i){
     '<div class="ficha-titulo"><p class="ficha-marca">' + rkEsc(c.brand) + (grupo && grupo.grupo !== c.brand ? ', del grupo ' + rkEsc(grupo.grupo) : '') + ' <button type="button" class="mini-btn ficha-ver-grupo" data-grupo="' + rkEsc(grupoDe(i)) + '">ver el grupo</button></p>' +
       '<h2 id="fichaNombre">' + rkEsc(c.name) + '</h2>' +
       '<p class="ficha-chips"><span>' + icono + rkEsc(SIM_PROP_TXT[c.type] || c.type) + '</span><span>' + rkEsc(c.body) + '</span>' +
-        '<span>' + rkEsc(SEGMENT_LABELS[c.size] || 'Tamaño s/d') + '</span><span class="ficha-estado ' + c.status + '">' + rkEsc(STATUS_LABELS[c.status] || c.status) + '</span></p>' +
+        '<span>' + rkEsc(c.size === 'nd' ? 'Tamaño s/d' : tamanoTxt(c)) + '</span><span class="ficha-estado ' + c.status + '">' + rkEsc(STATUS_LABELS[c.status] || c.status) + '</span></p>' +
       // Respaldo (2026-10-10): quién lo trae, fábrica en el Mercosur y red de service, con su detalle al tocar.
       (() => { const f = fabricaMercosur(i), red = textoRed(i), fab = importaFabrica(i);
         const items = [fab ? '<span>Lo trae la marca</span>' : '',
@@ -6971,7 +6974,7 @@ const ELEGIR_PREG = [
   // vendedor; los autos con la lista en pesos entran por PRECIO_CMP.
   // Deslizador de presupuesto (2026-11-01, pedido de Mati): sin opciones, se dibuja con presuHTML().
   { k: 'presu', t: '¿Cuánto querés gastar?', ops: [], deslizador: true },
-  { k: 'plazas', t: '¿Cuántos viajan seguido?', ops: [['4', 'Hasta 4'], ['5', '5'], ['6', '6 o 7']] },
+  { k: 'plazas', t: '¿Cuántos pasajeros viajan seguido?', ops: [['4', 'Hasta 4'], ['5', '5'], ['6', '6 o 7']] },
   // 2026-11-01, pedido de Mati: un auto chico donde entran 4 o 5 sirve para 2 adultos y 2 o 3 niños si tiene
   // ISOFIX, pero menos para 4 o 5 adultos. Sin umbrales nuevos: «chico» es el segmento A o B del sitio.
   { k: 'quien', t: '¿Quiénes viajan seguido?', ops: [['', 'Me da igual'], ['ninos', 'Con niños'], ['adultos', 'Adulto atrás']] },
@@ -6983,9 +6986,11 @@ const ELEGIR_PREG = [
   // 2026-11-07, pedido de Mati: tres filtros que las respuestas de arriba dejan armados y que se pueden cambiar a mano.
   // Tamaño (segmento A a D, lo arma «¿Quiénes viajan seguido?» y las plazas), tipo de auto (casillas; «Me da igual» las apaga) y
   // propulsión (EV, PHEV, HEV…, la arman el uso y el enchufe). Se guardan como lista separada por comas; '' = me da igual.
-  { k: 'seg', t: '¿De qué tamaño?', multi: true, sug: 'seg', ops: [['A', 'A urbano'], ['B', 'B chico'], ['C', 'C compacto'], ['D', 'D grande']] },
-  { k: 'prop', t: '¿Qué propulsión?', multi: true, igual: true, sug: 'prop', ops: [['ev', 'Eléctrico (EV)'], ['phev', 'Enchufable (PHEV)'], ['hev', 'Híbrido (HEV)'], ['mhev', 'Mild-hybrid'], ['ice', 'Nafta o diésel']] },
+  // El tipo de auto va antes del tamaño (issue #184): si elige solo deportivos, el tamaño se grisa.
   { k: 'carro', t: '¿Qué tipo de auto preferís?', multi: true, igual: true, ops: [['suv', 'SUV o crossover'], ['sedan', 'Sedán'], ['hatch', 'Hatchback'], ['pickup', 'Pickup'], ['minivan', 'Minivan'], ['coupe', 'Coupé o descapotable']] },
+  // Palabra, letra y autos de referencia (los más patentados de 2026 de cada segmento, issue #184).
+  { k: 'seg', t: '¿De qué tamaño?', multi: true, sug: 'seg', ops: [['A', 'Urbano', 'Kwid, Mobi'], ['B', 'Chico', '208, Yaris Cross'], ['C', 'Mediano', 'Corolla, Territory'], ['D', 'Grande', 'Song Pro, Hilux']] },
+  { k: 'prop', t: '¿Qué propulsión?', multi: true, igual: true, sug: 'prop', ops: [['ev', 'Eléctrico (EV)'], ['phev', 'Enchufable (PHEV)'], ['hev', 'Híbrido (HEV)'], ['mhev', 'Mild-hybrid'], ['ice', 'Nafta o diésel']] },
 ];
 // Cuántos sugiere (pedido del 2026-10-09): 5 en escritorio, donde entran en una fila, y 4 en
 // el celular; o los que haya si cumplen menos. Si la ventana cruza el corte, se repinta.
@@ -7044,13 +7049,13 @@ const ELEGIR_TIP = {
   carro: {
     '': 'Entran todos los tipos de auto.',
     suv: 'SUV y crossovers.', sedan: 'Sedanes.', hatch: 'Hatchbacks.', pickup: 'Pickups con caja de carga.',
-    minivan: 'Minivans.', coupe: 'Coupés y descapotables.',
+    minivan: 'Minivans.', coupe: 'Coupés y descapotables. No se eligen por tamaño.',
   },
   seg: {
-    A: 'Autos urbanos: hatchbacks de menos de 2,45 m entre ejes y los más chicos.',
-    B: 'Chicos: SUV de menos de 4,40 m de largo; hatchbacks y sedanes de menos de 2,60 y 2,66 m entre ejes.',
-    C: 'Compactos: SUV de 4,40 a 4,70 m de largo; hatchbacks y sedanes de hasta 2,80 m entre ejes.',
-    D: 'Medianos y grandes (D): SUV de más de 4,70 m de largo, sedanes de más de 2,80 m entre ejes, y los muy grandes (6 o 7 asientos y pickups). Los metros son del largo del auto o de la distancia entre ejes, no del habitáculo.',
+    A: 'Urbano (A): los autos más cortos de la tabla, como el Kwid o el Mobi. Son hatchbacks con menos de 2,45 m entre ejes.',
+    B: 'Chico (B): autos como el 208, el Cronos o el Yaris Cross. Son SUV de menos de 4,40 m de largo, hatchbacks y sedanes de cabina corta, y pickups chicas como la Strada.',
+    C: 'Mediano (C): autos como el Corolla, la Territory o el Corolla Cross. Son SUV de 4,40 a 4,70 m de largo, sedanes y hatchbacks de cabina mediana, y pickups compactas como la Toro.',
+    D: 'Grande (D): autos como el Song Pro, la SW4 o la Hilux. Son SUV de 4,70 m de largo o más, sedanes de cabina larga y pickups medianas. Este botón también trae los muy grandes: SUV largos de 6 o 7 asientos y pickups full-size.',
   },
   prop: {
     '': 'Entran todas las propulsiones.',
@@ -7061,14 +7066,14 @@ const ELEGIR_TIP = {
   plazas: {
     4: 'Entran los de 4 asientos o más. Los que no informan cuántos tienen se estiman por su tamaño.',
     5: 'Entran los de 5 asientos o más. Los que no informan cuántos tienen se estiman por su tamaño.',
-    6: 'Solo los que informan 6 o 7 asientos. Además suma el baúl.',
+    6: 'Solo los que informan 6 o 7 asientos, de cualquier tamaño. Además suma el baúl.',
   },
   movilidad: {
     silla: 'Entran los de baúl al menos tan grande como el del BYD Song Pro, donde la silla entra de costado con los asientos sin plegar (referencia de Mati). Ningún dato dice qué tan alto es el piso del baúl: probala en el auto.',
   },
   quien: {
     ninos: 'Piden ISOFIX: sin él no entran, y si no informan, quedan como «casi». El tamaño no se achica: entran todos los segmentos que tengan las plazas y el ISOFIX. Con 3 chicos, el del medio va sin ISOFIX.',
-    adultos: 'Si va algún adulto atrás, el tamaño se arma con los segmentos C y D (los chicos pueden quedar justos). Lo cambiás en «¿De qué tamaño?».',
+    adultos: 'Si va algún adulto atrás, el tamaño se arma con los medianos y los grandes (los chicos pueden quedar justos). Lo cambiás en «¿De qué tamaño?».',
   },
 };
 const elegirFit = (tipo, r) => (ELEGIR_ENCHUFE[r.enchufe][tipo] ?? .5) * (ELEGIR_USO[r.uso][tipo] ?? .5);
@@ -7097,8 +7102,6 @@ const MOTIVO_CORTO = {"Potencia total del sistema (kW)":"potencia","Volumen de b
 // todo; {d, txt} = falla en una sola cosa y por poco ("casi"): el precio hasta un 15% fuera de la franja,
 // el SUV del segmento de al lado o un asiento menos; null = no va. Sin precio con franja elegida: 'sinprecio'.
 const ELEGIR_CASI_PRECIO = .15;
-const SEG_LETRA = { compact: 'B', mid: 'C', big: 'D', xl: 'D' };
-const SEG_LETRA_AB = { mini: 'A', compact: 'B' };
 // ISOFIX de la tabla: true, false o null si no hay dato. Las celdas con detalle (DET:, NOTE:, EXT:) valen igual.
 // Baúl grande para la silla de ruedas (issue #112). Referencia de Mati (2026-11-01): en el BYD Song Pro, con los asientos traseros en su
 // posición recta (sin plegarlos), la silla de ruedas entra de costado en el baúl. Se pide un baúl al menos igual: el litraje que la tabla
@@ -7111,13 +7114,18 @@ const siNoDe = (fila, i) => { const v = String(FILA_POR_NOMBRE[fila][i + 1]).rep
   return /^(YES|S[ií])\b/.test(v) ? true : /^(NO|No)\b/.test(v) ? false : null; };
 const isofixDe = i => { const v = String(FILA_POR_NOMBRE['Anclajes ISO-FIX'][i + 1]).replace(/^(DET|NOTE|EXT):/, '');
   return /^(YES|S[ií])\b/.test(v) ? true : /^(NO|No)\b/.test(v) ? false : null; };
-// Lo que dejan armado las respuestas (2026-11-07, pedido de Mati). Tamaño: con niños los cuatro (los límites los ponen las plazas y el ISOFIX); con adulto atrás C y D; con 6 o 7 plazas solo D
-// (el segmento D incluye los muy grandes). Propulsión: con dónde cargar, EV si es ciudad y PHEV si hay ruta; sin carga o sin saber, HEV
+// Lo que dejan armado las respuestas (2026-11-07, pedido de Mati). Tamaño: con niños los cuatro (los límites los ponen las plazas y el ISOFIX); con adulto atrás C y D;
+// con 6 o 7 plazas los cuatro (issue #184: el filtro de plazas ya garantiza los asientos, y la Spin de 7 es B). El segmento D incluye los muy grandes.
+// Propulsión: con dónde cargar, EV si es ciudad y PHEV si hay ruta; sin carga o sin saber, HEV
 // (no depende de cargadores). Nunca sugiere mild-hybrid ni nafta. Tierra y trabajo: me da igual, porque casi no hay híbridos 4x4 ni pickups.
+// Los deportivos (dep) no tienen letra: el tamaño no los filtra (issue #184).
 const SEG_ABCD = { mini: 'A', compact: 'B', mid: 'C', big: 'D', xl: 'D' };
+const SEG_NOMBRE = { A: 'urbano', B: 'chico', C: 'mediano', D: 'grande' };
 const CARRO_GRUPO = { SUV: 'suv', Crossover: 'suv', 'Sedán': 'sedan', Hatchback: 'hatch', Pickup: 'pickup', Minivan: 'minivan', 'Coupé': 'coupe', Convertible: 'coupe' };
 const elegirLista = v => (v || '').split(',').filter(Boolean);
-const elegirSugSeg = r => +r.plazas >= 6 ? 'D' : r.quien === 'ninos' ? 'A,B,C,D' : r.quien === 'adultos' ? 'C,D' : 'A,B,C,D';
+// Con solo «Coupé o descapotable», «¿De qué tamaño?» no aplica: se grisa (issue #184, pedido de Sebastián).
+const elegirSoloDeportivos = r => elegirLista(r.carro).join(',') === 'coupe';
+const elegirSugSeg = r => +r.plazas >= 6 ? 'A,B,C,D' : r.quien === 'ninos' ? 'A,B,C,D' : r.quien === 'adultos' ? 'C,D' : 'A,B,C,D';
 const elegirSugProp = r => r.uso === 'tierra' || r.uso === 'carga' ? '' : r.enchufe === 'no' ? 'hev' : r.enchufe === 'si' && r.uso === 'ciudad' ? 'ev' : 'phev';
 // Aplica lo sugerido a los filtros que la persona no tocó a mano.
 const elegirNorm = r => Object.assign({}, r, r.segMan ? {} : { seg: elegirSugSeg(r) }, r.propMan ? {} : { prop: elegirSugProp(r) });
@@ -7138,12 +7146,12 @@ function elegirDesvio(i, r){
   }
   // Tamaño (segmento A a D): el de al lado queda como «casi»; sin segmento en la tabla, también.
   const segs = elegirLista(r.seg);
-  if (segs.length && segs.length < 4){
+  if (segs.length && segs.length < 4 && c.size !== 'dep'){
     const l = SEG_ABCD[c.size];
     if (!l) fallas.push({ d: .1, txt: 'No informa su tamaño' });
     else if (!segs.includes(l)){
       if (Math.min(...segs.map(s => Math.abs('ABCD'.indexOf(l) - 'ABCD'.indexOf(s)))) !== 1) return null;
-      fallas.push({ d: .12, txt: 'Otro tamaño (' + l + ')' });
+      fallas.push({ d: .12, txt: 'Otro tamaño (' + SEG_NOMBRE[l] + ')' });
     }
   }
   const isofix = isofixDe(i);
@@ -7249,7 +7257,8 @@ function elegirCalcular(r){
     // Cada renglón entra en uno solo en el celular (~26 caracteres): si con el tamaño no entra, va
     // solo el tipo, que el largo ya dice el tamaño; y si tampoco, sin la potencia.
     const pot = rkValor(i, FILA_POT);
-    const caract = (tam, kw) => [propArriba ? '' : Prop, c.body + (tam && SEGMENT_LABELS[c.size] && c.size !== 'nd' ? ' ' + SEGMENT_LABELS[c.size].replace(/^./, x => x.toLowerCase()) : ''),
+    const caract = (tam, kw) => [propArriba ? '' : Prop, tam && c.body === 'Pickup' && PICKUP_CLASE[c.size] ? PICKUP_CLASE[c.size]
+      : c.body + (tam && SEGMENT_LABELS[c.size] && c.size !== 'nd' ? ' ' + SEGMENT_LABELS[c.size].replace(/^./, x => x.toLowerCase()) : ''),
       SIM_LARGO[i] != null ? (SIM_LARGO[i] / 1000).toLocaleString('es-AR', { minimumFractionDigits: 1, maximumFractionDigits: 1 }) + ' m' : '',
       kw && pot.tipo === 'ok' ? Math.round(pot.n) + ' kW' : ''].filter(Boolean).join(', ');
     motivos.push([caract(true, true), caract(false, true), caract(false, false)].find(t => t.length <= 26) || caract(false, false));
@@ -7360,13 +7369,17 @@ function elegirMultiHTML(q, r){
   const sel = elegirLista(r[q.k]), todos = q.k === 'seg' ? sel.length === 4 : !sel.length, ops = q.ops;
   const man = q.k === 'seg' ? r.segMan : q.k === 'prop' ? r.propMan : false;
   const cart = (q.k === 'seg' ? ELEGIR_TIP.seg : q.k === 'prop' ? ELEGIR_TIP.prop : ELEGIR_TIP.carro);
-  const nota = !q.sug ? '' : man ? '<p class="filtro-nota">Lo cambiaste vos. <button type="button" class="mini-btn" data-sugerir="' + q.k + '">Volver a la sugerencia</button></p>'
+  const gris = q.k === 'seg' && elegirSoloDeportivos(r);
+  const nota = gris ? '<p class="filtro-nota">Los deportivos no se eligen por tamaño.</p>'
+    : !q.sug ? '' : man ? '<p class="filtro-nota">Lo cambiaste vos. <button type="button" class="mini-btn" data-sugerir="' + q.k + '">Volver a la sugerencia</button></p>'
     : '<p class="filtro-nota">' + (q.k === 'seg' ? 'Sugerido según quiénes viajan y las plazas.' : 'Sugerido según el uso y si podés o podrías cargarlo.') + ' Cambialo si querés.</p>';
   // «Me da igual» va como casilla al costado del título (2026-11-07, pedido de Mati: así sale un renglón).
   const igual = q.igual ? '<label class="leyenda-igual"><input type="checkbox" name="elm-' + q.k + '" value="__igual"' + (todos ? ' checked' : '') + '> Me da igual</label>' : '';
-  return '<fieldset role="group" aria-label="' + q.t + '"><div class="elegir-leyenda' + (q.igual ? ' con-igual' : '') + '"><span>' + q.t + '</span>' + igual + '</div><div class="elegir-ops" data-n="' + ops.length + '" data-q="' + q.k + '" style="--n:' + ops.length + '">' +
-    ops.map(([v, t]) => { const on = q.k === 'seg' ? sel.includes(v) : !todos && sel.includes(v), tip = cart[v];
-      return '<label><input type="checkbox" name="elm-' + q.k + '" value="' + v + '"' + (on ? ' checked' : '') + '><span' + (tip ? ' data-tip="' + tip + '"' : '') + '>' + (q.k === 'seg' ? '<b>' + t.charAt(0) + '</b>' + t.slice(2) : t) + '</span></label>'; }).join('') +
+  // Tamaño: la palabra arriba y debajo la letra con autos de referencia (issue #184).
+  const txt = (v, t, ej) => q.k === 'seg' ? '<b>' + t + '</b><small>' + v + '<em class="seg-ej"> · ' + ej + '</em></small>' : t;
+  return '<fieldset role="group" aria-label="' + q.t + '"' + (gris ? ' class="gris" aria-disabled="true"' : '') + '><div class="elegir-leyenda' + (q.igual ? ' con-igual' : '') + '"><span>' + q.t + '</span>' + igual + '</div><div class="elegir-ops" data-n="' + ops.length + '" data-q="' + q.k + '" style="--n:' + ops.length + '">' +
+    ops.map(([v, t, ej]) => { const on = gris || (q.k === 'seg' ? sel.includes(v) : !todos && sel.includes(v)), tip = cart[v];
+      return '<label><input type="checkbox" name="elm-' + q.k + '" value="' + v + '"' + (on ? ' checked' : '') + (gris ? ' disabled' : '') + '><span' + (tip ? ' data-tip="' + tip + '"' : '') + '>' + txt(v, t, ej) + '</span></label>'; }).join('') +
     '</div>' + nota + '</fieldset>';
 }
 // Por qué salió cada auto (2026-10-30, pedido de Mati): el puntaje desglosado en un cartel.
