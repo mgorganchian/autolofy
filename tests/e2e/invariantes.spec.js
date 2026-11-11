@@ -18,7 +18,7 @@ test.describe('invariantes del index.html', () => {
   test('CARS: cada auto tiene los 7 campos con valores válidos', () => {
     const VALIDOS = {
       type: ['ice', 'hev', 'mhev', 'phev', 'ev', 'tbd'],
-      size: ['xl', 'big', 'mid', 'compact', 'mini', 'nd'],
+      size: ['xl', 'big', 'mid', 'compact', 'mini', 'dep', 'nd'],
       body: ['SUV', 'Crossover', 'Sedán', 'Hatchback', 'Minivan', 'Pickup', 'Convertible', 'Coupé'],
       status: ['venta', 'preventa', 'nolanzado', 'discontinuado'],
     };
@@ -89,23 +89,25 @@ test.describe('invariantes del index.html', () => {
   // SUV y crossover por largo: B < 4400 ≤ C < 4700 ≤ D. Hatchback por distancia entre ejes: A < 2450 ≤ B < 2600 ≤ C
   // (y B si mide menos de 4200 de largo: los eléctricos chicos tienen ejes largos). Sedán: B < 2660 ≤ C < 2800 ≤ D.
   const esSuv = i => ['SUV', 'Crossover'].includes(CARS[i].body);
-  const SEGMENTO = (l, i) => esSuv(i) ? (l < 4400 ? 'compact' : l < 4700 ? 'mid' : (l >= 4825 && (asientosDe(i) || 0) >= 6) ? 'xl' : 'big')
+  // Issue #184 (2026-11-11): pickups en cuatro clases por largo (chica < 4600 ≤ compacta < 5200 ≤ mediana < 5700 ≤ full-size),
+  // coupés y descapotables sin tamaño («dep», Deportivo), y los BJ30 siguen la regla (sin excepciones).
+  const SEGMENTO = (l, i) => ['Coupé', 'Convertible'].includes(CARS[i].body) ? 'dep'
+    : esSuv(i) ? (l < 4400 ? 'compact' : l < 4700 ? 'mid' : (l >= 4825 && (asientosDe(i) || 0) >= 6) ? 'xl' : 'big')
+    : CARS[i].body === 'Pickup' ? (l < 4600 ? 'compact' : l < 5200 ? 'mid' : l < 5700 ? 'big' : 'xl')
     : CARS[i].body === 'Hatchback' && ejesDe(i) ? (ejesDe(i) < 2450 ? 'mini' : (ejesDe(i) < 2600 || l < 4200) ? 'compact' : 'mid')
     : CARS[i].body === 'Sedán' && ejesDe(i) ? (ejesDe(i) < 2660 ? 'compact' : ejesDe(i) < 2800 ? 'mid' : 'big')
     : l < 4150 ? 'mini' : l < 4515 ? 'compact' : l < 4714 ? 'mid'
-    : (l >= 4825 && ((asientosDe(i) || 0) >= 6 || CARS[i].body === 'Pickup')) ? 'xl' : 'big';
-  // Clasificados antes de la regla con otro criterio; queda a decisión del usuario.
-  const EXCEPCIONES = ['BAIC BJ30 4x2', 'BAIC BJ30 4x4'];
+    : (l >= 4825 && (asientosDe(i) || 0) >= 6) ? 'xl' : 'big';
 
   test('ningún auto con largo cargado queda sin segmento', () => {
     const sinSegmento = CARS.filter((c, i) => c.size === 'nd' && largoDe(i) !== null).map(c => c.name);
     expect(sinSegmento).toEqual([]);
   });
 
-  test('el segmento sigue la regla de largo, salvo las excepciones anotadas', () => {
+  test('el segmento sigue la regla de largo', () => {
     const distintos = CARS.map((c, i) => ({ c, l: largoDe(i) }))
       .map((x, i) => ({ ...x, i }))
-      .filter(({ c, l, i }) => l !== null && c.size !== 'nd' && !EXCEPCIONES.includes(c.name) && SEGMENTO(l, i) !== c.size)
+      .filter(({ c, l, i }) => l !== null && c.size !== 'nd' && SEGMENTO(l, i) !== c.size)
       .map(({ c, l, i }) => `${c.name}: ${l} mm figura "${c.size}", por la regla sería "${SEGMENTO(l, i)}"`);
     expect(distintos).toEqual([]);
   });
