@@ -5,12 +5,13 @@ const fs = require('fs');
 const path = require('path');
 const { execFileSync } = require('child_process');
 const { test, expect } = require('@playwright/test');
+const { PY, PY_ENV } = require('./python');
 
 const RAIZ = process.env.AUTOLOFY_RAIZ || path.resolve(__dirname, '../..');
 
 test('las páginas por auto están al día con index.html', ({ }, info) => {
   test.skip(info.project.name !== 'escritorio', 'no depende del viewport');
-  const out = execFileSync('python3', [path.join(RAIZ, 'herramientas-paginas.py'), '--check'], { encoding: 'utf8' });
+  const out = execFileSync(PY, [path.join(RAIZ, 'herramientas-paginas.py'), '--check'], { encoding: 'utf8', env: PY_ENV });
   expect(out).toContain('al día');
 });
 
