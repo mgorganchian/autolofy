@@ -6,8 +6,8 @@ proyectos de Vercel `autolofy` y `autolofy-plan`).
 Desde el 2026-10-28 también entran autos de marcas no chinas (decisión de Mati y Sebastián del
 27/10: los 0 km principales, los eléctricos y los híbridos); los primeros fueron los 9 rivales
 híbridos del BAIC X55 II Hybrid (Ford, Chevrolet, Toyota, Lexus, Nissan, Renault, Subaru y
-Hyundai). Sus marcas entran sin red de concesionarios cargada (`aviso` en `concesionarios.json`),
-y casi todas publican el precio en pesos: la celda lo dice en pesos, como lo publica la marca (ver
+Hyundai). Sus marcas entraron sin red de concesionarios cargada (`aviso` en `concesionarios.json`); desde
+el 2026-11-11 (issue #188) las 26 tienen su red oficial (ver «Concesionarios»), y casi todas publican el precio en pesos: la celda lo dice en pesos, como lo publica la marca (ver
 "Precios en pesos y dólar BNA" para cómo entran en los filtros).
 El 2026-10-29 (pedido de Mati) se sumaron **73 de los 100 modelos más patentados de 2026** que faltaban
 (inscripciones iniciales de la DNRPA de enero a septiembre, sin furgones ni camiones; 23 ya estaban). Criterios:
@@ -761,6 +761,20 @@ sí quedan en inglés, porque no muestran la palabra. Se coló con `YES` dos vec
 - Deepal publica la red de Changan; Arcfox, la de BAIC; los talleres de Jetour son la red
   de servicio de Famly, su importador; smart, la de su buscador (concesionarios Mercedes-Benz
   que la venden). Omoda/Jaecoo, SWM, Skywell, Stelato y Rely no publican red.
+- **Las 26 marcas no chinas** (2026-11-11, issue #188): cada una salió del buscador oficial de su sitio argentino, casi siempre
+  de la API que carga la página (la nota de cada marca dice cuál y cuántos puntos trajo). Las que devuelven pocos resultados por
+  búsqueda (Chevrolet 50, Ford y Renault 100, el mapa de Citroën 100) se consultaron desde una grilla de puntos sobre el país
+  hasta que no apareció ninguno nuevo. Ford, Toyota, Peugeot, Nissan, BMW y Audi se leyeron con el navegador integrado.
+  Fiat, Jeep y RAM usan el servicio de Stellantis `dealer-service.k8s.fcalatam.com.br` (brandId 0, 57 y 58); jeep.com.ar no tiene
+  buscador propio (su link lleva a un mapa vacío), así que Jeep cita el servicio. Citroën y DS salen del mapa de
+  `citroenstore.com.ar`, el link de concesionarios de citroen.com.ar. Venta y posventa salen de los servicios que publica cada red;
+  si la red no los distingue, el local va como venta (como Chery). Lo que solo vende usados, repuestos o plan de ahorro queda afuera
+  y la nota de la marca lo lista.
+  **Ubicación:** el pin de la red vale si cae en la ciudad de la dirección (40 km, o el nombre del municipio); si no, se ubica por
+  la dirección con Georef y la nota del local lo dice. **Uniones:** un local nuevo se junta con uno de otra marca si tienen el
+  mismo nombre y dirección, la misma dirección (a menos de 1 km) con una palabra del nombre en común, o están a menos de 150 m con
+  una palabra del nombre en común (sin contar el nombre de la ciudad) o el mismo teléfono local (no 0800/0810) a menos de 60 m;
+  nunca si las dos direcciones tienen número y no coinciden, ni con un local que tenga promos «para todos los autos» (`*`).
 - `tests/e2e/concesionarios.spec.js` falla si una marca de la tabla no figura, si un
   total no coincide, si un local no tiene fuente https o provincia normalizada, o si hay
   locales repetidos.
