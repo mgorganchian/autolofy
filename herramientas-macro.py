@@ -114,7 +114,7 @@ def main():
     if '--check' in sys.argv:
         print('cambió: ' + resumen)
         sys.exit(1)
-    open(INDEX, 'w', encoding='utf-8').write(BLOQUE.sub(lambda m: nuevo, html))
+    open(INDEX, 'w', encoding='utf-8', newline='\n').write(BLOQUE.sub(lambda m: nuevo, html))
     print('actualizado: ' + resumen)
 
 

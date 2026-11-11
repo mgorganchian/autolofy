@@ -540,7 +540,7 @@ if __name__ == '__main__':
             sys.exit('desactualizadas: ' + ', '.join(viejas + sobran) + '\ncorrer: python3 herramientas-paginas.py')
         print('páginas al día'); sys.exit(0)
     os.makedirs(DIR, exist_ok=True); os.makedirs(DIR_VS, exist_ok=True)
-    for r, t in salida.items(): open(r, 'w', encoding='utf-8').write(t)
+    for r, t in salida.items(): open(r, 'w', encoding='utf-8', newline='\n').write(t)
     for f in sobran: os.remove(os.path.join(RAIZ, f))
     n_vs = sum(1 for r in salida if r.startswith(DIR_VS))
     print(f'{len(slugs)} páginas con su RSS, {n_vs} comparaciones, sitemap.xml y robots.txt')

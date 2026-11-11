@@ -273,7 +273,7 @@ def buscar(solo=()):
         if procesar(crudo, os.path.join(CAND, cid + '.jpg'), False) | procesar(crudo, os.path.join(CAND, cid + '.int.jpg'), True):
             listas.append((cid, slug, v, t, lic, autor))
         os.remove(crudo)
-    with open(ruta, 'w', encoding='utf-8') as f:
+    with open(ruta, 'w', encoding='utf-8', newline='\n') as f:
         for fila in previas + listas: f.write('\t'.join(fila) + '\n')
     print(f'{len(listas)} candidatas en {CAND}/ — mirá cada una antes de instalar o descartar:')
     for cid, slug, v, t, lic, autor in listas:

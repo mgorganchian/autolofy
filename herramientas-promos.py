@@ -86,7 +86,7 @@ def main():
         for e in hist['promos']:
             pass
         sys.exit(1 if cambios else 0)
-    json.dump(hist, open(HIST, 'w', encoding='utf-8'), ensure_ascii=False, indent=1)
+    json.dump(hist, open(HIST, 'w', encoding='utf-8', newline='\n'), ensure_ascii=False, indent=1)
     print(f'{len(hist["promos"])} promos en el historial, {sum(e["estado"] == "vigente" for e in hist["promos"])} vigentes; {len(cambios)} cambios')
 
 
