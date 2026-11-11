@@ -22,7 +22,8 @@ De dónde sale: del esquema v1 de la base macroeconomia, con el mismo rol de sol
   agosto contra septiembre); desde junio de 2017, en cada mes que tienen las dos, la variación es la misma.
 - ar.bcra.inflacion_interanual: la del IPC en los últimos 12 meses.
 - ar.bcra.inflacion_esperada_12m: la mediana del REM para los próximos 12 meses; el mes es el del relevamiento.
-- ar.dolar.oficial.venta al último día de cada mes (v1.valor_al: el último valor en o antes de esa fecha).
+- ar.dolar.oficial.venta al último día con dato de cada mes (v1.fin_de_mes, de la base macroeconomia: antes se armaba acá con
+  generate_series y v1.valor_al; da los mismos 23 valores). Si a un mes le falta el dólar, el script falla en vez de arrastrar el anterior.
 Se guardan los meses desde hace dos años. El bloque va entre /*macro:inicio*/ y /*macro:fin*/. Si la base no responde o
 algún valor no es razonable, el script falla sin tocar nada.
 """
@@ -44,10 +45,8 @@ MENSUAL = """SELECT to_char(fecha, 'YYYY-MM'), valor FROM v1.observaciones
              WHERE codigo = %s AND fecha >= (date_trunc('month', now()) - make_interval(months => %s))::date
              ORDER BY fecha"""
 ULTIMO = "SELECT to_char(fecha, 'YYYY-MM'), valor FROM v1.observaciones WHERE codigo = %s ORDER BY fecha DESC LIMIT 1"
-DOLAR_FIN_DE_MES = """SELECT to_char(m, 'YYYY-MM'), d.valor
-  FROM generate_series(%s::date, %s::date, interval '1 month') AS m,
-       LATERAL v1.valor_al('ar.dolar.oficial.venta', (m + interval '1 month - 1 day')::date) AS d
-  ORDER BY m"""
+DOLAR_FIN_DE_MES = """SELECT to_char(mes, 'YYYY-MM'), valor FROM v1.fin_de_mes('ar.dolar.oficial.venta')
+  WHERE mes BETWEEN %s::date AND %s::date ORDER BY mes"""
 
 
 def cadena():
