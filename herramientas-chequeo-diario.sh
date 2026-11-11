@@ -34,7 +34,12 @@ REPO="/Users/mgorganchian/Projects/autolofy"
 LOG="$REPO/.chequeo-diario.log"
 SITIO="https://autolofy.vercel.app/"
 UA='autolofy-comparativo/1.0 (https://github.com/mgorganchian/autolofy)'
-CLAUDE="$(command -v claude || echo /Users/mgorganchian/.nvm/versions/node/v24.14.0/bin/claude)"
+# launchd corre el script con zsh -lc, que no carga nvm (nvm está en .zshrc), así que claude y node no
+# están en el PATH. Se los busca en la versión de Node más nueva de nvm, con orden numérico (v24.22 va
+# después de v24.9). Pasó el 2026-11-02 y el 2026-11-09: la ruta fija a la v24.14.0 dejó de existir al
+# actualizar Node, la parte de Claude no corrió (error 127) y la rutina perdió dos semanas.
+ultimo_nvm(){ local b=( "$HOME"/.nvm/versions/node/*/bin/$1(Nn) ); (( $#b )) && print -r -- "$b[-1]"; }
+CLAUDE="$(command -v claude || ultimo_nvm claude)"
 
 log(){ print -r -- "[$(date '+%Y-%m-%d %H:%M:%S')] $*" >> "$LOG"; }
 # Notificación de macOS además del log: el log no lo mira nadie hasta que algo ya
@@ -58,6 +63,11 @@ print -r -- "$$" > "$LOCK/pid"
 trap 'rm -f "$LOCK/pid" 2>/dev/null; rmdir "$LOCK" 2>/dev/null' EXIT INT TERM
 
 log "=== arranca la actualización semanal ==="
+if [[ -z "$CLAUDE" ]]; then
+  avisar "No encontré claude, ni en el PATH ni en nvm: la actualización semanal no corrió."
+  exit 1
+fi
+log "claude: $CLAUDE"
 
 # Volver a main antes de empezar. Hace falta porque la propia rutina deja el repo
 # parado en la rama que crea, y sin esto la corrida siguiente muere en el git pull
@@ -396,7 +406,7 @@ fi
 # main y se comprueba que es idéntica. Si falla, el sitio no se ve afectado (nada lee la base en vivo):
 # solo avisa. La cadena de conexión la lee db/sincronizar.mjs del Keychain; nunca se imprime.
 # launchd arranca con un PATH mínimo: node vive en nvm, así que se lo busca ahí si no está en el PATH.
-NODE_BIN=$(command -v node || ls -d "$HOME"/.nvm/versions/node/*/bin/node 2>/dev/null | tail -1)
+NODE_BIN=$(command -v node || ultimo_nvm node)
 if [[ -z "$NODE_BIN" ]]; then
   avisar "No encontré node para poner al día la base de Neon. El sitio no se ve afectado."
 else
