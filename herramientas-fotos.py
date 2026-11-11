@@ -14,10 +14,14 @@
                                                           # cambia la portada (foto 1, miniatura y crédito);
                                                           # con «conservar», la portada vieja pasa al carrusel
     python3 herramientas-fotos.py espejar SLUG...         # da vuelta la portada para que la trompa mire a la derecha
+    python3 herramientas-fotos.py letras SLUG "x0,y0,x1,y1;…"  # en una espejada, pone al derecho esas zonas con letras
+    python3 herramientas-fotos.py desespejar SLUG...      # deshace un espejado hecho por error
 
 Todas las portadas miran al mismo lado (pedido de Mati, 2026-11-10): tres cuartos delantero con la
 trompa hacia la DERECHA de la imagen. La que mira a la izquierda se espeja con `espejar`, que da vuelta
 la foto 1, la miniatura y la mediana, y suma «imagen espejada» al crédito (CC BY pide avisar los cambios).
+Después, `letras` pone al derecho la marca, el modelo, la patente y los emblemas que no son simétricos
+(pedido de Mati del 2026-11-11: que no se lean al revés); las cajas van en píxeles de la foto sin espejar.
 
 Cada auto tiene a lo sumo UNA foto por vista (VISTAS, abajo): frente, perfiles, cola,
 baúl abierto, tablero, instrumentos, consola, asientos. Dos fotos casi iguales no suman
@@ -531,6 +535,76 @@ def espejar(slugs):
     open(INDEX, 'w', encoding='utf-8', newline='\n').write(html)
 
 
+LETRAS = 'letras al derecho'
+
+
+def _tag_portada(html, slug):
+    m = re.search(r'<img class="car-photo" data-slug="%s"[^>]*>' % re.escape(slug), html)
+    if not m: sys.exit('no encontré la miniatura de ' + slug)
+    return m, re.search(r' data-credito="([^"]*)"', m.group(0))
+
+
+def _rehacer_chicas(slug):
+    """Vuelve a armar la miniatura y la mediana desde la portada de 900 px, como lo hace `portada`."""
+    import tempfile
+    tmp = tempfile.mkdtemp()
+    p = os.path.join(FOTOS, f'{slug}-1.jpg')
+    for sub, cal, caja in (('mini', 70, (190, 300)), ('med', 72, (304, 480))):
+        dest = os.path.join(tmp, sub + '.jpg')
+        if not imagen(p, dest, cal, caja=caja): sys.exit(f'no se pudo armar fotos/{sub}/{slug}.jpg')
+        shutil.copyfile(dest, os.path.join(FOTOS, sub, slug + '.jpg'))
+
+
+def letras(slug, cajas):
+    """En una portada espejada, vuelve a poner al derecho las letras (marca, modelo, patente) y los emblemas que no
+    son simétricos, para que no se lean al revés (pedido de Mati del 2026-11-11). CAJAS: «x0,y0,x1,y1;…» en
+    píxeles de la foto ORIGINAL, sin espejar, de 900 px de ancho. Cada recorte se pega sin espejar en el lugar
+    espejado, con el borde difuminado. Rehace la miniatura y la mediana y lo dice en el crédito."""
+    from PIL import Image, ImageOps, ImageFilter, ImageDraw
+    html = leer_index()
+    m, cred = _tag_portada(html, slug)
+    if not cred or ESPEJADA not in cred.group(1).lower(): sys.exit(f'{slug}: la portada no está espejada')
+    if LETRAS in cred.group(1): sys.exit(f'{slug}: ya tiene las letras corregidas')
+    ruta = os.path.join(FOTOS, f'{slug}-1.jpg')
+    actual = Image.open(ruta).convert('RGB')
+    original = ImageOps.mirror(actual)
+    W, H = actual.size
+    if W != 900: sys.exit(f'{slug}: la portada mide {W} px de ancho, no 900')
+    borde = 3
+    for caja in cajas.split(';'):
+        x0, y0, x1, y1 = (int(v) for v in caja.split(','))
+        if not (0 <= x0 < x1 <= W and 0 <= y0 < y1 <= H): sys.exit(f'{slug}: caja fuera de la foto: {caja}')
+        parche = original.crop((x0, y0, x1, y1))
+        mascara = Image.new('L', parche.size, 0)
+        ImageDraw.Draw(mascara).rectangle((borde, borde, parche.width - 1 - borde, parche.height - 1 - borde), fill=255)
+        actual.paste(parche, (W - x1, y0), mascara.filter(ImageFilter.GaussianBlur(borde / 1.5)))
+    actual.save(ruta, 'JPEG', quality=85, optimize=True, progressive=True)
+    _rehacer_chicas(slug)
+    viejo = cred.group(1)
+    nuevo = re.sub(ESPEJADA, f'{ESPEJADA} con las {LETRAS}', viejo, count=1, flags=re.I)
+    html = html[:m.start()] + m.group(0).replace(cred.group(0), f' data-credito="{nuevo}"', 1) + html[m.end():]
+    open(INDEX, 'w', encoding='utf-8', newline='\n').write(html)
+    print(f'{slug}: {len(cajas.split(";"))} zonas al derecho')
+
+
+def desespejar(slugs):
+    """Deshace `espejar` en una portada que se espejó por error (la trompa ya miraba a la derecha)."""
+    from PIL import Image, ImageOps
+    html = leer_index()
+    for slug in slugs:
+        m, cred = _tag_portada(html, slug)
+        if not cred or ESPEJADA not in cred.group(1).lower(): sys.exit(f'{slug}: no está espejada')
+        if LETRAS in cred.group(1): sys.exit(f'{slug}: tiene letras corregidas; volvé a instalar la portada')
+        ruta = os.path.join(FOTOS, f'{slug}-1.jpg')
+        ImageOps.mirror(Image.open(ruta).convert('RGB')).save(ruta, 'JPEG', quality=85, optimize=True, progressive=True)
+        _rehacer_chicas(slug)
+        resto = re.sub(r'(?: · )?' + ESPEJADA, '', cred.group(1), count=1, flags=re.I)
+        tag = m.group(0).replace(cred.group(0), f' data-credito="{resto}"' if resto else '', 1)
+        html = html[:m.start()] + tag + html[m.end():]
+        print(f'{slug}: vuelve a la foto sin espejar')
+    open(INDEX, 'w', encoding='utf-8', newline='\n').write(html)
+
+
 def instalar_oficial(lista):
     """LISTA.tsv: slug, vista, archivo_local, url_imagen, pagina_donde_aparece, marca_credito
     y, opcional, nota (con encabezado). Fotos de los sitios oficiales argentinos de la marca o del importador,
@@ -649,6 +723,8 @@ if __name__ == '__main__':
     elif a[:1] == ['reorganizar'] and len(a) == 2: reorganizar(a[1])
     elif a[:1] == ['portada'] and len(a) >= 4: portada(a[1], a[2:])
     elif a[:1] == ['espejar'] and len(a) > 1: espejar(a[1:])
+    elif a[:1] == ['letras'] and len(a) == 3: letras(a[1], a[2])
+    elif a[:1] == ['desespejar'] and len(a) > 1: desespejar(a[1:])
     elif a[:1] == ['instalar-oficial'] and len(a) == 2: instalar_oficial(a[1])
     elif a[:1] == ['descartar'] and len(a) == 3: descartar(a[1], a[2])
     elif a[:1] == ['galeria-hoja'] and len(a) == 2: galeria_hoja(a[1])
