@@ -17,7 +17,7 @@ CREATE TABLE auto (
   nombre_corto   text NOT NULL,
   marca          text NOT NULL REFERENCES marca(nombre),
   tipo           text NOT NULL CHECK (tipo IN ('ice','hev','mhev','phev','ev','tbd')),
-  segmento       text NOT NULL CHECK (segmento IN ('xl','big','mid','compact','mini','nd')),
+  segmento       text NOT NULL CHECK (segmento IN ('xl','big','mid','compact','mini','dep','nd')),
   carroceria     text NOT NULL CHECK (carroceria IN ('SUV','Crossover','Sedán','Hatchback','Minivan','Pickup','Convertible','Coupé')),
   estado         text NOT NULL CHECK (estado IN ('venta','preventa','nolanzado','discontinuado'))
 );
