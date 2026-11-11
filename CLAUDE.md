@@ -973,10 +973,17 @@ portada primero y el resto en el orden de las vistas.
   delantero con la **trompa hacia la DERECHA** de la imagen y la cola a la izquierda, como si el auto arrancara de
   izquierda a derecha y hacia quien mira. La que mira a la izquierda se espeja con `herramientas-fotos.py espejar SLUG`,
   que da vuelta la foto 1, la miniatura y la mediana y suma «imagen espejada» al crédito (CC BY pide avisar los cambios).
-  **No se espeja un auto con la marca escrita en grande en la trompa** (Chery Himla, Foton Tunland G7, Jetour G700, T1, T2
-  y T2 i-DM, JMC Grand Avenue y Grand Avenue Pro, Maxus T60 Max, F-150 Raptor, Hilux GR-Sport, Fiat Toro y las RAM Dakota,
-  Rampage y 1500): la marca se leería al revés; hace falta otra foto. Las tomas de frente (Maxus T60, Citroën Aircross,
-  smart #3, Kia K3 Sedán) tampoco se espejan. Si la portada no muestra la trompa y el carrusel tiene una que sí, se sube con
+  **Las letras no quedan al revés** (2026-11-11, pedido de Mati: «editá esa parte para que los logos queden bien», también
+  los chicos): después de espejar, `herramientas-fotos.py letras SLUG "x0,y0,x1,y1;…"` pega sin espejar, en el lugar
+  espejado, cada zona con letras o con un emblema que no es simétrico (marca y modelo en la parrilla o el capó, insignias,
+  patentes, logos del centro de la llanta, la banderita italiana de Fiat); las cajas van en píxeles de la foto sin espejar
+  y el crédito dice «imagen espejada con las letras al derecho». Los emblemas simétricos (Chery, Toyota, VW, Mercedes,
+  Audi, Renault, Citroën, Honda, Chevrolet, Mitsubishi) no se tocan. Así se espejaron también los de la marca en grande
+  (Himla, Jetour G700, T1 y T2, JMC Grand Avenue Pro, Maxus T60 Max, F-150 Raptor, Hilux GR-Sport, Toro y las RAM). Cuando la
+  palabra va en diagonal y con mucha perspectiva (JETOUR de la G700) una caja sola no alcanza: se pega letra por letra, cada
+  una en el casillero que le toca. Antes de espejar, mirar que la trompa de verdad mire a la izquierda: 9 se espejaron
+  por error el 2026-11-10 y se deshicieron con `desespejar`. Quedan sin espejar las tomas de frente (Maxus T60, Citroën
+  Aircross, smart #3, Kia K3 Sedán, Jetour T2 i-DM y JMC Grand Avenue). Si la portada no muestra la trompa y el carrusel tiene una que sí, se sube con
   `portada SLUG carrusel N VISTA conservar VISTA_VIEJA` (la vieja pasa al carrusel con su fuente). Al instalar una portada
   nueva, mirar hacia dónde apunta la trompa.
 - **La portada tiene que ser la versión que vende el importador argentino** (frente,
