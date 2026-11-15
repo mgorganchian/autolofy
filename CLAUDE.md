@@ -624,6 +624,14 @@ sí quedan en inglés, porque no muestran la palabra. Se coló con `YES` dos vec
   al cargar** (`ELEGIR_N`); achicar o agrandar la ventana no la cambia (`elegir-resize.spec.js`). **(#130)** los botones de la ventana de un auto que arman una comparación
   («Ver todos sus datos en la tabla», «Sumar a mi comparación» y «Comparar con…») llevan a la **vista Tabla** (`mostrarVista('tabla')`) también cuando se abrió
   desde Ayudame a elegir, Grupos o Ranking; antes cerraban la ventana y dejaban la pantalla anterior (`ficha-ver-tabla.spec.js`).
+- **Navegación de Ayudame a elegir** (2026-11-15, issue #192, pedido de Sebastián): **(1)** en la computadora (≥ 900 px) y solo en esa vista, el
+  encabezado sigue los bordes de la columna de `.elegir` (1100 px): logo, título, bajada y cota centrados, y en una misma fila las pestañas a la
+  izquierda y Concesionarios, Grupos, Imprimir y el tema a la derecha (grilla en `body.vista-elegir header` y `html.arranca-elegir header`). La
+  Tabla y las otras vistas siguen a todo el ancho. **(2)** Ayudame a elegir vuelve al lugar donde estaba, se vuelva con Atrás o con la pestaña:
+  `mostrarVista` anota `elegirY` al salir y lo repone al entrar, y `pasoHist` crea el paso nuevo con la página por un instante en `elegirY`,
+  porque Chrome anota el scroll de un paso recién cuando se crea el siguiente y lo repone después del popstate. **(3)** «Empezar de nuevo»
+  (`#elegirReiniciar`) repone `ELEGIR_INICIAL`. **(4)** La barra del pie suma, en gris, «Antes, N.» con cuántos cumplían antes de la última
+  respuesta (`dataset.total`); en ese caso no dice «Nuevas sugerencias», para que entre en un renglón del celular. `elegir-navegacion.spec.js`.
 - **Respaldo de fábrica** (2026-10-10, pedido del usuario: en Argentina da miedo conseguir repuestos;
   después del precio es de lo que más pesa): `MARCAS_INFO[marca].fabrica_mercosur` = planta que
   **ya produce** autos en el Mercosur, con fuente (BYD, GWM en Haval/Ora/Tank/Poer, Chery por CAOA,

@@ -1191,6 +1191,7 @@ if(!location.search&&!location.hash)document.documentElement.classList.add('arra
   .movilidad-ico:focus-visible{outline:2px solid var(--link);outline-offset:2px}
   .quien-ico{width:3rem;height:auto;margin:2px auto 3px;display:block}
   .quien-nota,.filtro-nota{font-size:.8rem;color:var(--text-secondary);margin:6px 0 0}
+  .elegir-antes{color:var(--ink-3)}
   .elegir-ops input{position:absolute;opacity:0;pointer-events:none}
   .elegir-ops span{display:flex;flex-direction:column;justify-content:center;flex:1;text-align:center;border:1px solid var(--border-strong);border-radius:3px;padding:4px 6px;font-size:.76rem}
   .elegir-ops input:checked + span{background:var(--byd-blue);border-color:var(--byd-blue);color:var(--sobre-verde)}
@@ -1508,6 +1509,20 @@ if(!location.search&&!location.hash)document.documentElement.classList.add('arra
   .cota::before,.cota::after{content:"";flex:1;height:8px;border-bottom:1px solid currentColor;margin-bottom:5px}
   .cota::before{border-left:1px solid currentColor}
   .cota::after{border-right:1px solid currentColor}
+  /* Encabezado alineado con Ayudame a elegir (2026-11-15, issue #192, pedido de Sebastián): en la
+     computadora, sus bordes son los de la columna de .elegir (1100 px con 16 de margen), el logo, el
+     título, la bajada y la cota van centrados, y las pestañas (izquierda) comparten fila con
+     Concesionarios, Grupos, Imprimir y el tema (derecha). Solo en esa vista: la tabla usa todo el ancho. */
+  @media (min-width:900px){
+    body.vista-elegir header,html.arranca-elegir header{display:grid;grid-template-columns:1fr auto;align-items:end;column-gap:12px;
+      padding-left:max(16px,calc((100% - 1100px) / 2 + 16px));padding-right:max(16px,calc((100% - 1100px) / 2 + 16px))}
+    body.vista-elegir header>*,html.arranca-elegir header>*{grid-column:1/-1}
+    body.vista-elegir header>.toolbar-row:not(.toolbar-2),html.arranca-elegir header>.toolbar-row:not(.toolbar-2){grid-column:1}
+    body.vista-elegir header>.toolbar-2,html.arranca-elegir header>.toolbar-2{grid-column:2;justify-content:flex-end}
+    body.vista-elegir #mainTitle,html.arranca-elegir #mainTitle{justify-content:center}
+    body.vista-elegir #headerSubtitle,html.arranca-elegir #headerSubtitle{text-align:center;margin-left:auto;margin-right:auto}
+    body.vista-elegir .cota,html.arranca-elegir .cota{margin-left:auto;margin-right:auto;width:100%}
+  }
   .summary-bar{background:transparent;border:1px solid rgb(var(--h-rgb) / .2);border-radius:6px;font-size:.84rem}
   .edit-btn,.share-btn{border-radius:4px;font-family:var(--fuente-tabla);font-weight:700;font-size:.8rem;letter-spacing:.01em}
   /* "Elegir autos" en verde y con destello (2026-10-10): es lo primero que hay que tocar en la Tabla
@@ -5013,11 +5028,16 @@ function alGirar(){ [60, 300, 700].forEach(ms => setTimeout(reacomodarAlGirar, m
 const MQ_VERTICAL = window.matchMedia('(orientation: portrait)');
 if (MQ_VERTICAL.addEventListener) MQ_VERTICAL.addEventListener('change', alGirar);
 window.addEventListener('orientationchange', alGirar);
+let elegirY = null;   // scroll de Ayudame a elegir la última vez que se salió de esa vista
 function mostrarVista(v){
   document.documentElement.classList.remove('arranca-elegir');   // de acá en más manda el script
   const rk = v === 'ranking', el = v === 'elegir', gr = v === 'grupos', cc = v === 'conces', tabla = !rk && !el && !gr && !cc;
   const otra = el || gr || cc;   // vistas sin la barra de selección ni la leyenda
-  vistaActual = rk ? 'ranking' : el ? 'elegir' : gr ? 'grupos' : cc ? 'conces' : 'tabla';
+  // Ayudame a elegir vuelve al lugar donde estaba (issue #192), se vuelva con Atrás o con la pestaña:
+  // al salir se anota el scroll y al entrar se repone. Sin esto quedaba el scroll de la vista anterior.
+  if (vistaActual === 'elegir' && !el) elegirY = window.scrollY;
+  const volverElegir = el && vistaActual !== 'elegir' && elegirY !== null;
+  vistaActual =rk ? 'ranking' : el ? 'elegir' : gr ? 'grupos' : cc ? 'conces' : 'tabla';
   actualizarTitulo();
   // "Elegir autos" vuelve a destellar al llegar a la tabla o al ranking (son 3 veces, no sin fin).
   const eb = document.getElementById('openModalBtn');
@@ -5046,7 +5066,11 @@ function mostrarVista(v){
   document.body.classList.toggle('vista-elegir', el);
   if (tabla) compactarThead(); else ajustarScrollPadding();
   if (otra) document.getElementById('noResults').style.display = 'none';
-  if (el){ pintarElegir(); return; }
+  if (el){
+    pintarElegir();
+    if (volverElegir){ const y = elegirY; window.scrollTo(0, y); requestAnimationFrame(() => window.scrollTo(0, y)); }
+    return;
+  }
   if (gr){ pintarGrupos(); return; }
   if (cc){ pintarConcesVista(); return; }
   if (rk){
@@ -5726,7 +5750,14 @@ let desdeHistoria = false;   // true mientras se aplica un paso del historial
 function pasoHist(cambios, url){
   if (desdeHistoria || historiaModo === 'off') return;
   const st = Object.assign({ capa: null, visor: false }, history.state || {}, { vista: vistaActual }, cambios);
+  // Al salir de Ayudame a elegir, el navegador anota el scroll de ese paso recién acá, cuando la otra vista
+  // ya lo movió, y con Atrás lo repone después de que mostrarVista lo arregló (issue #192). Por eso el
+  // paso nuevo se crea con la página, por un instante, en el lugar donde estaba Ayudame a elegir.
+  const salirElegir = historiaModo !== 'replace' && (history.state || {}).vista === 'elegir' && vistaActual !== 'elegir' && elegirY !== null;
+  const yAhora = window.scrollY;
+  if (salirElegir) window.scrollTo(0, elegirY);
   try { (historiaModo === 'replace' ? history.replaceState : history.pushState).call(history, st, '', url || urlCalcular()); } catch (e) {}
+  if (salirElegir) window.scrollTo(0, yAhora);
 }
 // Cerrar desde la interfaz (✕, Esc, tocar afuera): si esa ventana dejó su paso, se vuelve un paso
 // y la cierra el popstate. Devuelve true en ese caso.
@@ -7011,7 +7042,9 @@ const ELEGIR_ANCHO = window.matchMedia('(min-width: 900px)');
 const ELEGIR_N = ELEGIR_ANCHO.matches ? 5 : 4;
 const elegirN = () => ELEGIR_N;
 // Sin presupuesto elegido de entrada (2026-10-10): lo que viene marcado se lee como recomendación.
-let elegirResp = { presu: null, plazas: '5', quien: 'ninos', movilidad: '', uso: 'mixto', enchufe: 'nose', carro: '', seg: 'A,B,C,D', prop: '', segMan: false, propMan: false };
+// ELEGIR_INICIAL es también lo que repone «Empezar de nuevo» (issue #192).
+const ELEGIR_INICIAL = Object.freeze({ presu: null, plazas: '5', quien: 'ninos', movilidad: '', uso: 'mixto', enchufe: 'nose', carro: '', seg: 'A,B,C,D', prop: '', segMan: false, propMan: false });
+let elegirResp = Object.assign({}, ELEGIR_INICIAL);
 try { const g = JSON.parse(localStorage.getItem('elegir') || 'null'); if (g) elegirResp = Object.assign(elegirResp, g); } catch (e) {}
 // Respuestas guardadas con opciones que ya no existen (topes o franjas anteriores, "suv"): se reinician.
 // Respuestas viejas de «tipo de auto» (una sola opción, con el SUV partido por tamaño): pasan a las casillas nuevas.
@@ -7320,11 +7353,15 @@ function pintarElegir(cambio){
   const hoja = document.getElementById('elegirHoja');
   // Si una respuesta no mueve las sugerencias, se dice: si no, parece que no recalculó.
   const igual = cambio && hoja.dataset.top === out.top.map(x => x.i).join(',');
+  // Cuántos cumplían antes de la última respuesta (issue #192): va en gris en la barra del pie, que ya está
+  // a la vista; así el aviso no mueve las preguntas.
+  const antes = cambio && hoja.dataset.total !== undefined ? +hoja.dataset.total : null;
   // Es una vista de la página, como Tabla y Ranking (2026-10-09): el título del sitio es el de la
   // página, y acá va el de la sección.
   hoja.innerHTML = '<h2 id="elegirTitulo" class="elegir-titulo">Ayudame a elegir</h2>' +
     '<p class="ficha-nota">5 preguntas, 3 filtros que se arman solos y te sugerimos ' + elegirN() + ' autos. ' +
-      '<button type="button" class="mini-btn" id="elegirTabla">Ver la tabla</button></p>' +
+      '<button type="button" class="mini-btn" id="elegirTabla">Ver la tabla</button> ' +
+      '<button type="button" class="mini-btn" id="elegirReiniciar" title="Vuelve todas las respuestas y los filtros a como estaban al entrar">Empezar de nuevo</button></p>' +
     '<div class="elegir-cuerpo"><div class="elegir-preg">' + ELEGIR_PREG.map(q => q.deslizador ? presuHTML(r) : q.interruptor ? '' : q.multi ? elegirMultiHTML(q, r) : '<fieldset role="group" aria-label="' + q.t + '"><div class="elegir-leyenda' + (q.k === 'quien' ? ' quien-leyenda' : '') + '">' + q.t + (q.k === 'quien' ? movilidadBtnHTML(r) : '') + '</div><div class="elegir-ops" data-n="' + q.ops.length + '" data-q="' + q.k + '" style="--n:' + q.ops.length + '">' +
       q.ops.map(([v, t, pesos]) => '<label><input type="radio" name="el-' + q.k + '" value="' + v + '"' + (r[q.k] === v ? ' checked' : '') + '><span' +
         ((ELEGIR_TIP[q.k] || {})[v] ? ' data-tip="' + ELEGIR_TIP[q.k][v] + '"' : q.k === 'presu' && v ? ' data-tip="' + usdExacto(v) + ' Los autos con la lista en pesos entran por su precio pasado a dólares al ' + DOLAR_TXT + '."' : '') + '>' + (q.k === 'quien' ? quienSVG(v, r.plazas) : q.k === 'movilidad' && v ? SVG_ACCESO : '') + t +
@@ -7365,12 +7402,15 @@ function pintarElegir(cambio){
     out.sinPrecio ? btn('sinprecio', out.total ? '+' + out.sinPrecio + ' sin precio' : 'Los ' + out.sinPrecio + ' sin precio') : '',
   ].join('');
   hoja.insertAdjacentHTML('beforeend', '<div class="elegir-barra" role="status" aria-live="polite"><p class="elegir-barra-txt">' +
-    (igual ? '<em>Sin cambios.</em> ' : cambio && out.top.length ? '<em>Nuevas sugerencias.</em> ' : '') +
+    // Con «Antes, N.» el cambio ya se ve en la cifra; sin «Nuevas sugerencias» entra en un renglón del celular.
+    (antes !== null && antes !== out.total ? '' : igual ? '<em>Sin cambios.</em> ' : cambio && out.top.length ? '<em>Nuevas sugerencias.</em> ' : '') +
     (out.total ? '<b>' + out.total + '</b> auto' + (out.total === 1 ? ' cumple.' : 's cumplen.') : out.top.length ? 'Ninguno cumple todo.' : 'Ningún auto con precio cumple todo eso') +
+    (antes !== null && antes !== out.total ? ' <span class="elegir-antes">Antes, ' + antes + '.</span>' : '') +
     '</p>' +
     (botones ? '<p class="elegir-barra-btns"><span>Comparar</span>' + botones +
       (out.top.length ? '<button type="button" class="mini-btn" id="elegirVer">Ver lista</button>' : '') + '</p>' : '') + '</div>');
   hoja.dataset.top = out.top.map(x => x.i).join(',');
+  hoja.dataset.total = out.total;
   hoja.dataset.todos = out.todos.join(',');
   hoja.dataset.sinprecio = out.sinPrecioIdx.join(',');
   const pp = presuLeer(r.presu || presuInicial()); presuBurbujas(pp.min, pp.max);
@@ -7590,6 +7630,16 @@ elegirHoja.addEventListener('click', e => {
     try { localStorage.setItem('elegir', JSON.stringify(elegirResp)); } catch (er) {}
     const y = window.scrollY; pintarElegir(true); window.scrollTo(0, y); return; }
   if (e.target.closest('#elegirTabla')) return irAVista('tabla');
+  // Empezar de nuevo (issue #192): todas las respuestas y los tres filtros vuelven a como estaban al entrar.
+  if (e.target.closest('#elegirReiniciar')){
+    Object.assign(elegirResp, ELEGIR_INICIAL);
+    try { localStorage.setItem('elegir', JSON.stringify(elegirResp)); } catch (er) {}
+    pintarElegir(true);
+    const t = document.getElementById('elegirTitulo'); if (t) t.scrollIntoView({ behavior: suave(), block: 'start' });
+    const barra = document.querySelector('.elegir-barra');
+    if (barra){ barra.classList.remove('cambio'); void barra.offsetWidth; barra.classList.add('cambio'); }
+    return;
+  }
   if (e.target.closest('#elegirCambiar')){ const f = elegirHoja.querySelector('.elegir-preg'); if (f) f.scrollIntoView({ behavior: suave(), block: 'start' }); return; }
   const af = e.target.closest('[data-aflojar]');
   if (af){
