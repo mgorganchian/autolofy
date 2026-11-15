@@ -98,7 +98,8 @@ if(!location.search&&!location.hash)document.documentElement.classList.add('arra
   /* Mientras arranca en "Ayudame a elegir" no se dibuja la tabla (ver el script del <head>). */
   html.arranca-elegir #summaryBar, html.arranca-elegir header .controls, html.arranca-elegir #catScroll,
   html.arranca-elegir .diff-toggle, html.arranca-elegir #herrTabla, html.arranca-elegir #difBox,
-  html.arranca-elegir #theadWrap, html.arranca-elegir #tbodyWrap, html.arranca-elegir #legendToggleBtn{display:none !important}
+  html.arranca-elegir #theadWrap, html.arranca-elegir #tbodyWrap, html.arranca-elegir #legendToggleBtn,
+  html.arranca-elegir #toolbarTabla{display:none !important}
   html.arranca-elegir #elegirHoja{display:block;min-height:100vh}
   /* Saltar al contenido: invisible hasta que llega el foco con Tab (2026-10-10). */
   .saltar{position:absolute;left:8px;top:-60px;z-index:10000;background:var(--surface);color:var(--link);padding:8px 12px;border-radius:4px;font-weight:700}
@@ -1410,8 +1411,8 @@ if(!location.search&&!location.hash)document.documentElement.classList.add('arra
   #refInfo .mini-btn{font-size:.68rem;padding:0 2px}
 
   /* ============ Segunda fila de herramientas ============================== */
-  .toolbar-2{flex-wrap:wrap;justify-content:space-between}
-  .herr-tabla,.herr-gral{display:inline-flex;gap:6px;align-items:center;flex-wrap:wrap}
+  .herr-tabla,.herr-gral,.herr-ver{display:inline-flex;gap:6px;align-items:center;flex-wrap:wrap}
+  .herr-ver{margin-left:auto}   /* a la derecha también en el Ranking, donde no están las herramientas de la tabla */
   .orden-sel{position:relative;display:inline-flex;align-items:center;gap:5px;font-size:.68rem;color:rgb(var(--h-rgb) / .85)}
   .orden-sel select{font-size:.68rem;padding:3px 4px;border-radius:6px;border:1px solid rgb(var(--h-rgb) / .4);
     background:rgb(var(--h-rgb) / .14);color:var(--h-ink);max-width:60vw}
@@ -1509,19 +1510,16 @@ if(!location.search&&!location.hash)document.documentElement.classList.add('arra
   .cota::before,.cota::after{content:"";flex:1;height:8px;border-bottom:1px solid currentColor;margin-bottom:5px}
   .cota::before{border-left:1px solid currentColor}
   .cota::after{border-right:1px solid currentColor}
-  /* Encabezado alineado con Ayudame a elegir (2026-11-15, issue #192, pedido de Sebastián): en la
-     computadora, sus bordes son los de la columna de .elegir (1100 px con 16 de margen), el logo, el
-     título, la bajada y la cota van centrados, y las pestañas (izquierda) comparten fila con
-     Concesionarios, Grupos, Imprimir y el tema (derecha). Solo en esa vista: la tabla usa todo el ancho. */
+  /* Encabezado (2026-11-15, issues #192 y siguiente, pedido de Sebastián): en la computadora el logo, el
+     título, la bajada y la cota van centrados en todas las vistas, y debajo la fila de navegación: las
+     pestañas a la izquierda y Concesionarios, Grupos, Imprimir y el tema a la derecha. En Ayudame a elegir
+     los bordes son los de la columna de .elegir (1100 px con 16 de margen); la tabla usa todo el ancho. */
   @media (min-width:900px){
-    body.vista-elegir header,html.arranca-elegir header{display:grid;grid-template-columns:1fr auto;align-items:end;column-gap:12px;
+    #mainTitle{justify-content:center}
+    #headerSubtitle{text-align:center;margin-left:auto;margin-right:auto}
+    .cota{margin-left:auto;margin-right:auto;width:100%}
+    body.vista-elegir header,html.arranca-elegir header{
       padding-left:max(16px,calc((100% - 1100px) / 2 + 16px));padding-right:max(16px,calc((100% - 1100px) / 2 + 16px))}
-    body.vista-elegir header>*,html.arranca-elegir header>*{grid-column:1/-1}
-    body.vista-elegir header>.toolbar-row:not(.toolbar-2),html.arranca-elegir header>.toolbar-row:not(.toolbar-2){grid-column:1}
-    body.vista-elegir header>.toolbar-2,html.arranca-elegir header>.toolbar-2{grid-column:2;justify-content:flex-end}
-    body.vista-elegir #mainTitle,html.arranca-elegir #mainTitle{justify-content:center}
-    body.vista-elegir #headerSubtitle,html.arranca-elegir #headerSubtitle{text-align:center;margin-left:auto;margin-right:auto}
-    body.vista-elegir .cota,html.arranca-elegir .cota{margin-left:auto;margin-right:auto;width:100%}
   }
   .summary-bar{background:transparent;border:1px solid rgb(var(--h-rgb) / .2);border-radius:6px;font-size:.84rem}
   .edit-btn,.share-btn{border-radius:4px;font-family:var(--fuente-tabla);font-weight:700;font-size:.8rem;letter-spacing:.01em}
@@ -1802,8 +1800,8 @@ if(!location.search&&!location.hash)document.documentElement.classList.add('arra
     .vista-toggle button{padding:4px 2px;text-align:center;white-space:nowrap}
     .diff-toggle,.legend-toggle{justify-content:center;text-align:center;width:100%;box-sizing:border-box}
     .diff-toggle{white-space:normal}
-    .toolbar-2{grid-template-columns:1fr}
-    .herr-tabla,.herr-gral{display:grid;grid-template-columns:1fr 1fr;gap:8px;width:100%}
+    .toolbar-nav,.toolbar-tabla{grid-template-columns:1fr}
+    .herr-tabla,.herr-gral,.herr-ver{display:grid;grid-template-columns:1fr 1fr;gap:8px;width:100%}
     .herr-tabla .orden-sel,.herr-tabla #plegarTodoBtn{grid-column:1/-1}
     .herr-tabla .orden-sel{display:flex;width:100%}
     .herr-tabla .orden-sel select{flex:1;width:100%;max-width:none;box-sizing:border-box}
@@ -1834,6 +1832,22 @@ if(!location.search&&!location.hash)document.documentElement.classList.add('arra
   <p id="headerSubtitle">266 autos y sus fichas oficiales.</p>
   <div class="cota" aria-hidden="true"><span>266 autos</span></div>
 
+  <!-- Navegación del sitio (2026-11-15, pedido de Sebastián): las pestañas y lo general van antes de
+       buscar y filtrar características, en todas las vistas. -->
+  <div class="toolbar-row toolbar-nav">
+    <div class="vista-toggle" role="tablist" aria-label="Vista">
+      <button type="button" role="tab" id="vistaElegir" aria-selected="false">Ayudame a elegir</button>
+      <button type="button" role="tab" id="vistaTabla" aria-selected="true">Tabla</button>
+      <button type="button" role="tab" id="vistaRanking" aria-selected="false">Ranking</button>
+    </div>
+    <span class="herr-gral">
+      <button class="legend-toggle" id="concesBtn" type="button" title="Dónde ver y comprar cada marca">Concesionarios</button>
+      <button class="legend-toggle" id="gruposBtn" type="button" title="Qué grupo automotriz está detrás de cada marca">Grupos</button>
+      <button class="legend-toggle" id="imprimirBtn" type="button" title="Imprimir o guardar como PDF lo que estás viendo">Imprimir</button>
+      <button class="legend-toggle" id="temaBtn" type="button" aria-label="Cambiar entre modo claro y oscuro"></button>
+    </span>
+  </div>
+
   <!-- Barra compacta: siempre visible, es la única forma de reabrir el selector -->
   <div class="summary-bar" id="summaryBar">
     <span class="summary-txt"><span id="summaryText" aria-live="polite">266 autos, todos incluidos</span><span id="refInfo" hidden>, con <b></b> como referencia <button class="mini-btn" id="refQuitarBtn" type="button">quitar</button></span></span>
@@ -1849,19 +1863,7 @@ if(!location.search&&!location.hash)document.documentElement.classList.add('arra
   </div>
   <div class="cat-scroll" id="catScroll"></div>
   <div class="cat-scroll" id="rkScroll" style="display:none" aria-label="Característica del ranking"></div>
-  <div class="toolbar-row">
-    <div class="vista-toggle" role="tablist" aria-label="Vista">
-      <button type="button" role="tab" id="vistaElegir" aria-selected="false">Ayudame a elegir</button>
-      <button type="button" role="tab" id="vistaTabla" aria-selected="true">Tabla</button>
-      <button type="button" role="tab" id="vistaRanking" aria-selected="false">Ranking</button>
-    </div>
-    <label class="diff-toggle">
-      <input type="checkbox" id="diffOnly">
-      Solo diferencias
-    </label>
-    <button class="legend-toggle" id="legendToggleBtn" type="button">Cómo leer la tabla</button>
-  </div>
-  <div class="toolbar-row toolbar-2">
+  <div class="toolbar-row toolbar-tabla" id="toolbarTabla">
     <span class="herr-tabla" id="herrTabla">
       <label class="orden-sel"><span class="sr">Ordenar autos</span>
         <select id="ordenSel"><option value="" title="Largo, ancho y alto: el más grande primero">Por tamaño</option></select>
@@ -1871,11 +1873,12 @@ if(!location.search&&!location.hash)document.documentElement.classList.add('arra
       </label>
       <button class="legend-toggle" id="plegarTodoBtn" type="button">Plegar todo</button>
     </span>
-    <span class="herr-gral">
-      <button class="legend-toggle" id="concesBtn" type="button" title="Dónde ver y comprar cada marca">Concesionarios</button>
-      <button class="legend-toggle" id="gruposBtn" type="button" title="Qué grupo automotriz está detrás de cada marca">Grupos</button>
-      <button class="legend-toggle" id="imprimirBtn" type="button" title="Imprimir o guardar como PDF lo que estás viendo">Imprimir</button>
-      <button class="legend-toggle" id="temaBtn" type="button" aria-label="Cambiar entre modo claro y oscuro"></button>
+    <span class="herr-ver">
+      <label class="diff-toggle">
+        <input type="checkbox" id="diffOnly">
+        Solo diferencias
+      </label>
+      <button class="legend-toggle" id="legendToggleBtn" type="button">Cómo leer la tabla</button>
     </span>
   </div>
 </header>
@@ -5055,6 +5058,7 @@ function mostrarVista(v){
   // "Elegir autos" y "Cómo leer la tabla" son de la tabla y el ranking, no de las preguntas.
   document.getElementById('summaryBar').style.display = otra ? 'none' : '';
   document.getElementById('legendToggleBtn').style.display = otra ? 'none' : '';
+  document.getElementById('toolbarTabla').style.display = otra ? 'none' : '';
   if (otra) document.getElementById('legendBox').style.display = 'none';
   document.getElementById('gruposVista').hidden = !gr;
   document.getElementById('concesVista').hidden = !cc;

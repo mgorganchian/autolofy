@@ -27,9 +27,24 @@ test('en la computadora, el encabezado sigue los bordes de la columna de Ayudame
     const [yt, yh] = await Promise.all(['.vista-toggle', '.herr-gral'].map(s => page.locator(s).evaluate(e => e.getBoundingClientRect().bottom)));
     expect(Math.abs(yt - yh)).toBeLessThanOrEqual(2);
   }
-  // La tabla usa todo el ancho: ahí el encabezado no cambia.
-  await page.locator('#vistaTabla').click();
-  expect(await page.locator('header').evaluate(e => getComputedStyle(e).display)).toBe('block');
+});
+
+test('en la Tabla, el título va centrado y la navegación del sitio va antes de buscar y filtrar', async ({ page }, info) => {
+  await page.goto('/index.html?tabla');
+  // Pestañas y botones generales antes del buscador, de las categorías y de las herramientas de la tabla (también al tabular).
+  const orden = await page.evaluate(() => ['.vista-toggle', '.herr-gral', '#summaryBar', '#search', '#catScroll', '#herrTabla', '.diff-toggle']
+    .map(s => document.querySelector(s)).every((e, i, a) => !i || (a[i - 1].compareDocumentPosition(e) & Node.DOCUMENT_POSITION_FOLLOWING)));
+  expect(orden).toBe(true);
+  const [nav, buscar] = await Promise.all(['.vista-toggle', '#search'].map(s => page.locator(s).evaluate(e => e.getBoundingClientRect().top)));
+  expect(nav).toBeLessThan(buscar);
+  if (info.project.name !== 'escritorio') return;
+  // Logo y título centrados como en Ayudame a elegir; pestañas a la izquierda y botones a la derecha, en la misma fila.
+  const ancho = await page.evaluate(() => document.documentElement.clientWidth);
+  const titulo = await page.locator('#mainTitle').evaluate(e => { const r = document.createRange(); r.selectNodeContents(e); const b = r.getBoundingClientRect(); return (b.left + b.right) / 2; });
+  expect(Math.abs(titulo - ancho / 2)).toBeLessThanOrEqual(12);
+  const [t, h] = await Promise.all(['.vista-toggle', '.herr-gral'].map(s => caja(page, s)));
+  expect(t.l).toBeLessThan(ancho / 4);
+  expect(h.r).toBeGreaterThan(ancho * 3 / 4);
 });
 
 // Los clics van con element.click(): el de Playwright sube la página hasta el botón antes de tocarlo, y lo que se prueba es

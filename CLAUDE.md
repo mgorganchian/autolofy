@@ -632,6 +632,10 @@ sí quedan en inglés, porque no muestran la palabra. Se coló con `YES` dos vec
   porque Chrome anota el scroll de un paso recién cuando se crea el siguiente y lo repone después del popstate. **(3)** «Empezar de nuevo»
   (`#elegirReiniciar`) repone `ELEGIR_INICIAL`. **(4)** La barra del pie suma, en gris, «Antes, N.» con cuántos cumplían antes de la última
   respuesta (`dataset.total`); en ese caso no dice «Nuevas sugerencias», para que entre en un renglón del celular. `elegir-navegacion.spec.js`.
+- **Encabezado en todas las vistas** (2026-11-15, pedido de Sebastián): debajo del logo va la fila de navegación (`.toolbar-nav`: pestañas a la
+  izquierda; Concesionarios, Grupos, Imprimir y el tema a la derecha), **antes** de «Elegir autos», el buscador y las categorías; al final,
+  `#toolbarTabla` (orden, barras y plegar a la izquierda; «Solo diferencias» y «Cómo leer la tabla» a la derecha), que se esconde fuera de la
+  Tabla y el Ranking. En la computadora (≥ 900 px) logo, título, bajada y cota van centrados en todas las vistas. `elegir-navegacion.spec.js`.
 - **Respaldo de fábrica** (2026-10-10, pedido del usuario: en Argentina da miedo conseguir repuestos;
   después del precio es de lo que más pesa): `MARCAS_INFO[marca].fabrica_mercosur` = planta que
   **ya produce** autos en el Mercosur, con fuente (BYD, GWM en Haval/Ora/Tank/Poer, Chery por CAOA,
