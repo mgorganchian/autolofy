@@ -636,6 +636,8 @@ sí quedan en inglés, porque no muestran la palabra. Se coló con `YES` dos vec
   izquierda; Concesionarios, Grupos, Imprimir y el tema a la derecha), **antes** de «Elegir autos», el buscador y las categorías; al final,
   `#toolbarTabla` (orden, barras y plegar a la izquierda; «Solo diferencias» y «Cómo leer la tabla» a la derecha), que se esconde fuera de la
   Tabla y el Ranking. En la computadora (≥ 900 px) logo, título, bajada y cota van centrados en todas las vistas. `elegir-navegacion.spec.js`.
+  Desde 641 px las categorías de la Tabla y los criterios del Ranking (`.cat-scroll`) bajan de renglón para que se vean todos; en el celular
+  siguen en una fila que se desliza.
 - **Respaldo de fábrica** (2026-10-10, pedido del usuario: en Argentina da miedo conseguir repuestos;
   después del precio es de lo que más pesa): `MARCAS_INFO[marca].fabrica_mercosur` = planta que
   **ya produce** autos en el Mercosur, con fuente (BYD, GWM en Haval/Ora/Tank/Poer, Chery por CAOA,

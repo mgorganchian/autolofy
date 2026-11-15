@@ -166,6 +166,10 @@ if(!location.search&&!location.hash)document.documentElement.classList.add('arra
     scrollbar-width:none;
   }
   .cat-scroll::-webkit-scrollbar{display:none;}
+  /* En la computadora y la tablet (2026-11-15, pedido de Sebastián) las categorías y los criterios del
+     Ranking bajan de renglón: en una sola fila con scroll, las últimas no se veían ni se podían elegir.
+     En el celular siguen en una fila que se desliza con el dedo. */
+  @media (min-width:641px){ .cat-scroll{flex-wrap:wrap;overflow-x:visible} }
   .legend{
     font-size:.68rem;
     color:var(--ink-2);
