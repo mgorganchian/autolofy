@@ -44,8 +44,9 @@ test('ayudame a elegir: la franja de precio es piso y techo, y con enchufe en ca
   // La barra al pie cambia con cada respuesta (en el celular la lista queda fuera de la pantalla).
   const barra = page.locator('.elegir-barra');
   await page.locator('label:has(input[name="el-enchufe"][value="no"])').click();
-  // La barra ya no nombra los sugeridos (2026-10-10: mucho texto): dice si cambiaron y se ilumina.
-  await expect(barra).toContainText(/Nuevas sugerencias|Sin cambios/);
+  // La barra ya no nombra los sugeridos (2026-10-10: mucho texto): dice si cambiaron y se ilumina. Si cambió cuántos cumplen,
+  // dice «Antes, N.» en lugar de «Nuevas sugerencias», para entrar en un renglón (issue #192).
+  await expect(barra).toContainText(/Nuevas sugerencias|Sin cambios|Antes, \d+\./);
   await expect(barra).toHaveClass(/cambio/);
   for (const t of await res.locator("ul").allTextContents()) expect(t).not.toMatch(/necesita dónde cargar/i);
   await fijarPresu(page, '');
