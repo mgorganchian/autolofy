@@ -109,3 +109,21 @@ test('la barra del pie dice, en gris y en un renglón, cuántos cumplían antes 
   expect(colAntes).not.toBe(colTxt);
   expect(await txt.evaluate(e => e.scrollWidth <= e.clientWidth)).toBe(true);
 });
+
+test('las categorías de la Tabla y los criterios del Ranking se ven todos: en la computadora bajan de renglón', async ({ page }, info) => {
+  await page.goto('/index.html?tabla');
+  const medir = sel => page.locator(sel).evaluate(c => ({
+    adentro: [...c.children].every(b => b.getBoundingClientRect().right <= innerWidth + 1),
+    filas: new Set([...c.children].map(b => Math.round(b.getBoundingClientRect().top))).size,
+  }));
+  if (info.project.name === 'celular') {
+    expect((await medir('#catScroll')).filas).toBe(1);   // en el celular siguen en una fila que se desliza con el dedo
+    return;
+  }
+  const tabla = await medir('#catScroll');
+  expect(tabla.adentro).toBe(true);
+  expect(tabla.filas).toBeGreaterThan(1);
+  await page.locator('#vistaRanking').click();
+  await expect(page.locator('#rkScroll .rk-chip').first()).toBeVisible();
+  expect((await medir('#rkScroll')).adentro).toBe(true);
+});
