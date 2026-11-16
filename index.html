@@ -3923,7 +3923,10 @@ function renderModelList(){
   let visibleCount = 0;
   const q = sinTildes((document.getElementById('modelBuscar') || {}).value || '').trim();
   const html = [];
-  CARS.forEach((car,i)=>{
+  // En orden alfabético por el nombre del modelo, el que se ve en la tarjeta (2026-11-15, pedido de Sebastián):
+  // antes salían en el orden de CARS, que es el de carga.
+  CARS.map((car,i)=>i).sort((a,b)=>CARS[a].short.localeCompare(CARS[b].short,'es',{numeric:true,sensitivity:'base'})).forEach(i=>{
+    const car = CARS[i];
     if(!matchesFacets(i)) return;
     visibleCount++;
     if (q && !coincide(q, car.name + ' ' + car.brand)) return;
