@@ -488,7 +488,7 @@ sí quedan en inglés, porque no muestran la palabra. Se coló con `YES` dos vec
   después de la suspensión. Dice qué lleva adelante y atrás con un vocabulario fijo («Discos ventilados adelante, discos sólidos atrás», «Discos
   ventilados adelante, tambores atrás», «Discos adelante y atrás»…): «discos atrás» a secas es que la fuente no dice si son ventilados o sólidos, y
   no se completa. Medidas, pinzas y la cita de la ficha van al `DET:`. Las fichas de Audi son de México (EXT). No está en `PCTL_DIR`: no se
-  rankea. La primera carga salió de las fichas de `fichas-fuentes.tsv` (156 autos, cada celda en `datos-fuentes.tsv`); 110 quedaron s/d.
+  rankea. La primera carga salió de las fichas de `fichas-fuentes.tsv` (156 autos, cada celda en `datos-fuentes.tsv`); el 2026-11-16 una búsqueda por auto sumó 7 (fichas de otro país y fuentes no oficiales coincidentes) y quedaron 103 s/d.
 - **Cupo de importación con arancel 0%** (2026-11-07, fila de Origen; delegado por Mati): `EXT:Figura en el cupo` solo si el modelo tiene
   coincidencia **exacta** en un cupo **asignado** (Res. 295/2025, Res. 513/2025 o reasignación de la Disp. 375/2026); `NOTE:No concluyente` si la
   coincidencia es dudosa; `NR:s/d` si no figura. **Nunca `No`**: el cupo es de la empresa para un modelo y no prueba que el precio salga sin
