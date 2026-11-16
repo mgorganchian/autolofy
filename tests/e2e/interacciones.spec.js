@@ -306,3 +306,13 @@ test.describe('fotos en celular', () => {
     await expect(img).toHaveAttribute('src', /\/fotos\/(med\/[a-z0-9-]+|[a-z0-9-]+-1)\.jpg$/);
   });
 });
+
+test('el panel «Elegir autos» lista los modelos en orden alfabético por modelo, no por marca', async ({ page }) => {
+  await page.goto('/index.html?tabla');
+  await page.click('#openModalBtn');
+  await page.evaluate(() => { document.getElementById('modelDropdownBtn').click(); });
+  const nombres = await page.locator('#modelList label.mcard b').allTextContents();
+  expect(nombres.length).toBeGreaterThan(200);
+  const ordenados = [...nombres].sort((a, b) => a.localeCompare(b, 'es', { numeric: true, sensitivity: 'base' }));
+  expect(nombres).toEqual(ordenados);
+});
