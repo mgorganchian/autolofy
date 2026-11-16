@@ -638,6 +638,7 @@ sí quedan en inglés, porque no muestran la palabra. Se coló con `YES` dos vec
   Tabla y el Ranking. En la computadora (≥ 900 px) logo, título, bajada y cota van centrados en todas las vistas. `elegir-navegacion.spec.js`.
   Desde 641 px las categorías de la Tabla y los criterios del Ranking (`.cat-scroll`) bajan de renglón para que se vean todos; en el celular
   siguen en una fila que se desliza.
+- **«Elegir autos para comparar»** (2026-11-15, pedido de Sebastián: a la derecha y con «Elegir autos» no se entendía): el botón que abre el panel va **primero** en la barra del resumen (`#summaryBar`), antes de «Comparando N autos»; «Los que sigo» y «Compartir» quedan a la derecha. En el celular el botón va a lo ancho, «Compartir» debajo y el resumen al final. `elegir-navegacion.spec.js`.
 - **Respaldo de fábrica** (2026-10-10, pedido del usuario: en Argentina da miedo conseguir repuestos;
   después del precio es de lo que más pesa): `MARCAS_INFO[marca].fabrica_mercosur` = planta que
   **ya produce** autos en el Mercosur, con fuente (BYD, GWM en Haval/Ora/Tank/Poer, Chery por CAOA,

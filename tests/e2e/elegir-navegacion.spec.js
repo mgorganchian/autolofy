@@ -127,3 +127,22 @@ test('las categorías de la Tabla y los criterios del Ranking se ven todos: en l
   await expect(page.locator('#rkScroll .rk-chip').first()).toBeVisible();
   expect((await medir('#rkScroll')).adentro).toBe(true);
 });
+
+test('«Elegir autos para comparar» va primero en la barra del resumen, antes de «Comparando…»', async ({ page }) => {
+  await page.goto('/index.html?autos=byd-song-pro,gwm-haval-h6-4wd&ref=byd-song-pro');
+  const btn = page.locator('#openModalBtn');
+  await expect(btn).toHaveText('Elegir autos para comparar');
+  const orden = await page.evaluate(() => {
+    const bar = document.getElementById('summaryBar');
+    const b = document.getElementById('openModalBtn').getBoundingClientRect();
+    const t = document.getElementById('summaryText').getBoundingClientRect();
+    const s = document.getElementById('shareBtn').getBoundingClientRect();
+    return { primero: bar.firstElementChild.id, b, t, s, ancho: document.documentElement.scrollWidth, vw: innerWidth };
+  });
+  expect(orden.primero).toBe('openModalBtn');
+  expect(orden.ancho).toBeLessThanOrEqual(orden.vw);
+  // El botón queda arriba o a la izquierda del resumen, y no se pisa con «Compartir».
+  expect(orden.b.bottom <= orden.t.top + 1 || orden.b.right <= orden.t.left + 1).toBe(true);
+  expect(orden.b.bottom <= orden.s.top + 1 || orden.b.right <= orden.s.left + 1).toBe(true);
+  expect(orden.s.bottom <= orden.t.top + 1 || orden.t.right <= orden.s.left + 1).toBe(true);
+});

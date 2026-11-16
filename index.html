@@ -1408,7 +1408,19 @@ if(!location.search&&!location.hash)document.documentElement.classList.add('arra
 
   /* ============ Barra resumen: compartir y referencia ===================== */
   .summary-txt{min-width:0}
-  .summary-acciones{display:flex;gap:6px;flex-shrink:0}
+  /* "Elegir autos para comparar" va primero, a la izquierda del resumen (2026-11-15, pedido de Sebastián: a la
+     derecha no se entendía); "Los que sigo" y "Compartir" quedan a la derecha. */
+  .summary-bar{justify-content:flex-start}
+  .summary-acciones{display:flex;gap:6px;flex-shrink:0;margin-left:auto}
+  .summary-bar{flex-wrap:wrap}
+  .summary-txt{flex:1 1 16em}
+  /* En el celular, el botón a lo ancho como el resto de la barra, "Compartir" y "Los que sigo" debajo y el resumen al final. */
+  @media (max-width:640px){
+    #openModalBtn{flex-basis:100%;padding-top:10px;padding-bottom:10px}
+    .summary-acciones{flex-basis:100%;margin-left:0}
+    .summary-acciones > button{flex:1}
+    .summary-txt{order:3;flex-basis:100%}
+  }
   .share-btn{background:transparent;color:var(--h-ink);border:1px solid rgb(var(--h-rgb) / .5);border-radius:8px;
     padding:6px 10px;font-size:.72rem;font-weight:600;cursor:pointer;white-space:nowrap}
   .share-btn:hover{background:rgb(var(--h-rgb) / .15)}
@@ -1664,7 +1676,7 @@ if(!location.search&&!location.hash)document.documentElement.classList.add('arra
     header{background:none;color:#000;padding:0 0 6px}
     header h1,#headerSubtitle{display:block !important;color:#000}
     .summary-bar{background:none;border:0;color:#000;padding:0;margin-top:4px}
-    .controls,#catScroll,#rkScroll,.toolbar-row,.summary-acciones,#refQuitarBtn,.th-acciones,
+    .controls,#catScroll,#rkScroll,.toolbar-row,.summary-acciones,#openModalBtn,#refQuitarBtn,.th-acciones,
     #simPanel,#tooltipBox,#fotoZoom,.modal-overlay,.legend,.no-results{display:none !important}
     #theadWrap{display:none}
     .table-wrap{overflow:visible}
@@ -1854,11 +1866,11 @@ if(!location.search&&!location.hash)document.documentElement.classList.add('arra
 
   <!-- Barra compacta: siempre visible, es la única forma de reabrir el selector -->
   <div class="summary-bar" id="summaryBar">
+    <button class="edit-btn" id="openModalBtn" type="button">Elegir autos para comparar</button>
     <span class="summary-txt"><span id="summaryText" aria-live="polite">266 autos, todos incluidos</span><span id="refInfo" hidden>, con <b></b> como referencia <button class="mini-btn" id="refQuitarBtn" type="button">quitar</button></span></span>
     <span class="summary-acciones">
       <button class="share-btn" id="seguidosBtn" type="button" hidden>Los que sigo</button>
       <button class="share-btn" id="shareBtn" type="button" hidden>Compartir</button>
-      <button class="edit-btn" id="openModalBtn" type="button">Elegir autos</button>
     </span>
   </div>
 
