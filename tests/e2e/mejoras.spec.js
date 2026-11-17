@@ -3,7 +3,7 @@
 const fs = require('fs');
 const path = require('path');
 const { test, expect } = require('@playwright/test');
-const { leerIndex, vigilarErrores, FILAS_DATOS, N_FILAS } = require('./helpers');
+const { leerIndex, vigilarErrores, FILAS_DATOS, N_FILAS, abrirGeneral } = require('./helpers');
 
 const RAIZ = process.env.AUTOLOFY_RAIZ || path.resolve(__dirname, '../..');
 const { html } = leerIndex();
@@ -121,7 +121,7 @@ test('la vista Concesionarios ordena por cercanía con la ubicación del GPS', a
   await context.grantPermissions(['geolocation']);
   await context.setGeolocation({ latitude: -31.4135, longitude: -64.1811 });   // Córdoba capital
   await abrir(page);
-  await page.locator('#concesBtn').click();
+  await abrirGeneral(page); await page.locator('#concesBtn').click();
   await page.locator('#dondeGps').click();
   await expect(page.locator('#concesVista')).toContainText('Ordenado por cercanía a tu ubicación');
   const km = await page.locator('#concesVista .cc-dist').allTextContents();
@@ -400,7 +400,7 @@ test('botón Atrás: deshace el último paso (ficha, Grupos, vista, comparar) si
   await expect(page.locator('#rankingView')).toBeHidden();
   await expect(page.locator('#tbodyWrap')).toBeVisible();
   // Grupos → un auto → Atrás vuelve a Grupos → Atrás cierra Grupos
-  await page.click('#gruposBtn');
+  await abrirGeneral(page); await page.click('#gruposBtn');
   await expect(page.locator('#gruposVista')).toBeVisible();
   await page.locator('#gruposHoja .grupo-auto').first().click();
   await expect(page.locator('#fichaAuto')).toBeVisible();
@@ -660,7 +660,7 @@ test('sugerencias: la página del auto abre el formulario precargado con el auto
 test('Grupos y Concesionarios son vistas de la página: sin ventana, sin desborde y con su URL', async ({ page }) => {
   await abrir(page);
   for (const [btn, sec, q, titulo] of [['#gruposBtn', '#gruposVista', 'grupos', 'Grupos automotrices'], ['#concesBtn', '#concesVista', 'concesionarios', 'Concesionarios']]){
-    await page.locator(btn).click();
+    await abrirGeneral(page); await page.locator(btn).click();
     await expect(page.locator(sec)).toBeVisible();
     await expect(page.locator(btn)).toHaveAttribute('aria-pressed', 'true');
     await expect(page.locator(sec + ' h2')).toHaveText(titulo);
