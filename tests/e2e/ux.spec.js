@@ -4,7 +4,7 @@
 // la referencia compare solo lo comparable, y que reordenar columnas no desalinee
 // ninguna celda respecto de su auto.
 const { test, expect } = require('@playwright/test');
-const { leerIndex, vigilarErrores, FILAS_DATOS, N_FILAS } = require('./helpers');
+const { leerIndex, vigilarErrores, FILAS_DATOS, N_FILAS, abrirGeneral } = require('./helpers');
 
 const { CARS } = leerIndex();
 const indice = nombre => CARS.findIndex(c => c.name === nombre);
@@ -40,7 +40,7 @@ test.describe('link compartible', () => {
     await expect(page.locator(FILAS_DATOS)).toHaveCount(N_FILAS);
     expect((await idxVisibles(page)).sort((a, b) => a - b)).toEqual(elegidos.sort((a, b) => a - b));
     await expect(page.locator('#summaryText')).toHaveText('Comparando 3 autos');
-    await expect(page.locator('#mainTitle')).toBeHidden();       // como después de "Comparar"
+    await expect(page.locator('.barra-marca')).toBeVisible();   // la barra con el logo no se esconde nunca (issue #200)
     await expect(page.locator('#shareBtn')).toBeVisible();
   });
 
@@ -200,7 +200,7 @@ test.describe('modo oscuro', () => {
     const fondo = () => page.evaluate(() => getComputedStyle(document.body).backgroundColor);
     const oscuro = await fondo();
     expect(oscuro).not.toBe('rgb(238, 241, 238)');
-    await page.click('#temaBtn');
+    await abrirGeneral(page); await page.click('#temaBtn');
     await expect.poll(fondo).toBe('rgb(238, 241, 238)');
     await page.reload();
     await expect.poll(fondo).toBe('rgb(238, 241, 238)');           // quedó guardado
@@ -366,7 +366,7 @@ test.describe('selector y comparación', () => {
 test.describe('grupos automotrices', () => {
   test('la vista de grupos muestra quién está detrás de cada marca', async ({ page }) => {
     await abrir(page);
-    await page.click('#gruposBtn');
+    await abrirGeneral(page); await page.click('#gruposBtn');
     const changan = page.locator('#gruposHoja .grupo[data-grupo="Changan"]');
     await expect(changan.locator('.grupo-marca-cab b')).toHaveText(['Changan', 'Deepal']);
     await expect(changan.locator('.grupo-marca', { hasText: 'Deepal' }).locator('.grupo-rel')).toHaveText('submarca');
@@ -383,13 +383,13 @@ test.describe('grupos automotrices', () => {
     expect(gwm).toHaveLength(12);   // Haval (7), Ora (2), Tank y Poer
     expect(CARS.some(c => /^GWM \(|^Haval$/.test(c.brand))).toBe(false);
     await abrir(page);
-    await page.click('#gruposBtn');
+    await abrirGeneral(page); await page.click('#gruposBtn');
     await expect(page.locator('#gruposHoja .grupo[data-grupo="Great Wall Motor (GWM)"] .grupo-marca-cab b')).toHaveCount(4);
   });
 
   test('"Comparar sus autos" de un grupo deja solo sus autos en la tabla', async ({ page }) => {
     await abrir(page);
-    await page.click('#gruposBtn');
+    await abrirGeneral(page); await page.click('#gruposBtn');
     await page.locator('#gruposHoja .grupo[data-grupo="Changan"] [data-comparar-grupo]').click();
     const vis = (await idxVisibles(page)).map(i => CARS[i].name).sort();
     expect(vis).toEqual(['Changan CS55 Plus', 'Changan Eado Plus PHEV', 'Deepal S05']);

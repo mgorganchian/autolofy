@@ -6,7 +6,7 @@
 const fs = require('fs');
 const path = require('path');
 const { test, expect } = require('@playwright/test');
-const { leerIndex, vigilarErrores, FILAS_DATOS, N_FILAS } = require('./helpers');
+const { leerIndex, vigilarErrores, FILAS_DATOS, N_FILAS, abrirGeneral } = require('./helpers');
 
 const RAIZ = process.env.AUTOLOFY_RAIZ || path.resolve(__dirname, '../..');
 const RED = JSON.parse(fs.readFileSync(path.join(RAIZ, 'concesionarios.json'), 'utf8'));
@@ -98,7 +98,7 @@ const tarjetas = page => page.locator('#concesVista .cc');
 test.describe('vista Concesionarios', () => {
   test('muestra toda la red y filtra por provincia, marca y búsqueda', async ({ page }) => {
     await abrir(page);
-    await page.locator('#concesBtn').click();
+    await abrirGeneral(page); await page.locator('#concesBtn').click();
     await expect(page.locator('#concesVista')).toBeVisible();
     await expect(tarjetas(page)).toHaveCount(RED.concesionarios.length);
 
@@ -125,7 +125,7 @@ test.describe('vista Concesionarios', () => {
     const c = RED.concesionarios.find(x => /Ventas:.*\/.*Postventa:/.test(x.telefono));
     expect(c).toBeTruthy();
     await abrir(page);
-    await page.locator('#concesBtn').click();
+    await abrirGeneral(page); await page.locator('#concesBtn').click();
     await page.locator('#ccQ').fill(c.nombre);
     const tel = page.locator('#concesVista .cc').filter({ hasText: c.nombre }).first().locator('a[href^="tel:"]');
     expect(await tel.count()).toBeGreaterThan(1);

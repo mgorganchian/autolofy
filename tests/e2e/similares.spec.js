@@ -249,7 +249,7 @@ test.describe('similares en la tabla', () => {
     await abrir(); await expect(panel).toBeVisible();
     await page.keyboard.press('Escape'); await expect(panel).toBeHidden();
     await abrir(); await panel.locator('.sim-cerrar').click(); await expect(panel).toBeHidden();
-    await abrir(); await page.locator('#mainTitle').click(); await expect(panel).toBeHidden();
+    await abrir(); await page.locator('#summaryText').click(); await expect(panel).toBeHidden();
   });
 
   test('en el celular el panel entra en la pantalla', async ({ page }, info) => {

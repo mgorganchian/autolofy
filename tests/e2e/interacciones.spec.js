@@ -107,7 +107,7 @@ test.describe('selector de autos', () => {
     const vistos = await columnasVisibles(page).evaluateAll(ths => ths.map(th => +th.dataset.idx));
     expect(vistos.map(i => CARS[i].name).sort()).toEqual(esperados.map(c => c.name).sort());
     await expect(page.locator('#summaryText')).toHaveText(`Comparando ${esperados.length} auto${esperados.length === 1 ? '' : 's'}`);
-    await expect(page.locator('#mainTitle')).toBeHidden();
+    await expect(page.locator('.barra-marca')).toBeVisible();   // la barra con el logo no se esconde nunca (issue #200)
     // Las celdas del cuerpo acompañan al header.
     const celdas = await page.locator(FILAS_DATOS).first().locator('td[data-col]:not(.col-hidden)').count();
     expect(celdas).toBe(esperados.length);
@@ -191,7 +191,7 @@ test.describe('tooltips y fotos', () => {
     await celda.click();
     await expect(page.locator('#tooltipBox')).toHaveClass(/visible/);
     await expect(page.locator('#tooltipBox')).toHaveText(tip);
-    await page.locator('#mainTitle').click();
+    await page.locator('#summaryText').click();
     await expect(page.locator('#tooltipBox')).not.toHaveClass(/visible/);
   });
 

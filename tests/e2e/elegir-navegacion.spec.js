@@ -17,8 +17,8 @@ test('en la computadora, el encabezado sigue los bordes de la columna de Ayudame
   for (const ancho of [1024, 1440, 1920]) {
     await page.setViewportSize({ width: ancho, height: 900 });
     await page.goto('/index.html');
-    const titulo = await caja(page, '#elegirTitulo'), tabs = await caja(page, '.vista-toggle'), herr = await caja(page, '.herr-gral');
-    expect(Math.abs(tabs.l - titulo.l), `pestañas a ${ancho} px`).toBeLessThanOrEqual(1);
+    const titulo = await caja(page, '#elegirTitulo'), logo = await caja(page, '.barra-marca'), herr = await caja(page, '.herr-gral');
+    expect(Math.abs(logo.l - titulo.l), `logo a ${ancho} px`).toBeLessThanOrEqual(1);
     expect(Math.abs(herr.r - titulo.r), `botones a ${ancho} px`).toBeLessThanOrEqual(1);
     const medio = (titulo.l + titulo.r) / 2;
     for (const sel of ['#headerSubtitle', '.cota'])
@@ -29,7 +29,7 @@ test('en la computadora, el encabezado sigue los bordes de la columna de Ayudame
   }
 });
 
-test('en la Tabla, el título va centrado y la navegación del sitio va antes de buscar y filtrar', async ({ page }, info) => {
+test('en la Tabla, la barra del sitio sigue la misma columna y va antes de buscar y filtrar', async ({ page }, info) => {
   await page.goto('/index.html?tabla');
   // Pestañas y botones generales antes del buscador, de las categorías y de las herramientas de la tabla (también al tabular).
   const orden = await page.evaluate(() => ['.vista-toggle', '.herr-gral', '#summaryBar', '#search', '#catScroll', '#herrTabla', '.diff-toggle']
@@ -38,13 +38,15 @@ test('en la Tabla, el título va centrado y la navegación del sitio va antes de
   const [nav, buscar] = await Promise.all(['.vista-toggle', '#search'].map(s => page.locator(s).evaluate(e => e.getBoundingClientRect().top)));
   expect(nav).toBeLessThan(buscar);
   if (info.project.name !== 'escritorio') return;
-  // Logo y título centrados como en Ayudame a elegir; pestañas a la izquierda y botones a la derecha, en la misma fila.
+  // La barra sigue la columna de 1100 px de Ayudame a elegir (issue #200): logo a la izquierda, pestañas a su lado y botones
+  // a la derecha, en la misma fila. El título grande va solo en Ayudame a elegir.
   const ancho = await page.evaluate(() => document.documentElement.clientWidth);
-  const titulo = await page.locator('#mainTitle').evaluate(e => { const r = document.createRange(); r.selectNodeContents(e); const b = r.getBoundingClientRect(); return (b.left + b.right) / 2; });
-  expect(Math.abs(titulo - ancho / 2)).toBeLessThanOrEqual(12);
-  const [t, h] = await Promise.all(['.vista-toggle', '.herr-gral'].map(s => caja(page, s)));
-  expect(t.l).toBeLessThan(ancho / 4);
-  expect(h.r).toBeGreaterThan(ancho * 3 / 4);
+  const borde = Math.max(16, (ancho - 1100) / 2 + 16);
+  const [l, t, h] = await Promise.all(['.barra-marca', '.vista-toggle', '.herr-gral'].map(s => caja(page, s)));
+  expect(Math.abs(l.l - borde)).toBeLessThanOrEqual(1);
+  expect(t.l).toBeGreaterThan(l.r);
+  expect(Math.abs(h.r - (ancho - borde))).toBeLessThanOrEqual(1);
+  await expect(page.locator('#headerSubtitle')).toBeHidden();
 });
 
 // Los clics van con element.click(): el de Playwright sube la página hasta el botón antes de tocarlo, y lo que se prueba es

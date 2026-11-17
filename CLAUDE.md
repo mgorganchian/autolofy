@@ -225,7 +225,8 @@ sí quedan en inglés, porque no muestran la palabra. Se coló con `YES` dos vec
   filtro de asientos dejó de andar en silencio cuando se buscaba por `data-search`.
 - **El mejor se marca con una copa y la palabra «Mejor»**, no con una estrella (2026-11-05, pedido de Mati: la estrella se lee como puntaje o favorito). Sale de `MEJOR_HTML` en `index.html`; la clase sigue siendo `.mejor-sel` (la usan los tests) y la explicación de cada caso va en el `title`. Donde estos textos dicen «★» se lee la copa.
 - **La barra resumen NO es sticky** — decisión explícita del usuario.
-- **El header grande se oculta** tras el primer "Comparar" (`hasComparedOnce`).
+- **La barra del sitio no se esconde nunca** (2026-11-17, issue #200: el primer "Comparar" escondía el logo y no quedaba cómo volver al
+  inicio). El título grande, la bajada y la cota van solo en Ayudame a elegir; en las demás vistas el `h1` queda para los lectores de pantalla.
 - **Dropdown de Marca/Modelo en `position:static`**, no `absolute` (quedaba recortado).
 - El **indicador de percentiles** (una barra rojo → amarillo → verde al pie de la celda, cuyo
   largo es el percentil; reemplazó a los 4 cuadraditos el 2026-10-07, pedido del usuario). Con 2
@@ -630,17 +631,22 @@ sí quedan en inglés, porque no muestran la palabra. Se coló con `YES` dos vec
   («Ver todos sus datos en la tabla», «Sumar a mi comparación» y «Comparar con…») llevan a la **vista Tabla** (`mostrarVista('tabla')`) también cuando se abrió
   desde Ayudame a elegir, Grupos o Ranking; antes cerraban la ventana y dejaban la pantalla anterior (`ficha-ver-tabla.spec.js`).
 - **Navegación de Ayudame a elegir** (2026-11-15, issue #192, pedido de Sebastián): **(1)** en la computadora (≥ 900 px) y solo en esa vista, el
-  encabezado sigue los bordes de la columna de `.elegir` (1100 px): logo, título, bajada y cota centrados, y en una misma fila las pestañas a la
-  izquierda y Concesionarios, Grupos, Imprimir y el tema a la derecha (grilla en `body.vista-elegir header` y `html.arranca-elegir header`). La
-  Tabla y las otras vistas siguen a todo el ancho. **(2)** Ayudame a elegir vuelve al lugar donde estaba, se vuelva con Atrás o con la pestaña:
+  encabezado sigue los bordes de la columna de `.elegir` (1100 px), con título, bajada y cota centrados; desde el 2026-11-17 (issue #200) el
+  encabezado sigue esa columna en todas las vistas (la tabla, debajo, sigue a todo el ancho). **(2)** Ayudame a elegir vuelve al lugar donde estaba, se vuelva con Atrás o con la pestaña:
   `mostrarVista` anota `elegirY` al salir y lo repone al entrar, y `pasoHist` crea el paso nuevo con la página por un instante en `elegirY`,
   porque Chrome anota el scroll de un paso recién cuando se crea el siguiente y lo repone después del popstate. **(3)** «Empezar de nuevo»
   (`#elegirReiniciar`) repone `ELEGIR_INICIAL`. **(4)** La barra del pie suma, en gris, «Antes, N.» con cuántos cumplían antes de la última
   respuesta (`dataset.total`); en ese caso no dice «Nuevas sugerencias», para que entre en un renglón del celular. `elegir-navegacion.spec.js`.
-- **Encabezado en todas las vistas** (2026-11-15, pedido de Sebastián): debajo del logo va la fila de navegación (`.toolbar-nav`: pestañas a la
-  izquierda; Concesionarios, Grupos, Imprimir y el tema a la derecha), **antes** de «Elegir autos», el buscador y las categorías; al final,
-  `#toolbarTabla` (orden, barras y plegar a la izquierda; «Solo diferencias» y «Cómo leer la tabla» a la derecha), que se esconde fuera de la
-  Tabla y el Ranking. En la computadora (≥ 900 px) logo, título, bajada y cota van centrados en todas las vistas. `elegir-navegacion.spec.js`.
+- **Barra del sitio** (2026-11-17, issue #200, pedido de Sebastián; reemplaza la fila `.toolbar-nav` del 2026-11-15): arriba de todo y la misma
+  en todas las vistas, `#barra`: el logo de Autograma (lleva a `/`), las tres pestañas y, a la derecha, Concesionarios, Grupos, Novedades y el
+  tema (`.herr-gral`). En el celular, el logo y «Más» (`#masBtn`) en una fila y las pestañas debajo; «Más» abre lo general y suma «Quién hace
+  esto» (se cierra al elegir, con Esc o tocando afuera; en los tests, `abrirGeneral()`). Debajo, solo en Ayudame a elegir, el título grande. Después,
+  **antes** del buscador y las categorías, la fila de contexto (`#summaryBar`: «Elegir autos», qué se compara, «Los que sigo», Compartir e
+  **Imprimir**, que bajó de la barra); al final, `#toolbarTabla` (orden, barras y plegar a la izquierda; «Solo diferencias» y «Cómo leer la tabla»
+  a la derecha), que se esconde fuera de la Tabla y el Ranking. Las páginas que arma `herramientas-paginas.py` llevan la misma barra sin JS
+  (`barra()`, `BARRA_CSS`; el Ranking se abre con `?vista=ranking`). **El logo** sale de `marca/` (`autograma-oscuro.svg`, `-claro.svg` e
+  `icono-*.svg`, con los colores del sitio): en la página va en línea con `.lg-t` (`--h-ink`) y `.lg-v` (`--byd-blue`), así cambia con el tema;
+  el favicon es `icono-oscuro.svg`. `barra.spec.js` y `elegir-navegacion.spec.js`.
   Desde 641 px las categorías de la Tabla y los criterios del Ranking (`.cat-scroll`) bajan de renglón para que se vean todos; en el celular
   siguen en una fila que se desliza.
 - **«Elegir autos para comparar»** (2026-11-15, pedido de Sebastián: a la derecha y con «Elegir autos» no se entendía): el botón que abre el panel va **primero** en la barra del resumen (`#summaryBar`), antes de «Comparando N autos»; «Los que sigo» y «Compartir» quedan a la derecha. En el celular el botón va a lo ancho, «Compartir» debajo y el resumen al final. `elegir-navegacion.spec.js`.

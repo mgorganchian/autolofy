@@ -4,7 +4,7 @@
 const fs = require('fs');
 const path = require('path');
 const { test, expect } = require('@playwright/test');
-const { leerIndex, vigilarErrores, FILAS_DATOS, N_FILAS } = require('./helpers');
+const { leerIndex, vigilarErrores, FILAS_DATOS, N_FILAS, abrirGeneral } = require('./helpers');
 
 const RAIZ = process.env.AUTOLOFY_RAIZ || path.resolve(__dirname, '../..');
 const { html } = leerIndex();
@@ -65,7 +65,7 @@ test('la vista Grupos y el filtro de Marca muestran los logos, ninguno roto', as
   const marcas = await rotos(page);
   expect(marcas.rotos).toEqual([]);
   expect(marcas.total).toBeGreaterThan(10);
-  await page.locator('#gruposBtn').click();
+  await abrirGeneral(page); await page.locator('#gruposBtn').click();
   await expect(page.locator('#gruposHoja .grupo-cabeza .logo')).toHaveCount(Object.keys(LOGO_GRUPO).length);
   expect((await rotos(page)).rotos).toEqual([]);
 });
