@@ -1,6 +1,6 @@
 # Autolofy — reglas del proyecto
 
-Autolofy (https://autolofy.vercel.app) compara **266 autos** 0 km vendidos (o por llegar) en Argentina.
+Autolofy (https://autolofy.vercel.app) compara **268 autos** 0 km vendidos (o por llegar) en Argentina.
 Empezó con los chinos y electrificados; el nombre cambió el 2026-10-28 (repo `mgorganchian/autolofy`,
 proyectos de Vercel `autolofy` y `autolofy-plan`).
 Desde el 2026-10-28 también entran autos de marcas no chinas (decisión de Mati y Sebastián del
@@ -37,6 +37,15 @@ El 2026-10-29 (pedido de Mati) se sumaron **73 de los 100 modelos más patentado
   en su versión Supreme, con precio `EXT` de la prensa del lanzamiento (USD 35.500, 16/5/2025) porque gwm.com.ar ya no lo publica; el registro oficial
   lo sigue inscribiendo hasta septiembre de 2026. Portada: la tapa de su ficha (`FT-H6-HEV.pdf`). Ojo: `fichas-fuentes.tsv` y `fichas-hashes.tsv`
   siguen teniendo la fila vieja que asigna esa ficha al «Haval H6 Pro HEV» (de antes de que existiera esta columna).
+- **Tesla** (2026-11-20, pedido de Mati, el día que Tesla Argentina abrió los pedidos): entran el **Model Y Premium Long Range RWD** (el que
+  compra Mati) y el **Model 3 Premium Long Range RWD** (la versión equivalente del sedán, no la Performance), como `preventa`: el configurador toma
+  reservas y la prensa dice que las primeras unidades llegan en 2027. **tesla.com bloquea `curl`, WebFetch y el navegador automático de
+  `herramientas-galeria.js`** (0 imágenes): la ficha, el configurador (precio, colores, llantas), la garantía y el Ubícanos se leen con el
+  navegador de una persona (Claude in Chrome) y van a `datos-fuentes.tsv` como «leída en línea, sin hash». Lo que tesla.com/es_ar no publica
+  (ejes, batería, potencia, equipamiento) sale del manual del propietario y de fuentes de otro mercado como `EXT`. La marca vende directo:
+  Tesla Argentina S.R.L. (filial de fábrica, en `IMPORTA_FABRICA`) y una sola tienda (Unicenter, Martínez), sin centros de servicio publicados.
+  Las fotos son de Commons (`ALIAS` de `herramientas-fotos.py`: categorías «Tesla Model Y (2025)» y «Tesla Model 3 (2023–)»), sin las de
+  Japón, Singapur, Hong Kong ni el Reino Unido (volante a la derecha). El registro DNRPA no tiene ningún Model Y ni Model 3 0 km hasta septiembre de 2026.
 - **Bajar fotos de sitios que bloquean a curl** (Ford, Toyota, Audi, BMW; 2026-10-31): con el navegador integrado,
   como una persona. La página pide la imagen con `fetch` y la manda a un receptor local (`127.0.0.1`) con un
   formulario: el `connect-src` de esos sitios no deja hacer `fetch` a localhost, pero el formulario no pasa por ahí.
