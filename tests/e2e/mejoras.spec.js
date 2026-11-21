@@ -183,7 +183,7 @@ test('el visor agranda la foto y recorre las demás, desde Ayudame a elegir y de
 
 test('las flechitas de las miniaturas cambian la foto en el lugar, y al agrandarla arranca en esa', async ({ page }) => {
   // Pedido del 2026-10-09: en todos los lugares con fotos, sin abrir nada al tocar la flecha.
-  const segunda = /tank-300-2\.jpg$/;
+  const segunda = /tank-300-2\.jpg\?v=[0-9a-f]{8}$/;
   await page.goto('/index.html?autos=gwm-tank-300,byd-shark');
   await expect(page.locator(FILAS_DATOS)).toHaveCount(N_FILAS);
   const caja = page.locator('#theadTable .minicar[data-mini-slug="gwm-tank-300"]');
@@ -212,7 +212,7 @@ test('las flechitas de las miniaturas cambian la foto en el lugar, y al agrandar
     const parecido = page.locator('.ficha-sim .minicar:has(.mini-nav)').first();
     await parecido.hover();
     await parecido.locator('.mini-nav.sig').click();
-    await expect(parecido.locator('img')).toHaveAttribute('src', /-2\.jpg$/);
+    await expect(parecido.locator('img')).toHaveAttribute('src', /-2\.jpg\?v=[0-9a-f]{8}$/);
     expect(page.url()).toContain('auto=gwm-tank-300');
   }
 
@@ -547,7 +547,7 @@ test('tamaño a escala y fotos lado a lado al comparar; los todoterreno se recon
   await fotos.locator('summary').click();
   await expect(fotos.locator('figure')).toHaveCount(4);
   await page.locator('#vistaLadoSel').selectOption('tres-cuartos-delantero');
-  await expect(fotos.locator('figure img').first()).toHaveAttribute('src', /fotos\/[a-z0-9-]+-\d+\.jpg$/);
+  await expect(fotos.locator('figure img').first()).toHaveAttribute('src', /fotos\/[a-z0-9-]+-\d+\.jpg\?v=[0-9a-f]{8}$/);
   // El crédito va en cada foto que lo tiene en CREDITOS_POR_FOTO (las del tablero, todas).
   await page.locator('#vistaLadoSel').selectOption('tablero');
   expect(await fotos.locator('figure img').evaluateAll(l => l.every(im => im.closest('figure').querySelector('.lado-cred')))).toBe(true);

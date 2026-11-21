@@ -25,7 +25,24 @@ SITIO = 'https://autolofy.vercel.app'
 # Un auto sin foto válida de la versión argentina (FOTOS_POR_AUTO = 0, 2026-10-31) no tiene fotos/<slug>-1.jpg:
 # su página muestra la miniatura, que es la silueta de la carrocería, y la vista previa al compartir es og.jpg.
 tiene_foto = lambda slug: os.path.exists(os.path.join(RAIZ, 'fotos', slug + '-1.jpg'))
-img_auto = lambda slug: f'/fotos/{slug}-1.jpg' if tiene_foto(slug) else f'/fotos/mini/{slug}.jpg'
+# Huella de las fotos de cada auto (2026-11-21, pedido de Mati: en el celular se veía la foto vieja hasta un día después de
+# cambiarla). Es un sha1 corto de todos sus archivos (fotos/<slug>-N.jpg, la miniatura y la mediana): cambia solo si cambia
+# alguna foto de ese auto. Cada dirección de foto lleva ?v=<huella>, así el navegador baja la nueva apenas cambia y las que no
+# cambian se guardan un año (vercel.json). La escribe este script en FOTO_V de index.html y en las <img> del encabezado.
+def huella_fotos(slug):
+    import hashlib
+    d = os.path.join(RAIZ, 'fotos')
+    nums = sorted((int(m.group(1)), f) for f in os.listdir(d) if (m := re.fullmatch(re.escape(slug) + r'-(\d+)\.jpg', f)))
+    archivos = [os.path.join(d, f) for _, f in nums] + [os.path.join(d, sub, slug + '.jpg') for sub in ('mini', 'med')]
+    h = hashlib.sha1()
+    for a in archivos:
+        if os.path.exists(a): h.update(os.path.relpath(a, d).encode()); h.update(open(a, 'rb').read())
+    return h.hexdigest()[:8]
+_HUELLAS = {}
+def fv(slug):
+    if slug not in _HUELLAS: _HUELLAS[slug] = huella_fotos(slug)
+    return '?v=' + _HUELLAS[slug]
+img_auto = lambda slug: f'/fotos/{slug}-1.jpg{fv(slug)}' if tiene_foto(slug) else f'/fotos/mini/{slug}.jpg{fv(slug)}'
 SIN_FOTO = 'Todavía no tenemos una foto de esta versión: es la silueta de su carrocería.'
 # El formulario de sugerencias (el mismo que FORM_SUGERENCIAS del script; entry.1360569446 = Auto).
 # Microsoft Clarity (2026-11-04, pedido de Mati): única excepción a "sin JS externo"; mide visitas, clics y scroll.
@@ -151,7 +168,7 @@ def galeria_html(slug, nombre):
         vista = GALERIA['VISTA_NOMBRE'].get(vistas[k], vistas[k]) if k < len(vistas) else ''
         cred = creditos[k] if k < len(creditos) else ''
         pie = ' · '.join(p for p in (vista, cred) if p)
-        figs.append(f'<figure><img src="/fotos/{slug}-{k + 1}.jpg" alt="{e(nombre)}{(": " + e(vista)) if vista else ""}" '
+        figs.append(f'<figure><img src="/fotos/{slug}-{k + 1}.jpg{fv(slug)}" alt="{e(nombre)}{(": " + e(vista)) if vista else ""}" '
                     f'loading="lazy">{f"<figcaption>{e(pie)}</figcaption>" if pie else ""}</figure>')
     return f'<section class="galeria"><h2>Más fotos</h2>{"".join(figs)}</section>' if figs else ''
 
@@ -167,7 +184,7 @@ def pagina(i, data, car, slug, credito, colores, videos, vs=(), extra=None):
     desc = ', '.join(p for p in desc_partes if p) + '. Ficha técnica oficial, equipamiento, colores y comparación con otros autos 0 km en Argentina.'
     titulo = f'{nombre}: precio, ficha técnica y equipamiento en Argentina'
     url = f'{SITIO}/autos/{slug}'
-    foto = f'{SITIO}/fotos/{slug}-1.jpg' if tiene_foto(slug) else f'{SITIO}/og.jpg'
+    foto = f'{SITIO}/fotos/{slug}-1.jpg{fv(slug)}' if tiene_foto(slug) else f'{SITIO}/og.jpg'
     e = H.escape
     # Ficha completa, por categoría
     secciones = []
@@ -553,6 +570,11 @@ def generar():
     # concesionarios.json en la portada. Una marca cuya red no distingue el taller lleva talleres: null.
     red = red_oficial()
     s = re.sub(r'(/\*red:inicio\*/).*?(/\*red:fin\*/)', lambda m: m.group(1) + json.dumps(red, ensure_ascii=False, separators=(',', ':'), sort_keys=True) + m.group(2), s, flags=re.S)
+    # Huellas de las fotos: FOTO_V para el script y la miniatura de cada <th> con su ?v=.
+    huellas = {sl: fv(sl)[3:] for sl in slugs}
+    s = re.sub(r'(/\*fotov:inicio\*/const FOTO_V = ).*?(;/\*fotov:fin\*/)', lambda m: m.group(1) + json.dumps(huellas, separators=(',', ':')) + m.group(2), s, flags=re.S)
+    s = re.sub(r'(<img class="car-photo" data-slug="([^"]+)"[^>]*? src="fotos/mini/[^"?]+\.jpg)(?:\?v=[0-9a-f]+)?"',
+               lambda m: m.group(1) + fv(m.group(2)) + '"', s)
     salida[idx] = s
     return salida, slugs
 
