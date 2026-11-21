@@ -71,6 +71,7 @@ if(!location.search&&!location.hash)document.documentElement.classList.add('arra
     --border-strong:#B7C1BB;
     --link:#006B32;   /* el verde A daba 4,2:1 sobre el papel; este, 6:1 (2026-10-10) */
     --sobre-verde:#fff;   /* texto sobre el verde de acción */
+    --accion-hover:#006E33;   /* verde de acción al pasar el mouse: blanco encima da 6,6:1 */
     --accent-ink:var(--byd-blue-dark);
     --bar:var(--byd-blue);
     --pct-off:#dbe0e6;
@@ -80,12 +81,13 @@ if(!location.search&&!location.hash)document.documentElement.classList.add('arra
     --dot-on:#17211D;
     --tooltip-bg:#17211D;
     --ref-bg:#FFF6DC;
+    --ref-marca:#B07D00;   /* raya bajo el encabezado del auto de referencia: 3,4:1 sobre --ref-bg */
     /* Encabezado, barra de selección, encabezado de la tabla y categorías (2026-10-10): en el tema
        claro son claros (pedido del usuario: nada oscuro arriba). --h-rgb es el color de las tintas
        y bordes translúcidos (rgb(var(--h-rgb) / .3)); --h-inv-* el chip o botón activo. */
     --h-bg:#DCE3DE; --h-rgb:23 33 29; --h-ink:#17211D; --h-inv-bg:#17211D; --h-inv-ink:#fff;
-    --mejor:#0f7a4a;
-    --peor:#c23b3b;
+    --mejor:#0b6b40;   /* ▲▼ contra la referencia: 5:1 sobre el gris del encabezado (2026-11-21; antes 4,1:1) */
+    --peor:#b02f2f;
     color-scheme:light;
   }
   *{box-sizing:border-box;}
@@ -1153,7 +1155,7 @@ if(!location.search&&!location.hash)document.documentElement.classList.add('arra
   .cc-marcas{display:flex;flex-wrap:wrap;gap:4px;margin:3px 0}
   .cc-marcas span{font-family:var(--fuente-tabla);font-size:.66rem;background:var(--chip-bg);border-radius:3px;padding:0 6px}
   .cc-linea{margin:2px 0;font-size:.76rem;line-height:1.4;color:var(--ink)}
-  .cc-linea a,.cc-links a{color:var(--link)}
+  .cc-linea a,.cc-links a{color:var(--link);overflow-wrap:anywhere}   /* las URL y mails largos desbordaban la pantalla del celular (2026-11-21) */
   a[href^="tel:"],a[href^="https://wa.me"]{white-space:nowrap}   /* un teléfono no se parte en dos renglones */
   .cc-links{display:flex;flex-wrap:wrap;gap:4px 12px;margin:3px 0 0;font-size:.74rem}
   .cc-links .cc-fuente-n{margin-left:-8px;display:inline-block;min-width:24px;min-height:24px;text-align:center}
@@ -1466,7 +1468,10 @@ if(!location.search&&!location.hash)document.documentElement.classList.add('arra
   .ref-btn{background:rgb(var(--h-rgb) / .12);border:1px solid rgb(var(--h-rgb) / .35);border-radius:10px;
     padding:0 4px;font-size:.6rem;line-height:1.5;cursor:pointer;filter:grayscale(1);opacity:.75}
   .ref-btn[aria-pressed="true"]{filter:none;opacity:1;background:var(--h-inv-bg);border-color:var(--h-inv-bg)}
-  thead th.col-ref{background:#1d4fa8;box-shadow:inset 0 -3px 0 #ffd54a}
+  /* El encabezado del auto de referencia usa el mismo fondo que su columna, con una raya abajo
+     (2026-11-21, auditoría de accesibilidad: el azul fijo #1d4fa8 dejaba el nombre en 2,15:1 y
+     los pesos y la fecha en 1,21:1 en el tema claro, porque la tinta del encabezado es oscura). */
+  thead th.col-ref{background:var(--ref-bg);box-shadow:inset 0 -3px 0 var(--ref-marca)}
   tbody td.col-ref{background:var(--ref-bg) !important}
   .ref-cmp{font-size:.6rem;margin-left:3px;vertical-align:1px}
   .ref-cmp.mejor{color:var(--mejor)}
@@ -1483,9 +1488,9 @@ if(!location.search&&!location.hash)document.documentElement.classList.add('arra
       --ext-bg:#33280C; --ext-text:#F3C46B; --note-bg:#1A2A33; --note-text:#A9C7D8;
       --surface:#18201C; --surface-alt:#1B2420; --surface-hover:#24302A; --chip-bg:#222C27;
       --ink-2:#A9B5AF; --ink-3:#8E9A94; --border-strong:#3C4943;
-      --link:#5FD08E; --sobre-verde:#0B110E; --accent-ink:#BFE8CF; --bar:#3FA86A; --pct-off:#2f3848; --pct-on:#34c46e;
+      --link:#5FD08E; --sobre-verde:#0B110E; --accion-hover:#3FBF7F; --accent-ink:#BFE8CF; --bar:#3FA86A; --pct-off:#2f3848; --pct-on:#34c46e;
       --yes-bg:#123524; --dot-off:#3C4943; --dot-on:#E7ECE8; --tooltip-bg:#26302B;
-      --ref-bg:#2c2712; --mejor:#3fbf7f; --peor:#f07171;
+      --ref-bg:#2c2712; --ref-marca:#FFD54A; --mejor:#3fbf7f; --peor:#f07171;
       color-scheme:dark;
     }
   }
@@ -1496,9 +1501,9 @@ if(!location.search&&!location.hash)document.documentElement.classList.add('arra
     --ext-bg:#33280C; --ext-text:#F3C46B; --note-bg:#1A2A33; --note-text:#A9C7D8;
     --surface:#18201C; --surface-alt:#1B2420; --surface-hover:#24302A; --chip-bg:#222C27;
     --ink-2:#A9B5AF; --ink-3:#8E9A94; --border-strong:#3C4943;
-    --link:#5FD08E; --sobre-verde:#0B110E; --accent-ink:#BFE8CF; --bar:#3FA86A; --pct-off:#2f3848; --pct-on:#34c46e;
+    --link:#5FD08E; --sobre-verde:#0B110E; --accion-hover:#3FBF7F; --accent-ink:#BFE8CF; --bar:#3FA86A; --pct-off:#2f3848; --pct-on:#34c46e;
     --yes-bg:#123524; --dot-off:#3C4943; --dot-on:#E7ECE8; --tooltip-bg:#26302B;
-    --ref-bg:#2c2712; --mejor:#3fbf7f; --peor:#f07171;
+    --ref-bg:#2c2712; --ref-marca:#FFD54A; --mejor:#3fbf7f; --peor:#f07171;
     color-scheme:dark;
   }
 
@@ -1562,6 +1567,8 @@ if(!location.search&&!location.hash)document.documentElement.classList.add('arra
   table{font-family:var(--fuente-tabla);font-variant-numeric:tabular-nums}
   thead th{font-family:var(--fuente-tabla);font-size:.72rem}
   thead th small{font-size:.66rem;opacity:.7}
+  /* La fecha de la lista ya viene en --ink-3: con la opacidad encima quedaba en 2,8:1 (2026-11-21). */
+  thead th small.precio-fecha{opacity:1}
   .th-nombre{font-family:var(--fuente-titulo);font-weight:700;font-size:.92rem;line-height:1.05;letter-spacing:.005em;
     text-decoration:none;margin-bottom:2px}
   .th-nombre:hover{text-decoration:underline;text-underline-offset:3px}
@@ -1630,7 +1637,7 @@ if(!location.search&&!location.hash)document.documentElement.classList.add('arra
   .advanced-toggle{border-style:solid;border-radius:4px;font-family:var(--fuente-tabla)}
   .compare-btn{background:var(--byd-blue);color:var(--sobre-verde);border-radius:4px;box-shadow:none;font-family:var(--fuente-titulo);
     font-weight:700;font-size:1.15rem;letter-spacing:.01em}
-  .compare-btn:hover{background:#006E33}
+  .compare-btn:hover{background:var(--accion-hover)}   /* el #006E33 fijo daba 3:1 en el tema oscuro */
 
   /* Mayores diferencias y página del auto: planilla, no tarjetas */
   .dif{font-family:var(--fuente-tabla)}

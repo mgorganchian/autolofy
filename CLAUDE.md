@@ -383,6 +383,13 @@ sí quedan en inglés, porque no muestran la palabra. Se coló con `YES` dos vec
   `#fff` en esa zona.** Texto sobre el verde de acción: `--sobre-verde` (blanco en claro, oscuro en
   oscuro: blanco sobre el verde del tema oscuro daba 3:1). Contraste medido en todas las vistas y
   los dos temas: nada por debajo de 4,5:1. "Elegir autos" es verde y destella (`destelloElegir`).
+  **Auditoría del 2026-11-21** (Impeccable): el encabezado del auto de referencia era azul fijo (`#1d4fa8`) y en
+  el tema claro dejaba el nombre en 2,15:1 y los pesos en 1,21:1; ahora usa el fondo de su columna (`--ref-bg`) con
+  la raya `--ref-marca`. La fecha de la lista va sin la opacidad de `thead th small` (con ella daba 2,8:1), el hover
+  del verde es `--accion-hover`, ▲▼ son más oscuros, y el `.cta` de las páginas que arma `herramientas-paginas.py`
+  usa `--sobre-accent`. `tests/e2e/contraste.spec.js` mide el contraste **como se ve**: color con la opacidad de él y
+  de sus ancestros sobre los fondos compuestos (medir el color crudo no detectó la fecha), y que Concesionarios no
+  se desborde a 390 px (los links largos llevan `overflow-wrap:anywhere`).
 - **Arreglos medidos** (2026-10-10, auditoría con Playwright): la portada decide la vista antes de
   pintar (`arranca-elegir` en el `<head>`: el salto medía 0,56 de CLS); las miniaturas llevan
   `loading="lazy"` (el panel cerrado bajaba 124 fotos, 1,15 MB); en el celular la tabla usa
