@@ -40,9 +40,7 @@ test('con un adulto atrás el tamaño sugerido es C y D: los A no entran, los B 
 test('la pregunta está en la hoja con «me da igual» marcada y el resumen la nombra', async ({ page }) => {
   await page.goto('/index.html');
   await expect(page.locator('input[name="el-quien"]')).toHaveCount(3);
-  // Desde el 2026-11-07 arranca «Con niños» (pedido de Mati); «Me da igual» se elige a mano.
-  await expect(page.locator('input[name="el-quien"][value="ninos"]')).toBeChecked();
-  await page.locator('label:has(input[name="el-quien"][value=""])').click();
+  // Desde el 2026-11-21 arranca en «Me da igual» (auditoría de UX: lo marcado se lee como recomendación).
   await expect(page.locator('input[name="el-quien"][value=""]')).toBeChecked();
   await page.locator('label:has(input[name="el-quien"][value="ninos"])').click();
   await expect(page.locator('#elegirHoja')).toContainText('Con niños');

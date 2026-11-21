@@ -10,16 +10,21 @@ test.afterEach(() => expect(errores).toEqual([]));
 const estado = page => page.evaluate(() => ({ s: elegirResp.presu, p: presuLeer(elegirResp.presu || presuInicial()), n: +document.getElementById('presuN').textContent.match(/\d+/)[0],
   usd: document.getElementById('presuUsd').textContent, pesos: document.getElementById('presuPesos').textContent }));
 
-test('arranca en el rango más bajo, con dólares, pesos y la cantidad de autos', async ({ page }) => {
+test('arranca en «Me da igual el precio», con el rango más bajo a la vista, dólares, pesos y la cantidad de autos', async ({ page }) => {
+  // 2026-11-21 (auditoría de UX, decisión de Mati): Ayudame a elegir arranca sin nada marcado, también el precio.
+  await expect(page.locator('#presuIgual')).toBeChecked();
+  expect(await page.evaluate(() => elegirResp.presu)).toBe('');
   const e = await estado(page);
   expect(e.p.min).toBe(await page.evaluate(() => PRESU_PISO));
   expect(e.p.max % 1000).toBe(0);
-  // 2026-11-07: el rango de arranque llega hasta el 12.º auto más barato que cumple la propulsión sugerida (y lo demás armado), no hasta el 30.º de todos.
-  const r = await page.evaluate(() => { const o = elegirCalcular(elegirResp); return { cumplen: o.total, n: o.top.length, casi: o.casi, N: elegirN(), prop: elegirResp.prop }; });
-  expect(r.prop).toBe('phev');
+  // Al destildar «Me da igual el precio» queda el rango que se ve: hasta el 12.º auto más barato que cumple lo demás.
+  await page.locator('#presuIgual').uncheck();
+  expect(await page.evaluate(() => elegirResp.presu)).toBe(e.s || await page.evaluate(() => presuInicial()));
+  const r = await page.evaluate(() => { const o = elegirCalcular(elegirResp); return { cumplen: o.total, n: o.top.length, casi: o.casi, N: elegirN() }; });
   expect(r.cumplen).toBeGreaterThanOrEqual(r.N);
   expect(r.casi).toBe(0);
-  expect(e.n).toBeGreaterThan(r.cumplen);
+  // Sin otras respuestas cumplen todos los que tienen precio en ese rango (antes el filtro de enchufables dejaba menos).
+  expect(e.n).toBeGreaterThanOrEqual(r.cumplen);
   expect(e.usd).toMatch(/^USD [\d.]+ a [\d.]+$/);
   expect(e.pesos).toMatch(/^\$ [\d,]+ M a \$ [\d,]+ M$/);
 });

@@ -611,7 +611,7 @@ sí quedan en inglés, porque no muestran la palabra. Se coló con `YES` dos vec
   sugerido a los que no se tocaron, `segMan` y `propMan` marcan los tocados y «Volver a la sugerencia» los suelta).
   **Tamaño (A a D)**: «Me da igual» deja los cuatro; «Con niños» los cuatro (decisión de Mati del 2026-11-07: los límites los ponen las plazas y el ISOFIX, como en la regla del 1/11); «Adulto atrás» C y D; 6 o 7 plazas, los cuatro (issue #184: el filtro de plazas ya garantiza los asientos; solo D dejaba afuera a la Spin y al Aircross de 7). La D incluye los muy grandes (`SEG_ABCD`). El
   segmento de al lado queda como «casi» («Otro tamaño (chico)»); sin segmento en la tabla, «No informa su tamaño». **Propulsión**: con dónde cargar, ciudad = EV y
-  ciudad y ruta o mucha ruta = PHEV; «No sé» (el valor de entrada) PHEV, que sirve con o sin enchufe; sin carga, HEV (no depende de cargadores); tierra y trabajo, me da igual (casi no hay híbridos 4x4 ni pickups híbridas).
+  ciudad y ruta o mucha ruta = PHEV; «No sé» PHEV, que sirve con o sin enchufe; sin responder el enchufe, me da igual (desde el 2026-11-21); sin carga, HEV (no depende de cargadores); tierra y trabajo, me da igual (casi no hay híbridos 4x4 ni pickups híbridas).
   **Nunca se sugiere mild-hybrid ni nafta**, pero se pueden tildar a mano. La propulsión elegida **excluye**, no solo prioriza (el puntaje por propulsión sigue
   contando entre los que quedan). **Tipo de auto**: SUV o crossover (juntos), sedán, hatchback, pickup, minivan, coupé o descapotable; «Me da igual» apaga las demás.
   Las opciones viejas «SUV chico/compacto/mediano» desaparecieron (las cubre el tamaño) y las respuestas guardadas se migran. `tests/e2e/elegir-filtros.spec.js`.
@@ -622,9 +622,16 @@ sí quedan en inglés, porque no muestran la palabra. Se coló con `YES` dos vec
   asientos se plieguen (si lo hacen, es un motivo más). Suma como motivo el baúl en litros y la apertura eléctrica. **No dice qué tan alto es el piso**:
   ninguna fila lo tiene; el cartel dice que hay que probar la silla en el auto. Falta (opción 2 del issue) cargar la altura de carga y la boca del baúl.
   Lenguaje: «silla de ruedas», nunca «discapacitado». `movilidad.spec.js`.
+- **Arranca vacío** (2026-11-21, auditoría de UX con Impeccable, decisión de Mati): lo marcado se lee como recomendación, y el arranque
+  viejo (5 plazas, «Con niños», «Ciudad y ruta», «No sé» y el presupuesto más barato) dejaba sugeridos enchufables sin que nadie los pidiera.
+  `ELEGIR_INICIAL` no marca nada ('' = sin responder; `ELEGIR_ENCHUFE['']`, `ELEGIR_USO['']` y `ELEGIR_FILAS['']` son neutros) y, mientras
+  la persona responda menos de `ELEGIR_MIN_RESP` (2) preguntas con algo que no sea «Me da igual» (`elegirRespondidas`), la lista se llama
+  **«Los más vendidos»**: los que cumplen lo marcado, ordenados por la fila Patentamientos 2026 (sin repetir dos de la misma marca con la
+  misma cifra compartida, como los BJ30), con la cifra en la tarjeta y una nota que pide responder. Las respuestas guardadas en el navegador
+  se respetan. `elegir-vacio.spec.js`.
 - **Presupuesto con deslizador** (2026-11-01, pedido de Mati): «¿Cuánto querés gastar?» ya no son franjas sino un deslizador de dos mangos
-  (de a USD 1.000, con los pesos al BNA al lado y la cantidad de autos con precio). Arranca en el rango más bajo (`presuInicial()`, unos 30
-  autos). **Arrastrar la barra del medio traslada todo el rango con el ancho en dólares fijo** (`presuTrasladar`; hasta el 2026-11-08 estiraba
+  (de a USD 1.000, con los pesos al BNA al lado y la cantidad de autos con precio). Desde el 2026-11-21 arranca en «Me da igual el precio», con el rango más bajo a la vista y apagado (`presuInicial()`, unos 12
+  autos que cumplen lo demás): al destildarlo, queda ese. **Arrastrar la barra del medio traslada todo el rango con el ancho en dólares fijo** (`presuTrasladar`; hasta el 2026-11-08 estiraba
   el fin para mantener la cantidad de autos y el máximo avanzaba a tirones de 1.000, 2.000 o nada: decisión de Mati, opción A; la cantidad de autos sí cambia al arrastrar);
   los extremos se ajustan aparte, y las flechas corren los dos extremos lo mismo (se frenan contra los bordes sin achicar el rango).
   **Escala por tramos** (2026-11-08): el riel no es lineal; el tramo donde se concentran los autos (hoy USD 21.000 a 43.000, 60% de los autos) se lleva el 64% del riel

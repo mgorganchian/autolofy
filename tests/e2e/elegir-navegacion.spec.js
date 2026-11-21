@@ -90,11 +90,11 @@ test('«Empezar de nuevo» vuelve las respuestas y los filtros a como estaban al
   await page.locator('input[name="el-uso"][value="tierra"]').check({ force: true });
   expect(await sugeridos(page)).not.toBe(top0);
   await page.locator('#elegirReiniciar').click();
-  await expect(page.locator('input[name="el-plazas"][value="5"]')).toBeChecked();
-  await expect(page.locator('input[name="el-uso"][value="mixto"]')).toBeChecked();
+  // Desde el 2026-11-21 «al entrar» es sin nada marcado.
+  await expect(page.locator('input[name="el-plazas"]:checked, input[name="el-uso"]:checked, input[name="el-enchufe"]:checked')).toHaveCount(0);
   expect(await sugeridos(page)).toBe(top0);
   const guardado = await page.evaluate(() => JSON.parse(localStorage.getItem('elegir')));
-  expect(guardado).toMatchObject({ plazas: '5', uso: 'mixto', enchufe: 'nose', quien: 'ninos', segMan: false, propMan: false });
+  expect(guardado).toMatchObject({ presu: '', plazas: '', uso: '', enchufe: '', quien: '', carro: '', prop: '', segMan: false, propMan: false });
 });
 
 test('la barra del pie dice, en gris y en un renglón, cuántos cumplían antes de la última respuesta', async ({ page }) => {

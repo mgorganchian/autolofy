@@ -7106,9 +7106,16 @@ const ELEGIR_ANCHO = window.matchMedia('(min-width: 900px)');
 // Se decide una sola vez al cargar (issue #129, de Sebastián): al achicar o agrandar la ventana la cantidad de sugerencias no cambia.
 const ELEGIR_N = ELEGIR_ANCHO.matches ? 5 : 4;
 const elegirN = () => ELEGIR_N;
-// Sin presupuesto elegido de entrada (2026-10-10): lo que viene marcado se lee como recomendación.
+// Arranca vacío (2026-11-21, auditoría de UX, decisión de Mati): lo que viene marcado se lee como recomendación, y antes arrancaba
+// con 5 plazas, «Con niños», «Ciudad y ruta», «No sé» y el presupuesto más barato, que dejaban sugeridos enchufables sin que nadie lo
+// pidiera. Ahora nada viene marcado ('' = sin responder) y, hasta que la persona contesta ELEGIR_MIN_RESP preguntas, se muestran los
+// más patentados en 2026 entre los que cumplen lo marcado (elegirRespondidas, «Los más vendidos»).
 // ELEGIR_INICIAL es también lo que repone «Empezar de nuevo» (issue #192).
-const ELEGIR_INICIAL = Object.freeze({ presu: null, plazas: '5', quien: 'ninos', movilidad: '', uso: 'mixto', enchufe: 'nose', carro: '', seg: 'A,B,C,D', prop: '', segMan: false, propMan: false });
+const ELEGIR_INICIAL = Object.freeze({ presu: '', plazas: '', quien: '', movilidad: '', uso: '', enchufe: '', carro: '', seg: 'A,B,C,D', prop: '', segMan: false, propMan: false });
+const ELEGIR_MIN_RESP = 2;
+// Cuántas preguntas respondió la persona con algo que no sea «Me da igual» (los filtros sugeridos solo cuentan si los tocó).
+const elegirRespondidas = r => ['presu', 'plazas', 'quien', 'movilidad', 'uso', 'enchufe', 'carro'].filter(k => r[k]).length +
+  (r.segMan && elegirLista(r.seg).length < 4 ? 1 : 0) + (r.propMan && r.prop ? 1 : 0);
 let elegirResp = Object.assign({}, ELEGIR_INICIAL);
 try { const g = JSON.parse(localStorage.getItem('elegir') || 'null'); if (g) elegirResp = Object.assign(elegirResp, g); } catch (e) {}
 // Respuestas guardadas con opciones que ya no existen (topes o franjas anteriores, "suv"): se reinician.
@@ -7133,6 +7140,7 @@ const ELEGIR_ENCHUFE = {
   si:   { ev: 1, phev: 1, hev: .45, mhev: .4, ice: .35 },
   nose: { ev: .55, phev: .85, hev: .85, mhev: .75, ice: .7 },
   no:   { ev: .1, phev: .55, hev: 1, mhev: .9, ice: .85 },
+  '':   { ev: 1, phev: 1, hev: 1, mhev: 1, ice: 1 },   // sin responder: la propulsión no suma ni resta
 };
 const ELEGIR_USO = {
   ciudad: { ev: 1, phev: 1, hev: 1, mhev: .8, ice: .6 },
@@ -7140,6 +7148,7 @@ const ELEGIR_USO = {
   ruta:   { ev: .6, phev: .9, hev: .85, mhev: .9, ice: .9 },
   tierra: { ev: .3, phev: .65, hev: .6, mhev: .85, ice: .95 },
   carga:  { ev: .5, phev: .6, hev: .6, mhev: .8, ice: .95 },
+  '':     { ev: 1, phev: 1, hev: 1, mhev: 1, ice: 1 },
 };
 // Carteles de las opciones de Ayudame a elegir (2026-10-30, pedido de Mati): qué hace cada respuesta, tal
 // como lo calculan ELEGIR_USO, ELEGIR_FILAS y los bonus de elegirCalcular. Si cambia el cálculo, cambian acá.
@@ -7193,6 +7202,7 @@ const ELEGIR_FILAS = {
   ruta: ['Potencia total del sistema (kW)', 'Velocidad máxima (km/h)', 'Consumo de combustible (L/100km)'],
   tierra: ['Potencia total del sistema (kW)'],
   carga: ['Volumen de baúl/carga (L)', 'Potencia total del sistema (kW)'],
+  '': ['Consumo de combustible (L/100km)', 'Potencia total del sistema (kW)'],   // sin uso respondido: consumo y potencia, lo general
 };
 let ELEGIR_PCTL = null;
 function elegirPctl(nombre){
@@ -7235,7 +7245,7 @@ const SEG_NOMBRE = { A: 'urbano', B: 'chico', C: 'mediano', D: 'grande' };
 const CARRO_GRUPO = { SUV: 'suv', Crossover: 'suv', 'Sedán': 'sedan', Hatchback: 'hatch', Pickup: 'pickup', Minivan: 'minivan', 'Coupé': 'coupe', Convertible: 'coupe' };
 const elegirLista = v => (v || '').split(',').filter(Boolean);
 const elegirSugSeg = r => +r.plazas >= 6 ? 'A,B,C,D' : r.quien === 'ninos' ? 'A,B,C,D' : r.quien === 'adultos' ? 'C,D' : 'A,B,C,D';
-const elegirSugProp = r => r.uso === 'tierra' || r.uso === 'carga' ? '' : r.enchufe === 'no' ? 'hev' : r.enchufe === 'si' && r.uso === 'ciudad' ? 'ev' : 'phev';
+const elegirSugProp = r => !r.enchufe || r.uso === 'tierra' || r.uso === 'carga' ? '' : r.enchufe === 'no' ? 'hev' : r.enchufe === 'si' && r.uso === 'ciudad' ? 'ev' : 'phev';
 // Aplica lo sugerido a los filtros que la persona no tocó a mano.
 const elegirNorm = r => Object.assign({}, r, r.segMan ? {} : { seg: elegirSugSeg(r) }, r.propMan ? {} : { prop: elegirSugProp(r) });
 function elegirDesvio(i, r){
@@ -7311,7 +7321,8 @@ function elegirEquipo(i){
   return ELEGIR_EQUIPO[i];
 }
 function elegirCalcular(r){
-  const plazas = +r.plazas;
+  const plazas = +r.plazas, neutral = elegirRespondidas(r) < ELEGIR_MIN_RESP;
+  const ventas = i => { const v = rkValor(i, 'Patentamientos 2026 (unidades)'); return v.tipo === 'ok' ? v.n : -1; };
   const sinPrecioIdx = [], desvio = {};
   const cands = CARS.map((c, i) => i).filter(i => {
     const d = elegirDesvio(i, r);
@@ -7373,6 +7384,7 @@ function elegirCalcular(r){
       kw && pot.tipo === 'ok' ? Math.round(pot.n) + ' kW' : ''].filter(Boolean).join(', ');
     motivos.push([caract(true, true), caract(false, true), caract(false, false)].find(t => t.length <= 26) || caract(false, false));
     const resto = [];
+    if (neutral && ventas(i) >= 0) resto.push(ventas(i).toLocaleString('es-AR') + ' patentados en 2026');
     if (r.quien === 'ninos' && isofixDe(i) === true) resto.push('Con ISOFIX');
     if (r.movilidad === 'silla'){ const b = rkValor(i, 'Volumen de baúl/carga (L)'); if (b.tipo === 'ok') resto.unshift('Baúl de ' + Math.round(b.n) + ' L');
       if (siNoDe('Asientos traseros plegables', i) === true) resto.push('Asientos que se pliegan');
@@ -7392,11 +7404,13 @@ function elegirCalcular(r){
     const flojo = ps.filter(x => x[1].c === 0).map(x => MOTIVO_CORTO[x[0]] || rkTitulo(x[0]).toLowerCase());
     const casi = desvio[i] ? desvio[i].txt : '';
     // Con el "casi" arriba quedan 3 renglones para lo demás: siempre 4 en total.
-    return { i, puntos, parte, casi, d: desvio[i] ? desvio[i].d : 0, motivos: motivos.concat(resto).filter(Boolean).slice(0, casi ? 3 : 4), flojo };
+    return { i, puntos, parte, casi, neutral, d: desvio[i] ? desvio[i].d : 0, motivos: motivos.concat(resto).filter(Boolean).slice(0, casi ? 3 : 4), flojo };
   });
-  const cumplen = res.filter(x => !x.casi).sort((a, b) => b.puntos - a.puntos);
+  // Con menos de ELEGIR_MIN_RESP respuestas no hay con qué puntuar: van primero los más patentados en 2026.
+  const orden = (a, b) => neutral ? ventas(b.i) - ventas(a.i) || b.puntos - a.puntos : b.puntos - a.puntos;
+  const cumplen = res.filter(x => !x.casi).sort(orden);
   // Los "casi", del que menos se aparta al que más; a igual desvío, el de más puntos.
-  const casi = res.filter(x => x.casi).sort((a, b) => a.d - b.d || b.puntos - a.puntos);
+  const casi = res.filter(x => x.casi).sort((a, b) => a.d - b.d || orden(a, b));
   // Siempre N (pedido de Mati, 2026-10-30): primero los que cumplen y después los casi, con como mucho
   // 2 autos por marca. Si así no se llega a N, se completa sin el tope de marca.
   const N = elegirN(), top = [], porMarca = {};
@@ -7404,16 +7418,18 @@ function elegirCalcular(r){
     if (top.length >= N || top.includes(x)) return;
     const m = CARS[x.i].brand;
     if (tope && (porMarca[m] || 0) >= 2) return;
+    // Dos autos que el registro no separa llevan la misma cifra (los BJ30 4x2 y 4x4): en «Los más vendidos» va uno solo.
+    if (tope && neutral && top.some(y => CARS[y.i].brand === m && ventas(y.i) === ventas(x.i))) return;
     porMarca[m] = (porMarca[m] || 0) + 1; top.push(x);
   });
   tomar(cumplen, true); tomar(casi, true); tomar(cumplen, false); tomar(casi, false);
   // Los que cumplen van primero también en la lista final.
-  top.sort((a, b) => (!!a.casi - !!b.casi) || (a.casi ? a.d - b.d : b.puntos - a.puntos));
-  return { top, todos: cumplen.map(x => x.i), total: cumplen.length, casi: top.filter(x => x.casi).length, sinPrecio: sinPrecioIdx.length, sinPrecioIdx };
+  top.sort((a, b) => (!!a.casi - !!b.casi) || (a.casi ? a.d - b.d : orden(a, b)));
+  return { neutral, faltan: ELEGIR_MIN_RESP - elegirRespondidas(r), top, todos: cumplen.map(x => x.i), total: cumplen.length, casi: top.filter(x => x.casi).length, sinPrecio: sinPrecioIdx.length, sinPrecioIdx };
 }
 function pintarElegir(cambio){
   Object.assign(elegirResp, elegirNorm(elegirResp));
-  if (elegirResp.presu === null) elegirResp.presu = presuInicial();
+  if (elegirResp.presu === null) elegirResp.presu = '';
   const r = elegirResp, out = elegirCalcular(r);
   const hoja = document.getElementById('elegirHoja');
   // Si una respuesta no mueve las sugerencias, se dice: si no, parece que no recalculó.
@@ -7433,7 +7449,9 @@ function pintarElegir(cambio){
         (pesos ? '<small class="precio-pesos">' + pesos + '</small>' : '') + '</span></label>').join('') + '</div>' +
       (q.k === 'quien' && r.movilidad === 'silla' ? '<p class="quien-nota quien-nota-silla">Con silla de ruedas: solo autos con baúl al menos como el del BYD Song Pro, donde la silla entra de costado. Probala en el auto antes de comprar.</p>' : '') +
       (q.k === 'quien' && r.quien ? '<p class="quien-nota">' + (r.quien === 'ninos' ? 'Atrás van los chicos con silla; adelante, dos adultos.' : 'Va algún adulto atrás: los autos chicos pueden quedar justos.') + '</p>' : '') + '</fieldset>').join('') + '</div>' +
-    '<div class="elegir-resultados">' + elegirResumenHTML(r) + '<h3 class="elegir-res-tit" id="elegirResTit">' + (out.total ? 'Te sugerimos' : 'Ningún auto a la venta cumple todo eso') + '</h3>' +
+    '<div class="elegir-resultados">' + elegirResumenHTML(r) + '<h3 class="elegir-res-tit" id="elegirResTit">' + (out.total ? (out.neutral ? 'Los más vendidos' : 'Te sugerimos') : 'Ningún auto a la venta cumple todo eso') + '</h3>' +
+    (out.total && out.neutral ? '<p class="ficha-nota elegir-neutral">Los autos de la tabla con más patentamientos en 2026' + (elegirRespondidas(r) ? ', entre los que cumplen lo que marcaste' : '') + '. ' +
+      (out.faltan > 1 ? 'Respondé dos preguntas' : 'Respondé una pregunta más') + ' y te sugerimos autos a tu medida.</p>' : '') +
     // Sin ninguno que cumpla: qué aflojar, y abajo los más cercanos (2026-10-30).
     (!out.total ? elegirAflojarHTML(r) + (out.top.length ? '<h3 class="elegir-res-tit">Los más cercanos</h3>' : '') : '') +
     (out.top.length ? (out.casi && out.total ? '<p class="ficha-nota">Cumplen todo ' + (out.total === 1 ? 'uno solo' : out.total) + '. Los demás se apartan en una cosa, y lo dicen arriba.</p>' : '') +
@@ -7501,6 +7519,8 @@ function elegirMultiHTML(q, r){
 }
 // Por qué salió cada auto (2026-10-30, pedido de Mati): el puntaje desglosado en un cartel.
 function elegirPorqueHTML(x){
+  if (x.neutral){ const t = 'Por qué aparece. Todavía no respondiste dos preguntas: lo ordenamos por cuántos se patentaron en 2026 (registro oficial, DNRPA; la versión de la tabla o, si el registro no separa versiones, el modelo). Que se venda mucho no es una medida de calidad.' + (x.casi ? ' No cumple todo lo pedido: ' + x.casi.charAt(0).toLowerCase() + x.casi.slice(1) + '.' : '');
+    return ' <span class="elegir-porque" tabindex="0" role="button" aria-label="' + rkEsc(t) + '" data-tip="' + rkEsc(t) + '">?</span>'; }
   const f = n => n.toLocaleString('es-AR', { minimumFractionDigits: 1, maximumFractionDigits: 1 });
   const p = x.parte, partes = ['Encaja con el uso y el enchufe: ' + f(p.fit) + ' de 3', 'Rinde en lo que importa para ese uso: ' + f(p.uso) + ' de 1,5',
     'Respaldo (quién lo trae, fábrica, red y garantías): ' + f(p.respaldo) + ' de 1'];
@@ -7538,19 +7558,20 @@ function elegirResumenHTML(r){
   const presu = ELEGIR_PREG.find(q => q.k === 'presu'), uso = ELEGIR_PREG.find(q => q.k === 'uso');
   const multiTxt = k => { const q = ELEGIR_PREG.find(x => x.k === k); return elegirLista(r[k]).map(v => (q.ops.find(o => o[0] === v) || [])[1]).filter(Boolean); };
   if (r.presu) partes.push(presuCorto(r.presu));
-  partes.push(r.plazas === '6' ? '6 o 7 plazas' : r.plazas === '4' ? 'hasta 4 plazas' : '5 plazas');
+  if (r.plazas) partes.push(r.plazas === '6' ? '6 o 7 plazas' : r.plazas === '4' ? 'hasta 4 plazas' : '5 plazas');
   if (r.movilidad === 'silla') partes.push('con silla de ruedas');
   if (r.quien) partes.push(r.quien === 'ninos' ? 'con niños' : 'con adulto atrás');
-  if (uso) partes.push(txt(uso).toLowerCase());
+  if (r.uso) partes.push(txt(uso).toLowerCase());
   if (elegirLista(r.seg).length && elegirLista(r.seg).length < 4) partes.push('segmento ' + elegirLista(r.seg).join(' o '));
   if (r.prop) partes.push(multiTxt('prop').join(' o ').toLowerCase());
   if (r.carro) partes.push(multiTxt('carro').join(' o '));
   if (r.enchufe === 'si') partes.push('con dónde cargar');
+  if (!partes.length) return '<p class="elegir-tus">Todavía no respondiste ninguna pregunta. <button type="button" class="mini-btn" id="elegirCambiar">Responder</button></p>';
   return '<p class="elegir-tus">Para ' + rkEsc(partes.join(', ')) + '. <button type="button" class="mini-btn" id="elegirCambiar">Cambiar</button></p>';
 }
 // Cero resultados: qué respuesta aflojar, con cuántos autos daría (GOV.UK: decir cómo salir).
 function elegirAflojarHTML(r){
-  const pruebas = [['presu', '', 'cualquier presupuesto'], ['carro', '', 'cualquier tipo de auto'], ['prop', '', 'cualquier propulsión'], ['seg', 'A,B,C,D', 'cualquier tamaño'], ['plazas', '5', '5 plazas'], ['quien', '', 'me da igual quiénes viajen'], ['movilidad', '', 'sin silla de ruedas'], ['uso', 'mixto', 'ciudad y ruta']]
+  const pruebas = [['presu', '', 'cualquier presupuesto'], ['carro', '', 'cualquier tipo de auto'], ['prop', '', 'cualquier propulsión'], ['seg', 'A,B,C,D', 'cualquier tamaño'], ['plazas', '', 'cualquier cantidad de plazas'], ['quien', '', 'me da igual quiénes viajen'], ['movilidad', '', 'sin silla de ruedas'], ['uso', '', 'cualquier uso']]
     .filter(([k, v]) => r[k] !== v)
     .map(([k, v, t]) => { const o = elegirCalcular(elegirNorm(Object.assign({}, r, { [k]: v }, k === 'seg' ? { segMan: true } : k === 'prop' ? { propMan: true } : {}))); return [k, v, t, o.total]; })
     .filter(x => x[3] > 0);

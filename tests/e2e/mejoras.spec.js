@@ -467,9 +467,9 @@ test('mejoras de UX: buscador con sinónimos, precio escrito con filtro quitable
 
 test('ayudame a elegir: sin presupuesto preelegido, resumen con "Cambiar" y, si no hay autos, qué aflojar', async ({ page }) => {
   await page.goto('/index.html');
-  // Desde el 2026-11-01 el deslizador arranca en el rango más bajo (pedido de Mati); «Me da igual el precio» lo apaga.
-  expect(await page.evaluate(() => elegirResp.presu === presuInicial())).toBe(true);
-  await expect(page.locator('#presuIgual')).not.toBeChecked();
+  // Desde el 2026-11-21 arranca en «Me da igual el precio» (auditoría de UX): el deslizador muestra el rango más bajo, apagado.
+  expect(await page.evaluate(() => elegirResp.presu)).toBe('');
+  await expect(page.locator('#presuIgual')).toBeChecked();
   await fijarPresu(page, '0-28000');
   // Desde el 2026-10-29 las pickups en pesos entran en «Hasta USD 28.000» (issue #60): un SUV grande no.
   // SUV del segmento D (tilda «SUV» y deja solo la D) y sin filtro de propulsión.
