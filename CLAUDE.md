@@ -1114,6 +1114,14 @@ si esos tres lugares no coinciden o si una foto queda sin autor.
   registrado tiene que ser el de la tabla. Lo anterior a esa fecha solo tiene la fuente por auto
   (`fichas-fuentes.tsv`). Las tandas de búsqueda piden la fuente por celda, no por auto.
 
+- **Tanda de los 25 más vendidos** (2026-11-21, pedido de Mati: «no quiero tener datos faltantes», por orden de patentamientos 2026):
+  60 celdas en 21 de los 25 autos (5 agentes, un archivo por auto con sus huecos y el vocabulario de cada fila, y un script que valida
+  antes de escribir). Rindió sobre todo la **ficha oficial de otro país para la misma versión** (Uruguay, Chile, Colombia, México,
+  Brasil cuando el auto se fabrica allá o acá, Reino Unido), cargada como `EXT` con el país; después, releer la ficha y el manual
+  argentinos (frenos que las tandas anteriores no habían visto). Las bases no oficiales casi nunca llegan a 3 sitios que coincidan.
+  Ford, Toyota, Peugeot y Fiat Argentina bloquean `curl` y WebFetch: sus PDF se leen con el navegador integrado. Se corrigieron tres
+  celdas del Dolphin Mini que estaban mal (peso y 0-100 eran «~» de otra versión; el limpiaparabrisas trasero decía Sí sin fuente).
+  Cuando dos fuentes se contradicen, no se carga (crucero adaptativo de la Everest).
 - **Ola 5 de huecos** (2026-11-04, pedido de Mati: seguir de los más vendidos a los menos): puestos 91 a 150 de prioridad (60 autos, 2.057 celdas sin dato)
   con 6 agentes; **43 celdas cargadas en 8 autos** (BJ40 Pro 19, Jetour T2 i-DM 15, BJ30 2, Audi A3 y S3 NCAP, Lynk & Co 06, Lexus UX, MG 3, Everest, GLE 450).
   Rinde poco porque las fichas oficiales ya estaban agotadas: lo que no listan son ausencias reales, no huecos de búsqueda. Lo que sí rindió: manuales de
