@@ -1040,8 +1040,11 @@ portada primero y el resto en el orden de las vistas.
   (Himla, Jetour G700, T1 y T2, JMC Grand Avenue Pro, Maxus T60 Max, F-150 Raptor, Hilux GR-Sport, Toro y las RAM). Cuando la
   palabra va en diagonal y con mucha perspectiva (JETOUR de la G700) una caja sola no alcanza: se pega letra por letra, cada
   una en el casillero que le toca. Antes de espejar, mirar que la trompa de verdad mire a la izquierda: 9 se espejaron
-  por error el 2026-11-10 y se deshicieron con `desespejar`. Quedan sin espejar las tomas de frente (Maxus T60, Citroën
-  Aircross, smart #3, Kia K3 Sedán, Jetour T2 i-DM y JMC Grand Avenue). Si la portada no muestra la trompa y el carrusel tiene una que sí, se sube con
+  por error el 2026-11-10 y se deshicieron con `desespejar`. Las tomas de frente se reemplazaron el 2026-11-21 por fotos en tres
+  cuartos delantero (galerías oficiales de smart, BAIC, Maxus, JMC, Jetour y Kia, y Commons para el Aircross); la portada vieja
+  pasó al carrusel como frente o perfil con `portada … conservar VISTA`, que ahora también sirve con una imagen nueva. Quedan dos:
+  el **Arcfox V9** (no se vende acá y las fotos de Commons son de China, con carteles y la placa «问道V9») y el **BMW 118
+  Sportline** (sin foto: ver «Autos sin foto»). Si la portada no muestra la trompa y el carrusel tiene una que sí, se sube con
   `portada SLUG carrusel N VISTA conservar VISTA_VIEJA` (la vieja pasa al carrusel con su fuente). Al instalar una portada
   nueva, mirar hacia dónde apunta la trompa.
 - **La portada tiene que ser la versión que vende el importador argentino** (frente,
