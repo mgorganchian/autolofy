@@ -6,6 +6,7 @@
 // navegadores: `npx playwright install` no hace falta.
 const path = require('path');
 const { defineConfig } = require('@playwright/test');
+const { PY } = require('./python');
 
 const RAIZ = process.env.AUTOLOFY_RAIZ || path.resolve(__dirname, '../..');
 const PUERTO = 4173;
@@ -27,7 +28,7 @@ module.exports = defineConfig({
     launchOptions: { args: ['--host-resolver-rules=MAP *.clarity.ms ~NOTFOUND'] },
   },
   webServer: {
-    command: `python3 "${path.join(__dirname, 'servidor.py')}" ${PUERTO} "${RAIZ}"`,
+    command: `${PY} "${path.join(__dirname, 'servidor.py')}" ${PUERTO} "${RAIZ}"`,
     url: `http://127.0.0.1:${PUERTO}/index.html`,
     timeout: 15_000,
     reuseExistingServer: false,

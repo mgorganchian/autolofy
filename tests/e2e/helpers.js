@@ -57,4 +57,10 @@ const FILAS_CAT = '#mainTable tbody tr.cat-row:not(.hidden)';
 // tiene una fila menos que DATA.
 const N_FILAS = leerIndex().filas.length - 1;
 
-module.exports = { leerIndex, vigilarErrores, FILAS_DATOS, FILAS_CAT, N_FILAS };
+// En el celular, Concesionarios, Grupos y el tema van dentro de «Más» (issue #200): se abre antes de tocarlos.
+async function abrirGeneral(page) {
+  const mas = page.locator('#masBtn');
+  if (await mas.isVisible() && (await mas.getAttribute('aria-expanded')) !== 'true') await mas.click();
+}
+
+module.exports = { leerIndex, vigilarErrores, abrirGeneral, FILAS_DATOS, FILAS_CAT, N_FILAS };

@@ -6,8 +6,8 @@ proyectos de Vercel `autolofy` y `autolofy-plan`).
 Desde el 2026-10-28 también entran autos de marcas no chinas (decisión de Mati y Sebastián del
 27/10: los 0 km principales, los eléctricos y los híbridos); los primeros fueron los 9 rivales
 híbridos del BAIC X55 II Hybrid (Ford, Chevrolet, Toyota, Lexus, Nissan, Renault, Subaru y
-Hyundai). Sus marcas entran sin red de concesionarios cargada (`aviso` en `concesionarios.json`),
-y casi todas publican el precio en pesos: la celda lo dice en pesos, como lo publica la marca (ver
+Hyundai). Sus marcas entraron sin red de concesionarios cargada (`aviso` en `concesionarios.json`); desde
+el 2026-11-11 (issue #188) las 26 tienen su red oficial (ver «Concesionarios»), y casi todas publican el precio en pesos: la celda lo dice en pesos, como lo publica la marca (ver
 "Precios en pesos y dólar BNA" para cómo entran en los filtros).
 El 2026-10-29 (pedido de Mati) se sumaron **73 de los 100 modelos más patentados de 2026** que faltaban
 (inscripciones iniciales de la DNRPA de enero a septiembre, sin furgones ni camiones; 23 ya estaban). Criterios:
@@ -86,7 +86,7 @@ Con `N = CARS.length`:
 2. **`<th>`** en el `<thead>`, en el mismo índice — con su silueta de carrocería y su
    ícono de propulsión.
 3. **`<col class="col-data">`** en los **DOS** `<colgroup>` (`#theadTable` y `#mainTable`).
-4. **Cada una de las 105 filas de `DATA`**, en la posición correcta.
+4. **Cada una de las 106 filas de `DATA`**, en la posición correcta.
 5. **`colspan="N+1"`** de las filas de categoría — está hardcodeado.
 
 Además hay 3 conteos en texto: `#headerSubtitle`, `#summaryText` y el comentario arriba
@@ -97,7 +97,7 @@ de `CARS`.
 | campo | valores |
 |---|---|
 | `type` | `ice` `hev` `mhev` `phev` `ev` `tbd` |
-| `size` | `xl` `big` `mid` `compact` `mini` `nd` |
+| `size` | `xl` `big` `mid` `compact` `mini` `dep` `nd` |
 | `body` | `SUV` `Crossover` `Sedán` `Hatchback` `Minivan` `Pickup` `Convertible` `Coupé` (desde el 2026-10-29; se dibuja con la silueta del sedán, como el convertible) |
 | `status` | `venta` `preventa` `nolanzado` `discontinuado` |
 
@@ -107,17 +107,26 @@ más **y además 6+ asientos o pickup**, pedido del usuario del 2026-10-04: un s
 de 5 plazas es "grande"). Al
 agregar un auto con largo cargado, su segmento sale de ahí, no "a ojo". `nd` solo si
 no hay largo. Sumar ancho y distancia entre ejes se probó y clasificaba peor (13 de 27
-contra 24 de 27). Dos autos clasificados antes no siguen la regla (los dos BJ30) y están
-listados como excepción en `tests/e2e/invariantes.spec.js`.
+contra 24 de 27). Desde el 2026-11-11 no hay excepciones: los BJ30 siguen la regla (D).
 **Letras del mercado** (2026-10-30, pedido de Mati, como las usan la prensa y la industria): `mini` = urbano
 (A), `compact` = chico (B), `mid` = compacto (C), `big` = mediano o grande (D), `xl` = muy grande; las etiquetas
-llevan la letra. **SUV y crossover, por largo:** B < 4400 mm ≤ C < 4700 ≤ D (los BJ30 van como C).
+llevan la letra. **SUV y crossover, por largo:** B < 4400 mm ≤ C < 4700 ≤ D.
 **Hatchback y sedán, por distancia entre ejes**, que sigue a la cabina (el largo engaña: un sedán B como el
 Virtus mide 4,56 m porque suma el baúl): hatchback A < 2450 ≤ B < 2600 ≤ C, y B si mide menos de 4200 de
 largo (los eléctricos chicos tienen ejes largos); sedán B < 2660 ≤ C < 2800 ≤ D (el K4 y el M340i miden lo
-mismo de largo, pero 2720 y 2851 entre ejes). Pickups, minivans, coupés y descapotables siguen con los
-umbrales de largo de arriba. Ayudame a elegir ofrece «SUV chico (B)», «SUV compacto (C)» y «SUV mediano o
-grande (D)».
+mismo de largo, pero 2720 y 2851 entre ejes).
+**Segmentación única** (2026-11-11, issue #184, decisión de Mati y Sebastián): un solo nombre por segmento en todo el
+sitio, **Urbano (A), Chico (B), Mediano (C), Grande (D), Muy grande y Deportivo** («compacto» desapareció: la prensa llama
+«SUV compacto» al B). **Pickups, en cuatro clases por largo**: chica < 4600 mm (B) ≤ compacta < 5200 (C) ≤ mediana < 5700
+(D) ≤ full-size (`xl`); la ficha, los filtros de la Tabla y el ranking muestran la clase sin letra («Pickup mediana»,
+`PICKUP_CLASE`, `segLabel`). **Minivans, por largo**: B < 4515 ≤ C < 4714 ≤ D, muy grande con 4825 y 6+ asientos.
+**Coupés y descapotables** van sin tamaño: `size: "dep"`, «Deportivo»; sus barras «contra los de su tamaño» los comparan
+entre ellos. «Muy grande»: SUV y minivans de 4825 mm o más y 6+ asientos, y las pickups full-size (16 autos). En Ayudame
+a elegir el tamaño va **después** del tipo de auto, con la palabra y debajo la letra y autos conocidos («B · 208, Cronos,
+Yaris Cross»: los más patentados de 2026 de cada segmento en la tabla; en el celular la letra queda en el botón y los
+ejemplos van en una nota debajo, `seg-ej-nota`); si se eligen solo deportivos, el tamaño queda
+grisado y sin efecto, y con deportivos y otros tipos, el tamaño filtra a los otros. La regla está en
+`tests/e2e/invariantes.spec.js` (`SEGMENTO`); al sumar un auto, su segmento sale de ahí.
 
 ---
 
@@ -142,7 +151,7 @@ se coló dos veces.
 **Trampas al medir:** `grep '<th'` también matchea `<thead>`; `grep 'col-data'` también
 cuenta las 2 definiciones del `<style>`.
 
-**Verificación cruzada:** renderizar de verdad y contar 105 filas en 17 categorías (la tabla dibuja 16 y 104), con
+**Verificación cruzada:** renderizar de verdad y contar 106 filas en 17 categorías (la tabla dibuja 16 y 105), con
 cero errores de consola. Con el script roto la tabla queda en **0 filas** y el archivo
 igual "parece" bien.
 
@@ -216,7 +225,8 @@ sí quedan en inglés, porque no muestran la palabra. Se coló con `YES` dos vec
   filtro de asientos dejó de andar en silencio cuando se buscaba por `data-search`.
 - **El mejor se marca con una copa y la palabra «Mejor»**, no con una estrella (2026-11-05, pedido de Mati: la estrella se lee como puntaje o favorito). Sale de `MEJOR_HTML` en `index.html`; la clase sigue siendo `.mejor-sel` (la usan los tests) y la explicación de cada caso va en el `title`. Donde estos textos dicen «★» se lee la copa.
 - **La barra resumen NO es sticky** — decisión explícita del usuario.
-- **El header grande se oculta** tras el primer "Comparar" (`hasComparedOnce`).
+- **La barra del sitio no se esconde nunca** (2026-11-17, issue #200: el primer "Comparar" escondía el logo y no quedaba cómo volver al
+  inicio). El título grande, la bajada y la cota van solo en Ayudame a elegir; en las demás vistas el `h1` queda para los lectores de pantalla.
 - **Dropdown de Marca/Modelo en `position:static`**, no `absolute` (quedaba recortado).
 - El **indicador de percentiles** (una barra rojo → amarillo → verde al pie de la celda, cuyo
   largo es el percentil; reemplazó a los 4 cuadraditos el 2026-10-07, pedido del usuario). Con 2
@@ -395,7 +405,7 @@ sí quedan en inglés, porque no muestran la palabra. Se coló con `YES` dos vec
   la fecha de la lista (`fechasDePrecio`); `espejarPrecio()` copia a ese lugar la ★ y las ▲▼ de la fila oculta. **El precio ya no tiene
   barra de percentil visible.** Las 9 filas que estaban en «Precio» pasaron a tres categorías al final, con el vocabulario del sitio:
   **Respaldo** (garantía general, garantía de la batería, importador), **Origen** (fabricado en, grupo automotriz) y **Ventas en
-  Argentina** (patentamientos 2026 a 2023). `DATA` tiene 17 categorías y 105 filas; la tabla dibuja 16 y 104 (`N_FILAS` en los tests).
+  Argentina** (patentamientos 2026 a 2023). `DATA` tiene 17 categorías y 106 filas; la tabla dibuja 16 y 105 (`N_FILAS` en los tests).
   `herramientas-paginas.py` sigue leyendo el precio como la primera fila de la primera categoría.
 - **Encabezado compacto** (2026-10-10): `#theadWrap` se pega con `top` negativo igual al alto de las
   fotos (`compactarThead`), así al bajar las fotos salen de la pantalla y quedan nombre, descripción
@@ -475,6 +485,11 @@ sí quedan en inglés, porque no muestran la palabra. Se coló con `YES` dos vec
   valor visible: `PCTL_VETO` la deja fuera del ranking (BJ30, GAC S7, Jetour G700).
 - **Garantía general / de la batería / Fabricado en** (fila de Precio). "Marca china" no
   alcanza para poner "China": hay modelos armados en Brasil o Uruguay.
+- **Frenos** (2026-11-15, pedido de Sebastián: el dato estaba escondido en el detalle de la fila ABS de unos 35 autos): fila de Control y manejo,
+  después de la suspensión. Dice qué lleva adelante y atrás con un vocabulario fijo («Discos ventilados adelante, discos sólidos atrás», «Discos
+  ventilados adelante, tambores atrás», «Discos adelante y atrás»…): «discos atrás» a secas es que la fuente no dice si son ventilados o sólidos, y
+  no se completa. Medidas, pinzas y la cita de la ficha van al `DET:`. Las fichas de Audi son de México (EXT). No está en `PCTL_DIR`: no se
+  rankea. La primera carga salió de las fichas de `fichas-fuentes.tsv` (156 autos, cada celda en `datos-fuentes.tsv`); el 2026-11-16 una búsqueda por auto sumó 7 (fichas de otro país y fuentes no oficiales coincidentes) y quedaron 103 s/d.
 - **Cupo de importación con arancel 0%** (2026-11-07, fila de Origen; delegado por Mati): `EXT:Figura en el cupo` solo si el modelo tiene
   coincidencia **exacta** en un cupo **asignado** (Res. 295/2025, Res. 513/2025 o reasignación de la Disp. 375/2026); `NOTE:No concluyente` si la
   coincidencia es dudosa; `NR:s/d` si no figura. **Nunca `No`**: el cupo es de la empresa para un modelo y no prueba que el precio salga sin
@@ -578,8 +593,8 @@ sí quedan en inglés, porque no muestran la palabra. Se coló con `YES` dos vec
 - **Tres filtros que se arman solos** (2026-11-07, pedido de Mati): en Ayudame a elegir, debajo del uso y el enchufe, hay tres filtros de casillas que las
   respuestas dejan armados y que se pueden cambiar a mano (`elegirResp.seg`, `.prop`, `.carro`; lista separada por comas, `''` = me da igual; `elegirNorm` aplica lo
   sugerido a los que no se tocaron, `segMan` y `propMan` marcan los tocados y «Volver a la sugerencia» los suelta).
-  **Tamaño (A a D)**: «Me da igual» deja los cuatro; «Con niños» los cuatro (decisión de Mati del 2026-11-07: los límites los ponen las plazas y el ISOFIX, como en la regla del 1/11); «Adulto atrás» C y D; 6 o 7 plazas solo D (la D incluye los muy grandes, `SEG_ABCD`). El
-  segmento de al lado queda como «casi» («Otro tamaño (B)»); sin segmento en la tabla, «No informa su tamaño». **Propulsión**: con dónde cargar, ciudad = EV y
+  **Tamaño (A a D)**: «Me da igual» deja los cuatro; «Con niños» los cuatro (decisión de Mati del 2026-11-07: los límites los ponen las plazas y el ISOFIX, como en la regla del 1/11); «Adulto atrás» C y D; 6 o 7 plazas, los cuatro (issue #184: el filtro de plazas ya garantiza los asientos; solo D dejaba afuera a la Spin y al Aircross de 7). La D incluye los muy grandes (`SEG_ABCD`). El
+  segmento de al lado queda como «casi» («Otro tamaño (chico)»); sin segmento en la tabla, «No informa su tamaño». **Propulsión**: con dónde cargar, ciudad = EV y
   ciudad y ruta o mucha ruta = PHEV; «No sé» (el valor de entrada) PHEV, que sirve con o sin enchufe; sin carga, HEV (no depende de cargadores); tierra y trabajo, me da igual (casi no hay híbridos 4x4 ni pickups híbridas).
   **Nunca se sugiere mild-hybrid ni nafta**, pero se pueden tildar a mano. La propulsión elegida **excluye**, no solo prioriza (el puntaje por propulsión sigue
   contando entre los que quedan). **Tipo de auto**: SUV o crossover (juntos), sedán, hatchback, pickup, minivan, coupé o descapotable; «Me da igual» apaga las demás.
@@ -615,6 +630,26 @@ sí quedan en inglés, porque no muestran la palabra. Se coló con `YES` dos vec
   al cargar** (`ELEGIR_N`); achicar o agrandar la ventana no la cambia (`elegir-resize.spec.js`). **(#130)** los botones de la ventana de un auto que arman una comparación
   («Ver todos sus datos en la tabla», «Sumar a mi comparación» y «Comparar con…») llevan a la **vista Tabla** (`mostrarVista('tabla')`) también cuando se abrió
   desde Ayudame a elegir, Grupos o Ranking; antes cerraban la ventana y dejaban la pantalla anterior (`ficha-ver-tabla.spec.js`).
+- **Navegación de Ayudame a elegir** (2026-11-15, issue #192, pedido de Sebastián): **(1)** en la computadora (≥ 900 px) y solo en esa vista, el
+  encabezado sigue los bordes de la columna de `.elegir` (1100 px), con título, bajada y cota centrados; desde el 2026-11-17 (issue #200) el
+  encabezado sigue esa columna en todas las vistas (la tabla, debajo, sigue a todo el ancho). **(2)** Ayudame a elegir vuelve al lugar donde estaba, se vuelva con Atrás o con la pestaña:
+  `mostrarVista` anota `elegirY` al salir y lo repone al entrar, y `pasoHist` crea el paso nuevo con la página por un instante en `elegirY`,
+  porque Chrome anota el scroll de un paso recién cuando se crea el siguiente y lo repone después del popstate. **(3)** «Empezar de nuevo»
+  (`#elegirReiniciar`) repone `ELEGIR_INICIAL`. **(4)** La barra del pie suma, en gris, «Antes, N.» con cuántos cumplían antes de la última
+  respuesta (`dataset.total`); en ese caso no dice «Nuevas sugerencias», para que entre en un renglón del celular. `elegir-navegacion.spec.js`.
+- **Barra del sitio** (2026-11-17, issue #200, pedido de Sebastián; reemplaza la fila `.toolbar-nav` del 2026-11-15): arriba de todo y la misma
+  en todas las vistas, `#barra`: el logo de Autograma (lleva a `/`), las tres pestañas y, a la derecha, Concesionarios, Grupos, Novedades y el
+  tema (`.herr-gral`). En el celular, el logo y «Más» (`#masBtn`) en una fila y las pestañas debajo; «Más» abre lo general y suma «Quién hace
+  esto» (se cierra al elegir, con Esc o tocando afuera; en los tests, `abrirGeneral()`). Debajo, solo en Ayudame a elegir, el título grande. Después,
+  **antes** del buscador y las categorías, la fila de contexto (`#summaryBar`: «Elegir autos», qué se compara, «Los que sigo», Compartir e
+  **Imprimir**, que bajó de la barra); al final, `#toolbarTabla` (orden, barras y plegar a la izquierda; «Solo diferencias» y «Cómo leer la tabla»
+  a la derecha), que se esconde fuera de la Tabla y el Ranking. Las páginas que arma `herramientas-paginas.py` llevan la misma barra sin JS
+  (`barra()`, `BARRA_CSS`; el Ranking se abre con `?vista=ranking`). **El logo** sale de `marca/` (`autograma-oscuro.svg`, `-claro.svg` e
+  `icono-*.svg`, con los colores del sitio): en la página va en línea con `.lg-t` (`--h-ink`) y `.lg-v` (`--byd-blue`), así cambia con el tema;
+  el favicon es `icono-oscuro.svg`. `barra.spec.js` y `elegir-navegacion.spec.js`.
+  Desde 641 px las categorías de la Tabla y los criterios del Ranking (`.cat-scroll`) bajan de renglón para que se vean todos; en el celular
+  siguen en una fila que se desliza.
+- **«Elegir autos para comparar»** (2026-11-15, pedido de Sebastián: a la derecha y con «Elegir autos» no se entendía): el botón que abre el panel va **primero** en la barra del resumen (`#summaryBar`), antes de «Comparando N autos»; «Los que sigo» y «Compartir» quedan a la derecha. En el celular el botón va a lo ancho, «Compartir» debajo y el resumen al final. `elegir-navegacion.spec.js`.
 - **Respaldo de fábrica** (2026-10-10, pedido del usuario: en Argentina da miedo conseguir repuestos;
   después del precio es de lo que más pesa): `MARCAS_INFO[marca].fabrica_mercosur` = planta que
   **ya produce** autos en el Mercosur, con fuente (BYD, GWM en Haval/Ora/Tank/Poer, Chery por CAOA,
@@ -752,6 +787,20 @@ sí quedan en inglés, porque no muestran la palabra. Se coló con `YES` dos vec
 - Deepal publica la red de Changan; Arcfox, la de BAIC; los talleres de Jetour son la red
   de servicio de Famly, su importador; smart, la de su buscador (concesionarios Mercedes-Benz
   que la venden). Omoda/Jaecoo, SWM, Skywell, Stelato y Rely no publican red.
+- **Las 26 marcas no chinas** (2026-11-11, issue #188): cada una salió del buscador oficial de su sitio argentino, casi siempre
+  de la API que carga la página (la nota de cada marca dice cuál y cuántos puntos trajo). Las que devuelven pocos resultados por
+  búsqueda (Chevrolet 50, Ford y Renault 100, el mapa de Citroën 100) se consultaron desde una grilla de puntos sobre el país
+  hasta que no apareció ninguno nuevo. Ford, Toyota, Peugeot, Nissan, BMW y Audi se leyeron con el navegador integrado.
+  Fiat, Jeep y RAM usan el servicio de Stellantis `dealer-service.k8s.fcalatam.com.br` (brandId 0, 57 y 58); jeep.com.ar no tiene
+  buscador propio (su link lleva a un mapa vacío), así que Jeep cita el servicio. Citroën y DS salen del mapa de
+  `citroenstore.com.ar`, el link de concesionarios de citroen.com.ar. Venta y posventa salen de los servicios que publica cada red;
+  si la red no los distingue, el local va como venta (como Chery). Lo que solo vende usados, repuestos o plan de ahorro queda afuera
+  y la nota de la marca lo lista.
+  **Ubicación:** el pin de la red vale si cae en la ciudad de la dirección (40 km, o el nombre del municipio); si no, se ubica por
+  la dirección con Georef y la nota del local lo dice. **Uniones:** un local nuevo se junta con uno de otra marca si tienen el
+  mismo nombre y dirección, la misma dirección (a menos de 1 km) con una palabra del nombre en común, o están a menos de 150 m con
+  una palabra del nombre en común (sin contar el nombre de la ciudad) o el mismo teléfono local (no 0800/0810) a menos de 60 m;
+  nunca si las dos direcciones tienen número y no coinciden, ni con un local que tenga promos «para todos los autos» (`*`).
 - `tests/e2e/concesionarios.spec.js` falla si una marca de la tabla no figura, si un
   total no coincide, si un local no tiene fuente https o provincia normalizada, o si hay
   locales repetidos.
@@ -973,10 +1022,17 @@ portada primero y el resto en el orden de las vistas.
   delantero con la **trompa hacia la DERECHA** de la imagen y la cola a la izquierda, como si el auto arrancara de
   izquierda a derecha y hacia quien mira. La que mira a la izquierda se espeja con `herramientas-fotos.py espejar SLUG`,
   que da vuelta la foto 1, la miniatura y la mediana y suma «imagen espejada» al crédito (CC BY pide avisar los cambios).
-  **No se espeja un auto con la marca escrita en grande en la trompa** (Chery Himla, Foton Tunland G7, Jetour G700, T1, T2
-  y T2 i-DM, JMC Grand Avenue y Grand Avenue Pro, Maxus T60 Max, F-150 Raptor, Hilux GR-Sport, Fiat Toro y las RAM Dakota,
-  Rampage y 1500): la marca se leería al revés; hace falta otra foto. Las tomas de frente (Maxus T60, Citroën Aircross,
-  smart #3, Kia K3 Sedán) tampoco se espejan. Si la portada no muestra la trompa y el carrusel tiene una que sí, se sube con
+  **Las letras no quedan al revés** (2026-11-11, pedido de Mati: «editá esa parte para que los logos queden bien», también
+  los chicos): después de espejar, `herramientas-fotos.py letras SLUG "x0,y0,x1,y1;…"` pega sin espejar, en el lugar
+  espejado, cada zona con letras o con un emblema que no es simétrico (marca y modelo en la parrilla o el capó, insignias,
+  patentes, logos del centro de la llanta, la banderita italiana de Fiat); las cajas van en píxeles de la foto sin espejar
+  y el crédito dice «imagen espejada con las letras al derecho». Los emblemas simétricos (Chery, Toyota, VW, Mercedes,
+  Audi, Renault, Citroën, Honda, Chevrolet, Mitsubishi) no se tocan. Así se espejaron también los de la marca en grande
+  (Himla, Jetour G700, T1 y T2, JMC Grand Avenue Pro, Maxus T60 Max, F-150 Raptor, Hilux GR-Sport, Toro y las RAM). Cuando la
+  palabra va en diagonal y con mucha perspectiva (JETOUR de la G700) una caja sola no alcanza: se pega letra por letra, cada
+  una en el casillero que le toca. Antes de espejar, mirar que la trompa de verdad mire a la izquierda: 9 se espejaron
+  por error el 2026-11-10 y se deshicieron con `desespejar`. Quedan sin espejar las tomas de frente (Maxus T60, Citroën
+  Aircross, smart #3, Kia K3 Sedán, Jetour T2 i-DM y JMC Grand Avenue). Si la portada no muestra la trompa y el carrusel tiene una que sí, se sube con
   `portada SLUG carrusel N VISTA conservar VISTA_VIEJA` (la vieja pasa al carrusel con su fuente). Al instalar una portada
   nueva, mirar hacia dónde apunta la trompa.
 - **La portada tiene que ser la versión que vende el importador argentino** (frente,

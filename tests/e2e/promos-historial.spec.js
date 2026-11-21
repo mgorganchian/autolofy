@@ -3,13 +3,14 @@
 // python3 herramientas-promos.py y commitear promos-historial.json.
 const { test, expect } = require('@playwright/test');
 const { spawnSync } = require('child_process');
+const { PY, PY_ENV } = require('./python');
 const path = require('path');
 const fs = require('fs');
 const RAIZ = process.env.AUTOLOFY_RAIZ || path.resolve(__dirname, '../..');
 
 test('el historial de promos está al día con concesionarios.json', ({ }, info) => {
   test.skip(info.project.name !== 'escritorio', 'no depende del viewport');
-  const r = spawnSync('python3', [path.join(RAIZ, 'herramientas-promos.py'), '--check'], { encoding: 'utf8' });
+  const r = spawnSync(PY, [path.join(RAIZ, 'herramientas-promos.py'), '--check'], { encoding: 'utf8', env: PY_ENV });
   expect(r.stdout + r.stderr, 'corré herramientas-promos.py').toBe('');
   expect(r.status).toBe(0);
 });

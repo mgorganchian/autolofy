@@ -2,12 +2,13 @@
 // está registrado en precios-historial.json. Si falla: python3 herramientas-precios.py --desde AAAA-MM-DD y commitear.
 const { test, expect } = require('@playwright/test');
 const { spawnSync } = require('child_process');
+const { PY, PY_ENV } = require('./python');
 const path = require('path');
 const RAIZ = process.env.AUTOLOFY_RAIZ || path.resolve(__dirname, '../..');
 
 test('el historial de precios está al día con la tabla', ({ }, info) => {
   test.skip(info.project.name !== 'escritorio', 'no depende del viewport');
-  const r = spawnSync('python3', [path.join(RAIZ, 'herramientas-precios.py'), '--check'], { encoding: 'utf8' });
+  const r = spawnSync(PY, [path.join(RAIZ, 'herramientas-precios.py'), '--check'], { encoding: 'utf8', env: PY_ENV });
   expect(r.stdout + r.stderr, 'corré herramientas-precios.py').toBe('');
   expect(r.status).toBe(0);
 });

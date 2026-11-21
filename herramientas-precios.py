@@ -60,7 +60,7 @@ def main():
     if '--check' in a:
         for x in cambios: print('sin registrar', x)
         sys.exit(1 if cambios else 0)
-    json.dump(hist, open(HIST, 'w', encoding='utf-8'), ensure_ascii=False, indent=1)
+    json.dump(hist, open(HIST, 'w', encoding='utf-8', newline='\n'), ensure_ascii=False, indent=1)
     for x in cambios:
         if x[1] is not None: print(f'cambió {x[0]}: {x[1]:,} -> {x[2]:,} {x[3]}'.replace(',', '.'))
     print(f'{len(hist["autos"])} autos con precio, {sum(len(v) for v in hist["autos"].values())} entradas, {len(cambios)} nuevas')

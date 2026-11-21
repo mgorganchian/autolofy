@@ -33,7 +33,7 @@ test('con un adulto atrás el tamaño sugerido es C y D: los A no entran, los B 
   }, base);
   expect(r.seg).toBe('C,D');
   expect(r.a.every(d => d === null)).toBe(true);
-  expect(r.b).toEqual(['Otro tamaño (B)']);
+  expect(r.b).toEqual(['Otro tamaño (chico)']);
   expect(r.cd).toBe(true);
 });
 

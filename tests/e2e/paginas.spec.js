@@ -5,12 +5,13 @@ const fs = require('fs');
 const path = require('path');
 const { execFileSync } = require('child_process');
 const { test, expect } = require('@playwright/test');
+const { PY, PY_ENV } = require('./python');
 
 const RAIZ = process.env.AUTOLOFY_RAIZ || path.resolve(__dirname, '../..');
 
 test('las páginas por auto están al día con index.html', ({ }, info) => {
   test.skip(info.project.name !== 'escritorio', 'no depende del viewport');
-  const out = execFileSync('python3', [path.join(RAIZ, 'herramientas-paginas.py'), '--check'], { encoding: 'utf8' });
+  const out = execFileSync(PY, [path.join(RAIZ, 'herramientas-paginas.py'), '--check'], { encoding: 'utf8', env: PY_ENV });
   expect(out).toContain('al día');
 });
 
@@ -22,7 +23,7 @@ test('la página de un auto tiene título, descripción, foto, datos estructurad
   const ld = JSON.parse(await page.locator('script[type="application/ld+json"]').textContent());
   expect(ld['@type']).toBe('Car');
   expect(ld.brand.name).toBe('Chery');
-  await expect(page.locator('main table tr')).toHaveCount(105);
+  await expect(page.locator('main table tr')).toHaveCount(106);
   await expect(page.locator('main tr', { hasText: 'Longitud (mm)' })).toContainText('4553');
   await expect(page.locator('a.cta')).toHaveAttribute('href', '/?auto=chery-tiggo-7-pro-phev');
   expect(await page.locator('figure img').first().evaluate(i => i.complete && i.naturalWidth > 0)).toBe(true);

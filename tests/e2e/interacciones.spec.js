@@ -107,7 +107,7 @@ test.describe('selector de autos', () => {
     const vistos = await columnasVisibles(page).evaluateAll(ths => ths.map(th => +th.dataset.idx));
     expect(vistos.map(i => CARS[i].name).sort()).toEqual(esperados.map(c => c.name).sort());
     await expect(page.locator('#summaryText')).toHaveText(`Comparando ${esperados.length} auto${esperados.length === 1 ? '' : 's'}`);
-    await expect(page.locator('#mainTitle')).toBeHidden();
+    await expect(page.locator('.barra-marca')).toBeVisible();   // la barra con el logo no se esconde nunca (issue #200)
     // Las celdas del cuerpo acompañan al header.
     const celdas = await page.locator(FILAS_DATOS).first().locator('td[data-col]:not(.col-hidden)').count();
     expect(celdas).toBe(esperados.length);
@@ -191,7 +191,7 @@ test.describe('tooltips y fotos', () => {
     await celda.click();
     await expect(page.locator('#tooltipBox')).toHaveClass(/visible/);
     await expect(page.locator('#tooltipBox')).toHaveText(tip);
-    await page.locator('#mainTitle').click();
+    await page.locator('#summaryText').click();
     await expect(page.locator('#tooltipBox')).not.toHaveClass(/visible/);
   });
 
@@ -305,4 +305,14 @@ test.describe('fotos en celular', () => {
     // La mediana de 480 px si alcanza (2026-10-10), o la de 900 px.
     await expect(img).toHaveAttribute('src', /\/fotos\/(med\/[a-z0-9-]+|[a-z0-9-]+-1)\.jpg$/);
   });
+});
+
+test('el panel «Elegir autos» lista los modelos en orden alfabético por modelo, no por marca', async ({ page }) => {
+  await page.goto('/index.html?tabla');
+  await page.click('#openModalBtn');
+  await page.evaluate(() => { document.getElementById('modelDropdownBtn').click(); });
+  const nombres = await page.locator('#modelList label.mcard b').allTextContents();
+  expect(nombres.length).toBeGreaterThan(200);
+  const ordenados = [...nombres].sort((a, b) => a.localeCompare(b, 'es', { numeric: true, sensitivity: 'base' }));
+  expect(nombres).toEqual(ordenados);
 });

@@ -3,7 +3,7 @@
 const fs = require('fs');
 const path = require('path');
 const { test, expect } = require('@playwright/test');
-const { leerIndex, vigilarErrores, FILAS_DATOS, N_FILAS } = require('./helpers');
+const { leerIndex, vigilarErrores, FILAS_DATOS, N_FILAS, abrirGeneral } = require('./helpers');
 
 const RAIZ = process.env.AUTOLOFY_RAIZ || path.resolve(__dirname, '../..');
 const { html } = leerIndex();
@@ -44,8 +44,9 @@ test('ayudame a elegir: la franja de precio es piso y techo, y con enchufe en ca
   // La barra al pie cambia con cada respuesta (en el celular la lista queda fuera de la pantalla).
   const barra = page.locator('.elegir-barra');
   await page.locator('label:has(input[name="el-enchufe"][value="no"])').click();
-  // La barra ya no nombra los sugeridos (2026-10-10: mucho texto): dice si cambiaron y se ilumina.
-  await expect(barra).toContainText(/Nuevas sugerencias|Sin cambios/);
+  // La barra ya no nombra los sugeridos (2026-10-10: mucho texto): dice si cambiaron y se ilumina. Si cambió cuántos cumplen,
+  // dice «Antes, N.» en lugar de «Nuevas sugerencias», para entrar en un renglón (issue #192).
+  await expect(barra).toContainText(/Nuevas sugerencias|Sin cambios|Antes, \d+\./);
   await expect(barra).toHaveClass(/cambio/);
   for (const t of await res.locator("ul").allTextContents()) expect(t).not.toMatch(/necesita dónde cargar/i);
   await fijarPresu(page, '');
@@ -120,7 +121,7 @@ test('la vista Concesionarios ordena por cercanía con la ubicación del GPS', a
   await context.grantPermissions(['geolocation']);
   await context.setGeolocation({ latitude: -31.4135, longitude: -64.1811 });   // Córdoba capital
   await abrir(page);
-  await page.locator('#concesBtn').click();
+  await abrirGeneral(page); await page.locator('#concesBtn').click();
   await page.locator('#dondeGps').click();
   await expect(page.locator('#concesVista')).toContainText('Ordenado por cercanía a tu ubicación');
   const km = await page.locator('#concesVista .cc-dist').allTextContents();
@@ -399,7 +400,7 @@ test('botón Atrás: deshace el último paso (ficha, Grupos, vista, comparar) si
   await expect(page.locator('#rankingView')).toBeHidden();
   await expect(page.locator('#tbodyWrap')).toBeVisible();
   // Grupos → un auto → Atrás vuelve a Grupos → Atrás cierra Grupos
-  await page.click('#gruposBtn');
+  await abrirGeneral(page); await page.click('#gruposBtn');
   await expect(page.locator('#gruposVista')).toBeVisible();
   await page.locator('#gruposHoja .grupo-auto').first().click();
   await expect(page.locator('#fichaAuto')).toBeVisible();
@@ -614,13 +615,13 @@ test('barras contra los de su tamaño: el percentil sale del segmento y se recue
       const e = document.querySelector('#mainTable tr[data-nombre="Volumen de baúl/carga (L)"] td[data-col="' + i + '"] .pct'); return e && e.title; }, sl);
   expect(await barra('byd-song-pro')).toMatch(/^Mejor que el \d+% de los \d+ autos con este dato$/);
   await page.locator('#barrasSel').selectOption('seg');
-  expect(await barra('byd-song-pro')).toMatch(/^Mejor que el \d+% de los \d+ autos medianos o grandes \(D\) con este dato$/);
+  expect(await barra('byd-song-pro')).toMatch(/^Mejor que el \d+% de los \d+ autos grandes \(D\) con este dato$/);
   // Un segmento con menos de 5 autos con el dato no tiene barra (los urbanos con baúl).
   const chicos = await page.evaluate(() => CARS.filter((c, i) => c.size === 'mini' && pctlValor(FILA_POR_NOMBRE['Volumen de baúl/carga (L)'][i + 1], 'Volumen de baúl/carga (L)') !== null).length);
   if (chicos < 5) expect(await barra('fiat-mobi-trekking')).toBeNull();
   await page.reload();
   await expect(page.locator('#barrasSel')).toHaveValue('seg');
-  expect(await barra('byd-song-pro')).toMatch(/autos medianos o grandes \(D\) con este dato$/);
+  expect(await barra('byd-song-pro')).toMatch(/autos grandes \(D\) con este dato$/);
   await abrir(page, '?autos=byd-song-pro,gwm-tank-300');
   await expect(page.locator('#barrasSelLbl')).toBeHidden();
 });
@@ -659,7 +660,7 @@ test('sugerencias: la página del auto abre el formulario precargado con el auto
 test('Grupos y Concesionarios son vistas de la página: sin ventana, sin desborde y con su URL', async ({ page }) => {
   await abrir(page);
   for (const [btn, sec, q, titulo] of [['#gruposBtn', '#gruposVista', 'grupos', 'Grupos automotrices'], ['#concesBtn', '#concesVista', 'concesionarios', 'Concesionarios']]){
-    await page.locator(btn).click();
+    await abrirGeneral(page); await page.locator(btn).click();
     await expect(page.locator(sec)).toBeVisible();
     await expect(page.locator(btn)).toHaveAttribute('aria-pressed', 'true');
     await expect(page.locator(sec + ' h2')).toHaveText(titulo);

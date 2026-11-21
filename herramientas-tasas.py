@@ -91,5 +91,5 @@ if __name__ == '__main__':
     s = open(p, encoding='utf-8').read()
     n, k = re.subn(r'(/\*tasas:inicio\*/).*?(/\*tasas:fin\*/)', lambda m: m.group(1) + bloque + m.group(2), s, flags=re.S)
     if k != 1: sys.exit(f'el bloque de tasas aparece {k} veces en index.html')
-    open(p, 'w', encoding='utf-8').write(n)
+    open(p, 'w', encoding='utf-8', newline='\n').write(n)
     print(f'{len(ls)} líneas de préstamo para 0 km, al {hoy.isoformat()}')

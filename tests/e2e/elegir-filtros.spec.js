@@ -19,15 +19,16 @@ test('el tamaño sale de quiénes viajan y de las plazas, y se puede cambiar', a
   expect(await marcados(page, 'seg')).toEqual(['A', 'B', 'C', 'D']);
   await page.locator('label:has(input[name="el-quien"][value="adultos"])').click();
   expect(await marcados(page, 'seg')).toEqual(['C', 'D']);
+  // Con 6 o 7 plazas no se fija el tamaño (issue #184): el filtro de plazas ya garantiza los asientos.
   await page.locator('label:has(input[name="el-plazas"][value="6"])').click();
-  expect(await marcados(page, 'seg')).toEqual(['D']);
+  expect(await marcados(page, 'seg')).toEqual(['A', 'B', 'C', 'D']);
   // Lo toca a mano: ya no lo pisan las respuestas, y vuelve con «Volver a la sugerencia».
   await page.locator('label:has(input[name="elm-seg"][value="C"])').click();
-  expect(await marcados(page, 'seg')).toEqual(['C', 'D']);
-  await page.locator('label:has(input[name="el-quien"][value="ninos"])').click();
-  expect(await marcados(page, 'seg')).toEqual(['C', 'D']);
+  expect(await marcados(page, 'seg')).toEqual(['A', 'B', 'D']);
+  await page.locator('label:has(input[name="el-plazas"][value="5"])').click();
+  expect(await marcados(page, 'seg')).toEqual(['A', 'B', 'D']);
   await page.locator('[data-sugerir="seg"]').click();
-  expect(await marcados(page, 'seg')).toEqual(['D']);
+  expect(await marcados(page, 'seg')).toEqual(['C', 'D']);
   // Destildar todo equivale a no filtrar.
   await page.locator('label:has(input[name="el-plazas"][value="5"])').click();
   await page.locator('label:has(input[name="el-quien"][value=""])').click();
@@ -90,7 +91,7 @@ test('el tamaño de al lado queda como «casi» y las respuestas viejas se migra
     return { l, casi: elegirDesvio(i, { presu: '', plazas: '5', seg: 'C,D' }), no: elegirDesvio(i, { presu: '', plazas: '5', seg: 'D' }) };
   });
   expect(r.l).toBe('B');
-  expect(r.casi.txt).toBe('Otro tamaño (B)');
+  expect(r.casi.txt).toBe('Otro tamaño (chico)');
   expect(r.no).toBeNull();
   await page.evaluate(() => localStorage.setItem('elegir', JSON.stringify({ carro: 'suv-c' })));
   await page.reload();
@@ -105,7 +106,7 @@ test('los cuatro tamaños (A a D) van en una sola fila, también en el celular, 
     textos: ls.map(l => l.textContent.trim()) }));
   expect(r.n).toBe(4);
   expect(r.tops.length).toBe(1);
-  expect(r.textos).toEqual(['Aurbano', 'Bchico', 'Ccompacto', 'Dgrande']);
+  expect(r.textos).toEqual(['UrbanoA · Kwid, Mobi', 'ChicoB · 208, Cronos, Yaris Cross', 'MedianoC · Corolla, Territory', 'GrandeD · Song Pro, SW4, Hilux']);
   const anchos = await page.locator('.elegir-ops[data-q="seg"] span').evaluateAll(ss => ss.map(s => [Math.round(s.scrollWidth), Math.round(s.clientWidth)]));
   for (const [sw, cw] of anchos) expect(sw).toBeLessThanOrEqual(cw + 1);
 });
@@ -119,4 +120,50 @@ test('«Me da igual» es una casilla al costado del título (tipo de auto y prop
   }
   const n = await page.locator('.elegir-ops[data-q="carro"] label').count();
   expect(n).toBe(6);
+});
+
+// Issue #184 (2026-11-11, Mati y Sebastián): una sola segmentación por tamaño.
+test('los autos de ejemplo de cada tamaño son de ese tamaño, y las pickups y los deportivos se nombran aparte', async ({ page }) => {
+  const r = await page.evaluate(() => {
+    const ej = { A: ['Kwid', 'Mobi'], B: ['208', 'Cronos', 'Yaris Cross'], C: ['Corolla', 'Territory'], D: ['Song Pro', 'SW4', 'Hilux'] }, mal = [];
+    for (const [l, ns] of Object.entries(ej)) for (const n of ns) {
+      const c = CARS.filter(c => c.status === 'venta' && new RegExp('\\b' + n + '\\b').test(c.name + ' ' + c.short));
+      if (!c.length || c.some(x => SEG_ABCD[x.size] !== l)) mal.push(l + ' ' + n + ': ' + c.map(x => x.name + '=' + x.size).join(', '));
+    }
+    const de = n => segLabel(CARS.find(c => c.name.startsWith(n)));
+    return { mal, hilux: de('Toyota Hilux'), toro: de('Fiat Toro'), strada: de('Fiat Strada'), f150: de('Ford F-150'), mustang: de('Ford Mustang'),
+      bj30: CARS.filter(c => /BJ30/.test(c.name)).map(c => c.size), muyGrandes: CARS.filter(c => c.size === 'xl').length,
+      segs: SEGMENTS };
+  });
+  expect(r.mal).toEqual([]);
+  expect([r.hilux, r.toro, r.strada, r.f150, r.mustang]).toEqual(['Pickup mediana', 'Pickup compacta', 'Pickup chica', 'Pickup full-size', 'Deportivo']);
+  expect(r.bj30).toEqual(['big', 'big']);
+  expect(r.muyGrandes).toBe(16);
+  expect(r.segs.slice(0, 4)).toEqual(['Urbano (A)', 'Chico (B)', 'Mediano (C)', 'Grande (D)']);
+});
+
+test('con solo deportivos el tamaño queda grisado y sin efecto; con otros tipos, los deportivos entran igual', async ({ page }) => {
+  const sinTam = () => page.evaluate(() => { const f = document.querySelector('.elegir-ops[data-q="seg"]').closest('fieldset'); return { dis: f.disabled, nota: f.textContent.includes('Los deportivos no se eligen por tamaño') }; });
+  expect(await sinTam()).toEqual({ dis: false, nota: false });
+  await page.evaluate(() => { elegirResp.carro = 'coupe'; elegirResp.seg = 'A'; elegirResp.segMan = true; pintarElegir(); });
+  expect(await sinTam()).toEqual({ dis: true, nota: true });
+  const r = await page.evaluate(() => {
+    const dep = CARS.map((c, i) => i).filter(i => CARS[i].size === 'dep' && CARS[i].status === 'venta');
+    const o = { presu: '', plazas: '4', quien: '', carro: 'coupe,sedan', seg: 'A', uso: 'mixto', enchufe: 'nose' };
+    const sinFiltro = Object.assign({}, o, { seg: 'A,B,C,D' });
+    return { n: dep.length, todos: dep.every(i => JSON.stringify(elegirDesvio(i, o)) === JSON.stringify(elegirDesvio(i, sinFiltro))) };
+  });
+  expect(r.n).toBeGreaterThan(0);
+  expect(r.todos).toBe(true);
+});
+
+test('con 6 o 7 plazas entran la Spin y el Aircross de 7 asientos, que son chicos (B)', async ({ page }) => {
+  const r = await page.evaluate(() => {
+    const q = elegirNorm({ presu: '', plazas: '6', quien: '', carro: '', uso: 'mixto', enchufe: 'nose', segMan: false, propMan: true, prop: '' });
+    return { seg: q.seg, spin: CARS.map((c, i) => i).filter(i => /Spin|Aircross .*7$/.test(CARS[i].name) && CARS[i].status === 'venta').map(i => [CARS[i].size, elegirDesvio(i, q)]) };
+  });
+  expect(r.seg).toBe('A,B,C,D');
+  expect(r.spin.length).toBeGreaterThan(0);
+  expect(r.spin.map(x => x[0])).toEqual(['compact', 'compact']);
+  for (const [, d] of r.spin) expect(d).not.toBeNull();
 });

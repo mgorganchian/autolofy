@@ -116,7 +116,7 @@ def main():
             if mon == 'USD' and hist.get(slug):
                 hist[slug].append([fecha, monto, hist[slug][-1][2], urls[MAPA[slug][0]]])
         s = s[:hj] + 'const HISTORIAL_PRECIOS = ' + json.dumps(hist, ensure_ascii=False, separators=(',', ':')) + s[he:]
-        open(os.path.join(AQUI, 'index.html'), 'w', encoding='utf-8').write(s)
+        open(os.path.join(AQUI, 'index.html'), 'w', encoding='utf-8', newline='\n').write(s)
         subprocess.run(['python3', os.path.join(AQUI, 'herramientas-precios.py'), '--desde', fecha], check=True)
         print(f'{len(cambios)} celdas actualizadas. Falta: python3 herramientas-paginas.py y la suite.')
 

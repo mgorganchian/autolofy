@@ -5,7 +5,7 @@
 # llama por este nombre.
 #
 # Corre LOCAL (launchd), no en la nube, por tres razones concretas:
-#   - necesita el llavero de macOS para poder pushear y abrir el PR
+#   - necesita la credencial de gh (llavero de macOS) para pushear y abrir el PR
 #   - el recorte de fotos usa Vision de macOS vía Swift, que no existe en la nube
 #   - el único entorno de nube disponible es el de trabajo, y este es un proyecto personal
 #
@@ -356,7 +356,11 @@ fi
 # ---------- 3b. PR con auto-merge ----------
 # GitHub lo mergea solo cuando pasa el check e2e. Se espera hasta 20 minutos.
 if [[ "$(git rev-list --count main.."$RAMA")" -gt 0 ]]; then
-  if git push --quiet -u origin "$RAMA" 2>>"$LOG" \
+  # El llavero no siempre tiene la contraseña de personal-write (falló el 11/11/2026):
+  # se pushea con la credencial de gh, la misma que abre el PR.
+  if git -c credential.helper= -c 'credential.helper=!gh auth git-credential' \
+       -c credential.https://github.com.username=mgorganchian \
+       push --quiet -u origin "$RAMA" 2>>"$LOG" \
      && gh pr create --base main --head "$RAMA" --title "Rutina semanal del $(date +%d/%m/%Y)" \
           --body "Actualización semanal automática (herramientas-chequeo-diario.sh): fichas, datos faltantes y fotos. Se mergea sola cuando pasan los tests." >>"$LOG" 2>&1 \
      && { gh pr merge "$RAMA" --auto --squash --delete-branch >>"$LOG" 2>&1 \
