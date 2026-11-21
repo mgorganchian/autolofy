@@ -1182,6 +1182,18 @@ antes de verificar el sitio. Si los controles de GitHub fallan, el PR queda abie
 rutina avisa con una notificación de macOS. Si Claude no puede autenticarse o falla, también
 avisa; el 2026-09-28 la sesión venció y la pasada no corrió sin que nadie se enterara.
 
+**El «Security Checkpoint» de Vercel no es un sitio roto** (2026-11-21): la mitigación automática de DDoS de
+Vercel (regla de sistema `sys_dos_mitigation`) desafió durante 10 minutos a la IP de la Mac después de un bucle de
+`curl` que bajaba la página cada 30 segundos, y `curl` recibía un 403 con la cabecera `x-vercel-mitigated: challenge`
+en lugar del sitio. El proyecto no tiene firewall propio y los visitantes no se vieron afectados. La rutina lo
+distingue (`bajar_sitio`): si la desafían, espera 12 minutos, prueba una sola vez más y, si sigue, avisa eso en vez
+de «Lo publicado no dice…». **Nunca verificar el sitio con un bucle de `curl`**: un pedido espaciado, y si hace falta
+más, `vercel inspect` (deploy Ready con el alias de autolofy.vercel.app) o el navegador. No se esquiva el desafío ni
+se pausan las mitigaciones. `vercel firewall persistent-actions list` y `vercel firewall traffic list` muestran qué
+IP desafió y por qué regla. El marcador que busca es la cantidad de autos del resumen («268 autos, todos incluidos»):
+hasta el 2026-11-21 buscaba «· todos incluidos», no lo encontraba y daba por verificado cualquier cosa; ahora, si no
+lo encuentra en `index.html`, avisa.
+
 Como nadie revisa el PR antes de que se mergee, la prudencia reemplaza a la supervisión:
 ante la duda sobre un dato, no cargarlo. Una corrida sin cambios es un resultado válido.
 
