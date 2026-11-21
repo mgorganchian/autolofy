@@ -13,6 +13,8 @@
     python3 herramientas-fotos.py portada SLUG IMAGEN VISTA "crédito" "fila de fichas-fuentes.tsv" [sin-recorte]
                                                           # cambia la portada (foto 1, miniatura y crédito);
                                                           # con «conservar», la portada vieja pasa al carrusel
+    python3 herramientas-fotos.py portada SLUG IMAGEN VISTA CREDITO FILA [sin-recorte] [conservar VISTA_VIEJA]
+                                                          # portada nueva desde una imagen; con «conservar», la vieja pasa al carrusel
     python3 herramientas-fotos.py espejar SLUG...         # da vuelta la portada para que la trompa mire a la derecha
     python3 herramientas-fotos.py letras SLUG "x0,y0,x1,y1;…"  # en una espejada, pone al derecho esas zonas con letras
     python3 herramientas-fotos.py desespejar SLUG...      # deshace un espejado hecho por error
@@ -440,10 +442,17 @@ def portada(slug, args):
     else:
         img, v, credito, fila_txt = args[0], args[1], args[2], args[3]
         origen = os.path.join(CAND, 'portada-' + slug + '.jpg'); os.makedirs(CAND, exist_ok=True)
-        if not procesar(img, origen, len(args) > 4 and args[4] == 'sin-recorte'): sys.exit('no se pudo procesar ' + img)
+        if not procesar(img, origen, 'sin-recorte' in args[4:]): sys.exit('no se pudo procesar ' + img)
         fila = fila_txt.split('\t')
         if fila[0] != nombre: sys.exit(f'la fila tiene que empezar con el nombre exacto: {nombre!r}')
         resto = est[1:]
+        if 'conservar' in args[4:]:
+            # Igual que con «carrusel»: la portada vieja pasa al carrusel con su vista, su crédito y su fuente (2026-11-21).
+            vv = args[args.index('conservar', 4) + 1]
+            if vv not in CLAVES or vv == v: sys.exit(f'vista de la portada vieja inválida: {vv!r}')
+            if any(x['vista'] == vv for x in resto): sys.exit(f'{slug}: el carrusel ya tiene una foto de {vv}')
+            cred_v, fila_v = fuente_portada(html, slug, nombre)
+            resto = resto + [{'archivo': f'{slug}-1.jpg', 'vista': vv, 'cred': cred_v, 'fila': ['', vv] + fila_v}]
     if v not in CLAVES: sys.exit(f'vista desconocida {v!r}')
     if any(x['vista'] == v for x in resto): sys.exit(f'{slug}: el carrusel ya tiene una foto de {v}; sacala antes con reorganizar')
     tmp = tempfile.mkdtemp()
