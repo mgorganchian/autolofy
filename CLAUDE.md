@@ -387,7 +387,7 @@ sí quedan en inglés, porque no muestran la palabra. Se coló con `YES` dos vec
   pintar (`arranca-elegir` en el `<head>`: el salto medía 0,56 de CLS); las miniaturas llevan
   `loading="lazy"` (el panel cerrado bajaba 124 fotos, 1,15 MB); en el celular la tabla usa
   `fotos/med/<slug>.jpg` (480 px) en vez de la de 900 px (9,3 MB) — `herramientas-fotos.py portada`
-  la regenera; `vercel.json` guarda fotos y logos un día. Las cinco ventanas pasan por
+  la regenera; `vercel.json` guarda fotos y logos un día, y **un año las fotos pedidas con huella** (ver «Huella de las fotos»). Las cinco ventanas pasan por
   `dialogoAbierto`/`dialogoCerrado` (foco adentro, Tab no se escapa, vuelve al botón); el panel se
   cierra con Esc. Los carteles de ayuda se abren con Tab, se cierran con Esc y se puede pasar el
   puntero por encima. Zonas táctiles de 24 px como mínimo (flechitas 44). Los destellos son 3 y no
@@ -1052,6 +1052,14 @@ portada primero y el resto en el orden de las vistas.
   Lynk & Co 06 y 01, Tiggo 8 Pro, BAIC X35 y Jolion Pro HEV), y después Jaecoo 7 (una
   "SHS-P" de Commons: la anterior era el naftero) y SWM G03F (en Commons es "SWM Tiger";
   la "Tiger EDi" es la electrificada y no va).
+
+**Huella de las fotos** (2026-11-21, pedido de Mati: en el celular se seguía viendo una portada vieja hasta un día después de
+cambiarla, porque el archivo conserva el nombre). Toda dirección de foto lleva `?v=<huella>`: un sha1 corto de todos los
+archivos de ese auto (`fotos/<slug>-N.jpg`, la miniatura y la mediana), que cambia solo cuando cambia alguna. La calcula
+`herramientas-paginas.py` y la escribe en `FOTO_V` de `index.html` (entre `/*fotov:inicio*/` y `/*fotov:fin*/`), en el `src` de
+cada miniatura del `<th>` y en las páginas de `autos/` y `comparar/`; el script la suma con `fotoV(slug)`. Con `?v=`, Vercel
+guarda la foto un año (`immutable`, regla con `has` en `vercel.json`). **Después de tocar una foto hay que correr
+`herramientas-paginas.py`**: si no, `paginas.spec.js` falla (la huella quedó vieja) y el celular seguiría mostrando la anterior.
 
 **Las fotos se agregan con `herramientas-fotos.py`, nunca a mano**: `buscar` baja y
 procesa candidatas de Commons a `.fotos-candidatas/`, `instalar ID…` agrega las

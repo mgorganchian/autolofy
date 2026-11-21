@@ -13,6 +13,7 @@ const leerMapa = nombre => JSON.parse(new RegExp(`const ${nombre}\\s*=\\s*(\\{[\
 const FOTOS_POR_AUTO = leerMapa('FOTOS_POR_AUTO');
 const CREDITOS_POR_FOTO = leerMapa('CREDITOS_POR_FOTO');
 const VISTAS_POR_FOTO = leerMapa('VISTAS_POR_FOTO');
+const FOTO_V = leerMapa('FOTO_V');
 const VISTAS = ['tres-cuartos-delantero', 'frente', 'perfil-izquierdo', 'perfil-derecho', 'tres-cuartos-trasero', 'trasera',
   'baul-abierto', 'tablero', 'instrumentos', 'consola-central', 'asientos-delanteros', 'asientos-traseros'];
 
@@ -37,9 +38,12 @@ test.describe('atribución de las fotos', () => {
     expect(enDisco.filter(f => !declarados.has(f))).toEqual([]);
   });
 
-  test('cada auto tiene su miniatura en fotos/mini (la del <th>, que antes iba embebida)', () => {
+  test('cada auto tiene su miniatura en fotos/mini (la del <th>, que antes iba embebida), con la huella de sus fotos', () => {
+    // La huella (?v=) cambia cuando cambia alguna foto del auto: así el celular no sigue mostrando la vieja (2026-11-21).
+    // Que esté al día lo controla paginas.spec.js (herramientas-paginas.py --check la recalcula).
     const slugs = [...html.matchAll(/<img class="car-photo" data-slug="([^"]+)"[^>]*src="([^"]+)"/g)];
-    const mal = slugs.filter(([, slug, src]) => src !== `fotos/mini/${slug}.jpg` || !fs.existsSync(path.join(RAIZ, src))).map(m => m[1]);
+    const mal = slugs.filter(([, slug, src]) => !/^[0-9a-f]{8}$/.test(FOTO_V[slug] || '') || src !== `fotos/mini/${slug}.jpg?v=${FOTO_V[slug]}` ||
+      !fs.existsSync(path.join(RAIZ, src.split('?')[0]))).map(m => m[1]);
     expect(slugs.length).toBe(Object.keys(FOTOS_POR_AUTO).length);
     expect(mal).toEqual([]);
   });

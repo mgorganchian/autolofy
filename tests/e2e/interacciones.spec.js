@@ -213,7 +213,7 @@ test.describe('tooltips y fotos', () => {
     await zoom.locator('.sig').click();
     await expect(zoom.locator('.puntos i').nth(1)).toHaveClass(/on/);
     await expect(zoom.locator('.credito')).toContainText(creditos[1]);
-    await expect(zoom.locator('img')).toHaveAttribute('src', `fotos/${slug}-2.jpg`);
+    await expect(zoom.locator('img')).toHaveAttribute('src', new RegExp(`^fotos/${slug}-2\\.jpg\\?v=[0-9a-f]{8}$`));
 
     await page.keyboard.press('Escape');
     await expect(zoom).toBeHidden();
@@ -260,7 +260,7 @@ test.describe('tooltips y fotos', () => {
     await expect(zoom).toBeVisible();
 
     await zoom.locator('.sig').click();
-    await expect(zoom.locator('img')).toHaveAttribute('src', `fotos/${slug}-2.jpg`);
+    await expect(zoom.locator('img')).toHaveAttribute('src', new RegExp(`^fotos/${slug}-2\\.jpg\\?v=[0-9a-f]{8}$`));
 
     // Lejos de las dos, sí se cierra.
     await page.mouse.move(5, 790, { steps: 5 });
@@ -274,6 +274,15 @@ test.describe('tooltips y fotos', () => {
     const faltantes = [];
     for (const u of urls) if (!(await request.head(u)).ok()) faltantes.push(u);
     expect(faltantes).toEqual([]);
+  });
+
+  test('toda foto se pide con la huella de su auto (?v=), para que el celular no muestre una vieja', async ({ page }, info) => {
+    test.skip(info.project.name !== 'escritorio', 'no depende del viewport');
+    const sin = await page.evaluate(() => Object.keys(window.FOTOS_POR_AUTO).flatMap(s => listaDeFotos(s).filter(u => !u.endsWith('?v=' + FOTO_V[s]) || !FOTO_V[s])));
+    expect(sin).toEqual([]);
+    // Las imágenes que ya pidió la página (miniaturas, medianas, portadas) también la llevan.
+    const pedidas = await page.evaluate(() => performance.getEntriesByType('resource').map(r => r.name).filter(u => /\/fotos\//.test(u) && !/\?v=[0-9a-f]{8}$/.test(u)));
+    expect(pedidas).toEqual([]);
   });
 });
 
@@ -303,7 +312,7 @@ test.describe('fotos en celular', () => {
     test.skip(info.project.name !== 'celular', 'solo en celular');
     const img = page.locator('#theadTable th:not(.feat-col):not(.col-hidden) img.car-photo').first();
     // La mediana de 480 px si alcanza (2026-10-10), o la de 900 px.
-    await expect(img).toHaveAttribute('src', /\/fotos\/(med\/[a-z0-9-]+|[a-z0-9-]+-1)\.jpg$/);
+    await expect(img).toHaveAttribute('src', /\/fotos\/(med\/[a-z0-9-]+|[a-z0-9-]+-1)\.jpg\?v=[0-9a-f]{8}$/);
   });
 });
 
