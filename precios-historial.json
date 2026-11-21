@@ -487,6 +487,12 @@
     "moneda": "USD",
     "monto": 36900,
     "version": "H7 2.0T 4WD, única versión"
+   },
+   {
+    "desde": "2026-11-11",
+    "moneda": "USD",
+    "monto": 37900,
+    "version": "H7 2.0T 4WD, única versión"
    }
   ],
   "gwm-haval-h7-hev": [
