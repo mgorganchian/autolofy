@@ -16,7 +16,8 @@
 #      fotos (una por vista). Claude corre la suite de tests antes de commitear.
 #   3. Si todas las fichas se pudieron verificar, actualiza la "Fecha de consulta"
 #      del pie de la página
-#   4. Si publicó algo, lo verifica contra el sitio en vivo
+#   4. Si publicó algo, lo verifica contra el sitio en vivo (si Vercel desafía a esta Mac con su
+#      Security Checkpoint, espera 12 minutos, prueba una vez más y, si sigue, avisa eso)
 #   5. Pone al día la base de Neon desde lo que quedó en main (db/sincronizar.mjs)
 #   Si Claude no puede autenticarse o termina con error, avisa con una notificación
 #   de macOS: corriendo una vez por semana, una falla muda son dos semanas perdidas.
@@ -47,6 +48,19 @@ log(){ print -r -- "[$(date '+%Y-%m-%d %H:%M:%S')] $*" >> "$LOG"; }
 avisar(){
   log "ALERTA: $1"
   osascript -e "display notification \"$1\" with title \"Autolofy\" sound name \"Basso\"" 2>/dev/null
+}
+# Baja una vez la página publicada: deja el HTML en VIVO y DESAFIO=1 si Vercel respondió con su
+# «Security Checkpoint» (HTTP 403, cabecera x-vercel-mitigated: challenge) en lugar de la página.
+# La mitigación automática de DDoS de Vercel a veces desafía por unos minutos a una IP que pidió la
+# página varias veces seguidas: el 2026-11-21 desafió a esta Mac de 08:57 a 09:07 UTC. Ese desafío
+# no es un sitio roto y no hay que avisarlo como si al sitio le faltara el marcador.
+bajar_sitio(){
+  local hdr
+  DESAFIO=0
+  hdr=$(mktemp -t autolofy-sitio) || { VIVO=""; return; }
+  VIVO=$(curl -s -D "$hdr" -H 'Cache-Control: no-cache' "$SITIO?cb=$RANDOM" --max-time 40)
+  grep -qi '^x-vercel-mitigated: *challenge' "$hdr" && DESAFIO=1
+  rm -f "$hdr"
 }
 
 cd "$REPO" || { log "FATAL: no pude entrar a $REPO"; exit 1; }
@@ -390,10 +404,23 @@ git branch -D "$RAMA" >/dev/null 2>&1
 DESPUES=$(git rev-parse HEAD)
 if [[ "$ANTES" != "$DESPUES" ]]; then
   log "publicó $ANTES -> $DESPUES; espero a que Vercel lo sirva…"
-  MARCA=$(grep -o '[0-9]\+ autos · todos incluidos' index.html | head -1)
+  # El resumen de la tabla dice «268 autos, todos incluidos» (antes era «268 autos · todos incluidos»).
+  # Con el marcador vacío, la comparación de abajo da siempre bien sin mirar nada: por eso se avisa.
+  MARCA=$(grep -oE '[0-9]+ autos(,| ·) todos incluidos' index.html | head -1)
   sleep 40
-  VIVO=$(curl -s -H 'Cache-Control: no-cache' "$SITIO?cb=$RANDOM" --max-time 40)
-  if [[ -z "$VIVO" ]]; then
+  bajar_sitio
+  if (( DESAFIO )); then
+    # El desafío dura unos minutos y cada pedido nuevo puede alargarlo: se espera 12 minutos y se
+    # prueba una sola vez más, nunca en un bucle.
+    log "  Vercel respondió con su Security Checkpoint (desafío a esta IP); pruebo de nuevo en 12 minutos"
+    sleep 720
+    bajar_sitio
+  fi
+  if [[ -z "$MARCA" ]]; then
+    avisar "No encontré en index.html la cantidad de autos que uso para comprobar lo publicado. Revisar el sitio a mano."
+  elif (( DESAFIO )); then
+    avisar "Vercel le pidió verificación a esta Mac (Security Checkpoint) y no pude comprobar lo publicado. Revisar el sitio a mano en el navegador."
+  elif [[ -z "$VIVO" ]]; then
     avisar "El sitio no respondió después de publicar. Revisar a mano."
   elif [[ "$VIVO" != *"$MARCA"* ]]; then
     avisar "Lo publicado no dice $MARCA. Revisar a mano."
