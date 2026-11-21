@@ -1858,6 +1858,22 @@
     "monto": 35500,
     "version": "Haval H6 HEV Supreme, versión tope de gama. Precio de lanzamiento publicado por la prensa el 16/5/2025: 16valvulas («GWM Haval H6 HEV Supreme (disponible en Oct"
    }
+  ],
+  "tesla-model-y-long-range-rwd": [
+   {
+    "desde": null,
+    "moneda": "USD",
+    "monto": 49990,
+    "version": "Model Y Premium Long Range RWD, en el configurador de tesla.com/es_ar (20/11/2026). El total que muestra el configurador (US$ 50.590) suma la tarifa de reserva "
+   }
+  ],
+  "tesla-model-3-long-range-rwd": [
+   {
+    "desde": null,
+    "moneda": "USD",
+    "monto": 46490,
+    "version": "Model 3 Premium Long Range RWD, en el configurador de tesla.com/es_ar (20/11/2026). El total que muestra el configurador suma la tarifa de reserva de la orden y"
+   }
   ]
  }
 }
