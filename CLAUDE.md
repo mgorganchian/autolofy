@@ -305,6 +305,11 @@ sí quedan en inglés, porque no muestran la palabra. Se coló con `YES` dos vec
   son los de las fotos). **Todo slug es marca-modelo** (`byd-song-pro`, `gwm-haval-h6-4wd`; issue #73,
   2026-10-30): un auto nuevo arranca con su marca. Si se renombra un slug, va a `SLUG_VIEJO` (los links y los
   seguidos viejos siguen andando) y a los `redirects` de `vercel.json`; no renombrar slugs sin necesidad.
+- **El panel «Elegir autos» abre sin autos tildados** (2026-11-22, issue #214, pedido de Sebastián: abría con los 268 y había que destildarlos
+  para elegir dos). Solo si se están viendo todos; con una comparación armada abre con esos autos tildados. Mientras no se tilde un modelo a
+  mano, lo elegido **sigue a los filtros** (`panelSigueFiltros`, en `renderModelList`): elegir una marca o un presupuesto tilda los que quedan,
+  y sin ningún filtro no queda ninguno. Tildar o destildar un modelo, «Todos», «Ninguno» o Similares cortan el seguimiento. Cerrar sin comparar
+  no cambia la tabla.
 - **Presupuesto** en el selector: rango en USD sobre `PRECIO_CMP`, con su equivalente en pesos a la
   vista. Los autos sin ningún precio publicado entran por defecto (tilde aparte): no esconder un auto
   porque falte el dato.
