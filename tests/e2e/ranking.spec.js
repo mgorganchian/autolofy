@@ -24,7 +24,7 @@ async function abrirRanking(page, { todos = false } = {}) {
   if (todos) await page.locator('#rkTodos').check();
 }
 const A_LA_VENTA = CARS.filter(c => c.status === 'venta').map(c => c.name);
-const HERRAMIENTAS = ['usd-kw', 'usd-km', '__medida', '__gasto', '__rebajas', '__cochera', '__marcas', '__grupos'];
+const HERRAMIENTAS = ['usd-cv', 'usd-km', '__medida', '__gasto', '__rebajas', '__cochera', '__marcas', '__grupos'];
 async function elegirFila(page, nombre) {
   // En el celular se elige en el desplegable; en escritorio, con los botones (2026-10-10).
   const sel = page.locator('#rkElegirSel');
@@ -225,14 +225,14 @@ test.describe('ranking para elegir', () => {
 
   test('potencia total: las "combinadas" que son suma de motores no compiten', async ({ page }) => {
     await abrirRanking(page, { todos: true });
-    await elegirFila(page, 'Potencia total del sistema (kW)');
+    await elegirFila(page, 'Potencia total del sistema (CV)');
     const nc = await enGrupo(page, 'nc');
     for (const n of ['BAIC BJ30 4x2', 'BAIC BJ30 4x4', 'GAC S7', 'Jetour G700']) expect(nc).toContain(n);
   });
 
-  test('USD por kW es el precio dividido la potencia total', async ({ page }) => {
+  test('USD por CV es el precio dividido la potencia total', async ({ page }) => {
     await abrirRanking(page);
-    await elegirFila(page, 'usd-kw');
+    await elegirFila(page, 'usd-cv');
     const r = await page.evaluate(() => { const i = CARS.findIndex(c => c.name === 'Maxus T60');
       return { esperado: Math.round(SIM_PRECIO[i] / rkValor(i, FILA_POT).n), visto: Number(document.querySelector('#rkLista .rk-item[data-auto="Maxus T60"]').dataset.valor) }; });
     expect(r.visto).toBe(r.esperado);
@@ -303,7 +303,7 @@ test('el precio va chico debajo del nombre solo si se rankea por otra cosa', asy
   await abrirRanking(page);
   await elegirFila(page, 'Precio de lista (versión tope de gama de la tabla)');
   await expect(page.locator('#rkLista .rk-precio')).toHaveCount(0);
-  await elegirFila(page, 'Potencia total del sistema (kW)');
+  await elegirFila(page, 'Potencia total del sistema (CV)');
   // En las dos monedas desde el 2026-10-29 (issue #60): el de dólares, con su equivalente en pesos.
   await expect(page.locator('#rkLista .rk-precio').first()).toHaveText(/^(USD [\d.]+ \(\$ [\d,]+ M\)|\$ [\d,]+ M)$/);
 });

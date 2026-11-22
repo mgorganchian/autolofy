@@ -95,7 +95,7 @@ Con `N = CARS.length`:
 2. **`<th>`** en el `<thead>`, en el mismo índice — con su silueta de carrocería y su
    ícono de propulsión.
 3. **`<col class="col-data">`** en los **DOS** `<colgroup>` (`#theadTable` y `#mainTable`).
-4. **Cada una de las 106 filas de `DATA`**, en la posición correcta.
+4. **Cada una de las 107 filas de `DATA`**, en la posición correcta.
 5. **`colspan="N+1"`** de las filas de categoría — está hardcodeado.
 
 Además hay 3 conteos en texto: `#headerSubtitle`, `#summaryText` y el comentario arriba
@@ -160,7 +160,7 @@ se coló dos veces.
 **Trampas al medir:** `grep '<th'` también matchea `<thead>`; `grep 'col-data'` también
 cuenta las 2 definiciones del `<style>`.
 
-**Verificación cruzada:** renderizar de verdad y contar 106 filas en 17 categorías (la tabla dibuja 16 y 105), con
+**Verificación cruzada:** renderizar de verdad y contar 107 filas en 17 categorías (la tabla dibuja 16 y 106), con
 cero errores de consola. Con el script roto la tabla queda en **0 filas** y el archivo
 igual "parece" bien.
 
@@ -421,7 +421,7 @@ sí quedan en inglés, porque no muestran la palabra. Se coló con `YES` dos vec
   la fecha de la lista (`fechasDePrecio`); `espejarPrecio()` copia a ese lugar la ★ y las ▲▼ de la fila oculta. **El precio ya no tiene
   barra de percentil visible.** Las 9 filas que estaban en «Precio» pasaron a tres categorías al final, con el vocabulario del sitio:
   **Respaldo** (garantía general, garantía de la batería, importador), **Origen** (fabricado en, grupo automotriz) y **Ventas en
-  Argentina** (patentamientos 2026 a 2023). `DATA` tiene 17 categorías y 106 filas; la tabla dibuja 16 y 105 (`N_FILAS` en los tests).
+  Argentina** (patentamientos 2026 a 2023). `DATA` tiene 17 categorías y 107 filas; la tabla dibuja 16 y 106 (`N_FILAS` en los tests).
   `herramientas-paginas.py` sigue leyendo el precio como la primera fila de la primera categoría.
 - **Encabezado compacto** (2026-10-10): `#theadWrap` se pega con `top` negativo igual al alto de las
   fotos (`compactarThead`), así al bajar las fotos salen de la pantalla y quedan nombre, descripción
@@ -499,6 +499,14 @@ sí quedan en inglés, porque no muestran la palabra. Se coló con `YES` dos vec
   la combinada que declara la fuente. **Nunca sumar motores a mano**. Si la "combinada"
   declarada es la suma exacta de los motores, se carga con `, suma de los motores` en el
   valor visible: `PCTL_VETO` la deja fuera del ranking (BJ30, GAC S7, Jetour G700).
+- **Potencia total del sistema (CV)** (2026-11-22, issue #210, opción A elegida por Mati y Sebastián: en Argentina la potencia se
+  lee en CV): fila propia, justo arriba de la de kW. **No se carga a mano: se calcula desde la de kW** (kW ÷ 0,7355, redondeado), con
+  el mismo origen (`NR`, `NOTE` y `EXT` se copian; lo confirmado va `DET`), el resto del valor visible (`suma de los motores`) y la
+  explicación de la de kW detrás de «Calculado desde los N kW de la ficha (1 CV = 0,7355 kW).». Puede diferir en uno o dos de la cifra
+  que publica la marca, y muchas fichas dicen HP, que es otra unidad (1 HP = 0,7457 kW): por eso no se toma la cifra del texto.
+  **La de CV es la que se rankea** (`FILA_POT`, `PCTL_DIR`, `PCTL_VETO`, Ayudame a elegir, Similares, «USD por CV» = `usd-cv`); la de kW
+  queda como el dato cargado, sin barra, para no contar la potencia dos veces. Al tocar una celda de kW, se rehace la de CV:
+  `invariantes.spec.js` falla si no coinciden.
 - **Garantía general / de la batería / Fabricado en** (fila de Precio). "Marca china" no
   alcanza para poner "China": hay modelos armados en Brasil o Uruguay.
 - **Frenos** (2026-11-15, pedido de Sebastián: el dato estaba escondido en el detalle de la fila ABS de unos 35 autos): fila de Control y manejo,

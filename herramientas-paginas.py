@@ -36,7 +36,8 @@ def huella_fotos(slug):
     archivos = [os.path.join(d, f) for _, f in nums] + [os.path.join(d, sub, slug + '.jpg') for sub in ('mini', 'med')]
     h = hashlib.sha1()
     for a in archivos:
-        if os.path.exists(a): h.update(os.path.relpath(a, d).encode()); h.update(open(a, 'rb').read())
+        # Con «/» también en Windows: si no, la huella cambia según el sistema que corre el script.
+        if os.path.exists(a): h.update(os.path.relpath(a, d).replace(os.sep, '/').encode()); h.update(open(a, 'rb').read())
     return h.hexdigest()[:8]
 _HUELLAS = {}
 def fv(slug):

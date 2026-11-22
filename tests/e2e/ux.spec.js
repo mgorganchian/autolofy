@@ -299,7 +299,7 @@ test.describe('selector y comparación', () => {
 
   test('con 2 o más autos, cada fila con dirección recalibra su barra y el mejor queda en verde', async ({ page }) => {
     await abrir(page, '?autos=byd-shark,maxus-t60,jac-t8');
-    const fila = page.locator('#mainTable tr[data-search^="potencia total"]');
+    const fila = page.locator('#mainTable tr[data-nombre="Potencia total del sistema (CV)"]');
     await expect(fila.locator('td[data-col]:visible .pct:not(.fuera)')).toHaveCount(3);
     await expect(fila.locator('.pct.mejor')).toHaveCount(1);
     await expect(fila.locator(`td[data-col="${indice('BYD Shark')}"] .pct`)).toHaveClass(/mejor/);
@@ -347,7 +347,7 @@ test.describe('selector y comparación', () => {
     // 2026-10-07: la barra rojo → amarillo → verde reemplazó a los cuatro cuadraditos en la
     // tabla completa (antes las barras solo aparecían al comparar de 2 a 6 autos).
     await abrir(page);
-    const fila = page.locator('#mainTable tr[data-nombre="Potencia total del sistema (kW)"]');
+    const fila = page.locator('#mainTable tr[data-nombre="Potencia total del sistema (CV)"]');
     const barras = await fila.locator('.pct').evaluateAll(bs => bs.map(b => {
       const r = b.getBoundingClientRect(), td = b.closest('td').getBoundingClientRect();
       return { pie: Math.round(td.bottom - r.bottom), w: parseFloat(b.querySelector('i').style.width) }; }));
