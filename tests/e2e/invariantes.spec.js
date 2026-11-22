@@ -10,9 +10,9 @@ const N = CARS.length;
 test.describe('invariantes del index.html', () => {
   test.beforeEach(({ }, info) => test.skip(info.project.name !== 'escritorio', 'no dependen del viewport'));
 
-  test('DATA parsea y tiene 106 filas en 17 categorías (la de Precio no se dibuja en la tabla: 16 y 105 filas en el cuerpo)', () => {
+  test('DATA parsea y tiene 107 filas en 17 categorías (la de Precio no se dibuja en la tabla: 16 y 106 filas en el cuerpo)', () => {
     expect(DATA).toHaveLength(17);   // 14 hasta el 2026-11-01: + Respaldo, Origen y Ventas en Argentina (issue #89)
-    expect(filas).toHaveLength(106);   // 105 hasta el 2026-11-15: + frenos; 104 hasta el 2026-11-07: + cupo de importación con arancel 0%; 101 hasta el 2026-10-29: + patentamientos 2025, 2024 y 2023; 92 hasta el 2026-10-04: + potencia total, garantías, origen, grupo e importador; 98 hasta el 2026-10-08: + patentamientos y NCAP; 100 hasta el 2026-10-11: + tracción
+    expect(filas).toHaveLength(107);   // 106 hasta el 2026-11-22: + potencia en CV (issue #210); 105 hasta el 2026-11-15: + frenos; 104 hasta el 2026-11-07: + cupo de importación con arancel 0%; 101 hasta el 2026-10-29: + patentamientos 2025, 2024 y 2023; 92 hasta el 2026-10-04: + potencia total, garantías, origen, grupo e importador; 98 hasta el 2026-10-08: + patentamientos y NCAP; 100 hasta el 2026-10-11: + tracción
   });
 
   test('CARS: cada auto tiene los 7 campos con valores válidos', () => {
@@ -117,5 +117,25 @@ test.describe('invariantes del index.html', () => {
     expect(html).toMatch(new RegExp(`<span id="summaryText"[^>]*>${N} autos, todos incluidos`));
     expect(html).toContain(`<div class="cota" aria-hidden="true"><span>${N} autos</span>`);
     expect(html).toMatch(new RegExp(`\\(${N} autos\\)\\s*\\n\\s*const CARS`));
+  });
+
+  test('la potencia en CV sale de la de kW, celda por celda (issue #210)', () => {
+    // La fila de CV no se carga a mano: es la de kW en otra unidad (1 CV = 0,7355 kW), con el mismo
+    // origen (NR, NOTE, EXT; lo confirmado va DET con la cuenta) y la misma explicación detrás.
+    const kw = filas.find(f => f[0] === 'Potencia total del sistema (kW)');
+    const cv = filas.find(f => f[0] === 'Potencia total del sistema (CV)');
+    expect(filas.indexOf(cv)).toBe(filas.indexOf(kw) - 1);
+    const num = t => parseFloat(t.replace(/\./g, '').replace(',', '.'));
+    for (let i = 1; i <= N; i++){
+      const k = kw[i], c = cv[i];
+      if (k.startsWith('NR:')) { expect(c).toBe(k); continue; }
+      const pre = (k.match(/^(NOTE|EXT|DET):/) || [, 'DET'])[1];
+      const resto = k.replace(/^(NOTE|EXT|DET):/, '');
+      const [vis, ...exp] = resto.split('|');
+      const [, kwTxt, cola] = vis.match(/^(\d[\d.,]*)(.*)$/);
+      const esperado = Math.round(num(kwTxt) / 0.73549875).toLocaleString('es-AR');
+      const detalle = ['Calculado desde los ' + kwTxt + ' kW de la ficha (1 CV = 0,7355 kW).', ...(exp.length ? [exp.join('|')] : [])].join(' ');
+      expect(c, CARS[i - 1].name).toBe(pre + ':' + esperado + cola + '|' + detalle);
+    }
   });
 });
