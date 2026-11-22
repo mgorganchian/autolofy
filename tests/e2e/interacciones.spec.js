@@ -76,10 +76,47 @@ test.describe('selector de autos', () => {
     await expect(page.locator('#modalOverlay')).toBeHidden();
   });
 
-  test('arranca con todos los autos y el botón cuenta N', async ({ page }) => {
+  // Issue #214: con todos los autos en la tabla, el panel abre sin ningún modelo tildado.
+  test('arranca sin modelos tildados y no deja comparar hasta elegir uno', async ({ page }) => {
     await page.click('#openModalBtn');
-    await expect(page.locator('#compareCount')).toHaveText(String(N));
+    await expect(page.locator('#compareCount')).toHaveText('0');
+    await expect(page.locator('#compareBtn')).toBeDisabled();
+    await expect(page.locator('#modelDropdownBtn')).toContainText('Ningún modelo elegido');
     await expect(page.locator('#brandDropdownBtn')).toContainText('Todas las marcas');
+    // «Todos» tilda todos los que pasan los filtros.
+    await page.click('#modelDropdownBtn');
+    await page.click('#modelAllBtn');
+    await expect(page.locator('#compareCount')).toHaveText(String(N));
+  });
+
+  test('con una comparación armada, el panel abre con esos autos tildados', async ({ page }) => {
+    await page.click('#openModalBtn');
+    await page.click('#modelDropdownBtn');
+    await page.locator('#modelList input[data-idx="1"]').check();
+    await page.locator('#modelList input[data-idx="2"]').check();
+    await page.click('#compareBtn');
+    await page.click('#openModalBtn');
+    await expect(page.locator('#compareCount')).toHaveText('2');
+    await expect(page.locator('#modelDropdownBtn')).toContainText('2 de');
+  });
+
+  test('mientras no se tilda un modelo, lo elegido sigue a los filtros', async ({ page }) => {
+    await page.click('#openModalBtn');
+    await page.click('#brandDropdownBtn');
+    await page.click('#brandNoneBtn');
+    await page.locator('#brandList input[data-val="DFSK"]').check();
+    const dfsk = CARS.filter(c => c.brand === 'DFSK').length;
+    await expect(page.locator('#compareCount')).toHaveText(String(dfsk));
+    // Tildar a mano corta el seguimiento: sacar uno deja los demás.
+    await page.click('#modelDropdownBtn');
+    await page.locator('#modelList input[type=checkbox]').first().uncheck();
+    await expect(page.locator('#compareCount')).toHaveText(String(dfsk - 1));
+  });
+
+  test('cerrar el panel sin comparar no cambia la tabla', async ({ page }) => {
+    await page.click('#openModalBtn');
+    await page.click('#closeModalBtn');
+    await expect(columnasVisibles(page)).toHaveCount(N);
   });
 
   test('sin marcas elegidas no se puede comparar', async ({ page }) => {
@@ -147,6 +184,7 @@ test.describe('selector de autos', () => {
   test('destildar un modelo lo saca de la comparación', async ({ page }) => {
     await page.click('#openModalBtn');
     await page.click('#modelDropdownBtn');
+    await page.click('#modelAllBtn');
     await page.locator('#modelList input[data-idx="0"]').uncheck();
     await expect(page.locator('#compareCount')).toHaveText(String(N - 1));
     await expect(page.locator('#modelDropdownBtn')).toContainText(`${N - 1} de ${N} modelos`);

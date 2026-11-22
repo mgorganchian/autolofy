@@ -3516,7 +3516,9 @@ function simRender(box, base, o){
 // Para sumar uno hay que habilitar sus filtros, pero sin que se tilden de rebote
 // los demás autos que esos filtros dejan ver, que arrancan tildados: elegir un
 // Lynk & Co con la marca filtrada en BYD sumaba los tres Lynk.
+let panelSigueFiltros = false;   // issue #214: ver openModal
 function simHabilitar(i){
+  panelSigueFiltros = false;
   const antes = CARS.map((_, k) => matchesFacets(k));
   const c = CARS[i];
   selectedBrands.add(c.brand);
@@ -3537,6 +3539,7 @@ function simHabilitar(i){
   modelChecked.set(i, true);
 }
 function simFijar(indices){
+  panelSigueFiltros = false;
   CARS.forEach((_, k) => modelChecked.set(k, false));
   indices.forEach(simHabilitar);
 }
@@ -3961,6 +3964,7 @@ function coincide(q, texto){
     (w.length >= 3 && palabras.some(p => unaLetra(w, p) || (p.length > w.length && unaLetra(w, p.slice(0, w.length + 1))))));
 }
 function renderModelList(){
+  if (panelSigueFiltros){ const filtra = CARS.some((_, i) => !matchesFacets(i)); CARS.forEach((_, i) => modelChecked.set(i, filtra)); }
   modelList.innerHTML = '';
   let visibleCount = 0;
   const q = sinTildes((document.getElementById('modelBuscar') || {}).value || '').trim();
@@ -3996,16 +4000,19 @@ document.getElementById('modelBuscar').addEventListener('input', renderModelList
 modelList.addEventListener('change', e=>{
   const idx = e.target.dataset.idx;
   if(idx===undefined) return;
+  panelSigueFiltros = false;   // desde acá elige la persona
   modelChecked.set(parseInt(idx,10), e.target.checked);
   e.target.closest('.mcard').classList.toggle('on', e.target.checked);
   updateModelBtnLabel();
   updateCompareCount();
 });
 document.getElementById('modelAllBtn').addEventListener('click', ()=>{
+  panelSigueFiltros = false;
   CARS.forEach((c,i)=>{ if(matchesFacets(i)) modelChecked.set(i,true); });
   renderModelList();
 });
 document.getElementById('modelNoneBtn').addEventListener('click', ()=>{
+  panelSigueFiltros = false;
   CARS.forEach((c,i)=>{ if(matchesFacets(i)) modelChecked.set(i,false); });
   renderModelList();
 });
@@ -4114,6 +4121,13 @@ const modalOverlay = document.getElementById('modalOverlay');
 const summaryText = document.getElementById('summaryText');
 
 function openModal(){
+  // Issue #214 (2026-11-22, pedido de Sebastián): si se están viendo todos los autos, el panel abre sin ningún
+  // modelo tildado; antes abría con los 268 y había que destildarlos para elegir dos. Con una comparación
+  // armada, abre con esos autos tildados para sumar o sacar. Cerrar sin comparar no cambia la tabla.
+  // Mientras no se tilde un modelo a mano, lo elegido sigue a los filtros (panelSigueFiltros, en renderModelList):
+  // elegir una marca o un presupuesto tilda los que quedan, como antes; sin ningún filtro, ninguno.
+  panelSigueFiltros = colVisible.every(Boolean);
+  if (panelSigueFiltros) renderModelList();
   modalOverlay.style.display = 'flex';
   document.body.classList.add('modal-open');
   dialogoAbierto(modalOverlay.querySelector('.modal-sheet'));

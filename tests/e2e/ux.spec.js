@@ -79,6 +79,8 @@ test.describe('presupuesto', () => {
   test('"Sin límite" vuelve a incluir todo', async ({ page }) => {
     await abrir(page);
     await page.click('#openModalBtn');
+    await page.click('#modelDropdownBtn');
+    await page.click('#modelAllBtn');   // issue #214: el panel abre sin modelos tildados
     await page.locator('#precioMaxIn').fill('25000');
     await page.click('#precioResetBtn');
     await expect(page.locator('#compareCount')).toHaveText(String(CARS.length));
@@ -294,7 +296,7 @@ test.describe('selector y comparación', () => {
     const vistos = await page.locator('#modelList .mcard b').allTextContents();
     expect(vistos.length).toBeGreaterThan(2);
     for (const n of vistos) expect(n.toLowerCase()).toContain('tiggo');
-    await expect(page.locator('#compareCount')).toHaveText(String(CARS.length));
+    await expect(page.locator('#compareCount')).toHaveText('0');   // abre sin modelos tildados (issue #214) y buscar no tilda
   });
 
   test('con 2 o más autos, cada fila con dirección recalibra su barra y el mejor queda en verde', async ({ page }) => {
