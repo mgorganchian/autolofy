@@ -941,7 +941,7 @@ document.documentElement.classList.add('esperando-letra');setTimeout(function(){
   .rk-sel{position:relative;display:inline-flex;align-items:center;gap:4px;font-size:.7rem;color:var(--ink-2)}
   .rk-elegir{position:relative;display:none}
   @media screen and (max-width:640px){
-    #rkScroll .rk-chip{display:none}
+    #rkScroll .rk-grupo{display:none}
     .rk-elegir{display:block;width:100%}
     .rk-elegir select{width:100%;font:inherit;font-weight:700;padding:6px 8px;border-radius:4px;border:1px solid rgb(var(--h-rgb) / .4);background:transparent;color:var(--h-ink)}
     .rk-elegir option,.rk-elegir optgroup{color:var(--ink);background:var(--surface)}
@@ -951,7 +951,13 @@ document.documentElement.classList.add('esperando-letra');setTimeout(function(){
   }
   .rk-sel select{font-size:.72rem;padding:3px 4px;border-radius:6px;border:1px solid var(--border-strong);background:var(--surface);color:var(--ink);max-width:40vw}
   .rk-check{display:inline-flex;align-items:center;gap:5px;font-size:.7rem;color:var(--ink-2);cursor:pointer}
-  .rk-chip-herr{font-weight:600}
+  /* Grupos del Ranking (2026-11-26): un renglón por grupo con su nombre a la izquierda, como las preguntas de Ayudame a elegir. */
+  @media (min-width:641px){
+    #rkScroll{display:grid;grid-template-columns:max-content minmax(0,1fr);gap:6px 14px}
+    .rk-grupo{display:grid;grid-column:1 / -1;grid-template-columns:10.5em minmax(0,1fr);grid-template-columns:subgrid;gap:6px 14px;align-items:baseline}
+  }
+  .rk-grupo-tit{font-family:var(--fuente-tabla);font-weight:600;font-size:.78rem;color:var(--h-ink)}
+  .rk-grupo-chips{display:flex;flex-wrap:wrap;gap:6px}
   .rk-ciclo{display:inline-block;font-size:.58rem;font-weight:700;letter-spacing:.3px;padding:0 4px;border-radius:4px;
     background:var(--chip-bg);color:var(--ink-2);vertical-align:2px}
   .rk-est{font-size:.64rem;font-weight:500;color:var(--ink-3);margin-top:1px}
@@ -1833,6 +1839,28 @@ document.documentElement.classList.add('esperando-letra');setTimeout(function(){
     .herr-tabla .orden-sel select{flex:1;width:100%;max-width:none;box-sizing:border-box}
     #temaBtn{min-height:33px}
   }
+  /* Herramientas de la Tabla en el celular (2026-11-26, auditoría con Impeccable): la primera pantalla de la Tabla mostraba
+     solo controles y ningún dato. Arriba quedan el buscador, las categorías y «Solo diferencias»; el orden, las barras, plegar
+     y «Cómo leer la tabla» van detrás de «Herramientas», e «Imprimir» pasa al menú «Más». En la computadora todo sigue a la
+     vista. En el Ranking no hay herramientas de la tabla: «Cómo leer la tabla» va a la vista. */
+  .herr-btn{display:none}
+  .herr-btn svg{transition:transform .15s ease-out}
+  .herr-btn[aria-expanded="true"] svg{transform:rotate(180deg)}
+  @media (prefers-reduced-motion:reduce){ .herr-btn svg{transition:none} }
+  @media screen and (max-width:640px){
+    .toolbar-tabla{grid-template-columns:1fr 1fr}
+    .toolbar-tabla .herr-tabla,.toolbar-tabla .herr-ver{display:contents}
+    .toolbar-tabla .diff-toggle{grid-area:1 / 1}
+    .herr-btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;grid-area:1 / 2}
+    .toolbar-tabla .herr-tabla #plegarTodoBtn{grid-column:1}
+    .toolbar-tabla #legendToggleBtn{grid-column:2}
+    .toolbar-tabla:not(.herr-abiertas) .herr-tabla,.toolbar-tabla:not(.herr-abiertas) #legendToggleBtn{display:none}
+    body.vista-ranking .herr-btn{display:none}
+    body.vista-ranking .toolbar-tabla #legendToggleBtn{display:block;grid-column:1}
+    #imprimirBtn{display:none}
+    .summary-acciones:not(:has(> :not([hidden]):not(#imprimirBtn))){display:none}
+    body.vista-elegir #imprimirMasBtn{display:none}
+  }
   /* Títulos en el celular (pedido del 2026-10-10): ya eran grandes, así que no siguen el 130% de
      la letra; quedan apenas más grandes que antes. Lo que sube es el texto de los detalles. */
   @media screen and (max-width:640px){
@@ -1869,7 +1897,7 @@ document.documentElement.classList.add('esperando-letra');setTimeout(function(){
       padding:8px;background:var(--h-bg);border:1px solid rgb(var(--h-rgb) / .3);border-radius:6px;box-shadow:0 8px 24px rgba(0,0,0,.35)}
     .barra .herr-gral.abierta{display:grid}
     .barra .herr-gral > *{min-height:44px;justify-content:flex-start;text-align:left}
-    .barra .herr-gral .solo-mas{display:inline-flex}
+    .barra .herr-gral .solo-mas{display:inline-flex;align-items:center}
   }
   @media print{ .barra .vista-toggle,.barra .herr-gral,.barra-mas{display:none !important} .lg-t{fill:#000} }
   /* Hasta que Barlow está lista, los botones de categorías no se ven (2026-11-26, auditoría de rendimiento): con font-display:swap
@@ -1902,6 +1930,7 @@ document.documentElement.classList.add('esperando-letra');setTimeout(function(){
       <button class="legend-toggle" id="gruposBtn" type="button" title="Qué grupo automotriz está detrás de cada marca">Grupos</button>
       <a class="legend-toggle" href="/novedades" title="Cambios de precio y promociones">Novedades</a>
       <a class="legend-toggle solo-mas" href="/quien-hace-esto">Quién hace esto</a>
+      <button class="legend-toggle solo-mas" id="imprimirMasBtn" type="button">Imprimir</button>
       <button class="legend-toggle" id="temaBtn" type="button" aria-label="Cambiar entre modo claro y oscuro"></button>
     </span>
   </div>
@@ -1928,6 +1957,7 @@ document.documentElement.classList.add('esperando-letra');setTimeout(function(){
   <div class="cat-scroll" id="catScroll"><!-- cats:inicio (los botones de categorías los escribe herramientas-paginas.py desde DATA: así ya están al primer pintado y la tabla no salta) --><button type="button" class="cat-btn active" data-cat="all">Todas</button><button type="button" class="cat-btn" data-cat="1">Dimensiones y peso</button><button type="button" class="cat-btn" data-cat="2">Motorización y rendimiento</button><button type="button" class="cat-btn" data-cat="3">Carga</button><button type="button" class="cat-btn" data-cat="4">Exterior</button><button type="button" class="cat-btn" data-cat="5">Interior</button><button type="button" class="cat-btn" data-cat="6">Control y manejo</button><button type="button" class="cat-btn" data-cat="7">Seguridad pasiva</button><button type="button" class="cat-btn" data-cat="8">Asistencias a la conducción (ADAS)</button><button type="button" class="cat-btn" data-cat="9">Asientos</button><button type="button" class="cat-btn" data-cat="10">Multimedia</button><button type="button" class="cat-btn" data-cat="11">Luces</button><button type="button" class="cat-btn" data-cat="12">Vidrios y espejos</button><button type="button" class="cat-btn" data-cat="13">Aire acondicionado</button><button type="button" class="cat-btn" data-cat="14">Respaldo</button><button type="button" class="cat-btn" data-cat="15">Origen</button><button type="button" class="cat-btn" data-cat="16">Ventas en Argentina</button><!-- cats:fin --></div>
   <div class="cat-scroll" id="rkScroll" style="display:none" aria-label="Característica del ranking"></div>
   <div class="toolbar-row toolbar-tabla" id="toolbarTabla">
+    <button class="legend-toggle herr-btn" id="herrBtn" type="button" aria-expanded="false" aria-controls="herrTabla">Herramientas<svg viewBox="0 0 12 12" width="12" height="12" aria-hidden="true" focusable="false"><path d="M2.5 4.5 6 8l3.5-3.5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
     <span class="herr-tabla" id="herrTabla">
       <label class="orden-sel"><span class="sr">Ordenar autos</span>
         <select id="ordenSel"><option value="" title="Largo, ancho y alto: el más grande primero">Por tamaño</option></select>
@@ -4458,6 +4488,32 @@ let rkAnioMercado = '2026';
 const RK_HERRAMIENTAS = { '__medida': 'A tu medida', '__gasto': 'Gasto mensual', '__rebajas': 'Rebajas publicadas', '__cochera': '¿Entra en mi cochera?' };
 const rkEsDerivada = k => k in RK_DERIVADAS;
 const rkEsHerr = k => k in RK_HERRAMIENTAS;
+// Grupos del Ranking (2026-11-26, auditoría con Impeccable: eran 29 botones del mismo peso en cinco renglones). En la computadora
+// cada grupo es un renglón con su nombre; en el celular, los mismos grupos en el desplegable. Cada fila va al grupo de su categoría
+// de DATA, y una categoría que no está en RK_GRUPO_CAT forma un grupo con su propio nombre: una fila nueva de PCTL_DIR nunca queda
+// afuera. Los cuatro años de patentamientos son un solo criterio, «Por modelo», con los años arriba de la lista, como las ventas
+// por marca y por grupo y con el mismo año (rkAnioMercado).
+const RK_CAT_DE = Object.fromEntries(DATA.flatMap(c => c[1].map(f => [f[0], c[0]])));
+const RK_PAT = RK_FILAS.map(f => f[0]).filter(n => VENTAS_AR[n]);
+const rkAnioDe = n => (String(n).match(/\d{4}/) || [])[0];
+const rkPatDe = anio => RK_PAT.find(n => rkAnioDe(n) === anio) || RK_PAT[0];
+const RK_GRUPO_CAT = { 'Precio': 'Precio y garantía', 'Respaldo': 'Precio y garantía', 'Dimensiones y peso': 'Espacio y equipo',
+  'Multimedia': 'Espacio y equipo', 'Ventas en Argentina': 'Ventas' };
+const RK_GRUPOS_ORDEN = ['Según lo que buscás', 'Precio y garantía', 'Potencia', 'Consumo y autonomía', 'Espacio y equipo', 'Ventas'];
+function rkGrupoDe(k){
+  if (rkEsHerr(k)) return 'Según lo que buscás';
+  if (rkEsDerivada(k)) return 'Precio y garantía';
+  if (k in RK_MERCADO) return 'Ventas';
+  const cat = RK_CAT_DE[k];
+  if (cat === 'Motorización y rendimiento') return /consumo|autonom|bater/i.test(k) ? 'Consumo y autonomía' : 'Potencia';
+  return RK_GRUPO_CAT[cat] || cat;
+}
+// El texto completo va en el desplegable del celular; en la computadora, dentro del renglón «Ventas», alcanza con lo que cambia.
+const rkTextoCriterio = k => rkEsHerr(k) ? RK_HERRAMIENTAS[k] : rkEsDerivada(k) ? RK_DERIVADAS[k].titulo : RK_MERCADO[k] ||
+  (RK_PAT.includes(k) ? 'Ventas por modelo' : rkEtiqueta(k));
+const RK_CHIP_CORTO = { '__marcas': 'Por marca', '__grupos': 'Por grupo' };
+const rkAniosHTML = (anios, anio) => '<div class="rk-anios" role="group" aria-label="Año">' + anios.map(a => '<button type="button" class="cat-btn' +
+  (a === anio ? ' active' : '') + '" aria-pressed="' + (a === anio) + '" data-anio="' + a + '">' + (a === '2026' ? '2026 (ene–sep)' : a) + '</button>').join('') + '</div>';
 const rkDir = k => rkEsDerivada(k) ? RK_DERIVADAS[k].dir : PCTL_DIR[k];
 const rkTitulo = k => rkEsDerivada(k) ? RK_DERIVADAS[k].titulo : RK_HERRAMIENTAS[k] || RK_MERCADO[k] || rkEtiqueta(k);
 const rkUnidadDe = k => rkEsDerivada(k) ? RK_DERIVADAS[k].unidad : rkUnidad(k);
@@ -4532,22 +4588,23 @@ function rkClasificarFila(k, lista){
 
 function rkChips(){
   const cont = document.getElementById('rkScroll');
-  const chip = (k, txt, extra) => '<button type="button" class="cat-btn rk-chip' + (extra || '') + (k === rkActual ? ' active' : '') +
-    '" aria-pressed="' + (k === rkActual) + '" data-fila="' + rkEsc(k) + '">' + rkEsc(txt) + '</button>';
+  // Lo que se puede elegir, en orden. Los patentamientos entran una vez, con el año que se está mirando.
+  const pat = RK_PAT.includes(rkActual) ? rkActual : rkPatDe(rkAnioMercado);
+  const items = [...Object.keys(RK_HERRAMIENTAS), ...RK_FILAS.map(f => f[0]).filter(n => n === FILA_PRECIO), ...Object.keys(RK_DERIVADAS),
+    ...RK_FILAS.map(f => f[0]).filter(n => n !== FILA_PRECIO && !RK_PAT.includes(n)), ...(pat ? [pat] : []), ...Object.keys(RK_MERCADO)];
+  const grupos = new Map(RK_GRUPOS_ORDEN.map(g => [g, []]));
+  items.forEach(k => { const g = rkGrupoDe(k); if (!grupos.has(g)) grupos.set(g, []); grupos.get(g).push(k); });
+  const llenos = [...grupos].filter(([, ks]) => ks.length);
+  const chip = k => '<button type="button" class="cat-btn rk-chip' + (k === rkActual ? ' active' : '') + '" aria-pressed="' + (k === rkActual) +
+    '" data-fila="' + rkEsc(k) + '">' + rkEsc(RK_CHIP_CORTO[k] || (RK_PAT.includes(k) ? 'Por modelo' : rkTextoCriterio(k))) + '</button>';
   // En el celular, un desplegable con todos los criterios en vez de la fila de botones que se
   // corría de costado y solo mostraba los primeros tres (2026-10-10: no se veía que se puede
   // rankear por otras cosas además del precio).
-  const op = (k, t) => '<option value="' + rkEsc(k) + '"' + (k === rkActual ? ' selected' : '') + '>' + rkEsc(t) + '</option>';
+  const op = k => '<option value="' + rkEsc(k) + '"' + (k === rkActual ? ' selected' : '') + '>' + rkEsc(rkTextoCriterio(k)) + '</option>';
   cont.innerHTML = '<label class="rk-elegir"><span class="sr">Rankear por</span><select id="rkElegirSel">' +
-      '<optgroup label="Según lo que buscás">' + Object.entries(RK_HERRAMIENTAS).map(([k, t]) => op(k, t)).join('') + '</optgroup>' +
-      '<optgroup label="Por un dato">' + RK_FILAS.map(f => op(f[0], rkEtiqueta(f[0]))).join('') + '</optgroup>' +
-      '<optgroup label="Por una cuenta">' + Object.entries(RK_DERIVADAS).map(([k, d]) => op(k, d.titulo)).join('') + '</optgroup>' +
-      '<optgroup label="Del mercado">' + Object.entries(RK_MERCADO).map(([k, t]) => op(k, t)).join('') + '</optgroup>' +
-    '</select></label>' +
-    Object.entries(RK_HERRAMIENTAS).map(([k, t]) => chip(k, t, ' rk-chip-herr')).join('') +
-    RK_FILAS.map(f => chip(f[0], rkEtiqueta(f[0]))).join('') +
-    Object.entries(RK_DERIVADAS).map(([k, d]) => chip(k, d.titulo, ' rk-chip-deriv')).join('') +
-    Object.entries(RK_MERCADO).map(([k, t]) => chip(k, t, ' rk-chip-deriv')).join('');
+      llenos.map(([g, ks]) => '<optgroup label="' + rkEsc(g) + '">' + ks.map(op).join('') + '</optgroup>').join('') + '</select></label>' +
+    llenos.map(([g, ks], j) => '<div class="rk-grupo" role="group" aria-labelledby="rkGrupo' + j + '"><span class="rk-grupo-tit" id="rkGrupo' + j + '">' +
+      rkEsc(g) + '</span><span class="rk-grupo-chips">' + ks.map(chip).join('') + '</span></div>').join('');
 }
 
 function rkFiltrosHTML(cand){
@@ -4689,6 +4746,7 @@ function rkCoberturaHTML(nPublican, nAplica, nRanking){
 }
 
 function renderRanking(){
+  if (RK_PAT.includes(rkActual)) rkAnioMercado = rkAnioDe(rkActual);
   rkChips();
   const cand = rkCandidatos();
   document.getElementById('rkFiltros').innerHTML = rkFiltrosHTML(cand);
@@ -4704,7 +4762,7 @@ function renderRanking(){
   document.getElementById('rkTitulo').textContent = rkTitulo(k) + (rkUnidadDe(k) && !rkEsDerivada(k) ? ' (' + rkUnidadDe(k) + ')' : '');
   const marcados = ok.filter(r => /^(NOTE|EXT):/.test(r.v || '')).length;
   // Cuántos tienen la cifra lo dice la línea de cobertura de abajo: acá no se repite (2026-10-10).
-  document.getElementById('rkSub').innerHTML = rkEsc((VENTAS_AR[k] ? 'Del más vendido al menos vendido. En ' + VENTAS_AR[k].periodo + ' se patentaron ' + VENTAS_AR[k].total.toLocaleString('es-AR') + ' autos 0 km en Argentina (autos, SUV, rurales y pickups; DNRPA).' : dir > 0 ? 'Mayor es mejor.' : 'Menor es mejor.') +
+  document.getElementById('rkSub').innerHTML = (RK_PAT.includes(k) ? rkAniosHTML(RK_PAT.map(rkAnioDe), rkAnioDe(k)) : '') + rkEsc((VENTAS_AR[k] ? 'Del más vendido al menos vendido. En ' + VENTAS_AR[k].periodo + ' se patentaron ' + VENTAS_AR[k].total.toLocaleString('es-AR') + ' autos 0 km en Argentina (autos, SUV, rurales y pickups; DNRPA).' : dir > 0 ? 'Mayor es mejor.' : 'Menor es mejor.') +
     (marcados ? ' ' + marcados + ' cifras con aclaración u otra fuente (tocá la franja de color).' : '')) +
     (rkEsDerivada(k) ? '<br>' + rkEsc(RK_DERIVADAS[k].sub) : '') +
     (WLTP_TEXTO[k] ? '<details class="rk-como"><summary>' + (k === FILA_COMB ? '¿Por qué una lista por ciclo?' : '¿Cómo se estima?') + '</summary>' + rkEsc(WLTP_TEXTO[k]) + '</details>' : '');
@@ -4753,8 +4811,7 @@ function rkMercadoFilas(k, anio){
 function rkRenderMercado(k){
   const anio = rkAnioMercado, tot = VENTAS_AR['Patentamientos ' + anio + ' (unidades)'];
   document.getElementById('rkTitulo').textContent = RK_MERCADO[k] + ' ' + anio;
-  document.getElementById('rkSub').innerHTML = '<div class="rk-anios" role="group" aria-label="Año">' +
-    Object.keys(VENTAS_MARCAS).sort().reverse().map(a => '<button type="button" class="cat-btn' + (a === anio ? ' active' : '') + '" aria-pressed="' + (a === anio) + '" data-anio="' + a + '">' + (a === '2026' ? '2026 (ene–sep)' : a) + '</button>').join('') + '</div>' +
+  document.getElementById('rkSub').innerHTML = rkAniosHTML(Object.keys(VENTAS_MARCAS).sort().reverse(), anio) +
     rkEsc('Del más vendido al menos vendido: todos los 0 km patentados en Argentina, estén o no en la tabla (DNRPA; autos, SUV, rurales y pickups). En ' + tot.periodo + ' fueron ' + tot.total.toLocaleString('es-AR') + '.' +
       (k === '__grupos' ? ' El grupo de cada marca es el que figura en la vista Grupos.' : ''));
   document.getElementById('rkCobertura').innerHTML = ''; document.getElementById('rkGrafico').innerHTML = ''; document.getElementById('rkFiltros').innerHTML = '';
@@ -4773,6 +4830,7 @@ document.getElementById('rkSub').addEventListener('click', e => {
   const b = e.target.closest('[data-anio]');
   if (!b) return;
   rkAnioMercado = b.dataset.anio;
+  if (RK_PAT.includes(rkActual)) rkActual = rkPatDe(rkAnioMercado);
   renderRanking();
 });
 // ---- Ficha de puestos de un auto (al tocarlo) ------------------------------
@@ -5140,6 +5198,7 @@ function mostrarVista(v){
   document.getElementById('rankingView').hidden = !rk;
   document.getElementById('elegirHoja').hidden = !el;
   document.body.classList.toggle('vista-elegir', el);
+  document.body.classList.toggle('vista-ranking', rk);
   if (tabla) compactarThead(); else ajustarScrollPadding();
   if (otra) document.getElementById('noResults').style.display = 'none';
   if (el){
@@ -5435,6 +5494,11 @@ const MEJOR_HTML = (titulo, aria) => '<span class="mejor-sel" title="' + titulo 
   recalibrarBarras(vis);
   if (vis.length < 2 || vis.length > 6){ box.hidden = true; box.innerHTML = ''; return; }
   const filas = [], gana = new Map(vis.map(i => [i, 0]));
+  // «Mayores diferencias» habla de los autos (2026-11-26, auditoría con Impeccable): no lista las ventas, y entre propulsiones
+  // distintas tampoco la batería, el motor eléctrico ni la autonomía eléctrica, que cambian de por sí (un enchufable siempre
+  // tiene más batería que un híbrido). «Gana en más filas» sigue contando todas las filas, como las copas de la tabla.
+  const propDistintas = new Set(vis.map(i => SIM_FAMILIA[CARS[i].type] || CARS[i].type)).size > 1;
+  const POR_PROPULSION = /^(Capacidad de batería|Motor eléctrico|Autonomía eléctrica)/;
   RK_FILAS.map(f => f[0]).filter(n => n !== FILA_COMB).forEach(nombre => {
     const vals = vis.map(i => ({ i, n: valorComparable(i, nombre), r: rkValor(i, nombre) }));
     if (vals.some(x => x.n == null)) return;
@@ -5448,7 +5512,8 @@ const MEJOR_HTML = (titulo, aria) => '<span class="mejor-sel" title="' + titulo 
       if (td) td.insertAdjacentHTML('beforeend', MEJOR_HTML('El mejor de los elegidos en esta fila', 'el mejor de los elegidos'));
     });
     const a = Math.max(mejor, peor), b = Math.min(mejor, peor);
-    filas.push({ nombre, orden, rel: b > 0 ? a / b - 1 : Infinity, est: vals.some(x => x.r.est) });
+    filas.push({ nombre, orden, rel: b > 0 ? a / b - 1 : Infinity, est: vals.some(x => x.r.est),
+      mercado: !!VENTAS_AR[nombre], porProp: propDistintas && POR_PROPULSION.test(nombre) });
   });
   // Quién lo importa pesa como una fila más: si entre los elegidos a unos los trae la propia
   // casa matriz y a otros un grupo importador, ganan los de la casa matriz (★ en la fila
@@ -5478,7 +5543,9 @@ const MEJOR_HTML = (titulo, aria) => '<span class="mejor-sel" title="' + titulo 
   const nom = i => rkEsc(CARS[i].short);
   const fmt = (n, nombre) => rkNumero(n, nombre) + (rkUnidad(nombre) ? ' ' + rkEsc(rkUnidad(nombre)) : '');
   const margen = rel => rel === Infinity ? '' : rel >= 1 ? '×' + (rel + 1).toLocaleString('es-AR', { maximumFractionDigits: 1 }) : '+' + Math.round(rel * 100) + '%';
-  const top = filas.filter(f => f.rel >= 0.05).sort((x, y) => y.rel - x.rel).slice(0, 5);
+  const grandes = filas.filter(f => f.rel >= 0.05 && !f.mercado);
+  const top = grandes.filter(f => !f.porProp).sort((x, y) => y.rel - x.rel).slice(0, 5);
+  const sinProp = grandes.some(f => f.porProp);
   const ranking = [...gana.entries()].sort((x, y) => y[1] - x[1]);
   box.hidden = false;
   box.innerHTML = '<div class="dif-gana"><b>Gana en más filas</b> ' +
@@ -5489,7 +5556,7 @@ const MEJOR_HTML = (titulo, aria) => '<span class="mejor-sel" title="' + titulo 
       return '<li><span class="dif-fila">' + rkEsc(rkTitulo(f.nombre)) + '</span> ' +
         '<span class="dif-mejor">' + nom(m.i) + ' ' + fmt(m.n, f.nombre) + '</span> vs ' + nom(p.i) + ' ' + fmt(p.n, f.nombre) +
         ' <span class="dif-margen">' + margen(f.rel) + '</span>' + (f.est ? ' <small>(estimado WLTP)</small>' : '') + '</li>';
-    }).join('') + '</ul></div>' : '') +
+    }).join('') + '</ul>' + (sinProp ? '<small>Sin la batería ni el motor eléctrico, que cambian con el tipo de propulsión.</small>' : '') + '</div>' : '') +
     escalaHTML(vis) + fotosLadoHTML(vis);
 }
 // Tamaño a escala (2026-10-10, como vehiclesizes.com): la silueta de cada auto estirada a su largo y
@@ -5952,6 +6019,12 @@ window.addEventListener('afterprint', () => {
   if (t) t.remove();
 });
 document.getElementById('imprimirBtn').addEventListener('click', () => window.print());
+document.getElementById('imprimirMasBtn').addEventListener('click', () => window.print());
+// «Herramientas» (celular, 2026-11-26): abre debajo el orden, las barras, plegar y la ayuda. No se cierra solo: es parte de la página.
+{ const b = document.getElementById('herrBtn'), fila = document.getElementById('toolbarTabla');
+  b.addEventListener('click', () => { const abrir = b.getAttribute('aria-expanded') !== 'true';
+    b.setAttribute('aria-expanded', String(abrir)); fila.classList.toggle('herr-abiertas', abrir); });
+}
 // «Más» (celular, issue #200): abre lo general del sitio debajo de la barra; se cierra al elegir algo, con Esc o tocando afuera.
 { const mas = document.getElementById('masBtn'), menu = document.getElementById('herrGral');
   const cerrar = () => { mas.setAttribute('aria-expanded', 'false'); menu.classList.remove('abierta'); };

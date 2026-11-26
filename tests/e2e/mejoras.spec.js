@@ -3,7 +3,7 @@
 const fs = require('fs');
 const path = require('path');
 const { test, expect } = require('@playwright/test');
-const { leerIndex, vigilarErrores, FILAS_DATOS, N_FILAS, abrirGeneral } = require('./helpers');
+const { leerIndex, vigilarErrores, FILAS_DATOS, N_FILAS, abrirGeneral, abrirHerramientas } = require('./helpers');
 
 const RAIZ = process.env.AUTOLOFY_RAIZ || path.resolve(__dirname, '../..');
 const { html } = leerIndex();
@@ -614,6 +614,7 @@ test('barras contra los de su tamaño: el percentil sale del segmento y se recue
   const barra = sl => page.evaluate(s => { const i = SLUG_AUTO.indexOf(s);
       const e = document.querySelector('#mainTable tr[data-nombre="Volumen de baúl/carga (L)"] td[data-col="' + i + '"] .pct'); return e && e.title; }, sl);
   expect(await barra('byd-song-pro')).toMatch(/^Mejor que el \d+% de los \d+ autos con este dato$/);
+  await abrirHerramientas(page);
   await page.locator('#barrasSel').selectOption('seg');
   expect(await barra('byd-song-pro')).toMatch(/^Mejor que el \d+% de los \d+ autos grandes \(D\) con este dato$/);
   // Un segmento con menos de 5 autos con el dato no tiene barra (los urbanos con baúl).

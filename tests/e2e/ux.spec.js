@@ -4,7 +4,7 @@
 // la referencia compare solo lo comparable, y que reordenar columnas no desalinee
 // ninguna celda respecto de su auto.
 const { test, expect } = require('@playwright/test');
-const { leerIndex, vigilarErrores, FILAS_DATOS, N_FILAS, abrirGeneral } = require('./helpers');
+const { leerIndex, vigilarErrores, FILAS_DATOS, N_FILAS, abrirGeneral, abrirHerramientas } = require('./helpers');
 
 const { CARS } = leerIndex();
 const indice = nombre => CARS.findIndex(c => c.name === nombre);
@@ -125,6 +125,7 @@ test.describe('auto de referencia', () => {
 test.describe('orden de columnas', () => {
   test('por precio: de menor a mayor y los que no tienen precio al final', async ({ page }) => {
     await abrir(page, '?autos=byd-shark,maxus-t60,jac-t8,foton-tunland-v7,mg-3');
+    await abrirHerramientas(page);
     await page.selectOption('#ordenSel', 'precio-de-lista');
     const precios = await page.evaluate(() => SIM_PRECIO);
     const orden = (await idxVisibles(page)).map(i => precios[i]);
@@ -174,6 +175,7 @@ test.describe('categorías plegables', () => {
   // ninguno (2026-10-03). Tiene que estar a la vista, también scrolleando al costado.
   test('los nombres de categoría se ven en pantalla, aunque se scrollee al costado', async ({ page }) => {
     await abrir(page);
+    await abrirHerramientas(page);
     await page.click('#plegarTodoBtn');
     // Se mide el texto de cada celda, no un elemento en particular: vale para
     // cualquier forma de armar la fila.
@@ -187,6 +189,7 @@ test.describe('categorías plegables', () => {
 
   test('"Plegar todo" deja solo los títulos de categoría', async ({ page }) => {
     await abrir(page);
+    await abrirHerramientas(page);
     await page.click('#plegarTodoBtn');
     await expect(page.locator('#mainTable tbody tr:not(.cat-row):visible')).toHaveCount(0);
     await expect(page.locator('#mainTable tbody tr.cat-row:visible')).toHaveCount(16);
