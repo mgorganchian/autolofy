@@ -405,6 +405,19 @@ sí quedan en inglés, porque no muestran la palabra. Se coló con `YES` dos vec
   puntero por encima. Zonas táctiles de 24 px como mínimo (flechitas 44). Los destellos son 3 y no
   sin fin (WCAG 2.2.2). `scroll-padding` para que lo fijo no tape el foco. `<main>` y "Saltar al
   contenido". En la computadora la base es 112,5% (el 90% del texto quedaba debajo de 14 px).
+- **Rendimiento al cargar** (2026-11-26, auditoría con Impeccable; medido con Playwright, el celular con la CPU 4 veces más lenta):
+  **nada que lea o escriba `scrollLeft` (ni `offsetWidth` u otra medida) puede correr mientras carga**: obliga a calcular el layout de
+  toda la tabla (82.000 elementos, 0,2 s en la computadora y casi 1 s en el celular), aunque esté escondida. Por eso `CARGANDO` (true
+  hasta el final del arranque) saltea esos `scrollLeft` en `applyColumnVisibility`, `ordenarColumnas` y `mostrarVista`; el único
+  layout de la carga es el del `compactarThead` del primer cuadro. **Los botones de categorías vienen escritos en el HTML**
+  (`<!-- cats:inicio -->`, los escribe `herramientas-paginas.py` desde `DATA`): creados por el script aparecían después del primer
+  pintado y empujaban la tabla. Se muestran cuando la letra está lista (`esperando-letra`: con `font-display:swap` se reacomodaban de
+  renglón) y el cuerpo ocupa la pantalla mientras está vacío (`#tbodyWrap:has(#tbody:empty)`). Resultado: Tabla en la computadora,
+  CLS de 0,74 a 0,04 y bloqueo (TBT) de 568 a 328 ms; portada en el celular, TBT de 1.790 a 591 ms y LCP de 2,0 a 0,86 s; Tabla en
+  el celular, TBT de 2.968 a 1.879 ms (el LCP de 0,14 s que daba antes era el texto del pie, visible porque la tabla estaba vacía;
+  ahora es la foto del primer auto, a 2,2 s). Lo que queda en el celular es el layout de 86.000 nodos: bajar de ahí pide no armar las
+  268 columnas de entrada. Clarity, después de cargar, recorre esos mismos nodos (1,2 s de CPU en la computadora, en tareas cortas).
+  `rendimiento.spec.js`.
 - **Mejoras de UX** (2026-10-10, revisión con NN/g, Baymard y GOV.UK): Ayudame a elegir sin presupuesto
   preelegido (lo marcado se lee como recomendación), resumen "Para … Cambiar" arriba de los sugeridos
   en el celular, "Flojo en …" en la computadora y, sin resultados, botones con qué aflojar y cuántos

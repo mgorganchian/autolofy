@@ -23,7 +23,10 @@
 try{var t=localStorage.getItem('tema');if(t==='dark'||t==='light')document.documentElement.dataset.theme=t}catch(e){}
 /* Sin parámetros la página abre en "Ayudame a elegir": se sabe antes de pintar, así no se ve la tabla
    vacía unos segundos y después salta (2026-10-10: el salto medía 0,56 de CLS con 4G). */
-if(!location.search&&!location.hash)document.documentElement.classList.add('arranca-elegir');</script>
+if(!location.search&&!location.hash)document.documentElement.classList.add('arranca-elegir');
+/* Los botones de categorías se muestran cuando Barlow está lista (ver «esperando-letra» en el CSS); el script principal los
+   muestra al terminar de cargar, y esto es el resguardo por si algo falla. */
+document.documentElement.classList.add('esperando-letra');setTimeout(function(){document.documentElement.classList.remove('esperando-letra')},3000);</script>
 <style>
   /* Barlow (SIL OFL), solo latín, embebida: el archivo sigue sin dependencias externas.
      Una grotesca de herencia DIN, la de fichas técnicas y carteles viales. */
@@ -172,6 +175,8 @@ if(!location.search&&!location.hash)document.documentElement.classList.add('arra
      Ranking bajan de renglón: en una sola fila con scroll, las últimas no se veían ni se podían elegir.
      En el celular siguen en una fila que se desliza con el dedo. */
   @media (min-width:641px){ .cat-scroll{flex-wrap:wrap;overflow-x:visible} }
+  /* Mientras el script arma las filas, el cuerpo ocupa la pantalla: si no, el pie se pinta arriba y la tabla lo empuja (2026-11-26). */
+  #tbodyWrap:has(#tbody:empty){min-height:100vh}
   .legend{
     font-size:.68rem;
     color:var(--ink-2);
@@ -1867,6 +1872,10 @@ if(!location.search&&!location.hash)document.documentElement.classList.add('arra
     .barra .herr-gral .solo-mas{display:inline-flex}
   }
   @media print{ .barra .vista-toggle,.barra .herr-gral,.barra-mas{display:none !important} .lg-t{fill:#000} }
+  /* Hasta que Barlow está lista, los botones de categorías no se ven (2026-11-26, auditoría de rendimiento): con font-display:swap
+     el primer cuadro salía con la letra de reemplazo y, al cambiar, los botones se reacomodaban de renglón; un salto así, aunque sea
+     de unos botones, cuenta sobre toda el área que se movió (CLS 0,48). Esconder toda la página atrasaba la foto en el celular 2 s. */
+  html.esperando-letra #catScroll{visibility:hidden}
 </style>
 <!-- Microsoft Clarity: única excepción a "sin JS externo" (ver CLAUDE.md). El ID lo comparte herramientas-paginas.py. -->
 <script>(function(c,l,a,r,i,t,y){c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);})(window,document,"clarity","script","z8m6ec1hi3");</script>
@@ -1916,7 +1925,7 @@ if(!location.search&&!location.hash)document.documentElement.classList.add('arra
   <div class="controls">
     <input type="text" id="search" placeholder="Buscar característica..." aria-label="Buscar una característica en la tabla">
   </div>
-  <div class="cat-scroll" id="catScroll"></div>
+  <div class="cat-scroll" id="catScroll"><!-- cats:inicio (los botones de categorías los escribe herramientas-paginas.py desde DATA: así ya están al primer pintado y la tabla no salta) --><button type="button" class="cat-btn active" data-cat="all">Todas</button><button type="button" class="cat-btn" data-cat="1">Dimensiones y peso</button><button type="button" class="cat-btn" data-cat="2">Motorización y rendimiento</button><button type="button" class="cat-btn" data-cat="3">Carga</button><button type="button" class="cat-btn" data-cat="4">Exterior</button><button type="button" class="cat-btn" data-cat="5">Interior</button><button type="button" class="cat-btn" data-cat="6">Control y manejo</button><button type="button" class="cat-btn" data-cat="7">Seguridad pasiva</button><button type="button" class="cat-btn" data-cat="8">Asistencias a la conducción (ADAS)</button><button type="button" class="cat-btn" data-cat="9">Asientos</button><button type="button" class="cat-btn" data-cat="10">Multimedia</button><button type="button" class="cat-btn" data-cat="11">Luces</button><button type="button" class="cat-btn" data-cat="12">Vidrios y espejos</button><button type="button" class="cat-btn" data-cat="13">Aire acondicionado</button><button type="button" class="cat-btn" data-cat="14">Respaldo</button><button type="button" class="cat-btn" data-cat="15">Origen</button><button type="button" class="cat-btn" data-cat="16">Ventas en Argentina</button><!-- cats:fin --></div>
   <div class="cat-scroll" id="rkScroll" style="display:none" aria-label="Característica del ranking"></div>
   <div class="toolbar-row toolbar-tabla" id="toolbarTabla">
     <span class="herr-tabla" id="herrTabla">
@@ -3133,6 +3142,10 @@ function pctlHTML(d, que){
          '%;background-size:'+(10000/w).toFixed(1)+'% 100%;--z:'+barraZona(w)+'%"></i></span>';
 }
 
+// Mientras corre la carga (2026-11-26, auditoría de rendimiento): leer o escribir scrollLeft obliga al navegador a calcular el
+// layout de toda la tabla (82.000 elementos: 0,2 s en la computadora y casi 1 s en un celular). Al cargar el scroll ya es 0 y la
+// tabla todavía no se vio, así que esas lecturas y escrituras se saltean hasta que termina el arranque (CARGANDO = false al final).
+let CARGANDO = true;
 const tbody = document.getElementById('tbody');
 const catScroll = document.getElementById('catScroll');
 let allRows = [];
@@ -3143,12 +3156,8 @@ let allRows = [];
 const PRECIO_CAT = DATA.findIndex(cat => cat[1].some(r => r[0] === FILA_PRECIO));
 DATA.forEach((cat,ci)=>{
   if (ci !== PRECIO_CAT){
-    const catBtn = document.createElement('button');
-    catBtn.className='cat-btn';
-    catBtn.textContent=cat[0];
-    catBtn.dataset.cat=ci;
-    catScroll.appendChild(catBtn);
-
+    // Los botones de cada categoría (y «Todas») vienen escritos en el HTML, entre <!-- cats:inicio --><button type="button" class="cat-btn active" data-cat="all">Todas</button><button type="button" class="cat-btn" data-cat="1">Dimensiones y peso</button><button type="button" class="cat-btn" data-cat="2">Motorización y rendimiento</button><button type="button" class="cat-btn" data-cat="3">Carga</button><button type="button" class="cat-btn" data-cat="4">Exterior</button><button type="button" class="cat-btn" data-cat="5">Interior</button><button type="button" class="cat-btn" data-cat="6">Control y manejo</button><button type="button" class="cat-btn" data-cat="7">Seguridad pasiva</button><button type="button" class="cat-btn" data-cat="8">Asistencias a la conducción (ADAS)</button><button type="button" class="cat-btn" data-cat="9">Asientos</button><button type="button" class="cat-btn" data-cat="10">Multimedia</button><button type="button" class="cat-btn" data-cat="11">Luces</button><button type="button" class="cat-btn" data-cat="12">Vidrios y espejos</button><button type="button" class="cat-btn" data-cat="13">Aire acondicionado</button><button type="button" class="cat-btn" data-cat="14">Respaldo</button><button type="button" class="cat-btn" data-cat="15">Origen</button><button type="button" class="cat-btn" data-cat="16">Ventas en Argentina</button><!-- cats:fin -->
+    // (2026-11-26): creados acá aparecían después del primer pintado y empujaban la tabla 64 px (CLS 0,73 en la computadora).
     const catRow = document.createElement('tr');
     catRow.className='cat-row';
     catRow.dataset.cat=ci;
@@ -3274,11 +3283,6 @@ tbody.addEventListener('keydown', e => {
 });
 
 let activeCat = 'all';
-const allBtn = document.createElement('button');
-allBtn.className='cat-btn active';
-allBtn.textContent='Todas';
-allBtn.dataset.cat='all';
-catScroll.insertBefore(allBtn, catScroll.firstChild);
 
 catScroll.addEventListener('click', e=>{
   if(e.target.tagName!=='BUTTON') return;
@@ -3321,7 +3325,7 @@ function applyColumnVisibility(){
   document.querySelectorAll('#mainTable tr.cat-row td').forEach(td => { td.colSpan = k + 1; });
   // Una selección nueva arranca desde el primer auto.
   const cuerpo = document.getElementById('tbodyWrap'), header = document.getElementById('theadWrap');
-  cuerpo.scrollLeft = 0; header.scrollLeft = 0;
+  if (!CARGANDO){ cuerpo.scrollLeft = 0; header.scrollLeft = 0; }
   TH_AUTO.forEach((th, i) => th.classList.toggle('col-hidden', !colVisible[i]));
   allRows.forEach(tr=>{
     tr.querySelectorAll('td[data-col]').forEach(td=>{
@@ -5115,7 +5119,7 @@ function mostrarVista(v){
   if (!otra && eb){ eb.style.animation = 'none'; void eb.offsetWidth; eb.style.animation = ''; }
   // Al esconder la tabla el navegador le pierde el scroll horizontal: se guarda
   // para que al volver siga en los mismos autos.
-  if (!tabla && tbodyWrap.style.display !== 'none') rkScrollTabla = tbodyWrap.scrollLeft;
+  if (!tabla && !CARGANDO && tbodyWrap.style.display !== 'none') rkScrollTabla = tbodyWrap.scrollLeft;
   document.getElementById('vistaElegir').setAttribute('aria-selected', String(el));
   document.getElementById('vistaTabla').setAttribute('aria-selected', String(tabla));
   document.getElementById('vistaRanking').setAttribute('aria-selected', String(rk));
@@ -5280,7 +5284,7 @@ function ordenarColumnas(){
     orden.forEach(i => f.appendChild(celdas[i]));
     tr.appendChild(f);
   });
-  tbodyWrap.scrollLeft = 0; theadWrap.scrollLeft = 0;
+  if (!CARGANDO){ tbodyWrap.scrollLeft = 0; theadWrap.scrollLeft = 0; }
 }
 
 function marcarReferencia(){
@@ -7775,6 +7779,9 @@ if (!location.search && !location.hash) mostrarVista('elegir');
 historiaModo = 'push';
 try { history.replaceState({ vista: vistaActual, capa: null, visor: false }, '', location.href); } catch (e) {}
 pintarSeguidosBtn(); pintarAvisoSeguidos();
+CARGANDO = false;
+{ const mostrarCats = () => document.documentElement.classList.remove('esperando-letra');
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(mostrarCats, mostrarCats); else mostrarCats(); }
 
 // Tooltip propio: instantáneo, sin el delay nativo del navegador. Funciona con mouse y con tap en mobile.
 const tooltipBox = document.getElementById('tooltipBox');

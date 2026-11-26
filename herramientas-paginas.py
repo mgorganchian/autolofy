@@ -567,6 +567,13 @@ def generar():
     nav = ('<nav class="todos-autos" aria-label="Página de cada auto"><h2>La página de cada auto</h2><ul>' +
            ''.join(f'<li><a href="/autos/{sl}">{H.escape(c["name"])}</a></li>' for c, sl in lista) + '</ul></nav>')
     s = re.sub(r'(<!-- autos:inicio[^>]*-->\n).*?(<!-- autos:fin -->)', lambda m: m.group(1) + nav + '\n' + m.group(2), s, flags=re.S)
+    # Los botones de las categorías de la tabla (2026-11-26, auditoría de rendimiento): escritos en el HTML ya están al primer
+    # pintado; creados por el script aparecían después y empujaban la tabla. La categoría del precio no tiene botón (issue #89).
+    a = s.index('const DATA = ['); data = json.loads(s[a + 13:s.find('];', a) + 1])
+    cat_precio = next(i for i, c in enumerate(data) if any(r[0] == 'Precio de lista (versión tope de gama de la tabla)' for r in c[1]))
+    cats = ('<button type="button" class="cat-btn active" data-cat="all">Todas</button>' +
+            ''.join(f'<button type="button" class="cat-btn" data-cat="{i}">{H.escape(c[0])}</button>' for i, c in enumerate(data) if i != cat_precio))
+    s = re.sub(r'(<!-- cats:inicio[^>]*-->).*?(<!-- cats:fin -->)', lambda m: m.group(1) + cats + m.group(2), s, flags=re.S)
     # Resumen de la red oficial por marca (2026-10-10), para mostrar talleres sin bajar los 440 KB de
     # concesionarios.json en la portada. Una marca cuya red no distingue el taller lleva talleres: null.
     red = red_oficial()
