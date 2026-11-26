@@ -39,7 +39,7 @@ document.documentElement.classList.add('esperando-letra');setTimeout(function(){
     /* Ficha técnica: papel frío, tinta, y la escala A–E de la etiqueta de eficiencia
        energética, que acá solo codifica información (percentil, origen del dato). */
     --etq-a:#00843D; --etq-b:#5BA83F; --etq-c:#B5C400; --etq-d:#F0B800; --etq-e:#E2231A;
-    --banda-ext:#E09A00;     /* dato de otro mercado o de prensa */
+    --banda-ext:#B07800;     /* dato de otro mercado o de prensa (3,3:1 sobre el papel; el #E09A00 de antes daba 2,4:1) */
     --banda-note:#5B7A8C;    /* dato con aclaración */
     --byd-blue:#00843D;      /* (nombre histórico) acción principal: el verde A de la etiqueta */
     --byd-blue-dark:#17211D; /* (nombre histórico) tinta: encabezados y bandas */
@@ -238,7 +238,7 @@ document.documentElement.classList.add('esperando-letra');setTimeout(function(){
   #fotoZoom img{display:block;width:100%;height:auto;border-radius:6px;background:#fff}
   /* Flechas del carrusel: solo aparecen si el auto tiene mas de una foto. */
   #fotoZoom .nav{position:absolute;top:50%;transform:translateY(-50%);width:34px;height:34px;
-    border:0;border-radius:50%;background:rgba(255,255,255,.92);color:#0b1f47;font-size:19px;
+    border:0;border-radius:50%;background:rgba(255,255,255,.92);color:#0b1f47;font-size:1.05rem;
     line-height:1;cursor:pointer;box-shadow:0 2px 8px rgba(0,0,0,.28);display:none}
   #fotoZoom .nav.ant{left:8px} #fotoZoom .nav.sig{right:8px}
   #fotoZoom.multi .nav{display:block}
@@ -719,7 +719,6 @@ document.documentElement.classList.add('esperando-letra');setTimeout(function(){
     cursor:pointer;
     box-shadow:0 2px 10px rgba(0,0,0,.25);
   }
-  .compare-btn:hover{background:#e8eef8;}
   .compare-btn:disabled{opacity:.5;cursor:not-allowed;}
   .summary-bar{
     display:flex;
@@ -745,7 +744,6 @@ document.documentElement.classList.add('esperando-letra');setTimeout(function(){
     cursor:pointer;
     white-space:nowrap;
   }
-  .edit-btn:hover{background:#e8eef8;}
 
   .legend-toggle{
     background:rgb(var(--h-rgb) / .08);
@@ -913,7 +911,7 @@ document.documentElement.classList.add('esperando-letra');setTimeout(function(){
   @media (hover:none){ .mini-nav{opacity:.85} }
   /* En las fotos chicas (Similares, Ranking, Parecidos) tapaban la foto: ahí aparecen solo al
      pasar el mouse o con el teclado (pedido del 2026-10-09); en pantallas táctiles no van. */
-  .minicar.chica .mini-nav{width:16px;height:16px;font-size:12px;line-height:16px;opacity:0}
+  .minicar.chica .mini-nav{width:16px;height:16px;font-size:.67rem;line-height:16px;opacity:0}
   .minicar.chica:hover .mini-nav,.minicar.chica:focus-within .mini-nav{opacity:1}
   @media (hover:none){ .minicar.chica .mini-nav{display:none} }
   .minicar.chica .mini-nav.ant{left:1px} .minicar.chica .mini-nav.sig{right:1px}
@@ -926,7 +924,7 @@ document.documentElement.classList.add('esperando-letra');setTimeout(function(){
   .sim-todos:disabled{opacity:.5;cursor:default}
   .sim-vacio{font-size:.72rem;color:var(--ink-2);margin:4px 0 0}
   .sim button:focus-visible{outline:2px solid var(--link);outline-offset:2px}
-  .sim-btn{display:block;margin:4px auto 0;background:rgb(var(--h-rgb) / .12);color:var(--h-ink);border:1px solid rgb(var(--h-rgb) / .35);border-radius:10px;padding:1px 9px;font-size:.6rem;cursor:pointer}
+  .sim-btn{display:block;margin:4px auto 0;background:rgb(var(--h-rgb) / .12);color:var(--h-ink);border:1px solid rgb(var(--h-rgb) / .35);border-radius:10px;padding:1px 9px;font-size:.68rem;cursor:pointer}
   .sim-btn:hover{background:rgb(var(--h-rgb) / .24)}
   .sim-btn:focus-visible{outline:2px solid var(--h-ink);outline-offset:1px}
   #simPanel{position:fixed;z-index:70;left:50%;transform:translateX(-50%);bottom:14px;width:min(440px,calc(100vw - 24px));box-shadow:0 12px 40px rgba(0,0,0,.35)}
@@ -976,7 +974,7 @@ document.documentElement.classList.add('esperando-letra');setTimeout(function(){
   .rk-grafico figcaption{font-size:.68rem;color:var(--ink-2);margin:0 4px 4px}
   .rk-grafico svg{display:block;width:100%;height:auto}
   .rk-g-grid{stroke:var(--line);stroke-width:1}
-  .rk-g-eje{fill:var(--ink-3);font-size:11px}
+  .rk-g-eje{fill:var(--ink-3);font-size:.7rem}
   .rk-g-pt{fill:var(--bar);fill-opacity:.55;stroke:var(--surface);stroke-width:1.5;cursor:pointer}
   .rk-g-pt.mio{fill:#e0a400;fill-opacity:1}
   .rk-ficha{position:fixed;z-index:70;left:50%;transform:translateX(-50%);bottom:14px;width:min(440px,calc(100vw - 24px));
@@ -1053,7 +1051,7 @@ document.documentElement.classList.add('esperando-letra');setTimeout(function(){
   .ficha-cabeza{display:grid;grid-template-columns:minmax(0,1.2fr) minmax(0,1fr);gap:18px;align-items:start}
   .ficha-foto{position:relative;line-height:0}
   .ficha-foto img{width:100%;aspect-ratio:900/570;object-fit:contain;background:#fff;border-radius:12px;cursor:zoom-in}
-  .visor{position:fixed;inset:0;z-index:2000;background:rgba(8,12,20,.94);display:flex;flex-direction:column;align-items:center;justify-content:center;padding:44px 8px 16px}
+  .visor{position:fixed;inset:0;z-index:2000;background:rgb(8,12,20);display:flex;flex-direction:column;align-items:center;justify-content:center;padding:44px 8px 16px}
   .visor[hidden]{display:none}
   body.visor-abierto{overflow:hidden}
   .visor-nombre{margin:0 0 8px;color:#fff;font-family:var(--fuente-titulo);font-size:1.2rem;text-align:center}
@@ -1072,7 +1070,7 @@ document.documentElement.classList.add('esperando-letra');setTimeout(function(){
   .visor-cerrar:focus-visible,.visor-nav:focus-visible{outline:2px solid #fff;outline-offset:2px}
   @media (max-width:640px){ .visor-nav{width:36px;height:36px;font-size:1.3rem} .visor-nav.ant{left:4px} .visor-nav.sig{right:4px} }
   .ficha-nav{position:absolute;top:42%;transform:translateY(-50%);width:34px;height:34px;border:0;border-radius:50%;
-    background:rgba(255,255,255,.92);color:#0b1f47;font-size:20px;line-height:1;cursor:pointer;box-shadow:0 2px 8px rgba(0,0,0,.28)}
+    background:rgba(255,255,255,.92);color:#0b1f47;font-size:1.1rem;line-height:1;cursor:pointer;box-shadow:0 2px 8px rgba(0,0,0,.28)}
   .ficha-nav.ant{left:8px} .ficha-nav.sig{right:8px}
   .ficha-puntos{display:flex;justify-content:center;gap:5px;margin-top:6px;line-height:1}
   .ficha-puntos i{width:6px;height:6px;border-radius:50%;background:var(--dot-off)}
@@ -1309,7 +1307,7 @@ document.documentElement.classList.add('esperando-letra');setTimeout(function(){
   .ficha-hist-lista{list-style:none;margin:4px 0;padding:0;display:grid;grid-template-columns:max-content max-content max-content;gap:2px 12px;font-size:.74rem;align-items:baseline}
   .ficha-hist-lista li{display:contents;font-variant-numeric:tabular-nums}
   .ficha-hist-lista b{text-align:right}   /* los precios alineados en columna (2026-10-10) */
-  .ficha-hist-lista span{color:var(--ink-3)} .ficha-hist-lista a{color:var(--link)}
+  .ficha-hist-lista span{color:var(--ink-3)} .ficha-hist-lista a{color:var(--link);display:inline-block;min-height:24px;line-height:24px}
   .cc-cotizar{display:flex;flex-wrap:wrap;align-items:center;gap:6px;margin:6px 0 2px;font-size:.72rem;color:var(--ink-2)}
   .cc-cotizar .ficha-btn{padding:3px 10px;font-size:.74rem;text-decoration:none}
   .cc-destacado{border:1px solid var(--etq-a);border-radius:6px;padding:9px 10px}
@@ -1388,7 +1386,7 @@ document.documentElement.classList.add('esperando-letra');setTimeout(function(){
   .ficha-service a,.ficha-llamados a,.ficha-fuentes .sugerencias{color:var(--link)}
   #barrasSelLbl[hidden]{display:none}
   #fichaSeguir[aria-pressed="true"]{background:var(--chip-bg)}
-  .aviso-seguidos{margin:10px 16px;padding:10px 14px;border:1px solid var(--line);border-left:4px solid var(--byd-blue);border-radius:6px;background:var(--surface);font-size:.86rem}
+  .aviso-seguidos{margin:10px 16px;padding:10px 14px;border:1px solid var(--byd-blue);border-radius:6px;background:var(--surface);font-size:.86rem}
   .aviso-seguidos p{margin:0} .aviso-seguidos ul{margin:4px 0 8px;padding-left:18px}
   .aviso-auto{background:none;border:0;padding:0;color:var(--link);font:inherit;font-weight:700;text-decoration:underline;cursor:pointer}
   .aviso-acc{display:flex;gap:8px;flex-wrap:wrap}
@@ -1438,6 +1436,7 @@ document.documentElement.classList.add('esperando-letra');setTimeout(function(){
     padding:6px 10px;font-size:.72rem;font-weight:600;cursor:pointer;white-space:nowrap}
   .share-btn:hover{background:rgb(var(--h-rgb) / .15)}
   #refInfo .mini-btn{font-size:.68rem;padding:0 2px}
+  .ficha-ver-grupo{min-height:24px}
 
   /* ============ Segunda fila de herramientas ============================== */
   .herr-tabla,.herr-gral,.herr-ver{display:inline-flex;gap:6px;align-items:center;flex-wrap:wrap}
@@ -1458,13 +1457,13 @@ document.documentElement.classList.add('esperando-letra');setTimeout(function(){
   .precio-rango output{font-weight:700;font-variant-numeric:tabular-nums}
   .precio-rango input[type=range]{width:100%;accent-color:var(--byd-blue)}
   .donde-oferta-eval{margin:0 0 8px;font-weight:700;color:var(--yes)}
-  .precio-fecha{display:block;font-size:.66rem;font-weight:400;color:var(--ink-3);margin-top:2px;cursor:help}
+  .precio-fecha{display:block;font-size:.7rem;font-weight:400;color:var(--ink-3);margin-top:2px;cursor:help}
   .precio-sd{display:flex;align-items:center;gap:6px;font-size:.72rem;color:var(--ink-2);margin-top:6px;cursor:pointer}
 
   /* ============ Categorías plegables ===================================== */
   tr.cat-row td{cursor:pointer;user-select:none;text-align:left}
   .cat-nombre{position:sticky;left:12px;display:inline-block}
-  tr.cat-row td:focus-visible{outline:2px solid var(--h-ink);outline-offset:-3px}
+  .cat-boton:focus-visible{outline:2px solid var(--h-ink);outline-offset:3px}
   .cat-chev{display:inline-block;margin-right:6px;transition:transform .15s}
   tr.cat-plegada .cat-chev{transform:rotate(-90deg)}
   tr.plegada{display:none}
@@ -1560,7 +1559,7 @@ document.documentElement.classList.add('esperando-letra');setTimeout(function(){
     15%{box-shadow:0 0 0 3px var(--h-bg),0 0 0 6px var(--byd-blue)}
     35%{box-shadow:0 0 0 3px var(--h-bg),0 0 14px 6px var(--byd-blue)}}
   @media (prefers-reduced-motion:reduce){ .edit-btn{animation:none;box-shadow:0 0 0 3px var(--h-bg),0 0 0 5px var(--byd-blue)} }
-  .edit-btn:hover{background:#E3EBE5}
+  .edit-btn:hover{background:var(--accion-hover)}
   .controls input{border-radius:4px;font-family:var(--fuente);font-size:.9rem}
   .cat-btn{border-radius:3px;font-family:var(--fuente-tabla);font-weight:500;font-size:.78rem;letter-spacing:.01em;
     background:transparent;border-color:rgb(var(--h-rgb) / .26)}
@@ -1577,7 +1576,7 @@ document.documentElement.classList.add('esperando-letra');setTimeout(function(){
   /* Tabla: la letra de ficha, con cifras tabulares */
   table{font-family:var(--fuente-tabla);font-variant-numeric:tabular-nums}
   thead th{font-family:var(--fuente-tabla);font-size:.72rem}
-  thead th small{font-size:.66rem;opacity:.7}
+  thead th small{font-size:.7rem;opacity:.7}
   /* La fecha de la lista ya viene en --ink-3: con la opacidad encima quedaba en 2,8:1 (2026-11-21). */
   thead th small.precio-fecha{opacity:1}
   .th-nombre{font-family:var(--fuente-titulo);font-weight:700;font-size:.92rem;line-height:1.05;letter-spacing:.005em;
@@ -3282,20 +3281,23 @@ document.querySelectorAll('#mainTable tr.cat-row').forEach(catRow => {
   // (10.000 px con los 108 autos) y centrado quedaba a 5.000 px, fuera de la
   // pantalla. Pegado a la izquierda se ve siempre, aunque se scrollee al costado.
   const nombre = document.createElement('span');
+  // Título para los lectores de pantalla (se recorren con la tecla H) y, adentro, el botón que pliega la categoría.
   nombre.className = 'cat-nombre';
-  nombre.innerHTML = '<span class="cat-chev" aria-hidden="true">▾</span>';
-  nombre.append(td.textContent);
+  nombre.setAttribute('role', 'heading'); nombre.setAttribute('aria-level', '2');
+  const boton = document.createElement('span');
+  boton.className = 'cat-boton';
+  boton.setAttribute('role', 'button'); boton.tabIndex = 0; boton.setAttribute('aria-expanded', 'true');
+  boton.innerHTML = '<span class="cat-chev" aria-hidden="true">▾</span>';
+  boton.append(td.textContent);
+  nombre.appendChild(boton);
   td.textContent = '';
   td.appendChild(nombre);
-  td.setAttribute('role', 'button');
-  td.tabIndex = 0;
-  td.setAttribute('aria-expanded', 'true');
 });
 function plegar(ci, pleg){
   if (pleg) plegadas.add(ci); else plegadas.delete(ci);
-  const td = document.querySelector('#mainTable tr.cat-row[data-cat="' + ci + '"] td');
-  td.setAttribute('aria-expanded', String(!pleg));
-  td.closest('tr').classList.toggle('cat-plegada', pleg);
+  const tr = document.querySelector('#mainTable tr.cat-row[data-cat="' + ci + '"]');
+  tr.querySelector('.cat-boton').setAttribute('aria-expanded', String(!pleg));
+  tr.classList.toggle('cat-plegada', pleg);
 }
 function actualizarBotonPlegar(){
   const b = document.getElementById('plegarTodoBtn');
@@ -3309,7 +3311,7 @@ tbody.addEventListener('click', e => {
   applyFilters(); actualizarBotonPlegar();
 });
 tbody.addEventListener('keydown', e => {
-  if ((e.key === 'Enter' || e.key === ' ') && e.target.matches('tr.cat-row td')){ e.preventDefault(); e.target.click(); }
+  if ((e.key === 'Enter' || e.key === ' ') && e.target.matches('tr.cat-row .cat-boton')){ e.preventDefault(); e.target.click(); }
 });
 
 let activeCat = 'all';
@@ -4709,27 +4711,41 @@ function rkRestoHTML(resto, k){
 
 // Gráfico de puntos: precio contra el dato de la fila. SVG propio, sin librerías.
 function rkGraficoHTML(ok, k, mios){
-  const pts = ok.filter(r => SIM_PRECIO[r.i] != null).map(r => ({ i: r.i, x: SIM_PRECIO[r.i], y: r.n }));
+  // Los de lista en pesos entran pasados a dólares al BNA, como en el resto del Ranking (con SIM_PRECIO quedaban afuera 77 autos,
+  // entre ellos el más vendido).
+  const pts = ok.filter(r => PRECIO_CMP[r.i] != null).map(r => ({ i: r.i, x: PRECIO_CMP[r.i], y: r.n, pesos: SIM_PRECIO[r.i] == null }));
   if (pts.length < 3) return '';
-  const W = 640, H = 230, ml = 52, mr = 12, mt = 12, mb = 34;
+  // El ancho del dibujo sigue al de la pantalla (innerWidth no obliga a calcular el layout), así la letra del eje mide lo
+  // mismo que la de la página: con 640 fijo, en el celular salía a 6 px.
+  const W = Math.round(Math.max(300, Math.min(720, (window.innerWidth || 720) - 40))), H = 240, ml = 52, mr = 12, mt = 30, mb = 40;
   const xs = pts.map(p => p.x), ys = pts.map(p => p.y);
   const x0 = Math.min(...xs), x1 = Math.max(...xs), y0 = Math.min(...ys), y1 = Math.max(...ys);
-  const px = x => ml + (x1 === x0 ? 0.5 : (x - x0) / (x1 - x0)) * (W - ml - mr);
-  const py = y => H - mb - (y1 === y0 ? 0.5 : (y - y0) / (y1 - y0)) * (H - mt - mb);
+  // El precio va en escala logarítmica (con la lineal, los autos de más de USD 200.000 apretaban a casi todos contra la
+  // izquierda), y las ventas también, que van de 1 a miles. Las demás filas quedan lineales.
+  const logY = RK_PAT.includes(k) && y0 > 0;
+  const fy = logY ? Math.log : (v => v);
+  const px = x => ml + (x1 === x0 ? 0.5 : (Math.log(x) - Math.log(x0)) / (Math.log(x1) - Math.log(x0))) * (W - ml - mr);
+  const py = y => H - mb - (y1 === y0 ? 0.5 : (fy(y) - fy(y0)) / (fy(y1) - fy(y0))) * (H - mt - mb);
   const num = n => n.toLocaleString('es-AR', { maximumFractionDigits: 1 });
-  const ticks = (a, b) => [a, a + (b - a) / 2, b];
+  // Marcas redondas (1, 2 y 5 por potencia de 10) dentro del rango; si no hay dos, los extremos y el medio.
+  const redondas = (a, b, pasos) => { const r = [];
+    for (let e = Math.floor(Math.log10(a)); e <= Math.ceil(Math.log10(b)); e++) for (const m of pasos) { const v = m * 10 ** e; if (v >= a && v <= b) r.push(v); }
+    return r; };
+  const ticksX = (() => { const r = redondas(x0, x1, [1, 2, 5]); return r.length >= 2 ? r : [x0, Math.sqrt(x0 * x1), x1]; })();
+  const ticksY = logY ? (() => { const r = redondas(y0, y1, [1]); return r.length >= 2 ? r : [y0, y1]; })() : [y0, y0 + (y1 - y0) / 2, y1];
   const unidad = rkUnidadDe(k);
   const mejor = rkDir(k) > 0 ? 'arriba' : 'abajo';
   return '<figure class="rk-grafico"><figcaption>Precio contra ' + rkEsc(rkTitulo(k).toLowerCase()) +
-    ': conviene estar a la izquierda (más barato) y ' + mejor + ' (mejor).' + (k === FILA_AUT || k === FILA_CONS ? ' Usa el estimado WLTP.' : '') + '</figcaption>' +
+    ': conviene estar a la izquierda (más barato) y ' + mejor + ' (mejor).' + (k === FILA_AUT || k === FILA_CONS ? ' Usa el estimado WLTP.' : '') +
+    (pts.some(p => p.pesos) ? ' Las listas en pesos van pasadas a dólares al BNA.' : '') + '</figcaption>' +
     '<svg viewBox="0 0 ' + W + ' ' + H + '" role="img" aria-label="Gráfico de precio contra ' + rkEsc(rkTitulo(k)) + '">' +
-    ticks(y0, y1).map(t => '<line class="rk-g-grid" x1="' + ml + '" x2="' + (W - mr) + '" y1="' + py(t) + '" y2="' + py(t) + '"/><text class="rk-g-eje" x="' + (ml - 6) + '" y="' + (py(t) + 4) + '" text-anchor="end">' + num(t) + '</text>').join('') +
-    ticks(x0, x1).map(t => '<text class="rk-g-eje" x="' + px(t) + '" y="' + (H - mb + 16) + '" text-anchor="middle">' + Math.round(t / 1000) + 'k</text>').join('') +
-    '<text class="rk-g-eje" x="' + (W - mr) + '" y="' + (H - 4) + '" text-anchor="end">USD</text>' +
-    (unidad ? '<text class="rk-g-eje" x="4" y="' + (mt + 4) + '">' + rkEsc(unidad) + '</text>' : '') +
+    ticksY.map(t => '<line class="rk-g-grid" x1="' + ml + '" x2="' + (W - mr) + '" y1="' + py(t) + '" y2="' + py(t) + '"/><text class="rk-g-eje" x="' + (ml - 6) + '" y="' + (py(t) + 4) + '" text-anchor="end">' + num(t) + '</text>').join('') +
+    ticksX.map(t => '<text class="rk-g-eje" x="' + px(t).toFixed(1) + '" y="' + (H - mb + 18) + '" text-anchor="middle">' + Math.round(t / 1000) + 'k</text>').join('') +
+    '<text class="rk-g-eje" x="' + (W - mr) + '" y="' + (H - 4) + '" text-anchor="end">USD, escala logarítmica</text>' +
+    (unidad ? '<text class="rk-g-eje" x="4" y="' + (mt - 14) + '">' + rkEsc(unidad) + (logY ? ', escala logarítmica' : '') + '</text>' : '') +
     pts.filter(p => !mios.includes(p.i)).concat(pts.filter(p => mios.includes(p.i))).map(p =>
       '<circle class="rk-g-pt' + (mios.includes(p.i) ? ' mio' : '') + '" cx="' + px(p.x).toFixed(1) + '" cy="' + py(p.y).toFixed(1) + '" r="' + (mios.includes(p.i) ? 6 : 4.5) +
-      '" data-idx="' + p.i + '" data-tip="' + rkEsc(CARS[p.i].name + ': USD ' + p.x.toLocaleString('es-AR') + ', ' + num(p.y) + (unidad ? ' ' + unidad : '')) + '"/>').join('') +
+      '" data-idx="' + p.i + '" data-tip="' + rkEsc(CARS[p.i].name + ': ' + (p.pesos ? '≈ USD ' + p.x.toLocaleString('es-AR') + ' al BNA (lista de ' + pesosCorto(SIM_PESOS[p.i]) + ')' : 'USD ' + p.x.toLocaleString('es-AR')) + ', ' + num(p.y) + (unidad ? ' ' + unidad : '')) + '"/>').join('') +
     '</svg></figure>';
 }
 
@@ -6441,7 +6457,7 @@ fechasDePrecio();
     .observe(tr, { subtree: true, childList: true });
   copiar();
 })();
-// En la fila del importador, "Fábrica en Brasil" para las marcas que fabrican en el Mercosur.
+// En la fila del importador, "La marca fabrica en Brasil" para las marcas que fabrican en el Mercosur (la fábrica es de la marca, no de ese auto).
 (function fabricasEnTabla(){
   const tr = document.querySelector('#mainTable tr[data-nombre="Importador en Argentina"]');
   if (!tr) return;
@@ -6450,7 +6466,7 @@ fechasDePrecio();
     if (!td) return;
     if (f){
       const el = document.createElement('small');
-      el.className = 'precio-fecha fabrica-merc'; el.textContent = 'Fábrica en ' + f.pais;
+      el.className = 'precio-fecha fabrica-merc'; el.textContent = 'La marca fabrica en ' + f.pais;
       el.dataset.tip = textoFabrica(f);
       td.appendChild(el);
     }
@@ -6534,7 +6550,7 @@ async function abrirFicha(i){
       // Respaldo (2026-10-10): quién lo trae, fábrica en el Mercosur y red de service, con su detalle al tocar.
       (() => { const f = fabricaMercosur(i), red = textoRed(i), fab = importaFabrica(i);
         const items = [fab ? '<span>Lo trae la marca</span>' : '',
-          f ? '<span data-tip="' + rkEsc(textoFabrica(f)) + '">Fábrica en ' + rkEsc(f.pais) + '</span>' : '',
+          f ? '<span data-tip="' + rkEsc(textoFabrica(f)) + '">La marca fabrica en ' + rkEsc(f.pais) + '</span>' : '',
           red ? '<span data-tip="' + rkEsc(red + '. Según la red que publica la marca en su sitio.') + '">' + rkEsc(red.replace(/ \(.*\)$/, '')) + '</span>' : ''].filter(Boolean);
         return items.length ? '<p class="ficha-chips ficha-respaldo">' + items.join('') + '</p>' : ''; })() +
       '<div class="ficha-acciones"><button type="button" class="ficha-btn primario" id="fichaVerTabla">Ver todos sus datos en la tabla</button>' +

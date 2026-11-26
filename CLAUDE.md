@@ -432,6 +432,16 @@ sí quedan en inglés, porque no muestran la palabra. Se coló con `YES` dos vec
   - **«Mayores diferencias» habla de los autos**: no lista los patentamientos, y entre propulsiones distintas (`SIM_FAMILIA`) tampoco la
     batería, el motor eléctrico ni la autonomía eléctrica (un enchufable siempre tiene más batería que un híbrido); cuando saca alguna,
     lo dice debajo. Entre dos híbridos el motor eléctrico sí cuenta. **«Gana en más filas» sigue contando todas las filas**, como las copas.
+- **Pulido** (2026-11-26, auditoría con Impeccable, `pulido.spec.js`):
+  - **Gráfico del Ranking** (`rkGraficoHTML`): el precio va en **escala logarítmica** (con la lineal, los autos de más de USD 200.000
+    apretaban a casi todos contra la izquierda) y las ventas también; las demás filas, lineales. El gráfico lo dice en los rótulos. El
+    ancho del dibujo sale de `innerWidth` (no de una medida de la página: no obliga a calcular el layout), así la letra del eje va en
+    `rem` y no baja de 12 px; con 640 fijo salía a 6 px en el celular. La unidad va arriba del dibujo: se pisaba con el primer número.
+  - **Las categorías de la Tabla son títulos** (`role="heading"`, nivel 2) con el botón que las pliega adentro (`.cat-boton`, que lleva
+    `aria-expanded` y el foco): eran celdas con rol de botón y un lector de pantalla no las recorría como títulos.
+  - La franja ámbar (`--banda-ext`) pasó de `#E09A00` a `#B07800` en el tema claro: daba 2,4:1 y lo que codifica información pide
+    3:1 (WCAG 1.4.11). El hover de «Elegir autos para comparar» es `--accion-hover` (dejaba el texto blanco sobre casi blanco).
+    El visor de fotos es opaco. «Similares», «Video» y la fecha de la lista no bajan de 12 px en la computadora.
 - **Mejoras de UX** (2026-10-10, revisión con NN/g, Baymard y GOV.UK): Ayudame a elegir sin presupuesto
   preelegido (lo marcado se lee como recomendación), resumen "Para … Cambiar" arriba de los sugeridos
   en el celular, "Flojo en …" en la computadora y, sin resultados, botones con qué aflojar y cuántos
@@ -719,8 +729,8 @@ sí quedan en inglés, porque no muestran la palabra. Se coló con `YES` dos vec
   Changan por CAOA; las anunciadas no cuentan: Geely, Leapmotor, GAC, MG, Omoda/Jaecoo). Es de la
   marca, no del auto. En Ayudame a elegir suma 1 que lo traiga la casa matriz y .6 la fábrica en el
   Mercosur; en A tu medida es el criterio "Respaldo de fábrica" (`rkRespaldo`, en "Mucho" por
-  defecto); en el comparador cuenta como otra fila; en la tabla, "Fábrica en Brasil" en la fila del
-  importador. Revisar las anunciadas cuando empiecen a producir.
+  defecto); en el comparador cuenta como otra fila; en la tabla y en la ficha, «La marca fabrica en Brasil» en la fila
+  del importador (decía «Fábrica en Brasil» y al lado de un auto hecho en China se leía como el origen del auto). Revisar las anunciadas cuando empiecen a producir.
 - **Respaldo** (2026-10-09, pedido del usuario): las dos garantías están en `PCTL_DIR` (años y,
   a igual plazo, kilómetros: vale años + km/250.000, sin pasar nunca un año; 2026-10-09): tienen barra, ★ y ranking. Quién lo importa
   (`IMPORTA_FABRICA`: BYD, Omoda, Jaecoo y Leapmotor los trae la casa matriz, según

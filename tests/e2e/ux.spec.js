@@ -162,8 +162,10 @@ test.describe('categorías plegables', () => {
     await abrir(page);
     const cat = page.locator('#mainTable tr.cat-row[data-cat="1"] td');
     const filas = page.locator('#mainTable tbody tr[data-cat="1"]:not(.cat-row)');
+    // La categoría es un título (los lectores de pantalla la recorren con la tecla H) con el botón que la pliega adentro.
+    await expect(cat.getByRole('heading', { level: 2 })).toBeVisible();
     await cat.click();
-    await expect(cat).toHaveAttribute('aria-expanded', 'false');
+    await expect(cat.getByRole('button')).toHaveAttribute('aria-expanded', 'false');
     await expect(filas.first()).toBeHidden();
     await expect(cat).toBeVisible();
     await cat.click();

@@ -318,7 +318,7 @@ test('respaldo de fábrica: la fábrica en el Mercosur tiene fuente, se ve en la
     expect(f.pais && f.planta && f.desde, k).toBeTruthy();
   }
   const byd = await page.evaluate(() => CARS.findIndex(c => c.brand === 'BYD' && c.status === 'venta'));
-  await expect(page.locator(`#mainTable tr[data-nombre="Importador en Argentina"] td[data-col="${byd}"] .fabrica-merc`)).toHaveText('Fábrica en Brasil');
+  await expect(page.locator(`#mainTable tr[data-nombre="Importador en Argentina"] td[data-col="${byd}"] .fabrica-merc`)).toHaveText('La marca fabrica en Brasil');
   await page.click('#vistaRanking');
   const sel = page.locator('#rkElegirSel');
   if (await sel.isVisible()) await sel.selectOption('__medida'); else await page.locator('#rkScroll .rk-chip[data-fila="__medida"]').click();
