@@ -1,7 +1,7 @@
 // Interacciones de la página: búsqueda, categorías, solo diferencias,
 // referencias, selector de autos, tooltips y zoom de fotos.
 const { test, expect } = require('@playwright/test');
-const { leerIndex, vigilarErrores, FILAS_DATOS, FILAS_CAT, N_FILAS } = require('./helpers');
+const { leerIndex, vigilarErrores, abrirHerramientas, FILAS_DATOS, FILAS_CAT, N_FILAS } = require('./helpers');
 
 const { DATA, CARS } = leerIndex();
 const N = CARS.length;
@@ -57,6 +57,7 @@ test.describe('filtros de la tabla', () => {
 
   test('las referencias se abren y se cierran', async ({ page }) => {
     await expect(page.locator('#legendBox')).toBeHidden();
+    await abrirHerramientas(page);
     await page.click('#legendToggleBtn');
     await expect(page.locator('#legendBox')).toBeVisible();
     await expect(page.locator('#legendToggleBtn')).toContainText('Ocultar');

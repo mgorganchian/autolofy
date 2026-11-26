@@ -3,7 +3,7 @@
 const fs = require('fs');
 const path = require('path');
 const { test, expect } = require('@playwright/test');
-const { vigilarErrores } = require('./helpers');
+const { vigilarErrores, abrirGeneral } = require('./helpers');
 
 let errores;
 test.beforeEach(({ page }) => { errores = vigilarErrores(page); });
@@ -30,9 +30,18 @@ test('el logo está siempre en el mismo lugar: en cada vista, al comparar y con 
   await expect(page.locator('h1')).toHaveCount(1);
 });
 
-test('Imprimir va con Compartir, en la fila de la comparación', async ({ page }) => {
+test('Imprimir va con Compartir en la computadora y en «Más» en el celular', async ({ page }, info) => {
   await page.goto('/index.html?tabla');
-  await expect(page.locator('#summaryBar #imprimirBtn')).toBeVisible();
+  if (info.project.name === 'escritorio'){
+    await expect(page.locator('#summaryBar #imprimirBtn')).toBeVisible();
+    await expect(page.locator('#imprimirMasBtn')).toBeHidden();
+    return;
+  }
+  // En el celular, imprimir es raro y ocupaba un renglón entero arriba de la tabla (2026-11-26).
+  await expect(page.locator('#summaryBar #imprimirBtn')).toBeHidden();
+  await expect(page.locator('#summaryBar .summary-acciones')).toBeHidden();
+  await abrirGeneral(page);
+  await expect(page.locator('#imprimirMasBtn')).toBeVisible();
 });
 
 test('un link con ?vista=ranking abre el Ranking', async ({ page }) => {

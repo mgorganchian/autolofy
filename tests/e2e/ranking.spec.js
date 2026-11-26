@@ -25,11 +25,18 @@ async function abrirRanking(page, { todos = false } = {}) {
 }
 const A_LA_VENTA = CARS.filter(c => c.status === 'venta').map(c => c.name);
 const HERRAMIENTAS = ['usd-cv', 'usd-km', '__medida', '__gasto', '__rebajas', '__cochera', '__marcas', '__grupos'];
+// Los años de patentamientos son un solo criterio, «Por modelo», con el año arriba de la lista (2026-11-26).
+const PAT = FILAS_RANKING.filter(n => /^Patentamientos \d{4} /.test(n));
+// Criterios que se eligen: las filas, con un solo botón para los patentamientos, y las herramientas.
+const N_CRITERIOS = FILAS_RANKING.length - (PAT.length - 1) + HERRAMIENTAS.length;
 async function elegirFila(page, nombre) {
   // En el celular se elige en el desplegable; en escritorio, con los botones (2026-10-10).
   const sel = page.locator('#rkElegirSel');
-  if (await sel.isVisible()) await sel.selectOption(nombre);
-  else await page.locator(`#rkScroll .rk-chip[data-fila="${nombre}"]`).click();
+  const anio = PAT.includes(nombre) ? nombre.match(/\d{4}/)[0] : null;
+  const criterio = anio ? await page.locator('#rkScroll .rk-chip').evaluateAll((cs, pat) => cs.map(c => c.dataset.fila).find(f => pat.includes(f)), PAT) : nombre;
+  if (await sel.isVisible()) await sel.selectOption(criterio);
+  else await page.locator(`#rkScroll .rk-chip[data-fila="${criterio}"]`).click();
+  if (anio) await page.locator(`#rkSub [data-anio="${anio}"]`).click();
   await expect(page.locator('#rkScroll .rk-chip.active')).toHaveAttribute('data-fila', nombre);
 }
 const enLista = page => page.locator('#rkLista .rk-item').evaluateAll(ls => ls.map(l => l.dataset.auto));
@@ -39,7 +46,7 @@ test.describe('vista ranking', () => {
   test('muestra las 21 filas comparables y vuelve a la tabla', async ({ page }) => {
     await abrirRanking(page);
     // Las filas comparables, dos relaciones precio/valor y dos herramientas.
-    await expect(page.locator('#rkScroll .rk-chip')).toHaveCount(FILAS_RANKING.length + HERRAMIENTAS.length);
+    await expect(page.locator('#rkScroll .rk-chip')).toHaveCount(N_CRITERIOS);
     expect(FILAS_RANKING).toHaveLength(21);   // + los 4 años de patentamientos (2026-10-29); 14 + Potencia total (2026-10-04) + las dos garantías (2026-10-09)
     await expect(page.locator('#tbodyWrap')).toBeHidden();
     await expect(page.locator('#search')).toBeHidden();
@@ -292,7 +299,7 @@ test('en el celular se elige qué rankear en un desplegable con todos los criter
   const sel = page.locator('#rkElegirSel');
   if (page.viewportSize().width > 640){ await expect(sel).toBeHidden(); return; }
   await expect(sel).toBeVisible();
-  await expect(sel.locator('option')).toHaveCount(FILAS_RANKING.length + HERRAMIENTAS.length);
+  await expect(sel.locator('option')).toHaveCount(N_CRITERIOS);
   await sel.selectOption('Garantía general');
   await expect(page.locator('#rkTitulo')).toContainText('Garantía');
 });

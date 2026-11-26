@@ -63,4 +63,10 @@ async function abrirGeneral(page) {
   if (await mas.isVisible() && (await mas.getAttribute('aria-expanded')) !== 'true') await mas.click();
 }
 
-module.exports = { leerIndex, vigilarErrores, abrirGeneral, FILAS_DATOS, FILAS_CAT, N_FILAS };
+// En el celular, el orden, las barras, «Plegar todo» y «Cómo leer la tabla» van detrás de «Herramientas» (2026-11-26).
+async function abrirHerramientas(page) {
+  const b = page.locator('#herrBtn');
+  if (await b.isVisible() && (await b.getAttribute('aria-expanded')) !== 'true') await b.click();
+}
+
+module.exports = { leerIndex, vigilarErrores, abrirGeneral, abrirHerramientas, FILAS_DATOS, FILAS_CAT, N_FILAS };

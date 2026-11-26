@@ -418,6 +418,20 @@ sí quedan en inglés, porque no muestran la palabra. Se coló con `YES` dos vec
   ahora es la foto del primer auto, a 2,2 s). Lo que queda en el celular es el layout de 86.000 nodos: bajar de ahí pide no armar las
   268 columnas de entrada. Clarity, después de cargar, recorre esos mismos nodos (1,2 s de CPU en la computadora, en tareas cortas).
   `rendimiento.spec.js`.
+- **Menos controles antes del dato** (2026-11-26, auditoría con Impeccable, `densidad.spec.js`):
+  - **«Herramientas» en el celular** (`#herrBtn`): la primera pantalla de la Tabla mostraba solo controles (la primera fila de datos
+    quedaba en 871 px de 844). Arriba quedan el buscador, las categorías y «Solo diferencias»; el orden, las barras, «Plegar todo» y
+    «Cómo leer la tabla» se abren con «Herramientas» (`.herr-abiertas`, no se cierra solo), e **«Imprimir» pasa al menú «Más»**
+    (`#imprimirMasBtn`, `.solo-mas`). Ahora la primera fila queda en 702 px. En la computadora todo sigue a la vista. En el Ranking
+    no hay herramientas de la tabla: `body.vista-ranking` deja «Cómo leer la tabla» a la vista. En los tests, `abrirHerramientas()`.
+  - **El Ranking en 6 grupos** (`rkChips`, `rkGrupoDe`): Según lo que buscás, Precio y garantía, Potencia, Consumo y autonomía, Espacio y
+    equipo, y Ventas; en la computadora un renglón por grupo con su nombre (subgrid), en el celular los mismos grupos en el desplegable.
+    Cada fila va al grupo de su categoría de `DATA` (`RK_GRUPO_CAT`); una categoría que no esté ahí forma un grupo con su nombre, así una
+    fila nueva de `PCTL_DIR` nunca queda afuera. **Los 4 años de patentamientos son un solo criterio, «Por modelo»** (`RK_PAT`), con los
+    años arriba de la lista como «Por marca» y «Por grupo», y el mismo año para los tres (`rkAnioMercado`). Eran 29 botones; son 26.
+  - **«Mayores diferencias» habla de los autos**: no lista los patentamientos, y entre propulsiones distintas (`SIM_FAMILIA`) tampoco la
+    batería, el motor eléctrico ni la autonomía eléctrica (un enchufable siempre tiene más batería que un híbrido); cuando saca alguna,
+    lo dice debajo. Entre dos híbridos el motor eléctrico sí cuenta. **«Gana en más filas» sigue contando todas las filas**, como las copas.
 - **Mejoras de UX** (2026-10-10, revisión con NN/g, Baymard y GOV.UK): Ayudame a elegir sin presupuesto
   preelegido (lo marcado se lee como recomendación), resumen "Para … Cambiar" arriba de los sugeridos
   en el celular, "Flojo en …" en la computadora y, sin resultados, botones con qué aflojar y cuántos
@@ -691,8 +705,8 @@ sí quedan en inglés, porque no muestran la palabra. Se coló con `YES` dos vec
   tema (`.herr-gral`). En el celular, el logo y «Más» (`#masBtn`) en una fila y las pestañas debajo; «Más» abre lo general y suma «Quién hace
   esto» (se cierra al elegir, con Esc o tocando afuera; en los tests, `abrirGeneral()`). Debajo, solo en Ayudame a elegir, el título grande. Después,
   **antes** del buscador y las categorías, la fila de contexto (`#summaryBar`: «Elegir autos», qué se compara, «Los que sigo», Compartir e
-  **Imprimir**, que bajó de la barra); al final, `#toolbarTabla` (orden, barras y plegar a la izquierda; «Solo diferencias» y «Cómo leer la tabla»
-  a la derecha), que se esconde fuera de la Tabla y el Ranking. Las páginas que arma `herramientas-paginas.py` llevan la misma barra sin JS
+  **Imprimir**, que bajó de la barra; en el celular va en «Más»); al final, `#toolbarTabla` (orden, barras y plegar a la izquierda; «Solo diferencias» y «Cómo leer la tabla»
+  a la derecha; en el celular, todo menos «Solo diferencias» detrás de «Herramientas»), que se esconde fuera de la Tabla y el Ranking. Las páginas que arma `herramientas-paginas.py` llevan la misma barra sin JS
   (`barra()`, `BARRA_CSS`; el Ranking se abre con `?vista=ranking`). **El logo** sale de `marca/` (`autograma-oscuro.svg`, `-claro.svg` e
   `icono-*.svg`, con los colores del sitio): en la página va en línea con `.lg-t` (`--h-ink`) y `.lg-v` (`--byd-blue`), así cambia con el tema;
   el favicon es `icono-oscuro.svg`. `barra.spec.js` y `elegir-navegacion.spec.js`.
