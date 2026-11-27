@@ -69,4 +69,10 @@ async function abrirHerramientas(page) {
   if (await b.isVisible() && (await b.getAttribute('aria-expanded')) !== 'true') await b.click();
 }
 
-module.exports = { leerIndex, vigilarErrores, abrirGeneral, abrirHerramientas, FILAS_DATOS, FILAS_CAT, N_FILAS };
+// En el celular, el resumen de una comparación es un renglón que se abre al tocarlo (2026-11-27).
+async function abrirDiferencias(page) {
+  const b = page.locator('#difBox .dif-resumen');
+  if (await b.isVisible() && (await b.getAttribute('aria-expanded')) !== 'true') await b.click();
+}
+
+module.exports = { leerIndex, vigilarErrores, abrirGeneral, abrirHerramientas, abrirDiferencias, FILAS_DATOS, FILAS_CAT, N_FILAS };

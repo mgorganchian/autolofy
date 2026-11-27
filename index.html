@@ -178,7 +178,9 @@ document.documentElement.classList.add('esperando-letra');setTimeout(function(){
   /* En la computadora y la tablet (2026-11-15, pedido de Sebastián) las categorías y los criterios del
      Ranking bajan de renglón: en una sola fila con scroll, las últimas no se veían ni se podían elegir.
      En el celular siguen en una fila que se desliza con el dedo. */
-  @media (min-width:641px){ .cat-scroll{flex-wrap:wrap;overflow-x:visible} }
+  /* El celular apaisado (alto de 500 px o menos) también: con tres renglones de categorías, en una comparación el primer auto
+     quedaba debajo de la pantalla (2026-11-27). */
+  @media (min-width:641px) and (min-height:501px){ .cat-scroll{flex-wrap:wrap;overflow-x:visible} }
   /* Mientras el script arma las filas, el cuerpo ocupa la pantalla: si no, el pie se pinta arriba y la tabla lo empuja (2026-11-26). */
   #tbodyWrap:has(#tbody:empty){min-height:100vh}
   .legend{
@@ -1397,6 +1399,21 @@ document.documentElement.classList.add('esperando-letra');setTimeout(function(){
   .ficha-cochera b.no{color:var(--etq-e)}
   .dif-margen{font-weight:700;font-variant-numeric:tabular-nums;background:var(--note-bg);color:var(--note-text);border-radius:4px;padding:0 4px}
   .dif-vacio{margin:0;color:var(--ink-2)}
+  /* Comparación en el celular (2026-11-27, auditoría con Impeccable): con 2 autos el cuadro medía 558 px y el primer auto
+     quedaba a 954 px, debajo de la pantalla. En el celular (vertical o apaisado) el cuadro es un renglón que se abre al tocarlo. */
+  .dif-resumen{display:none}
+  .dif-cuerpo{display:contents}
+  @media (max-width:640px), (max-height:500px){
+    .dif{padding:4px 12px}
+    .dif-resumen{display:flex;align-items:center;justify-content:space-between;gap:4px 10px;flex-wrap:wrap;width:100%;min-height:44px;
+      margin:0;padding:4px 0;border:0;background:none;color:inherit;font:inherit;text-align:left;cursor:pointer}
+    .dif-resumen-gana{display:flex;flex-wrap:wrap;align-items:center;gap:4px 6px}
+    .dif-resumen-ver{color:var(--link);font-weight:700;text-decoration:underline;text-underline-offset:3px;white-space:nowrap}
+    .dif-resumen:focus-visible{outline:2px solid var(--ink);outline-offset:2px}
+    .dif:not(.abierto) .dif-cuerpo{display:none}
+    .dif.abierto .dif-cuerpo{display:flex;flex-wrap:wrap;gap:8px 24px;width:100%;padding-bottom:6px}
+    .dif-gana > b, .dif-gana > .dif-chip{display:none}   /* ya están en el renglón del resumen */
+  }
   .mejor-sel{color:var(--opt);font-size:.68rem;font-weight:700;letter-spacing:.02em;margin-left:3px;display:inline-flex;align-items:center;gap:2px;white-space:nowrap;vertical-align:middle}
   .mejor-sel svg{width:1.05em;height:1.05em;flex:none}
   .th-precio .mejor-sel{margin:0 4px 0 0}
@@ -5568,7 +5585,12 @@ const MEJOR_HTML = (titulo, aria) => '<span class="mejor-sel" title="' + titulo 
   const sinProp = grandes.some(f => f.porProp);
   const ranking = [...gana.entries()].sort((x, y) => y[1] - x[1]);
   box.hidden = false;
-  box.innerHTML = '<div class="dif-gana"><b>Gana en más filas</b> ' +
+  box.classList.toggle('abierto', difResumenAbierto);
+  box.innerHTML = '<button type="button" class="dif-resumen" aria-expanded="' + difResumenAbierto + '" aria-controls="difCuerpo">' +
+    '<span class="dif-resumen-gana"><b>Gana en más filas</b> ' + ranking.map(([i, n]) => '<span class="dif-chip">' + nom(i) + ' <b>' + n + '</b></span>').join('') + '</span>' +
+    '<span class="dif-resumen-ver">' + (difResumenAbierto ? 'Ocultar las diferencias' : 'Ver las diferencias') + '</span></button>' +
+    '<div class="dif-cuerpo" id="difCuerpo">' +
+    '<div class="dif-gana"><b>Gana en más filas</b> ' +
     ranking.map(([i, n]) => '<span class="dif-chip">' + nom(i) + ' <b>' + n + '</b></span>').join('') +
     '<small>de ' + nComp + ' fila' + (nComp === 1 ? '' : 's') + ' con cifra en los ' + vis.length + ' autos' + (extraImp ? ', contando quién lo importa y si la marca fabrica en el Mercosur' : '') + ' (copa «Mejor» en la tabla)</small></div>' +
     (top.length ? '<div class="dif-lista"><b>Mayores diferencias</b><ul>' + top.map(f => {
@@ -5577,7 +5599,7 @@ const MEJOR_HTML = (titulo, aria) => '<span class="mejor-sel" title="' + titulo 
         '<span class="dif-mejor">' + nom(m.i) + ' ' + fmt(m.n, f.nombre) + '</span> vs ' + nom(p.i) + ' ' + fmt(p.n, f.nombre) +
         ' <span class="dif-margen">' + margen(f.rel) + '</span>' + (f.est ? ' <small>(estimado WLTP)</small>' : '') + '</li>';
     }).join('') + '</ul>' + (sinProp ? '<small>Sin la batería ni el motor eléctrico, que cambian con el tipo de propulsión.</small>' : '') + '</div>' : '') +
-    escalaHTML(vis) + fotosLadoHTML(vis);
+    escalaHTML(vis) + fotosLadoHTML(vis) + '</div>';
 }
 // Tamaño a escala (2026-10-10, como vehiclesizes.com): la silueta de cada auto estirada a su largo y
 // su alto, todos con la misma escala y una regla de 1 metro. Va plegado: no ocupa lugar si no se abre.
@@ -5592,6 +5614,7 @@ const metros = mm => (mm / 1000).toLocaleString('es-AR', { minimumFractionDigits
 // Qué desplegables del cuadro de diferencias quedaron abiertos: el cuadro se rehace con cada cambio
 // de la selección y no tienen que cerrarse solos.
 const difAbiertos = new Set();
+let difResumenAbierto = false;   // el renglón del resumen en el celular
 const difDetalle = (id, titulo, cuerpo) => '<details class="dif-mas" data-dif="' + id + '"' + (difAbiertos.has(id) ? ' open' : '') + '><summary>' + titulo + '</summary>' + cuerpo + '</details>';
 function escalaHTML(vis){
   const med = vis.map(i => ({ i, l: medidaDe(i, 'Longitud (mm)'), h: medidaDe(i, 'Altura (mm)') })).filter(x => x.l > 0 && x.h > 0);
@@ -5857,6 +5880,14 @@ document.addEventListener('change', e => {
   vistaLado = e.target.value;
   const g = e.target.closest('details').querySelector('.lado-grid');
   if (g) g.innerHTML = fotosLadoGrid(CARS.map((_, i) => i).filter(i => colVisible[i]));
+});
+document.addEventListener('click', e => {
+  const b = e.target.closest && e.target.closest('.dif-resumen');
+  if (!b) return;
+  difResumenAbierto = !difResumenAbierto;
+  document.getElementById('difBox').classList.toggle('abierto', difResumenAbierto);
+  b.setAttribute('aria-expanded', String(difResumenAbierto));
+  b.querySelector('.dif-resumen-ver').textContent = difResumenAbierto ? 'Ocultar las diferencias' : 'Ver las diferencias';
 });
 document.addEventListener('toggle', e => { const d = e.target.dataset && e.target.dataset.dif; if (d) (e.target.open ? difAbiertos.add(d) : difAbiertos.delete(d)); }, true);
 
