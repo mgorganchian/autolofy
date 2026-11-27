@@ -234,7 +234,7 @@ test.describe('mayores diferencias', () => {
     await abrir(page, '?autos=byd-shark,maxus-t60,jac-t8');
     const box = page.locator('#difBox');
     await expect(box).toBeVisible();
-    const chips = await box.locator('.dif-chip b').allTextContents();
+    const chips = await box.locator('.dif-gana .dif-chip b').allTextContents();
     expect(chips).toHaveLength(3);
     const filasConCifra = Number((await box.locator('.dif-gana small').textContent()).match(/de (\d+) fila/)[1]);
     // Cada fila comparable tiene al menos un ganador (los empates comparten).

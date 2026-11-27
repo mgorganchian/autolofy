@@ -3,7 +3,7 @@
 const fs = require('fs');
 const path = require('path');
 const { test, expect } = require('@playwright/test');
-const { leerIndex, vigilarErrores, FILAS_DATOS, N_FILAS, abrirGeneral, abrirHerramientas } = require('./helpers');
+const { leerIndex, vigilarErrores, FILAS_DATOS, N_FILAS, abrirGeneral, abrirHerramientas, abrirDiferencias } = require('./helpers');
 
 const RAIZ = process.env.AUTOLOFY_RAIZ || path.resolve(__dirname, '../..');
 const { html } = leerIndex();
@@ -529,6 +529,7 @@ test('¿entra en mi cochera?: entran, no entran y sin dato; la página del auto 
 
 test('tamaño a escala y fotos lado a lado al comparar; los todoterreno se reconocen', async ({ page }) => {
   await abrir(page, '?autos=byd-song-pro,byd-sealion-7,baic-bj40-pro,gwm-tank-300');
+  await abrirDiferencias(page);
   const esc = page.locator('#difBox details[data-dif="escala"]');
   await esc.locator('summary').click();
   await expect(esc.locator('.esc-fila')).toHaveCount(4);

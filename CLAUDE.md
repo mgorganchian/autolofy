@@ -432,6 +432,12 @@ sí quedan en inglés, porque no muestran la palabra. Se coló con `YES` dos vec
   - **«Mayores diferencias» habla de los autos**: no lista los patentamientos, y entre propulsiones distintas (`SIM_FAMILIA`) tampoco la
     batería, el motor eléctrico ni la autonomía eléctrica (un enchufable siempre tiene más batería que un híbrido); cuando saca alguna,
     lo dice debajo. Entre dos híbridos el motor eléctrico sí cuenta. **«Gana en más filas» sigue contando todas las filas**, como las copas.
+  - **La comparación en el celular** (2026-11-27, segunda auditoría con Impeccable, `comparar-celular.spec.js`): con 2 autos el resumen
+    medía 558 px y el primer auto quedaba a 954 px. En el celular (hasta 640 px de ancho o 500 de alto) el resumen es un renglón,
+    `.dif-resumen` («Gana en más filas» con sus cifras y «Ver las diferencias»), que abre el cuerpo (`.dif-cuerpo`: la nota, Mayores
+    diferencias, Tamaño a escala y Fotos lado a lado); queda abierto al cambiar la selección (`difResumenAbierto`). En la computadora el
+    cuerpo va a la vista (`display:contents`) y el renglón no se muestra. En el celular apaisado las categorías van en una fila que se
+    desliza, como en el vertical: en tres renglones empujaban el auto debajo de la pantalla. En los tests, `abrirDiferencias()`.
 - **Pulido** (2026-11-26, auditoría con Impeccable, `pulido.spec.js`):
   - **Gráfico del Ranking** (`rkGraficoHTML`): el precio va en **escala logarítmica** (con la lineal, los autos de más de USD 200.000
     apretaban a casi todos contra la izquierda) y las ventas también; las demás filas, lineales. El gráfico lo dice en los rótulos. El
