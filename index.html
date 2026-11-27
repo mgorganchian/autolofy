@@ -145,9 +145,13 @@ document.documentElement.classList.add('esperando-letra');setTimeout(function(){
     min-width:140px;
     padding:8px 10px;
     border-radius:8px;
-    border:none;
+    border:1px solid var(--border-strong);
     font-size:.85rem;
+    background:var(--surface);   /* sin fondo propio, en el tema oscuro el navegador lo pintaba gris (#3B3B3B) */
+    color:var(--ink);
   }
+  /* El texto de ayuda de los campos: el gris del navegador daba 2,4:1 en el tema oscuro (2026-11-27). */
+  ::placeholder{color:var(--ink-3);opacity:1}
   .cat-btn{
     background:rgb(var(--h-rgb) / .12);
     color:var(--h-ink);
@@ -1300,7 +1304,7 @@ document.documentElement.classList.add('esperando-letra');setTimeout(function(){
     .elegir-res ul{margin:0;font-size:.72rem;line-height:1.3;padding-left:14px}
   }
   .ficha-hist-res{margin:2px 0 4px;font-family:var(--fuente-tabla);font-weight:700;font-size:.9rem}
-  .ficha-hist-res.baja{color:var(--etq-a)} .ficha-hist-res.sube{color:var(--etq-e)}
+  /* «Subió» y «Bajó» van en tinta: la palabra ya lo dice, y en verde y rojo daban 4,1:1 y 3,9:1 (2026-11-27). */
   .ficha-hist-svg{display:block;width:100%;max-width:320px;height:auto}
   .ficha-hist-svg path{fill:none;stroke:var(--ink-2);stroke-width:2}
   .ficha-hist-svg circle{fill:var(--paper);stroke:var(--ink);stroke-width:1.5}

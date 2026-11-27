@@ -67,6 +67,42 @@ for (const tema of ['light', 'dark']) {
       expect(fallas, url).toEqual([]);
     }
   });
+
+  test(`tema ${tema}: el texto de las páginas estáticas se lee, links incluidos (4,5:1)`, async ({ page }) => {
+    // Los links usaban --accent (#00843D): 4,22:1 sobre el papel del tema claro. Ahora usan --link (2026-11-27).
+    await page.emulateMedia({ colorScheme: tema });
+    for (const url of ['/autos/byd-song-pro.html', '/novedades.html', '/quien-hace-esto.html']) {
+      await page.goto(url);
+      await expect(page.locator('main a').first()).toBeVisible();
+      const fallas = await page.evaluate(medirContraste, 'main');
+      expect(fallas, url).toEqual([]);
+    }
+  });
+
+  test(`tema ${tema}: «Subió» y «Bajó» del historial del precio se leen (4,5:1)`, async ({ page }) => {
+    // En verde y rojo de la etiqueta de eficiencia daban 4,11:1 en el tema claro y 3,85:1 en el oscuro.
+    await page.emulateMedia({ colorScheme: tema });
+    await page.goto('/index.html?auto=byd-song-pro');
+    await expect(page.locator('.ficha-hist-res').first()).toBeVisible();
+    const fallas = await page.evaluate(medirContraste, '.ficha-hist-res');
+    expect(fallas).toEqual([]);
+  });
+
+  test(`tema ${tema}: el texto de ayuda de los buscadores se lee (4,5:1)`, async ({ page }) => {
+    // El gris del navegador sobre el campo sin fondo propio daba 2,43:1 en el tema oscuro.
+    await page.emulateMedia({ colorScheme: tema });
+    await page.goto('/index.html?tabla');
+    await expect(page.locator('#search')).toBeVisible();
+    const fallas = await page.evaluate(() => {
+      const lum = c => { const [r, g, b] = c.match(/[\d.]+/g).slice(0, 3).map(Number).map(v => (v /= 255) <= 0.03928 ? v / 12.92 : ((v + 0.055) / 1.055) ** 2.4); return 0.2126 * r + 0.7152 * g + 0.0722 * b; };
+      const fondo = e => { for (; e; e = e.parentElement) { const c = getComputedStyle(e).backgroundColor; if (!/rgba\(.*, 0\)$/.test(c)) return c; } return 'rgb(255, 255, 255)'; };
+      return [...document.querySelectorAll('input[placeholder]')].filter(e => e.getBoundingClientRect().width > 0).map(e => {
+        const [a, b] = [lum(getComputedStyle(e, '::placeholder').color), lum(fondo(e))].sort((x, y) => y - x);
+        return { campo: e.placeholder, ratio: (a + 0.05) / (b + 0.05) };
+      }).filter(x => x.ratio < 4.5).map(x => `${x.campo} ${x.ratio.toFixed(2)}:1`);
+    });
+    expect(fallas).toEqual([]);
+  });
 }
 
 test('Concesionarios en un celular de 390 px no se desborda de costado (WCAG 1.4.10)', async ({ page }) => {

@@ -395,6 +395,10 @@ sí quedan en inglés, porque no muestran la palabra. Se coló con `YES` dos vec
   usa `--sobre-accent`. `tests/e2e/contraste.spec.js` mide el contraste **como se ve**: color con la opacidad de él y
   de sus ancestros sobre los fondos compuestos (medir el color crudo no detectó la fecha), y que Concesionarios no
   se desborde a 390 px (los links largos llevan `overflow-wrap:anywhere`).
+  **Segunda pasada (2026-11-27):** los links de las páginas que arma `herramientas-paginas.py` usan `--link` (#006B32; con `--accent`
+  daban 4,22:1), «Subió» y «Bajó» del historial del precio van en tinta (la palabra ya lo dice; en verde y rojo daban 4,1:1 y 3,9:1),
+  y el buscador de la Tabla tiene fondo, tinta y borde del tema, con `::placeholder` en `--ink-3` (el gris del navegador daba 2,43:1 en
+  el oscuro). `contraste.spec.js` mide todo el texto de `main` en las páginas estáticas, el historial y los textos de ayuda.
 - **Arreglos medidos** (2026-10-10, auditoría con Playwright): la portada decide la vista antes de
   pintar (`arranca-elegir` en el `<head>`: el salto medía 0,56 de CLS); las miniaturas llevan
   `loading="lazy"` (el panel cerrado bajaba 124 fotos, 1,15 MB); en el celular la tabla usa
