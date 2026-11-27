@@ -33,7 +33,7 @@ case "${1:-}" in
 esac
 REPO="/Users/mgorganchian/Projects/autolofy"
 LOG="$REPO/.chequeo-diario.log"
-SITIO="https://autolofy.vercel.app/"
+SITIO="https://autograma.vercel.app/"
 UA='autolofy-comparativo/1.0 (https://github.com/mgorganchian/autolofy)'
 # launchd corre el script con zsh -lc, que no carga nvm (nvm está en .zshrc), así que claude y node no
 # están en el PATH. Se los busca en la versión de Node más nueva de nvm, con orden numérico (v24.22 va

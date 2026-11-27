@@ -12,7 +12,7 @@ Documento para pasarle a Claude Code (corriendo local en la Mac de Mati) y que p
 
 - Archivo HTML autocontenido (sin dependencias externas, todo inline) que compara **49 autos** **[corregido: eran 47]** chinos/electrificados disponibles (o por llegar) en Argentina, en una tabla de **92 filas** de características agrupadas en **14 categorías**.
 - **Repo**: github.com/mgorganchian/autolofy (branch `main`, archivo `index.html` en la **raíz del repo, sin carpeta**).
-- **Deploy**: **https://autolofy.vercel.app/** (Vercel, proyecto `autolofy`), conectado por GitHub → cada merge a `main` dispara un redeploy.
+- **Deploy**: **https://autograma.vercel.app/** (Vercel, proyecto `autolofy`; desde el 2026-11-27 el sitio se llama Autograma y `autolofy.vercel.app` redirige), conectado por GitHub → cada merge a `main` dispara un redeploy.
 - **Acceso de escritura**: se hace con un token fine-grained con scope **solo a este repo**, en la cuenta personal (no la organización de trabajo). Hay otro token, de solo lectura y de otro proyecto — **no tocar, no confundir, no reusar**. Los nombres concretos están en `CONTEXTO_LOCAL_PRIVADO.md`, que está en `.gitignore` porque **este repo es público**.
 
 ### Por qué el archivo está en la raíz y no en una carpeta
@@ -27,7 +27,7 @@ La CLI no está instalada y no hace falta. El sitio publicado pesa **exactamente
 ```bash
 # tamaño del index.html de un commit + 536 = tamaño esperado en vivo
 expr $(git cat-file -s $(git rev-parse <commit>:index.html)) + 536
-curl -s -H 'Cache-Control: no-cache' "https://autolofy.vercel.app/?cb=$RANDOM" | wc -c
+curl -s -H 'Cache-Control: no-cache' "https://autograma.vercel.app/?cb=$RANDOM" | wc -c
 ```
 
 Mejor todavía: buscar un marcador de contenido del cambio (`grep -q 'Leapmotor C10'`). El `<meta name="netlify-deploy">` **no** trae ID de deploy, solo un link de marketing, así que desde afuera no se puede leer el estado del build.

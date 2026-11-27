@@ -15,7 +15,7 @@ test('la ficha ofrece mail, WhatsApp y copiar link con el link de la página del
   const url = await page.evaluate(() => location.origin + '/autos/byd-shark');
   const mail = await page.locator('#fichaCompartirMail').getAttribute('href');
   expect(mail.startsWith('mailto:?subject=')).toBe(true);
-  expect(decodeURIComponent(mail)).toContain('Mirá este auto en Autolofy: BYD Shark');
+  expect(decodeURIComponent(mail)).toContain('Mirá este auto en Autograma: BYD Shark');
   expect(decodeURIComponent(mail)).toContain(url);
   const wa = await page.locator('#fichaCompartirWa').getAttribute('href');
   expect(wa.startsWith('https://wa.me/?text=')).toBe(true);

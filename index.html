@@ -3,17 +3,17 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Autolofy: comparativo de autos 0 km en Argentina</title>
-<link rel="alternate" type="application/rss+xml" title="Novedades de Autolofy" href="/novedades.xml">
+<title>Autograma: comparativo de autos 0 km en Argentina</title>
+<link rel="alternate" type="application/rss+xml" title="Novedades de Autograma" href="/novedades.xml">
 <meta name="description" content="Más de 100 autos 0 km que se venden en Argentina, comparados con sus fichas técnicas oficiales: precio, potencia, autonomía, consumo, equipamiento, garantía y ranking.">
 <!-- Vista previa al compartir (WhatsApp, Telegram, redes). Es la misma para cualquier
      link: un sitio estático no puede armar una imagen por comparación. og.jpg se regenera
      a mano si cambian mucho los autos (fotos oficiales, sin créditos de Commons). -->
 <meta property="og:type" content="website">
-<meta property="og:site_name" content="Autolofy">
-<meta property="og:title" content="Autolofy: comparativo de autos 0 km en Argentina">
+<meta property="og:site_name" content="Autograma">
+<meta property="og:title" content="Autograma: comparativo de autos 0 km en Argentina">
 <meta property="og:description" content="Más de 100 autos con sus fichas técnicas oficiales: precio, potencia, autonomía, consumo, garantía y ranking.">
-<meta property="og:image" content="https://autolofy.vercel.app/og.jpg">
+<meta property="og:image" content="https://autograma.vercel.app/og.jpg">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
 <meta name="twitter:card" content="summary_large_image">
@@ -3639,7 +3639,7 @@ function actualizarResumen(){
 // Desplazamientos hechos por el script: sin animación si el sistema pide reducir el movimiento.
 function suave(){ return window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth'; }
 // Título de la pestaña (y del link al compartir desde el navegador): dice qué se compara.
-const TITULO_BASE = 'Autolofy: comparativo de autos 0 km en Argentina';
+const TITULO_BASE = 'Autograma: comparativo de autos 0 km en Argentina';
 let vistaActual = 'tabla';
 function actualizarTitulo(){
   const ficha = fichaActual !== null ? CARS[fichaActual].name : null;
@@ -6547,13 +6547,13 @@ function fichaFortalezas(i){
 // datos de nadie. Se comparte la página estática /autos/<slug> (tiene título y vista previa propios). En el celular, además,
 // el menú de compartir del sistema.
 const compartirURL = i => location.origin + '/autos/' + SLUG_AUTO[i];
-const compartirTexto = i => 'Mirá este auto en Autolofy: ' + CARS[i].name;
+const compartirTexto = i => 'Mirá este auto en Autograma: ' + CARS[i].name;
 function compartirFichaHTML(i){
   const u = compartirURL(i), t = compartirTexto(i);
   const sistema = navigator.share && matchMedia('(pointer:coarse)').matches;
   return '<p class="ficha-compartir"><span class="ficha-compartir-tit">Compartir esta ficha</span>' +
     (sistema ? '<button type="button" class="ficha-btn" id="fichaCompartirSis">Compartir</button>' : '') +
-    '<a class="ficha-btn" id="fichaCompartirMail" href="mailto:?subject=' + encodeURIComponent('Autolofy: ' + CARS[i].name) + '&body=' + encodeURIComponent(t + '\n' + u) + '">Mail</a>' +
+    '<a class="ficha-btn" id="fichaCompartirMail" href="mailto:?subject=' + encodeURIComponent('Autograma: ' + CARS[i].name) + '&body=' + encodeURIComponent(t + '\n' + u) + '">Mail</a>' +
     '<a class="ficha-btn" id="fichaCompartirWa" target="_blank" rel="noopener" href="https://wa.me/?text=' + encodeURIComponent(t + '\n' + u) + '">WhatsApp</a>' +
     '<button type="button" class="ficha-btn" id="fichaCompartirCopiar">Copiar link</button></p>';
 }
@@ -7039,7 +7039,7 @@ async function pintarDondeVerlo(i){
   const orden = (a, b) => (a.km == null) - (b.km == null) || (a.km - b.km) || PROV_ORDEN(a.c.provincia, b.c.provincia) || PROV_ORDEN(a.c.nombre, b.c.nombre);
   const visibles = conKm.filter(x => miUbic || !prov || x.c.provincia === prov).sort(orden);
   const mejor = mejorOferta(marcaPromos, conKm.filter(x => x.promos.length));
-  const cotBase = { auto: CARS[i].name, marca, link: 'https://autolofy.vercel.app/autos/' + slug };
+  const cotBase = { auto: CARS[i].name, marca, link: 'https://autograma.vercel.app/autos/' + slug };
   const ofertaTxt = p => p ? (PROMO_TIPO[p.tipo] || 'Promoción') + ' ' + (p.precio ? fmtMonto(p.precio) : p.descuento ? '−' + fmtMonto(p.descuento) : '') : '';
   let ofertaHTML = '';
   if (mejor){
