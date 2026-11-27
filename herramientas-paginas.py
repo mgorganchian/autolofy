@@ -21,7 +21,7 @@ import re
 import sys
 
 RAIZ = os.path.dirname(os.path.abspath(__file__))
-SITIO = 'https://autolofy.vercel.app'
+SITIO = 'https://autograma.vercel.app'
 # Un auto sin foto válida de la versión argentina (FOTOS_POR_AUTO = 0, 2026-10-31) no tiene fotos/<slug>-1.jpg:
 # su página muestra la miniatura, que es la silueta de la carrocería, y la vista previa al compartir es og.jpg.
 tiene_foto = lambda slug: os.path.exists(os.path.join(RAIZ, 'fotos', slug + '-1.jpg'))
@@ -307,8 +307,8 @@ def novedades(cars, slugs):
     e = H.escape
     pagina_html = f'''<!doctype html>
 <html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Novedades de Autolofy: precios, promociones y autos nuevos</title>
-<meta name="description" content="Bajas y subas de precio de lista, promociones vigentes de cada marca y autos nuevos en Autolofy, el comparativo de autos 0 km en Argentina.">
+<title>Novedades de Autograma: precios, promociones y autos nuevos</title>
+<meta name="description" content="Bajas y subas de precio de lista, promociones vigentes de cada marca y autos nuevos en Autograma, el comparativo de autos 0 km en Argentina.">
 <link rel="canonical" href="{SITIO}/novedades">
 <link rel="alternate" type="application/rss+xml" title="Novedades" href="/novedades.xml">
 <style>
@@ -330,7 +330,7 @@ h2{{font-size:1.05rem;margin:2px 0}} p{{margin:2px 0}}
 '''
     rfc = lambda f: datetime(int(f[:4]), int(f[5:7]), int(f[8:]), 12, tzinfo=timezone.utc).strftime('%a, %d %b %Y %H:%M:%S +0000')
     rss = ('<?xml version="1.0" encoding="UTF-8"?>\n<rss version="2.0"><channel>\n'
-           f'<title>Autolofy: novedades</title><link>{SITIO}/novedades</link>'
+           f'<title>Autograma: novedades</title><link>{SITIO}/novedades</link>'
            '<description>Cambios de precio de lista, promociones vigentes y autos nuevos.</description><language>es-ar</language>\n' +
            ''.join(f'<item><title>{e(x["titulo"])}</title><link>{SITIO}{e(x["link"])}</link>'
                    f'<guid isPermaLink="false">{e(x["fecha"] + " " + x["titulo"])}</guid><pubDate>{rfc(x["fecha"])}</pubDate>'
@@ -483,7 +483,7 @@ def quien():
     del sitio: si se suma publicidad u otra medición de visitas además de Clarity, hay que cambiar "Privacidad"."""
     return f'''<!doctype html>
 <html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Quién hace Autolofy</title>
+<title>Quién hace Autograma</title>
 <meta name="description" content="Un comparativo hecho por un particular, sin relación comercial con marcas ni concesionarios: por qué existe y cómo se arman los datos.">
 <link rel="canonical" href="{SITIO}/quien-hace-esto">
 <style>

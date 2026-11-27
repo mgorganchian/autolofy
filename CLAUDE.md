@@ -1,8 +1,10 @@
-# Autolofy — reglas del proyecto
+# Autograma (antes Autolofy) — reglas del proyecto
 
-Autolofy (https://autolofy.vercel.app) compara **268 autos** 0 km vendidos (o por llegar) en Argentina.
-Empezó con los chinos y electrificados; el nombre cambió el 2026-10-28 (repo `mgorganchian/autolofy`,
-proyectos de Vercel `autolofy` y `autolofy-plan`).
+Autograma (https://autograma.vercel.app) compara **268 autos** 0 km vendidos (o por llegar) en Argentina.
+Empezó con los chinos y electrificados; el nombre cambió a Autolofy el 2026-10-28 y a **Autograma** el 2026-11-27
+(issue #202, pedido de Sebastián): `autolofy.vercel.app` redirige con un 308 a `autograma.vercel.app`. Lo interno sigue
+con el nombre viejo a propósito: el repo `mgorganchian/autolofy`, los proyectos de Vercel `autolofy` y `autolofy-plan`,
+la clave `autolofy_soy`, el esquema y el rol de la base, las variables `AUTOLOFY_*` y la rutina (`ar.autolofy.chequeo`).
 Desde el 2026-10-28 también entran autos de marcas no chinas (decisión de Mati y Sebastián del
 27/10: los 0 km principales, los eléctricos y los híbridos); los primeros fueron los 9 rivales
 híbridos del BAIC X55 II Hybrid (Ford, Chevrolet, Toyota, Lexus, Nissan, Renault, Subaru y
@@ -510,7 +512,7 @@ sí quedan en inglés, porque no muestran la palabra. Se coló con `YES` dos vec
   por tracción en el panel (`selectedTracs`).
 - **Compartir la ficha** (2026-11-01, issue #90, decisión de Mati): la ficha de cada auto tiene «Compartir esta ficha» con Mail (`mailto:`),
   WhatsApp (`wa.me`) y Copiar link, y en el celular también «Compartir» (menú del sistema). Se comparte la página estática
-  `/autos/<slug>` (título y vista previa propios), con el texto «Mirá este auto en Autolofy: <nombre>». **No toma ni guarda datos de nadie**:
+  `/autos/<slug>` (título y vista previa propios), con el texto «Mirá este auto en Autograma: <nombre>». **No toma ni guarda datos de nadie**:
   abre el mail o el WhatsApp de la propia persona. Pedir mail o teléfono a quien no está registrado sigue pospuesto (cambiaría Privacidad y
   obligaría a cumplir la ley de datos personales). `compartir-ficha.spec.js`.
 - **Seguir un auto** (2026-10-11): sin cuentas ni mails. `seguidos` (en el navegador) guarda, por
@@ -586,7 +588,8 @@ sí quedan en inglés, porque no muestran la palabra. Se coló con `YES` dos vec
   del grupo Chery (la controla Yibin; Chery tiene una parte minoritaria).
 - **Página de cada auto** (`?auto=slug`): lee `fichas-fuentes.tsv` del propio sitio para
   los links a fuentes oficiales. **No renombrar ni mover ese archivo** (lo sirve Vercel).
-- `og.jpg` (vista previa al compartir) se genera con fotos oficiales sin créditos de Commons.
+- `og.jpg` (vista previa al compartir) se genera con fotos oficiales sin créditos de Commons: `node herramientas-og.js` (logo de
+  Autograma de `marca/`, la Barlow embebida en `index.html` y 8 portadas oficiales; se niega a usar una de Commons).
 
 ## Patentamientos, choques, historial y novedades (2026-10-08)
 
@@ -1217,7 +1220,8 @@ suspensión, multimedia, luces y climatización, que las notas nunca publican.
 
 ## Deploy
 
-El sitio vive en **Vercel**: `https://autolofy.vercel.app/`, y publica solo con
+El sitio vive en **Vercel**: `https://autograma.vercel.app/` (desde el 2026-11-27; `autolofy.vercel.app` y
+`autoschinos-ar.vercel.app` redirigen ahí), y publica solo con
 cada push a `main`, en segundos. Netlify quedó atrás — el `netlify.toml` sigue en el
 repo pero no cumple ninguna función.
 
@@ -1270,7 +1274,7 @@ Vercel (regla de sistema `sys_dos_mitigation`) desafió durante 10 minutos a la 
 en lugar del sitio. El proyecto no tiene firewall propio y los visitantes no se vieron afectados. La rutina lo
 distingue (`bajar_sitio`): si la desafían, espera 12 minutos, prueba una sola vez más y, si sigue, avisa eso en vez
 de «Lo publicado no dice…». **Nunca verificar el sitio con un bucle de `curl`**: un pedido espaciado, y si hace falta
-más, `vercel inspect` (deploy Ready con el alias de autolofy.vercel.app) o el navegador. No se esquiva el desafío ni
+más, `vercel inspect` (deploy Ready con el alias de autograma.vercel.app) o el navegador. No se esquiva el desafío ni
 se pausan las mitigaciones. `vercel firewall persistent-actions list` y `vercel firewall traffic list` muestran qué
 IP desafió y por qué regla. El marcador que busca es la cantidad de autos del resumen («268 autos, todos incluidos»):
 hasta el 2026-11-21 buscaba «· todos incluidos», no lo encontraba y daba por verificado cualquier cosa; ahora, si no

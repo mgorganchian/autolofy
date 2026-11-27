@@ -1,6 +1,6 @@
 ---
 name: autolofy-marca
-description: Criterios de marca de Autolofy (comparador de 0 km de Mati y Sebastián): naming, eslóganes, isologos, tipografía y el registro de comentarios de Mati. Cargalo antes de proponer o revisar nombres, eslóganes, logos o textos de marca de Autolofy.
+description: Criterios de marca de Autograma, antes Autolofy (comparador de 0 km de Mati y Sebastián): naming, eslóganes, isologos, tipografía y el registro de comentarios de Mati. Cargalo antes de proponer o revisar nombres, eslóganes, logos o textos de marca de Autolofy.
 ---
 
 # Marca de Autolofy
@@ -20,6 +20,8 @@ Cuando Mati o Sebastián dejen un comentario nuevo sobre la marca, sumalo al reg
 - Búsqueda de Mati en el INPI: artifact «Autolofy: búsqueda de marcas en el INPI».
 
 ## Estado actual (9/11/2026)
+
+**Nombre en uso (27/11/2026):** el sitio se presenta como **Autograma**, en autograma.vercel.app (issue #202, pedido de Sebastián); autolofy.vercel.app redirige. El repo, los proyectos de Vercel, la base y esta skill siguen llamándose autolofy a propósito. Lo del INPI y el Instagram sigue abierto (ver abajo).
 
 **Finalistas (6/11):** Autograma, Autonito, Porautos, Autosabe, Autopodio.
 
