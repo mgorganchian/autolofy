@@ -230,12 +230,12 @@ def pagina(i, data, car, slug, credito, colores, videos, vs=(), extra=None):
 <link rel="alternate" type="application/rss+xml" title="{e(nombre)}: cambios de precio y promociones" href="/autos/{slug}.xml">
 <script type="application/ld+json">{json.dumps(ld, ensure_ascii=False)}</script>
 <style>
-:root{{--paper:#EEF1EE;--ink:#17211D;--ink2:#4B5A53;--line:#C9D4CE;--accent:#00843D;--sobre-accent:#fff}}
-@media (prefers-color-scheme:dark){{:root{{--paper:#141B18;--ink:#E4EAE6;--ink2:#9DB3A8;--line:#2E3A35;--accent:#3FB57A;--sobre-accent:#0B110E}}}}
+:root{{--paper:#EEF1EE;--ink:#17211D;--ink2:#4B5A53;--line:#C9D4CE;--accent:#00843D;--sobre-accent:#fff;--link:#006B32}}
+@media (prefers-color-scheme:dark){{:root{{--paper:#141B18;--ink:#E4EAE6;--ink2:#9DB3A8;--line:#2E3A35;--accent:#3FB57A;--sobre-accent:#0B110E;--link:#5FD08E}}}}
 html{{-webkit-text-size-adjust:100%;text-size-adjust:100%}} @media screen and (max-width:640px){{html{{font-size:115%}}}}
 body{{margin:0;background:var(--paper);color:var(--ink);font:1rem/1.5 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}}
 main{{max-width:880px;margin:0 auto;padding:16px}}
-a{{color:var(--accent)}} h1{{font-size:2rem;line-height:1.1;margin:8px 0 4px;text-wrap:balance}}
+a{{color:var(--link)}} h1{{font-size:2rem;line-height:1.1;margin:8px 0 4px;text-wrap:balance}}
 .sub{{color:var(--ink2);margin:0 0 12px}} figure{{margin:0}} figure img{{width:100%;height:auto;background:#fff;border-radius:2px}}
 figcaption{{font-size:.75rem;color:var(--ink2)}} .galeria{{display:grid;gap:14px;margin:18px 0}} .galeria h2{{margin:0}} .cta{{display:inline-block;margin:12px 0;padding:8px 14px;border-radius:4px;background:var(--accent);color:var(--sobre-accent);text-decoration:none;font-weight:600}}
 h2{{font-size:1.15rem;margin:24px 0 6px;border-bottom:2px solid var(--ink)}} table{{width:100%;table-layout:fixed;border-collapse:collapse;font-variant-numeric:tabular-nums}}
@@ -312,11 +312,11 @@ def novedades(cars, slugs):
 <link rel="canonical" href="{SITIO}/novedades">
 <link rel="alternate" type="application/rss+xml" title="Novedades" href="/novedades.xml">
 <style>
-:root{{--paper:#EEF1EE;--ink:#17211D;--ink2:#4B5A53;--line:#C9D4CE;--accent:#00843D;--sobre-accent:#fff}}
-@media (prefers-color-scheme:dark){{:root{{--paper:#141B18;--ink:#E4EAE6;--ink2:#9DB3A8;--line:#2E3A35;--accent:#3FB57A;--sobre-accent:#0B110E}}}}
+:root{{--paper:#EEF1EE;--ink:#17211D;--ink2:#4B5A53;--line:#C9D4CE;--accent:#00843D;--sobre-accent:#fff;--link:#006B32}}
+@media (prefers-color-scheme:dark){{:root{{--paper:#141B18;--ink:#E4EAE6;--ink2:#9DB3A8;--line:#2E3A35;--accent:#3FB57A;--sobre-accent:#0B110E;--link:#5FD08E}}}}
 html{{-webkit-text-size-adjust:100%;text-size-adjust:100%}} @media screen and (max-width:640px){{html{{font-size:115%}}}}
 body{{margin:0;background:var(--paper);color:var(--ink);font:1rem/1.5 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}}
-main{{max-width:760px;margin:0 auto;padding:16px}} a{{color:var(--accent)}} h1{{font-size:2rem;line-height:1.1;margin:8px 0;text-wrap:balance}}
+main{{max-width:760px;margin:0 auto;padding:16px}} a{{color:var(--link)}} h1{{font-size:2rem;line-height:1.1;margin:8px 0;text-wrap:balance}}
 .sub{{color:var(--ink2);margin:0 0 16px}} ol{{list-style:none;margin:0;padding:0}}
 li{{border-bottom:1px solid var(--line);padding:10px 0}} time{{font-size:.8rem;color:var(--ink2)}}
 h2{{font-size:1.05rem;margin:2px 0}} p{{margin:2px 0}}
@@ -446,12 +446,12 @@ def pagina_vs(a, b, data, cars, slugs, creditos):
 <meta property="og:description" content="{e(desc)}"><meta property="og:url" content="{url}">
 <meta property="og:image" content="{SITIO}{img_auto(slugs[a]) if tiene_foto(slugs[a]) else '/og.jpg'}">
 <style>
-:root{{--paper:#EEF1EE;--ink:#17211D;--ink2:#4B5A53;--line:#C9D4CE;--accent:#00843D;--sobre-accent:#fff}}
-@media (prefers-color-scheme:dark){{:root{{--paper:#141B18;--ink:#E4EAE6;--ink2:#9DB3A8;--line:#2E3A35;--accent:#3FB57A;--sobre-accent:#0B110E}}}}
+:root{{--paper:#EEF1EE;--ink:#17211D;--ink2:#4B5A53;--line:#C9D4CE;--accent:#00843D;--sobre-accent:#fff;--link:#006B32}}
+@media (prefers-color-scheme:dark){{:root{{--paper:#141B18;--ink:#E4EAE6;--ink2:#9DB3A8;--line:#2E3A35;--accent:#3FB57A;--sobre-accent:#0B110E;--link:#5FD08E}}}}
 html{{-webkit-text-size-adjust:100%;text-size-adjust:100%}} @media screen and (max-width:640px){{html{{font-size:115%}}}}
 body{{margin:0;background:var(--paper);color:var(--ink);font:1rem/1.5 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}}
 main{{max-width:880px;margin:0 auto;padding:16px}}
-a{{color:var(--accent)}} h1{{font-size:2rem;line-height:1.1;margin:8px 0 4px;text-wrap:balance}}
+a{{color:var(--link)}} h1{{font-size:2rem;line-height:1.1;margin:8px 0 4px;text-wrap:balance}}
 .sub{{color:var(--ink2);margin:0 0 12px}} .fotos{{display:grid;grid-template-columns:1fr 1fr;gap:10px}} figure{{margin:0}}
 figure img{{width:100%;height:auto;background:#fff;border-radius:2px}} figcaption{{font-size:.75rem;color:var(--ink2)}} figcaption b{{color:var(--ink);font-size:.9rem}}
 .cta{{display:inline-block;margin:12px 0;padding:8px 14px;border-radius:4px;background:var(--accent);color:var(--sobre-accent);text-decoration:none;font-weight:600}}
@@ -487,11 +487,11 @@ def quien():
 <meta name="description" content="Un comparativo hecho por un particular, sin relación comercial con marcas ni concesionarios: por qué existe y cómo se arman los datos.">
 <link rel="canonical" href="{SITIO}/quien-hace-esto">
 <style>
-:root{{--paper:#EEF1EE;--ink:#17211D;--ink2:#4B5A53;--line:#C9D4CE;--accent:#00843D;--sobre-accent:#fff}}
-@media (prefers-color-scheme:dark){{:root{{--paper:#141B18;--ink:#E4EAE6;--ink2:#9DB3A8;--line:#2E3A35;--accent:#3FB57A;--sobre-accent:#0B110E}}}}
+:root{{--paper:#EEF1EE;--ink:#17211D;--ink2:#4B5A53;--line:#C9D4CE;--accent:#00843D;--sobre-accent:#fff;--link:#006B32}}
+@media (prefers-color-scheme:dark){{:root{{--paper:#141B18;--ink:#E4EAE6;--ink2:#9DB3A8;--line:#2E3A35;--accent:#3FB57A;--sobre-accent:#0B110E;--link:#5FD08E}}}}
 html{{-webkit-text-size-adjust:100%;text-size-adjust:100%}} @media screen and (max-width:640px){{html{{font-size:115%}}}}
 body{{margin:0;background:var(--paper);color:var(--ink);font:1rem/1.6 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}}
-main{{max-width:680px;margin:0 auto;padding:16px}} a{{color:var(--accent)}} h1{{font-size:2rem;line-height:1.1;margin:8px 0 12px;text-wrap:balance}}
+main{{max-width:680px;margin:0 auto;padding:16px}} a{{color:var(--link)}} h1{{font-size:2rem;line-height:1.1;margin:8px 0 12px;text-wrap:balance}}
 h2{{font-size:1.15rem;margin:24px 0 6px;border-bottom:2px solid var(--ink)}} .sub{{color:var(--ink2);margin:0 0 12px}} ul{{padding-left:20px}} li{{margin:4px 0}}
 {BARRA_CSS}
 </style>{CLARITY}</head><body>{barra('Quién hace esto')}<main>
