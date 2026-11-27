@@ -1,7 +1,7 @@
 # Todas las versiones de cada modelo: diseño (etapa 0 del issue #224)
 
-Estado: **propuesta**, para que Mati y Sebastián la revisen. Este documento no cambia datos ni código. Las decisiones
-pendientes están al final. Cada una trae la opción que propongo, y la propuesta solo vale cuando ellos dos la confirman.
+Estado: **decisiones tomadas** (respuestas de Sebastián del 2026-11-27, al final del documento). Este documento no
+cambia datos ni código. Lo que queda abierto es el criterio para medir cuál versión es «la más completa».
 
 ## Qué resuelve
 
@@ -17,12 +17,14 @@ versión lleva su precio y las filas que cambian entre una versión y otra. Con 
 
 - **Modelo**: lo que hoy es un «auto» de `CARS`, o sea una columna de la tabla. Conserva su slug `marca-modelo`
   (`ford-territory`). No hay que renombrar nada: los links, los seguidos y `SLUG_VIEJO` siguen andando.
-- **Versión**: una configuración que la marca vende con nombre y precio propios (`Territory SEL`, `Territory Titanium`).
+- **Versión**: una configuración que la marca vende con nombre propio (`Territory SEL`, `Territory Titanium`). También
+  cuenta como versión una que solo cambia el color o un paquete estético, si la marca le da otro nombre en su lista o en
+  su ficha (decisión 2). Las versiones para flotas o de plan de ahorro no entran (decisión 3).
   Su slug es el del modelo más un sufijo: `ford-territory-sel`. Se valida con un test: el slug de una versión siempre
   arranca con el de su modelo.
 - **Versión de referencia**: la versión que la columna del modelo muestra en la tabla. Cada modelo tiene exactamente
-  una. Mientras Mati y Sebastián no decidan otra cosa, es la de hoy, la tope de gama. Así la tabla no cambia el día que
-  se cargan las versiones.
+  una, y es **la más completa** (decisión 1). En casi todos los modelos es la tope de gama que la tabla ya muestra, así
+  que la tabla no cambia el día que se cargan las versiones.
 - **Fila del modelo**: un dato que es igual en todas las versiones porque es del modelo. Son las medidas, la plataforma,
   las garantías, el origen, el importador, las ventas y el NCAP.
 - **Fila de versión**: un dato que puede cambiar entre versiones. Son el precio, el motor y la potencia, la caja, la
@@ -44,15 +46,15 @@ que la ficha no lo marque tampoco prueba que no lo tenga. Por eso, en cada versi
 ## Dónde viven los datos
 
 `index.html` pesa hoy 4,2 MB y `DATA` ocupa unos 480 KB. Unas 700 versiones nuevas con 25 filas cada una suman
-alrededor de 17.500 celdas, que agregarían 1 MB o más. Por eso propongo partir los datos en dos:
+alrededor de 17.500 celdas, que agregarían 1 MB o más. Por eso los datos se parten los datos en dos:
 
 | Qué | Dónde | Por qué |
 |---|---|---|
 | Nombre, precio, moneda y fecha de cada versión (`VERSIONES_PRECIO`, por slug de modelo) | Embebido en `index.html`, con marcadores `/*versiones:inicio*/` y `/*versiones:fin*/` | El precio «desde», el Presupuesto y Ayudame a elegir lo necesitan apenas carga la página. Son unos 40 KB |
 | Las filas de versión de cada versión | `versiones.json`, servido junto a la página. La ficha y la tabla de versiones lo bajan recién cuando hacen falta, como `concesionarios.json` | Es el bloque pesado, y casi ninguna visita lo usa |
 
-El CLAUDE.md lista una por una las excepciones al archivo único. Para sumar `versiones.json` a esa lista hace falta que
-Mati y Sebastián lo aprueben (decisión 5).
+El CLAUDE.md lista una por una las excepciones al archivo único. `versiones.json` quedó aprobado como excepción
+(decisión 5) y se suma a esa lista cuando se cree.
 
 Forma propuesta:
 
@@ -96,8 +98,13 @@ que el precio de la versión `ref: true` sea el de la fila de precio de `DATA`.
 - **Historial de precios.** `HISTORIAL_PRECIOS` y `precios-historial.json` pasan a tener una clave por slug de versión.
   La versión de referencia conserva la historia que ya tiene su modelo. Novedades y el RSS anuncian los cambios de
   todas las versiones, con el mismo `CAMBIO_MIN` del 1%.
-- **Páginas estáticas.** `autos/<modelo>.html` suma la tabla de versiones. No propongo una página por versión, porque
-  serían 1.000 páginas casi iguales para Google (decisión 6).
+- **Páginas estáticas.** Cada versión tiene su página (decisión 6): `herramientas-paginas.py` arma
+  `autos/<slug-de-versión>.html`, servida como `/autos/ford-territory-sel`, y la suma a `sitemap.xml`. Cada página lleva
+  los datos del modelo con las filas de su versión, su precio y, arriba, qué la distingue de las otras versiones, con
+  links a ellas y a la página del modelo. Así no quedan 1.000 páginas casi iguales para Google: el título, la
+  descripción y el primer párrafo de cada una nombran la versión, su precio y lo que suma. `autos/<modelo>.html` sigue
+  existiendo, muestra la versión de referencia y suma la tabla de versiones. Las comparaciones «X vs Y» siguen siendo
+  entre modelos.
 - **Base en Neon.** Suma la tabla `version (slug PK, auto_slug FK, nombre, orden, es_referencia)`, con un CHECK que
   exige que el slug arranque con el del auto y un índice único parcial para una sola referencia por auto. Suma también
   `celda_version (version_slug, fila_id, origen, valor, detalle)` con la misma PK y los mismos CHECK que `celda`, y
@@ -116,7 +123,8 @@ que el precio de la versión `ref: true` sea el de la fila de precio de `DATA`.
 ## Tests nuevos (`tests/e2e/versiones.spec.js`)
 
 1. Cada modelo con versiones tiene exactamente una `ref: true`, y su precio coincide con la fila de precio de `DATA`.
-2. Los slugs de versión son únicos, arrancan con el slug del modelo y no chocan con otro modelo ni con `SLUG_VIEJO`.
+2. Los slugs de versión son únicos, arrancan con el slug del modelo y no chocan con otro modelo ni con `SLUG_VIEJO`
+   (las páginas de modelo y de versión comparten la carpeta `autos/`).
 3. Cada versión que no es la de referencia tiene en `versiones.json` todas las filas de `FILAS_DE_VERSION`. Que falte
    una hace fallar el test, para que nunca se herede en silencio.
 4. Toda celda nueva tiene su fila en `datos-fuentes.tsv` con el slug de la versión, y `=ref` también la tiene.
@@ -134,17 +142,19 @@ que el precio de la versión `ref: true` sea el de la fila de precio de `DATA`.
 | 3. Equipamiento por versión | Las filas de versión desde las fichas con columnas por versión | 3 a 5 semanas |
 | 4. Interfaz | El selector en la tabla, Versiones en la ficha y Ayudame a elegir por versión | 1 a 2 semanas, en paralelo con la 3 |
 
-## Decisiones pendientes (Mati y Sebastián)
+## Decisiones (respuestas de Sebastián del 2026-11-27)
 
-1. **Versión de referencia de la tabla**: la tope (como hoy), la más vendida o la de entrada. Propongo la tope durante
-   las etapas 1 a 3, para que la tabla no cambie mientras se carga, y decidir de nuevo con los datos a la vista.
-   Cambiarla obliga a renombrar la fila «Precio de lista (versión tope de gama de la tabla)», y ese nombre es la clave
-   de todo el código.
-2. **Versiones que cambian solo el color o un paquete estético**: propongo que no entren como versión aparte cuando la
-   marca no les pone otro precio de lista.
-3. **Versiones para flotas o de plan de ahorro**: propongo que no entren, porque el público general no las puede
-   comprar a precio de lista.
-4. **Arrancar por el piloto de los 25 más vendidos**: propongo que sí.
-5. **`versiones.json` como excepción al archivo único**: propongo aprobarla. La otra opción es embeber todo y sumar más
-   de 1 MB a cada carga.
-6. **Páginas estáticas por versión**: propongo que no haya, y que cada página de modelo tenga su tabla de versiones.
+1. **Versión de referencia de la tabla: la más completa.** Falta acordar cómo se mide. Propongo contar los ✓ de cada
+   versión en las filas de `FILAS_DE_VERSION` y, si dos empatan, quedarse con la más cara. En la mayoría de los modelos
+   es la tope que la tabla ya muestra. Donde no coincida, la columna cambia de versión y la fila «Precio de lista
+   (versión tope de gama de la tabla)» tiene que pasar a llamarse «… (versión más completa de la tabla)». Ese nombre es
+   la clave de todo el código, así que el cambio va en un PR propio, con `ETIQUETA_CORTA`, `GLOSSARY`,
+   `herramientas-paginas.py` y los tests.
+2. **Las versiones que cambian solo el color o un paquete estético entran.** Entran si la marca les da otro nombre en
+   su lista o en su ficha. Sus filas de versión se cargan igual que las de cualquier otra, casi siempre con `=ref`, y la
+   tabla de versiones muestra que solo cambia la estética. Eso sube un poco el total estimado de versiones del issue.
+3. **Las versiones para flotas o de plan de ahorro no entran.**
+4. **Se arranca por el piloto de los 25 más vendidos.**
+5. **`versiones.json` queda aprobado como excepción al archivo único.** Cuando se cree, se suma a la lista de
+   excepciones del CLAUDE.md.
+6. **Cada versión tiene su propia página estática** (ver «Páginas estáticas»).
