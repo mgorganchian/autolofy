@@ -1,7 +1,7 @@
 # Todas las versiones de cada modelo: diseño (etapa 0 del issue #224)
 
 Estado: **decisiones tomadas** (respuestas de Sebastián del 2026-11-27, al final del documento). Este documento no
-cambia datos ni código. Lo que queda abierto es el criterio para medir cuál versión es «la más completa».
+cambia datos ni código.
 
 ## Qué resuelve
 
@@ -144,8 +144,10 @@ que el precio de la versión `ref: true` sea el de la fila de precio de `DATA`.
 
 ## Decisiones (respuestas de Sebastián del 2026-11-27)
 
-1. **Versión de referencia de la tabla: la más completa.** Falta acordar cómo se mide. Propongo contar los ✓ de cada
-   versión en las filas de `FILAS_DE_VERSION` y, si dos empatan, quedarse con la más cara. En la mayoría de los modelos
+1. **Versión de referencia de la tabla: la más completa.** Se mide contando los ✓ de cada versión en las filas de
+   `FILAS_DE_VERSION` (`YES` y los `Sí` con aclaración, como los dibuja `simbVal`). Si dos empatan, queda la más cara.
+   Un `NR` no suma: una versión con menos datos cargados puede quedar abajo, y el test lo avisa cuando la elegida tiene
+   más `NR` que otra versión del mismo modelo. En la mayoría de los modelos
    es la tope que la tabla ya muestra. Donde no coincida, la columna cambia de versión y la fila «Precio de lista
    (versión tope de gama de la tabla)» tiene que pasar a llamarse «… (versión más completa de la tabla)». Ese nombre es
    la clave de todo el código, así que el cambio va en un PR propio, con `ETIQUETA_CORTA`, `GLOSSARY`,
