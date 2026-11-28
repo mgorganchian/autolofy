@@ -57,7 +57,7 @@ Todo vive en un único `index.html` autocontenido: sin CSS, JS ni imágenes exte
 Ese principio es deliberado — **no agregar dependencias externas ni partir el
 archivo.** Las únicas excepciones, servidas junto a la página y bajadas cuando hacen
 falta: `fotos/` (con `fotos/mini/`, las miniaturas del encabezado), `logos/`, `og.jpg`,
-`fichas-fuentes.tsv`, `logos-fuentes.tsv`, `concesionarios.json` y `/api/dolar` (la cotización del
+`fichas-fuentes.tsv`, `logos-fuentes.tsv`, `concesionarios.json`, `versiones.json` (ver «Versiones de cada modelo») y `/api/dolar` (la cotización del
 día, del mismo sitio; ver "Precios en pesos y dólar BNA").
 **Excepción de JS externo: Microsoft Clarity** (2026-11-04, decisión de Mati): el script de
 `clarity.ms` mide visitas, clics y scroll. Está en el `<head>` de `index.html` y en las plantillas de
@@ -537,6 +537,19 @@ sí quedan en inglés, porque no muestran la palabra. Se coló con `YES` dos vec
     cambiar la selección (`difAbiertos`).
 
 ---
+
+## Versiones de cada modelo (2026-11-27, issue #224)
+
+- Diseño y decisiones en `docs/versiones-por-modelo.md`. Cada columna sigue siendo una versión (la **más completa**: más ✓ en
+  las filas de versión y, si empatan, la más cara) y suma las demás versiones **de su misma propulsión**; otra propulsión va en
+  otra columna. Entran las versiones que solo cambian el color o un paquete estético si la marca les da otro nombre; no entran
+  las de flotas ni las de plan de ahorro.
+- `VERSIONES_PRECIO` (en `index.html`, entre `/*versiones:inicio*/` y `/*versiones:fin*/`: nombre y precio de cada versión),
+  `versiones.json` (las 52 filas de versión, `FILAS_DE_VERSION`) y `versiones-fuentes.tsv` (la fuente de cada celda y precio)
+  **los escribe `herramientas-versiones.py`**, nunca a mano. Una versión que no es la de la tabla trae **todas** las filas de
+  versión: nada se hereda de la columna. `=ref` («igual que la versión de la tabla») solo si la ficha muestra las dos columnas
+  iguales. `tests/e2e/versiones.spec.js` lo cubre.
+- El piloto (los 25 más vendidos) cargó los datos; la interfaz (selector, «desde $», versiones en la ficha) todavía no los usa.
 
 ## Ciclos, potencia total y garantía (2026-10-04)
 

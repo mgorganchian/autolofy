@@ -250,7 +250,8 @@ def main():
                 continue
             t = tildes(celdas_json[x['v']], k, filas_data)
             nr_ref = sum(filas_data[f][k].startswith('NR:') or filas_data[f][k] == 'ND' for f in FILAS_DE_VERSION)
-            nr_v = sum(c.startswith('NR:') or c == 'ND' for c in celdas_json[x['v']]['celdas'].values())
+            efectivas = [filas_data[f][k] if c == '=ref' else c for f, c in celdas_json[x['v']]['celdas'].items()]
+            nr_v = sum(c.startswith('NR:') or c == 'ND' for c in efectivas)
             if t > ref:
                 print(f'AVISO {modelo}: {x["n"]} suma {t} ✓ y la de la tabla {ref}: la más completa sería {x["n"]}.')
             if nr_ref > nr_v:
