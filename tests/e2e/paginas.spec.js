@@ -115,3 +115,28 @@ test('la página dice que no hay publicidad y que mide con Clarity: que siga sie
   const quien = fs.readFileSync(path.join(RAIZ, 'quien-hace-esto.html'), 'utf8');
   expect(quien).toContain('Microsoft Clarity');
 });
+
+// Ícono de la pantalla de inicio (2026-11-27, pedido de Mati): iOS no usa el favicon SVG y, sin un PNG, el iPhone
+// mostraba una «A» en vez del isologo. Todas las páginas lo anuncian y el archivo es un PNG de 180 × 180.
+test('el iPhone tiene el isologo para la pantalla de inicio en todas las páginas', async ({ page }, info) => {
+  test.skip(info.project.name !== 'escritorio', 'no depende del viewport');
+  const png = fs.readFileSync(path.join(RAIZ, 'apple-touch-icon.png'));
+  expect(png.subarray(1, 4).toString()).toBe('PNG');
+  expect([png.readUInt32BE(16), png.readUInt32BE(20)]).toEqual([180, 180]);
+  for (const url of ['/index.html?tabla', '/autos/chery-tiggo-7-pro-phev.html', '/novedades.html', '/quien-hace-esto.html']) {
+    await page.goto(url);
+    await expect(page.locator('link[rel="apple-touch-icon"]'), url).toHaveAttribute('href', '/apple-touch-icon.png');
+    await expect(page.locator('meta[name="apple-mobile-web-app-title"]'), url).toHaveAttribute('content', 'Autograma');
+    await expect(page.locator('link[rel="manifest"]'), url).toHaveAttribute('href', '/manifest.webmanifest');
+  }
+  const r = await page.request.get('/apple-touch-icon.png');
+  expect(r.ok()).toBe(true);
+  // Chrome en Android y en la computadora toma el ícono del manifest: cada uno existe y mide lo que dice.
+  const man = JSON.parse(fs.readFileSync(path.join(RAIZ, 'manifest.webmanifest'), 'utf8'));
+  expect(man.short_name).toBe('Autograma');
+  expect(man.icons.some(i => i.purpose === 'maskable')).toBe(true);
+  for (const ic of man.icons) {
+    const f = fs.readFileSync(path.join(RAIZ, ic.src.slice(1)));
+    expect(`${f.readUInt32BE(16)}x${f.readUInt32BE(20)}`, ic.src).toBe(ic.sizes);
+  }
+});
