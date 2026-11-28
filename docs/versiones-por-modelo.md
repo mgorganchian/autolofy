@@ -20,8 +20,13 @@ versión lleva su precio y las filas que cambian entre una versión y otra. Con 
 - **Versión**: una configuración que la marca vende con nombre propio (`Territory SEL`, `Territory Titanium`). También
   cuenta como versión una que solo cambia el color o un paquete estético, si la marca le da otro nombre en su lista o en
   su ficha (decisión 2). Las versiones para flotas o de plan de ahorro no entran (decisión 3).
-  Su slug es el del modelo más un sufijo: `ford-territory-sel`. Se valida con un test: el slug de una versión siempre
-  arranca con el de su modelo.
+  Su slug es marca-modelo-versión (`ford-territory-sel`) y arranca con la marca del modelo. No tiene que arrancar con
+  el slug de la columna, porque muchas columnas ya nombran una versión (`toyota-corolla-cross-seg-hev`). La versión de
+  referencia conserva el slug de la columna. Un test valida que los slugs sean únicos y no choquen con otro auto.
+- **Una columna, una propulsión** (decisión del 2026-11-27, al arrancar el piloto): las versiones de una columna tienen
+  todas su misma propulsión. Las de otra propulsión del mismo modelo (la Corolla Cross naftera, la Territory naftera) van
+  en una columna aparte, como ya pasa con Tiggo 4 y Tiggo 4 Hybrid. Así los filtros, el Ranking, Similares y Ayudame a
+  elegir siguen funcionando por columna.
 - **Versión de referencia**: la versión que la columna del modelo muestra en la tabla. Cada modelo tiene exactamente
   una, y es **la más completa** (decisión 1). En casi todos los modelos es la tope de gama que la tabla ya muestra, así
   que la tabla no cambia el día que se cargan las versiones.
@@ -29,7 +34,8 @@ versión lleva su precio y las filas que cambian entre una versión y otra. Con 
   las garantías, el origen, el importador, las ventas y el NCAP.
 - **Fila de versión**: un dato que puede cambiar entre versiones. Son el precio, el motor y la potencia, la caja, la
   tracción, el consumo, las llantas, los ADAS, los airbags, la multimedia, el techo, los asientos, las luces y la
-  climatización. La lista cerrada va en `FILAS_DE_VERSION` y se arma en el piloto con lo que muestren las fichas.
+  climatización. La lista cerrada, de 52 filas, es `FILAS_DE_VERSION` en `herramientas-versiones.py`, y se ajusta en el piloto
+  con lo que muestren las fichas. La potencia en CV no está porque se calcula desde la de kW, como en `DATA`.
 
 ## La regla que protege a la regla de oro
 
@@ -39,7 +45,7 @@ que la ficha no lo marque tampoco prueba que no lo tenga. Por eso, en cada versi
 - cada fila de `FILAS_DE_VERSION` se carga de forma explícita con su fuente: un valor, un `NR` con el motivo, o
   `=ref` (ver abajo);
 - `=ref` («igual que la versión de referencia») vale solo cuando la ficha muestra las dos columnas y marcan lo mismo.
-  El test controla que toda celda `=ref` tenga su fila en `datos-fuentes.tsv`;
+  El test controla que toda celda `=ref` tenga su fila en `versiones-fuentes.tsv`;
 - una fila del modelo se hereda sola. Si la ficha de una versión dice otra cosa (por ejemplo otro alto por las llantas),
   esa versión la pisa con su propio valor y su fuente.
 
@@ -106,7 +112,7 @@ que el precio de la versión `ref: true` sea el de la fila de precio de `DATA`.
   existiendo, muestra la versión de referencia y suma la tabla de versiones. Las comparaciones «X vs Y» siguen siendo
   entre modelos.
 - **Base en Neon.** Suma la tabla `version (slug PK, auto_slug FK, nombre, orden, es_referencia)`, con un CHECK que
-  exige que el slug arranque con el del auto y un índice único parcial para una sola referencia por auto. Suma también
+  exige que el slug arranque con la marca del auto y un índice único parcial para una sola referencia por auto. Suma también
   `celda_version (version_slug, fila_id, origen, valor, detalle)` con la misma PK y los mismos CHECK que `celda`, y
   `precio_lista` gana `version_slug`. `db/ida-y-vuelta.mjs` compara además `VERSIONES_PRECIO` y `versiones.json`.
 
@@ -127,7 +133,9 @@ que el precio de la versión `ref: true` sea el de la fila de precio de `DATA`.
    (las páginas de modelo y de versión comparten la carpeta `autos/`).
 3. Cada versión que no es la de referencia tiene en `versiones.json` todas las filas de `FILAS_DE_VERSION`. Que falte
    una hace fallar el test, para que nunca se herede en silencio.
-4. Toda celda nueva tiene su fila en `datos-fuentes.tsv` con el slug de la versión, y `=ref` también la tiene.
+4. Toda celda nueva y todo precio tienen su fila en `versiones-fuentes.tsv`, con el mismo formato que
+   `datos-fuentes.tsv` y el slug de la versión. Es un archivo aparte porque el test de `datos-fuentes.tsv` exige que el
+   slug sea una columna de la tabla. `=ref` también tiene su fila.
 5. Las celdas de versión cumplen las mismas reglas que `DATA`: los prefijos con `|`, los centinelas exactos y el
    castellano en `Sí (…)`.
 6. Cambiar de versión en una columna no deja ninguna celda debajo de otro auto (lo mismo que ya controla `ux.spec.js`).
