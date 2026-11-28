@@ -156,8 +156,11 @@ que el precio de la versión `ref: true` sea el de la fila de precio de `DATA`.
 - **Etapa 2 (2026-11-28):** nombre y precio de 198 versiones de otros 83 modelos, buscadas por 12 agentes, una tanda por grupo de
   marcas. Una versión con solo el precio lleva `pend` («equipamiento pendiente») y no está en `versiones.json`: la herramienta acepta
   una versión con las 52 filas o sin ninguna. La página muestra «Desde» en el encabezado y la lista de versiones en la ficha.
-  Quedaron sin buscar o sin precio: Audi, Volvo, Land Rover, Lexus y Tesla (sus sitios bloquean `curl`; hay que leerlos con el
-  navegador), Hyundai (Creta, Santa Fe y Tucson HEV: hoy no publica precios) y las versiones de MG que solo da su sitio. Tres
+  Los sitios que bloquean `curl` se leyeron con el navegador integrado el mismo día: Tesla suma el Model Y Premium RWD y los
+  Model 3 RWD y Performance AWD, y MG confirma con su sitio los Comfort del MG 3 HEV y del ZS HEV. **Audi** publica solo el
+  «Desde» de cada modelo sin nombrar la versión y su configurador no da precios; **Volvo** y **Land Rover** no publican precios;
+  **Lexus** tiene una sola versión de la propulsión de cada columna; el **MG ZS** naftero dice «Próximamente». Hyundai (Creta,
+  Santa Fe y Tucson HEV) hoy no publica precios. Una versión que ya tiene sus filas y vuelve con solo el precio las conserva. Tres
   Mercedes quedaron afuera a propósito: el A 200 no es versión del AMG A 45 S, ni el GLC SUV del GLC Coupé, ni el GLC 43 Coupé del
   AMG GLC 43 (submarca o carrocería aparte, como el Abarth).
 

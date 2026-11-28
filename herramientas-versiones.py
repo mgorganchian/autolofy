@@ -227,12 +227,16 @@ def main():
 
     precios, celdas_json, fuentes = leer_existente(html)
     nuevas = set(versiones)
+    viejas_fuentes = fuentes
     fuentes = [f for f in fuentes if f[0] not in nuevas]
     modelos_tocados = {v['modelo'] for v in versiones.values()}
     for modelo in modelos_tocados:
         lista = [x for x in precios.get(modelo, []) if x['v'] not in nuevas]
         for slug, v in versiones.items():
             if v['modelo'] == modelo:
+                if slug != modelo and not v['celdas'] and slug in celdas_json:
+                    v['celdas'] = celdas_json[slug]['celdas']  # trae solo el precio: conserva sus filas de versión
+                    v['fuentes'] += [f for f in viejas_fuentes if f[0] == slug and f[1] != FILA_PRECIO]
                 pend = slug != modelo and not v['celdas']
                 lista.append({'v': slug, 'n': v['nombre'], 'p': v['precio'],
                               **({'ref': True} if slug == modelo else {}), **({'pend': 1} if pend else {})})
