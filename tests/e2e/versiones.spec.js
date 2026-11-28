@@ -48,6 +48,8 @@ test('los slugs de versión son únicos, arrancan con la marca y no chocan con o
       expect(x.v).toMatch(/^[a-z0-9]+(-[a-z0-9]+)*$/);
       expect(x.v.startsWith(modelo.split('-')[0] + '-'), x.v).toBe(true);
       expect(SLUGS.includes(x.v), `${x.v} es otro auto de la tabla`).toBe(false);
+      // Etapa 2: una versión con solo el precio lleva pend y no tiene filas (nunca hereda las de la columna).
+      if (x.pend) { expect(x.pend, x.v).toBe(1); expect(JS.versiones[x.v], `${x.v} pend con filas`).toBeFalsy(); continue; }
       expect(JS.versiones[x.v], `${x.v} no está en versiones.json`).toBeTruthy();
       expect(JS.versiones[x.v].modelo).toBe(modelo);
       expect(JS.versiones[x.v].nombre).toBe(x.n);
@@ -80,4 +82,20 @@ test('cada precio y cada celda de versión tiene su fuente https registrada', ()
   };
   for (const lista of Object.values(PRECIOS)) for (const x of lista) esperar(x.v, 'Precio de lista', x.p);
   for (const [v, { celdas }] of Object.entries(JS.versiones)) for (const [f, c] of Object.entries(celdas)) esperar(v, f, c);
+});
+
+// Etapa 2: debajo del precio de cada modelo con versiones va «Desde» con la más barata, y su ficha las lista todas.
+test('el encabezado dice desde cuánto y cuántas versiones, y la ficha las lista de la más barata a la más cara', async ({ page }) => {
+  const [modelo, lista] = Object.entries(PRECIOS).find(([, l]) => l.length > 2) || [];
+  test.skip(!modelo, 'no hay versiones cargadas');
+  await page.goto('/index.html?tabla');
+  const desde = page.locator('th[data-idx="' + SLUGS.indexOf(modelo) + '"] .precio-desde');
+  await expect(desde).toContainText(lista.length + ' versiones');
+  await page.goto('/index.html?auto=' + modelo);
+  const filasFicha = page.locator('.ficha-versiones tbody tr');
+  await expect(filasFicha).toHaveCount(lista.length);
+  await expect(page.locator('.ficha-versiones tr.ref')).toHaveCount(1);
+  const precios = await page.evaluate(m => versionesDe(SLUG_AUTO.indexOf(m)).map(x => x.u), modelo);
+  const conPrecio = precios.filter(u => u != null);
+  expect(conPrecio, 'de la más barata a la más cara').toEqual([...conPrecio].sort((a, b) => a - b));
 });

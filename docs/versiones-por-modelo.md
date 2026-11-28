@@ -150,6 +150,17 @@ que el precio de la versión `ref: true` sea el de la fila de precio de `DATA`.
 | 3. Equipamiento por versión | Las filas de versión desde las fichas con columnas por versión | 3 a 5 semanas |
 | 4. Interfaz | El selector en la tabla, Versiones en la ficha y Ayudame a elegir por versión | 1 a 2 semanas, en paralelo con la 3 |
 
+## Estado
+
+- **Etapa 1 (piloto, PR #228):** 35 versiones de 14 modelos con precio y las 52 filas de versión.
+- **Etapa 2 (2026-11-28):** nombre y precio de 198 versiones de otros 83 modelos, buscadas por 12 agentes, una tanda por grupo de
+  marcas. Una versión con solo el precio lleva `pend` («equipamiento pendiente») y no está en `versiones.json`: la herramienta acepta
+  una versión con las 52 filas o sin ninguna. La página muestra «Desde» en el encabezado y la lista de versiones en la ficha.
+  Quedaron sin buscar o sin precio: Audi, Volvo, Land Rover, Lexus y Tesla (sus sitios bloquean `curl`; hay que leerlos con el
+  navegador), Hyundai (Creta, Santa Fe y Tucson HEV: hoy no publica precios) y las versiones de MG que solo da su sitio. Tres
+  Mercedes quedaron afuera a propósito: el A 200 no es versión del AMG A 45 S, ni el GLC SUV del GLC Coupé, ni el GLC 43 Coupé del
+  AMG GLC 43 (submarca o carrocería aparte, como el Abarth).
+
 ## Decisiones (respuestas de Sebastián del 2026-11-27)
 
 1. **Versión de referencia de la tabla: la más completa.** Se mide contando los ✓ de cada versión en las filas de

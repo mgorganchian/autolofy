@@ -13,7 +13,9 @@ Cada TANDA.tsv tiene una fila por celda, sin encabezado (las líneas con # se sa
   Las demás arrancan con la marca del modelo (`toyota-corolla-cross-xei-hev`).
 - fila «Precio de lista»: el precio de la versión, con el formato de una celda de DATA. Para la de referencia
   tiene que ser idéntico a la celda de precio de DATA; es la única fila que la de referencia lleva en la tanda.
-- las demás filas son las de FILAS_DE_VERSION: una versión que no es la de referencia tiene que traerlas todas.
+- las demás filas son las de FILAS_DE_VERSION: una versión que no es la de referencia tiene que traerlas todas, o
+  ninguna (etapa 2: solo el precio). Una versión sin filas queda con `pend` («equipamiento pendiente») en
+  VERSIONES_PRECIO y no entra en versiones.json: nunca hereda las filas de la columna.
   `=ref` dice «igual que la versión de referencia» y solo vale si la ficha muestra las dos columnas iguales.
 - tipo: `dato` o `motivo de s/d`; sha256: el hash del archivo o «leída en línea, sin hash»; fecha: AAAA-MM-DD.
 
@@ -174,7 +176,7 @@ def validar(tanda, filas_data, slugs):
                 errores.append(f'{slug}: el precio de la referencia tiene que ser idéntico a la celda de DATA')
             continue
         faltan = [f for f in FILAS_DE_VERSION if f not in v['celdas']]
-        if faltan:
+        if faltan and v['celdas']:
             errores.append(f'{slug}: faltan {len(faltan)} filas de versión (nunca se heredan): {", ".join(faltan[:5])}…')
     return versiones, errores
 
@@ -231,8 +233,11 @@ def main():
         lista = [x for x in precios.get(modelo, []) if x['v'] not in nuevas]
         for slug, v in versiones.items():
             if v['modelo'] == modelo:
-                lista.append({'v': slug, 'n': v['nombre'], 'p': v['precio'], **({'ref': True} if slug == modelo else {})})
-                if slug != modelo:
+                pend = slug != modelo and not v['celdas']
+                lista.append({'v': slug, 'n': v['nombre'], 'p': v['precio'],
+                              **({'ref': True} if slug == modelo else {}), **({'pend': 1} if pend else {})})
+                celdas_json.pop(slug, None)
+                if slug != modelo and not pend:
                     celdas_json[slug] = {'modelo': modelo, 'nombre': v['nombre'], 'celdas': v['celdas']}
                 fuentes.extend(v['fuentes'])
         if sum(1 for x in lista if x.get('ref')) != 1:
@@ -246,7 +251,7 @@ def main():
         k = slugs.index(modelo)
         ref = tildes(None, k, filas_data)
         for x in precios[modelo]:
-            if x.get('ref'):
+            if x.get('ref') or x.get('pend'):
                 continue
             t = tildes(celdas_json[x['v']], k, filas_data)
             nr_ref = sum(filas_data[f][k].startswith('NR:') or filas_data[f][k] == 'ND' for f in FILAS_DE_VERSION)
