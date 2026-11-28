@@ -56,7 +56,7 @@ El 2026-10-29 (pedido de Mati) se sumaron **73 de los 100 modelos más patentado
 Todo vive en un único `index.html` autocontenido: sin CSS, JS ni imágenes externas.
 Ese principio es deliberado — **no agregar dependencias externas ni partir el
 archivo.** Las únicas excepciones, servidas junto a la página y bajadas cuando hacen
-falta: `fotos/` (con `fotos/mini/`, las miniaturas del encabezado), `logos/`, `og.jpg`,
+falta: `fotos/` (con `fotos/mini/`, las miniaturas del encabezado), `logos/`, `og.jpg`, `apple-touch-icon.png`, `manifest.webmanifest` y sus `icono-*.png`,
 `fichas-fuentes.tsv`, `logos-fuentes.tsv`, `concesionarios.json` y `/api/dolar` (la cotización del
 día, del mismo sitio; ver "Precios en pesos y dólar BNA").
 **Excepción de JS externo: Microsoft Clarity** (2026-11-04, decisión de Mati): el script de
@@ -66,6 +66,8 @@ sección «Privacidad» de `quien-hace-esto` lo cuenta. No se suma otra medició
 `sitemap.xml` y `robots.txt` son páginas generadas para Google (ver "Páginas por auto").
 
 **Marca de visitante en Clarity** (2026-11-09, pedido de Mati): abrir el sitio con `?soy=<nombre>` (por ejemplo `?soy=mati` o `?soy=sebas`) guarda el nombre en `localStorage` (`autolofy_soy`) y lo manda a Clarity como etiqueta `visitante` en cada visita de ese navegador; `?soy=` vacío lo borra. El script va pegado al de Clarity en `index.html`, `novedades.html`, `quien-hace-esto.html` y la constante `CLARITY` de `herramientas-paginas.py`; el parámetro se saca de la URL para que no viaje al compartir.
+
+**Ícono de la pantalla de inicio** (2026-11-27, pedido de Mati: el iPhone mostraba una «A» en vez del isologo): iOS no usa el favicon SVG, así que todas las páginas (`index.html` y las plantillas de `herramientas-paginas.py`) anuncian `apple-touch-icon.png` (180 × 180) y `apple-mobile-web-app-title` «Autograma»; Chrome en Android y en la computadora toma el ícono de `manifest.webmanifest` (`icono-192.png`, `icono-512.png` y `icono-maskable-512.png`, con el dibujo al 80% para las formas adaptables de Android). Los PNG los arma `node herramientas-icono.js` desde `marca/icono-oscuro.svg`, sin cambiar el dibujo (al de Apple solo le saca el redondeo del fondo, porque iOS redondea solo). Si cambia el isologo, se vuelve a correr. `paginas.spec.js` lo cubre.
 
 El contexto largo (el *porqué* de cada decisión, orden de columnas, estado del research,
 metodología de búsqueda de fichas) está en **`CONTEXTO_PROYECTO_AUTOLOFY.md`**.
