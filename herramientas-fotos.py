@@ -504,8 +504,12 @@ def fuente_portada(html, slug, nombre):
     filas = [l.split('\t') for l in open(PORTADAS, encoding='utf-8').read().split('\n')]
     c = next((x for x in reversed(filas) if es_fila_portada(x, nombre)), None)
     if not c: sys.exit(f'{slug}: la portada no tiene fila en fichas-fuentes.tsv')
+    # Un crédito que es solo la nota del espejado no dice de quién es la foto: se le antepone el de la fuente.
+    nota = cred if cred and not cred.startswith('Foto:') else ''
+    if nota: cred = ''
+    def con_nota(c_): return f'{c_} · {nota[0].lower() + nota[1:]}' if nota else c_
     if len(c) >= 5 and c[4].startswith('https://commons.wikimedia.org/'):
-        return cred or f'Foto: {c[3]} · {c[2]} · Wikimedia Commons', c[1:5]
+        return con_nota(cred or f'Foto: {c[3]} · {c[2]} · Wikimedia Commons'), c[1:5]
     url = next((x for x in c[1:] if x.startswith('https://')), None) or next(
         (re.search(r'https://\S+', x).group(0) for x in c[1:] if re.search(r'https://\S+', x)), None)
     if not url:
@@ -518,7 +522,7 @@ def fuente_portada(html, slug, nombre):
         ini = html.index('const CARS = [')
         b = re.search(r'name:"%s"[^}]*brand:"([^"]+)"' % re.escape(nombre), html[ini:]).group(1)
         marca = f'{b} Argentina'
-    return cred or f'Foto: {marca} · {LICENCIA_OFICIAL} · sitio oficial', [url, LICENCIA_OFICIAL, marca, url]
+    return con_nota(cred or f'Foto: {marca} · {LICENCIA_OFICIAL} · sitio oficial'), [url, LICENCIA_OFICIAL, marca, url]
 
 
 ESPEJADA = 'imagen espejada'
@@ -593,7 +597,8 @@ def letras(slug, cajas):
     actual.save(ruta, 'JPEG', quality=85, optimize=True, progressive=True)
     _rehacer_chicas(slug)
     viejo = cred.group(1)
-    nuevo = re.sub(ESPEJADA, f'{ESPEJADA} con las {LETRAS}', viejo, count=1, flags=re.I)
+    # Conserva la mayúscula de «Imagen espejada» cuando el crédito empieza con ella.
+    nuevo = re.sub(ESPEJADA, lambda mo: f'{mo.group(0)} con las {LETRAS}', viejo, count=1, flags=re.I)
     html = html[:m.start()] + m.group(0).replace(cred.group(0), f' data-credito="{nuevo}"', 1) + html[m.end():]
     open(INDEX, 'w', encoding='utf-8', newline='\n').write(html)
     print(f'{slug}: {len(cajas.split(";"))} zonas al derecho')
