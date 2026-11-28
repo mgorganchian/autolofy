@@ -1,0 +1,13 @@
+{
+  "name": "Autograma: comparativo de autos 0 km en Argentina",
+  "short_name": "Autograma",
+  "start_url": "/",
+  "display": "browser",
+  "background_color": "#0B110E",
+  "theme_color": "#0B110E",
+  "icons": [
+    { "src": "/icono-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "/icono-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "/icono-maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}

@@ -127,7 +127,16 @@ test('el iPhone tiene el isologo para la pantalla de inicio en todas las página
     await page.goto(url);
     await expect(page.locator('link[rel="apple-touch-icon"]'), url).toHaveAttribute('href', '/apple-touch-icon.png');
     await expect(page.locator('meta[name="apple-mobile-web-app-title"]'), url).toHaveAttribute('content', 'Autograma');
+    await expect(page.locator('link[rel="manifest"]'), url).toHaveAttribute('href', '/manifest.webmanifest');
   }
   const r = await page.request.get('/apple-touch-icon.png');
   expect(r.ok()).toBe(true);
+  // Chrome en Android y en la computadora toma el ícono del manifest: cada uno existe y mide lo que dice.
+  const man = JSON.parse(fs.readFileSync(path.join(RAIZ, 'manifest.webmanifest'), 'utf8'));
+  expect(man.short_name).toBe('Autograma');
+  expect(man.icons.some(i => i.purpose === 'maskable')).toBe(true);
+  for (const ic of man.icons) {
+    const f = fs.readFileSync(path.join(RAIZ, ic.src.slice(1)));
+    expect(`${f.readUInt32BE(16)}x${f.readUInt32BE(20)}`, ic.src).toBe(ic.sizes);
+  }
 });
