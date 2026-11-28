@@ -219,7 +219,7 @@ def pagina(i, data, car, slug, credito, colores, videos, vs=(), extra=None):
     if usd and car['status'] == 'venta':
         ld['offers'] = {'@type': 'Offer', 'price': usd, 'priceCurrency': 'USD', 'availability': 'https://schema.org/InStock'}
     return f'''<!doctype html>
-<html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><link rel="icon" href="/marca/icono-oscuro.svg" type="image/svg+xml"><link rel="apple-touch-icon" href="/apple-touch-icon.png"><meta name="apple-mobile-web-app-title" content="Autograma">
 <title>{e(titulo)}</title>
 <meta name="description" content="{e(desc)}">
 <link rel="canonical" href="{url}">
@@ -306,7 +306,7 @@ def novedades(cars, slugs):
     items.sort(key=lambda x: x['fecha'], reverse=True)
     e = H.escape
     pagina_html = f'''<!doctype html>
-<html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><link rel="icon" href="/marca/icono-oscuro.svg" type="image/svg+xml"><link rel="apple-touch-icon" href="/apple-touch-icon.png"><meta name="apple-mobile-web-app-title" content="Autograma">
 <title>Novedades de Autograma: precios, promociones y autos nuevos</title>
 <meta name="description" content="Bajas y subas de precio de lista, promociones vigentes de cada marca y autos nuevos en Autograma, el comparativo de autos 0 km en Argentina.">
 <link rel="canonical" href="{SITIO}/novedades">
@@ -438,7 +438,7 @@ def pagina_vs(a, b, data, cars, slugs, creditos):
     fig = lambda k: (f'<figure><img src="{img_auto(slugs[k])}" alt="{e(cars[k]["name"])}" width="900" height="570">'
                      f'<figcaption><b>{e(cars[k]["name"])}</b>' + (f'<br>{e(creditos[k])}' if creditos[k] else '') + '</figcaption></figure>')
     return f'''<!doctype html>
-<html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><link rel="icon" href="/marca/icono-oscuro.svg" type="image/svg+xml"><link rel="apple-touch-icon" href="/apple-touch-icon.png"><meta name="apple-mobile-web-app-title" content="Autograma">
 <title>{e(titulo)}</title>
 <meta name="description" content="{e(desc)}">
 <link rel="canonical" href="{url}">
@@ -482,7 +482,7 @@ def quien():
     arman los datos. En primera persona, como lo contó el dueño del sitio. Solo afirma lo que es cierto
     del sitio: si se suma publicidad u otra medición de visitas además de Clarity, hay que cambiar "Privacidad"."""
     return f'''<!doctype html>
-<html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><link rel="icon" href="/marca/icono-oscuro.svg" type="image/svg+xml"><link rel="apple-touch-icon" href="/apple-touch-icon.png"><meta name="apple-mobile-web-app-title" content="Autograma">
 <title>Quién hace Autograma</title>
 <meta name="description" content="Un comparativo hecho por un particular, sin relación comercial con marcas ni concesionarios: por qué existe y cómo se arman los datos.">
 <link rel="canonical" href="{SITIO}/quien-hace-esto">
