@@ -551,7 +551,11 @@ sí quedan en inglés, porque no muestran la palabra. Se coló con `YES` dos vec
   **los escribe `herramientas-versiones.py`**, nunca a mano. Una versión que no es la de la tabla trae **todas** las filas de
   versión: nada se hereda de la columna. `=ref` («igual que la versión de la tabla») solo si la ficha muestra las dos columnas
   iguales. `tests/e2e/versiones.spec.js` lo cubre.
-- El piloto (los 25 más vendidos) cargó los datos; la interfaz (selector, «desde $», versiones en la ficha) todavía no los usa.
+- El piloto (los 25 más vendidos) cargó nombre, precio y las 52 filas de 35 versiones. La **etapa 2** (2026-11-28) sumó el nombre y el
+  precio de 198 versiones de otros 83 modelos, **sin equipamiento**: llevan `pend` en `VERSIONES_PRECIO` y no están en `versiones.json`
+  (una versión trae las 52 filas o ninguna, nunca algunas). La página muestra «Desde … · N versiones» debajo del precio de cada auto
+  (`pintarDesde`) y la lista de versiones con su precio en la ficha (`versionesFichaHTML`); el selector por versión es la etapa 4.
+  Los precios de versión pueden ser de una lista más nueva que la celda de la tabla (cada uno dice su lista).
 
 ## Ciclos, potencia total y garantía (2026-10-04)
 
