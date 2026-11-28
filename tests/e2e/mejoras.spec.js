@@ -697,11 +697,14 @@ test('precios en pesos: la lista en pesos entra en las franjas y los de dólares
     // El rango del deslizador que contiene su precio pasado a dólares.
     const presu = Math.floor(PRECIO_CMP[i] / 1000) * 1000 + '-' + Math.ceil(PRECIO_CMP[i] / 1000) * 1000;
     const r = elegirCalcular({ presu, plazas: '5', uso: 'mixto', enchufe: 'nose', carro: 'sedan,hatch,coupe' });
-    return { i, usd: SIM_PRECIO[i], pesos: SIM_PESOS[i], cmp: PRECIO_CMP[i], venta: DOLAR_BNA.venta, entra: r.todos.includes(i) };
+    const lista = +FILA_PRECIO_DATOS[i + 1].replace(/^DET:/, '').split('|')[0].replace(/[$.]/g, '');
+    return { i, lista, usd: SIM_PRECIO[i], pesos: SIM_PESOS[i], cmp: PRECIO_CMP[i], venta: DOLAR_BNA.venta, entra: r.todos.includes(i) };
   });
   expect(d.usd).toBeNull();
-  expect(d.pesos).toBe(45270000);
-  expect(d.cmp).toBe(Math.round(45270000 / d.venta));
+  // La celda del Cronos es la lista en pesos (no se escribe la cifra acá: cambia cada mes).
+  expect(d.lista).toBeGreaterThan(0);
+  expect(d.pesos).toBe(d.lista);
+  expect(d.cmp).toBe(Math.round(d.lista / d.venta));
   expect(d.entra).toBe(true);
   // Debajo del nombre (issue #89), el precio en dólares lleva su equivalente en pesos y el de pesos, su equivalente en dólares al BNA.
   const usdIdx = await page.evaluate(() => SIM_PRECIO.findIndex(p => p != null));

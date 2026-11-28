@@ -199,6 +199,12 @@
     "moneda": "USD",
     "monto": 41800,
     "version": "Tiggo 8 Pro 290T 1.6T 7DCT Luxury, única versión. Lista oficial Chery N°14 del 06/10/2026"
+   },
+   {
+    "desde": "2026-11-04",
+    "moneda": "USD",
+    "monto": 42800,
+    "version": "Tiggo 8 Pro 290T 1.6T 7DCT Luxury, única versión. Lista oficial Chery N°15 del 04/11/2026"
    }
   ],
   "gwm-haval-h6-pro-hev": [
@@ -279,6 +285,12 @@
     "moneda": "USD",
     "monto": 74990,
     "version": "S7 PHEV, tope de gama; precio de preventa. Precio de preventa de GAC Motor Argentina de junio de 2026. La prensa informa un precio de lista posterior de USD 79."
+   },
+   {
+    "desde": "2026-11-28",
+    "moneda": "USD",
+    "monto": 79990,
+    "version": "S7 AWD PHEV, única versión. Precio de lista que publica GAC Motor Argentina en la página del modelo (gacmotorargentina.com), consultada el 28/11/2026"
    }
   ],
   "kaiyi-x7": [
@@ -343,6 +355,12 @@
     "moneda": "USD",
     "monto": 35800,
     "version": "Arrizo 8 Hybrid 1.5T PHEV Luxury"
+   },
+   {
+    "desde": "2026-11-04",
+    "moneda": "USD",
+    "monto": 36800,
+    "version": "Arrizo 8 Hybrid 1.5T PHEV Luxury. Lista oficial Chery N°15 del 04/11/2026"
    }
   ],
   "mg-cyberster": [
@@ -375,6 +393,12 @@
     "moneda": "USD",
     "monto": 31000,
     "version": "Tiggo 4 Hybrid 1.5L DHT HEV Premium, única versión. Lista oficial Chery N°14 del 06/10/2026"
+   },
+   {
+    "desde": "2026-11-04",
+    "moneda": "USD",
+    "monto": 32000,
+    "version": "Tiggo 4 Hybrid 1.5L DHT HEV Premium, única versión. Lista oficial Chery N°15 del 04/11/2026"
    }
   ],
   "chery-tiggo-4-pro": [
@@ -391,6 +415,12 @@
     "moneda": "USD",
     "monto": 29500,
     "version": "Tiggo 7 Pro Hybrid 1.5T MHEV Premium. Lista oficial Chery N°14 del 06/10/2026"
+   },
+   {
+    "desde": "2026-11-04",
+    "moneda": "USD",
+    "monto": 30500,
+    "version": "Tiggo 7 Pro Hybrid 1.5T MHEV Premium. Lista oficial Chery N°15 del 04/11/2026"
    }
   ],
   "chery-tiggo-7-pro-phev": [
@@ -399,6 +429,12 @@
     "moneda": "USD",
     "monto": 36500,
     "version": "Tiggo 7 Pro Hybrid 1.5T PHEV Premium"
+   },
+   {
+    "desde": "2026-11-04",
+    "moneda": "USD",
+    "monto": 37500,
+    "version": "Tiggo 7 Pro Hybrid 1.5T PHEV Premium. Lista oficial Chery N°15 del 04/11/2026"
    }
   ],
   "byd-shark": [
@@ -789,6 +825,12 @@
     "moneda": "USD",
     "monto": 34000,
     "version": "Empow, única versión. GAC Motor Argentina no publica precios en su sitio. Precio de lanzamiento según Autoweb (19/02/2026). La lista de La Nación del 15/09/2026"
+   },
+   {
+    "desde": "2026-11-28",
+    "moneda": "USD",
+    "monto": 33000,
+    "version": "Empow GE, única versión. Precio de lista que publica GAC Motor Argentina en la página del modelo (gacmotorargentina.com), consultada el 28/11/2026"
    }
   ],
   "gac-gs3-emzoom": [
@@ -797,6 +839,12 @@
     "moneda": "USD",
     "monto": 36500,
     "version": "GS3 Emzoom GL R Style. GAC Motor Argentina no publica precios en su sitio. Autoweb (11/11/2025, lanzamiento): GB USD 31.900, GL Plus USD 34.000 y GL R Style USD"
+   },
+   {
+    "desde": "2026-11-28",
+    "moneda": "USD",
+    "monto": 36000,
+    "version": "GS3 Emzoom R Style, la versión más cara (la GB cuesta USD 31.900 y la GL+ USD 34.000). Precio de lista que publica GAC Motor Argentina en la página del modelo ("
    }
   ],
   "gac-gs8": [
@@ -947,6 +995,12 @@
     "moneda": "ARS",
     "monto": 45270000,
     "version": "Cronos Precision 1.3 CVT, la versión más cara de la gama. Precio sugerido que publica el configurador oficial de cronos.fiat.com.ar (consultado el 28/10/2026; «"
+   },
+   {
+    "desde": "2026-11-01",
+    "moneda": "ARS",
+    "monto": 46680000,
+    "version": "Cronos Precision 1.3 CVT, la versión más cara de la gama; «Lista de precios sugerida al público» de Stellantis Argentina de noviembre de 2026 (vigencia a partir"
    }
   ],
   "ford-ranger-ltd-plus-v6": [
@@ -969,6 +1023,12 @@
     "moneda": "ARS",
     "monto": 47420000,
     "version": "208 GT T200 AM27, la versión más cara del 208 en la «Lista de precios sugerida al público» de Stellantis Argentina de octubre de 2026 (vigencia a partir del 01/"
+   },
+   {
+    "desde": "2026-11-01",
+    "moneda": "ARS",
+    "monto": 48900000,
+    "version": "208 GT T200 AM27, la versión más cara del 208; peugeot.com.ar no publica precios por versión; «Lista de precios sugerida al público» de Stellantis Argentina de "
    }
   ],
   "volkswagen-amarok-v6-black-style": [
@@ -977,6 +1037,12 @@
     "moneda": "ARS",
     "monto": 93711100,
     "version": "Black Style V6 AT 4x4 G2, la versión más cara de la lista de la Amarok; lista de precios sugeridos a público de Volkswagen Argentina S.A. vigente del 01/10/2026"
+   },
+   {
+    "desde": "2026-11-01",
+    "moneda": "ARS",
+    "monto": 94179650,
+    "version": "Black Style V6 AT 4x4 G2, la versión más cara de la Amarok; lista de precios sugeridos a público de Volkswagen Argentina S.A. vigente del 01/11/2026 al 30/11/20"
    }
   ],
   "volkswagen-tera-outfit": [
@@ -985,6 +1051,12 @@
     "moneda": "ARS",
     "monto": 48881950,
     "version": "Outfit 170TSI AT, la versión más cara del Tera; lista de precios sugeridos a público de Volkswagen Argentina S.A. vigente del 01/10/2026 al 31/10/2026, IVA incl"
+   },
+   {
+    "desde": "2026-11-01",
+    "moneda": "ARS",
+    "monto": 49126350,
+    "version": "Outfit 170TSI AT, la versión más cara del Tera; lista de precios sugeridos a público de Volkswagen Argentina S.A. vigente del 01/11/2026 al 30/11/2026, IVA incl"
    }
   ],
   "chevrolet-tracker-rs": [
@@ -1009,6 +1081,12 @@
     "moneda": "ARS",
     "monto": 49502950,
     "version": "Highline 170TSI AT, la versión más cara del Polo; lista de precios sugeridos a público de Volkswagen Argentina S.A. vigente del 01/10/2026 al 31/10/2026, IVA in"
+   },
+   {
+    "desde": "2026-11-01",
+    "moneda": "ARS",
+    "monto": 49750450,
+    "version": "Highline 170TSI AT, la versión más cara del Polo; lista de precios sugeridos a público de Volkswagen Argentina S.A. vigente del 01/11/2026 al 30/11/2026, IVA in"
    }
   ],
   "renault-kwid-iconic-outsider": [
@@ -1025,6 +1103,12 @@
     "moneda": "ARS",
     "monto": 69346850,
     "version": "Highline Bi Tono 250TSI AT, la versión más cara del Taos; lista de precios sugeridos a público de Volkswagen Argentina S.A. vigente del 01/10/2026 al 31/10/2026"
+   },
+   {
+    "desde": "2026-11-01",
+    "moneda": "ARS",
+    "monto": 69693600,
+    "version": "Highline Bi Tono 250TSI AT, la versión más cara del Taos; lista de precios sugeridos a público de Volkswagen Argentina S.A. vigente del 01/11/2026 al 30/11/2026"
    }
   ],
   "chevrolet-onix-rs": [
@@ -1033,6 +1117,12 @@
     "moneda": "ARS",
     "monto": 39568900,
     "version": "Onix RS Turbo AT (1.0T RS AT), la versión más cara del Onix 2027; precio sugerido al público publicado en chevrolet.com.ar, válido del 01/10/2026 al 31/10/2026 "
+   },
+   {
+    "desde": "2026-11-01",
+    "moneda": "ARS",
+    "monto": 40764900,
+    "version": "Onix RS Turbo AT (1.0T RS AT), la versión más cara del Onix 2027; precio sugerido al público publicado en chevrolet.com.ar, válido del 01/11/2026 al 30/11/2026 "
    }
   ],
   "renault-kardian-iconic": [
@@ -1040,6 +1130,12 @@
     "desde": null,
     "moneda": "ARS",
     "monto": 49910000,
+    "version": "Iconic 200 EDC (1.0 turbo TCe de 120 cv, doble embrague EDC de 6 marchas), la más cara de las tres versiones. Precio sugerido al público con IVA que publica ren"
+   },
+   {
+    "desde": "2026-11-03",
+    "moneda": "ARS",
+    "monto": 50660000,
     "version": "Iconic 200 EDC (1.0 turbo TCe de 120 cv, doble embrague EDC de 6 marchas), la más cara de las tres versiones. Precio sugerido al público con IVA que publica ren"
    }
   ],
@@ -1057,6 +1153,12 @@
     "moneda": "ARS",
     "monto": 54881550,
     "version": "Outfit 200TSI AT (en el configurador, «Highline Outfit 200 TSI»), la versión más cara del Nivus; lista de precios sugeridos a público de Volkswagen Argentina S."
+   },
+   {
+    "desde": "2026-11-01",
+    "moneda": "ARS",
+    "monto": 55155950,
+    "version": "Outfit 200TSI AT (en el configurador, «Highline Outfit 200 TSI»), la versión más cara del Nivus; lista de precios sugeridos a público de Volkswagen Argentina S."
    }
   ],
   "fiat-strada-ultra": [
@@ -1065,6 +1167,12 @@
     "moneda": "ARS",
     "monto": 52750000,
     "version": "Strada Ultra T200 CD CVT (cabina doble, año modelo 2027), la versión más cara de la cabina doble, que es la carrocería más patentada. Precio sugerido que public"
+   },
+   {
+    "desde": "2026-11-01",
+    "moneda": "ARS",
+    "monto": 54340000,
+    "version": "Strada Ultra T200 CD CVT, la versión más cara de la cabina doble, que es la carrocería más patentada; «Lista de precios sugerida al público» de Stellantis Argen"
    }
   ],
   "fiat-argo-drive-cvt": [
@@ -1073,6 +1181,12 @@
     "moneda": "ARS",
     "monto": 37730000,
     "version": "Argo Drive 1.3 CVT (año modelo 2026), la más cara de las dos versiones que se venden. Precio sugerido que publica el configurador oficial de argo.fiat.com.ar (c"
+   },
+   {
+    "desde": "2026-11-01",
+    "moneda": "ARS",
+    "monto": 38300000,
+    "version": "Argo Drive 1.3L CVT, la más cara de las dos versiones que se venden; «Lista de precios sugerida al público» de Stellantis Argentina de noviembre de 2026 (vigenc"
    }
   ],
   "chevrolet-s10-high-country": [
@@ -1081,6 +1195,12 @@
     "moneda": "ARS",
     "monto": 74591900,
     "version": "S10 High Country (CD 2.8 TD 4x4 AT), la versión más cara de la S10 2027 y de cabina doble, la carrocería más patentada; precio sugerido al público («desde») pub"
+   },
+   {
+    "desde": "2026-11-01",
+    "moneda": "ARS",
+    "monto": 75714900,
+    "version": "S10 High Country (CD 2.8 TD 4x4 AT), la versión más cara de la S10 2027 y de cabina doble, la carrocería más patentada; precio sugerido al público publicado en "
    }
   ],
   "fiat-toro-volcano-td": [
@@ -1089,6 +1209,12 @@
     "moneda": "ARS",
     "monto": 64150000,
     "version": "Toro Volcano TD450 AT9 4X4 (Volcano 2.2 turbodiésel, año modelo 2027), la versión más cara de la gama. Precio sugerido que publica el configurador oficial de to"
+   },
+   {
+    "desde": "2026-11-01",
+    "moneda": "ARS",
+    "monto": 66080000,
+    "version": "Toro Volcano 2.2TD AT9 4X4, la versión más cara de la gama; «Lista de precios sugerida al público» de Stellantis Argentina de noviembre de 2026 (vigencia a part"
    }
   ],
   "citroen-c3-you": [
@@ -1097,6 +1223,12 @@
     "moneda": "ARS",
     "monto": 39330000,
     "version": "C3 T200 FEEL PK YOU! MY26, la versión más cara del C3 en la «Lista de precios sugerida al público» de Stellantis Argentina de octubre de 2026 (vigencia a partir"
+   },
+   {
+    "desde": "2026-11-01",
+    "moneda": "ARS",
+    "monto": 38920000,
+    "version": "C3 T200 FEEL PK YOU! MY27, la versión más cara del C3; el bitono es opcional; «Lista de precios sugerida al público» de Stellantis Argentina de noviembre de 202"
    }
   ],
   "toyota-corolla-hev-seg": [
@@ -1113,6 +1245,12 @@
     "moneda": "ARS",
     "monto": 64580000,
     "version": "Renegade Willys 1.3T AT9 4X4 (Nuevo Renegade 2027), la versión más cara del Renegade. jeep.com.ar no publica precios: el valor sale del servicio de precios de S"
+   },
+   {
+    "desde": "2026-11-01",
+    "moneda": "ARS",
+    "monto": 66520000,
+    "version": "Renegade Willys 1.3T AT9 4X4, la versión más cara del Renegade (precio sugerido de contado, flete bonificado, sin gastos administrativos ni patentamiento); «Lis"
    }
   ],
   "citroen-basalt-dark-edition": [
@@ -1121,6 +1259,12 @@
     "moneda": "ARS",
     "monto": 45730000,
     "version": "BASALT T200 DARK EDITION MY26, la versión más cara del Basalt en la «Lista de precios sugerida al público» de Stellantis Argentina de octubre de 2026 (vigencia "
+   },
+   {
+    "desde": "2026-11-01",
+    "moneda": "ARS",
+    "monto": 47110000,
+    "version": "BASALT T200 DARK EDITION MY27, la versión más cara del Basalt; el bitono es opcional; «Lista de precios sugerida al público» de Stellantis Argentina de noviembr"
    }
   ],
   "chevrolet-onix-plus-premier": [
@@ -1129,6 +1273,12 @@
     "moneda": "ARS",
     "monto": 39679900,
     "version": "Onix Plus Premier AT Turbo (1.0T Premier AT), la versión más cara del Onix Plus 2027; precio sugerido al público publicado en chevrolet.com.ar, válido del 01/10"
+   },
+   {
+    "desde": "2026-11-01",
+    "moneda": "ARS",
+    "monto": 40274900,
+    "version": "Onix Plus Premier AT Turbo (1.0T Premier AT), la versión más cara del Onix Plus 2027; precio sugerido al público publicado en chevrolet.com.ar, válido del 01/11"
    }
   ],
   "fiat-titano-ranch": [
@@ -1143,6 +1293,12 @@
     "moneda": "ARS",
     "monto": 75270000,
     "version": "Titano Ranch At 4X4, versión de la tabla; «Lista de precios sugerida al público» de Stellantis Argentina de 10/2026 (vigencia a partir del 01/10/2026): https://"
+   },
+   {
+    "desde": "2026-11-01",
+    "moneda": "ARS",
+    "monto": 72370000,
+    "version": "Titano Ranch AT 4X4, versión de la tabla; «Lista de precios sugerida al público» de Stellantis Argentina de noviembre de 2026 (vigencia a partir del 01/11/2026)"
    }
   ],
   "citroen-aircross-shine-7": [
@@ -1151,6 +1307,12 @@
     "moneda": "ARS",
     "monto": 50170000,
     "version": "AIRCROSS T200 SHINE 7 MY26.5, la versión más cara del Aircross en la «Lista de precios sugerida al público» de Stellantis Argentina de octubre de 2026 (vigencia"
+   },
+   {
+    "desde": "2026-11-01",
+    "moneda": "ARS",
+    "monto": 51680000,
+    "version": "AIRCROSS T200 SHINE 7 MY27, la versión más cara del Aircross; el bitono es opcional; «Lista de precios sugerida al público» de Stellantis Argentina de noviembre"
    }
   ],
   "toyota-sw4-gr-sport": [
@@ -1167,6 +1329,12 @@
     "moneda": "ARS",
     "monto": 49300000,
     "version": "Pulse Impetus 1.0T CVT (año modelo 2026; configurador: «IMPETUS T200 CVT», código 363BR21), la más cara de las versiones Fiat del Pulse; el Pulse Abarth ($50.21"
+   },
+   {
+    "desde": "2026-11-01",
+    "moneda": "ARS",
+    "monto": 50780000,
+    "version": "Pulse Impetus 1.0T CVT, la más cara de las versiones Fiat del Pulse (el Pulse Abarth, a $51.720.000, se vende como marca aparte); «Lista de precios sugerida al "
    }
   ],
   "nissan-kicks-exclusive": [
@@ -1183,6 +1351,12 @@
     "moneda": "ARS",
     "monto": 49013900,
     "version": "Montana RS Turbo AT (1.2T RS AT), la versión más cara de la gama. Precio sugerido al público publicado en chevrolet.com.ar, válido del 01/10/2026 al 31/10/2026"
+   },
+   {
+    "desde": "2026-11-01",
+    "moneda": "ARS",
+    "monto": 49503900,
+    "version": "Montana RS Turbo AT (1.2T RS AT), la versión más cara de la gama; precio sugerido al público publicado en chevrolet.com.ar, válido del 01/11/2026 al 30/11/2026 "
    }
   ],
   "hyundai-hb20-platinum-safety": [
@@ -1199,6 +1373,12 @@
     "moneda": "ARS",
     "monto": 54250000,
     "version": "Fastback Turbo 270 AT6 (año modelo 2026; configurador: «FASTBACK TURBO 270 AT6», código 376BM81), la única versión Fiat del Fastback; el Fastback Abarth ($55.75"
+   },
+   {
+    "desde": "2026-11-01",
+    "moneda": "ARS",
+    "monto": 55880000,
+    "version": "Fastback Turbo 270 AT, la única versión Fiat del Fastback (el Fastback Abarth, a $57.430.000, se vende como marca aparte); «Lista de precios sugerida al público"
    }
   ],
   "fiat-mobi-trekking": [
@@ -1207,6 +1387,12 @@
     "moneda": "ARS",
     "monto": 30280000,
     "version": "Mobi Trekking 1.0 MT5 (año modelo 2027), única versión que se vende. Precio sugerido al público de Fiat Argentina, del servicio de precios que consulta el confi"
+   },
+   {
+    "desde": "2026-11-01",
+    "moneda": "ARS",
+    "monto": 30440000,
+    "version": "Mobi Trekking 1.0 MT, única versión que se vende; «Lista de precios sugerida al público» de Stellantis Argentina de noviembre de 2026 (vigencia a partir del 01/"
    }
   ],
   "ram-dakota-laramie-night-edition": [
@@ -1215,6 +1401,12 @@
     "moneda": "ARS",
     "monto": 84410000,
     "version": "Dakota Laramie Night Edition 2.2 TD AT8 4x4, la versión más cara de la Dakota. ram.com.ar muestra «A consultar»: el valor sale del servicio de precios que usa e"
+   },
+   {
+    "desde": "2026-11-01",
+    "moneda": "ARS",
+    "monto": 86100000,
+    "version": "Dakota Laramie Night Edition AT 2.2 4X4, la versión más cara de la Dakota (precio sugerido de contado, flete bonificado, sin gastos administrativos ni patentami"
    }
   ],
   "ford-maverick-tremor": [
@@ -1263,6 +1455,12 @@
     "moneda": "ARS",
     "monto": 52890000,
     "version": "Iconic 1.3T MT6 4WD (en el sitio, versión «129»: 1.3L TCe Turbo, manual de 6 marchas, 4x4), la más cara de las tres. Precio sugerido al público con IVA que publ"
+   },
+   {
+    "desde": "2026-11-03",
+    "moneda": "ARS",
+    "monto": 53690000,
+    "version": "Iconic 1.3T MT6 4WD (en el sitio, versión «129»: 1.3L TCe Turbo, manual de 6 marchas, 4x4), la más cara de las tres. Precio sugerido al público con IVA que publ"
    }
   ],
   "kia-k3-cross-gt-line": [
@@ -1279,6 +1477,12 @@
     "moneda": "ARS",
     "monto": 43484900,
     "version": "Spin 1.8 Premier AT 7A, la versión más cara. El legal de financiación de chevrolet.com.ar, vigente del 01/10/2026 al 31/10/2026, da para esta versión «precio su"
+   },
+   {
+    "desde": "2026-11-01",
+    "moneda": "ARS",
+    "monto": 43919900,
+    "version": "Spin 1.8 Premier AT 7A, la versión más cara; precio sugerido al público publicado en chevrolet.com.ar, válido del 01/11/2026 al 30/11/2026 (gastos, flete y pate"
    }
   ],
   "renault-boreal-iconic": [
@@ -1286,6 +1490,12 @@
     "desde": null,
     "moneda": "ARS",
     "monto": 61200000,
+    "version": "Boreal iconic (1.3 TCe de 156 cv, doble embrague EDC de 6 marchas), la más cara de las tres versiones. Precio sugerido al público con IVA que publica renault.co"
+   },
+   {
+    "desde": "2026-11-03",
+    "moneda": "ARS",
+    "monto": 62120000,
     "version": "Boreal iconic (1.3 TCe de 156 cv, doble embrague EDC de 6 marchas), la más cara de las tres versiones. Precio sugerido al público con IVA que publica renault.co"
    }
   ],
@@ -1295,6 +1505,12 @@
     "moneda": "ARS",
     "monto": 40289100,
     "version": "Extreme CD MSI MT, la versión más cara de la Saveiro y la tope de la cabina doble (la carrocería que más se patenta: 1.023 de 1.698 inscripciones DNRPA ene-sep "
+   },
+   {
+    "desde": "2026-11-01",
+    "moneda": "ARS",
+    "monto": 40490550,
+    "version": "Extreme CD MSI MT, la versión más cara de la Saveiro y la tope de la cabina doble; lista de precios sugeridos a público de Volkswagen Argentina S.A. vigente del"
    }
   ],
   "nissan-kait-exclusive": [
@@ -1331,6 +1547,12 @@
     "moneda": "ARS",
     "monto": 58590000,
     "version": "Esprit Alpine, única versión. Precio sugerido al público con IVA que publica renault.com.ar al 28/10/2026 (tarifa 9714, aplicada desde el 02/10/2026); sin impue"
+   },
+   {
+    "desde": "2026-11-03",
+    "moneda": "ARS",
+    "monto": 59470000,
+    "version": "Esprit Alpine, única versión. Precio sugerido al público con IVA que publica renault.com.ar (tarifa 9729, aplicada desde el 03/11/2026)"
    }
   ],
   "renault-oroch-outsider-4wd": [
@@ -1347,6 +1569,12 @@
     "moneda": "ARS",
     "monto": 50890050,
     "version": "Exclusive 250TSI AT, la versión más cara del Virtus; lista de precios sugeridos a público por Volkswagen Argentina S.A. a sus concesionarios, vigente hasta el 3"
+   },
+   {
+    "desde": "2026-11-01",
+    "moneda": "ARS",
+    "monto": 51144500,
+    "version": "Exclusive 250TSI AT, la versión más cara del Virtus; lista de precios sugeridos a público de Volkswagen Argentina S.A. vigente del 01/11/2026 al 30/11/2026, IVA"
    }
   ],
   "renault-kangoo-stepway": [
@@ -1355,6 +1583,12 @@
     "moneda": "ARS",
     "monto": 47170000,
     "version": "Stepway 1.6 SCe, única versión de pasajeros que publica renault.com.ar (el furgón es la Kangoo Express, otra página). Precio sugerido al público con IVA al 28/1"
+   },
+   {
+    "desde": "2026-11-03",
+    "moneda": "ARS",
+    "monto": 47870000,
+    "version": "Stepway 1.6 SCe, única versión de pasajeros que publica renault.com.ar (el furgón es la Kangoo Express, otra página). Precio sugerido al público con IVA que pub"
    }
   ],
   "nissan-versa-exclusive": [
@@ -1377,6 +1611,12 @@
     "moneda": "ARS",
     "monto": 41584900,
     "version": "Sonic RS 1.0T AT, la versión más cara (la Premier cuesta $40.222.900). Precio sugerido al público publicado en chevrolet.com.ar, válido del 01/10/2026 al 31/10/"
+   },
+   {
+    "desde": "2026-11-01",
+    "moneda": "ARS",
+    "monto": 42624900,
+    "version": "Sonic RS 1.0T AT, la versión más cara; precio sugerido al público publicado en chevrolet.com.ar, válido del 01/11/2026 al 30/11/2026 (gastos, flete y patentamie"
    }
   ],
   "fiat-600-hybrid": [
@@ -1393,6 +1633,12 @@
     "moneda": "ARS",
     "monto": 158550000,
     "version": "F-150 Raptor 3.5L V6 4x4 Automática, la F-150 más cara (la Lariat Híbrida cuesta $132.880.000 y la Tremor $120.800.000); precio sugerido al público de Ford Arge"
+   },
+   {
+    "desde": "2026-11-01",
+    "moneda": "ARS",
+    "monto": 162225000,
+    "version": "F-150 Raptor 3.5L V6 4x4 Automática, la F-150 más cara; precio sugerido al público de Ford Argentina vigente del 01/11/2026 al 30/11/2026, IVA incluido (sin IVA"
    }
   ],
   "jeep-commander-blackhawk": [
@@ -1433,6 +1679,12 @@
     "moneda": "ARS",
     "monto": 85375250,
     "version": "R-Line 250TSI DSG, la versión más cara del Tiguan; lista de precios sugeridos a público por Volkswagen Argentina S.A. a sus concesionarios, vigente hasta el 31/"
+   },
+   {
+    "desde": "2026-11-01",
+    "moneda": "ARS",
+    "monto": 85802150,
+    "version": "R-Line 250TSI DSG, la versión más cara del Tiguan; lista de precios sugeridos a público de Volkswagen Argentina S.A. vigente del 01/11/2026 al 30/11/2026, IVA i"
    }
   ],
   "peugeot-3008-gt": [
@@ -1441,6 +1693,12 @@
     "moneda": "ARS",
     "monto": 81750000,
     "version": "NUEVO 3008 GT AM25, única versión del 3008 en la «Lista de precios sugerida al público» de Stellantis Argentina de octubre de 2026 (vigencia a partir del 01/10/"
+   },
+   {
+    "desde": "2026-11-01",
+    "moneda": "ARS",
+    "monto": 82650000,
+    "version": "NUEVO 3008 GT AM25, única versión del 3008; peugeot.com.ar no publica precios; «Lista de precios sugerida al público» de Stellantis Argentina de noviembre de 20"
    }
   ],
   "bmw-x3-m50-xdrive": [
@@ -1497,6 +1755,12 @@
     "moneda": "ARS",
     "monto": 57820000,
     "version": "2008 GT T200 AM27, lista de precios sugeridos al público de Stellantis para Peugeot de octubre de 2026 (vigente desde el 01/10/2026): https://www.media.stellant"
+   },
+   {
+    "desde": "2026-11-01",
+    "moneda": "ARS",
+    "monto": 59620000,
+    "version": "2008 GT T200 AM27; «Lista de precios sugerida al público» de Stellantis Argentina de noviembre de 2026 (vigencia a partir del 01/11/2026), publicada en media.st"
    }
   ],
   "mitsubishi-l200": [
@@ -1513,6 +1777,12 @@
     "moneda": "ARS",
     "monto": 116837900,
     "version": "High Country, la versión más cara de la Silverado 2026 (la Z71 Trail Boss cuesta $108.775.900). Precio sugerido al público publicado en chevrolet.com.ar, válido"
+   },
+   {
+    "desde": "2026-11-01",
+    "moneda": "ARS",
+    "monto": 118005900,
+    "version": "High Country, la versión más cara de la Silverado 2026; precio sugerido al público publicado en chevrolet.com.ar, válido del 01/11/2026 al 30/11/2026 (gastos, f"
    }
   ],
   "chevrolet-spark-euv": [
@@ -1521,6 +1791,12 @@
     "moneda": "ARS",
     "monto": 38460900,
     "version": "Spark EUV Activ, única versión; precio sugerido de lista de octubre 2026 (válido del 01/10 al 31/10/2026) en chevrolet.com.ar"
+   },
+   {
+    "desde": "2026-11-01",
+    "moneda": "ARS",
+    "monto": 39037900,
+    "version": "Spark EUV Activ, única versión; precio sugerido al público publicado en chevrolet.com.ar, válido del 01/11/2026 al 30/11/2026 (gastos, flete y patentamiento apa"
    }
   ],
   "chevrolet-trailblazer-high-country": [
@@ -1529,6 +1805,12 @@
     "moneda": "ARS",
     "monto": 82138900,
     "version": "High Country (TRAILBLAZER CTDI 4X4 HIGH COUNTRY AT), única versión. Precio sugerido publicado en chevrolet.com.ar, válido del 01/10/2026 al 31/10/2026."
+   },
+   {
+    "desde": "2026-11-01",
+    "moneda": "ARS",
+    "monto": 82959900,
+    "version": "High Country (TRAILBLAZER CTDI 4X4 HIGH COUNTRY AT), única versión; precio sugerido al público publicado en chevrolet.com.ar, válido del 01/11/2026 al 30/11/202"
    }
   ],
   "ford-mustang-dark-horse": [
@@ -1537,6 +1819,12 @@
     "moneda": "ARS",
     "monto": 128350000,
     "version": "Mustang Dark Horse 5.0L V8, la versión más cara (la GT Performance cuesta $113.250.000); precio sugerido al público de Ford Argentina vigente del 01/10/2026 al "
+   },
+   {
+    "desde": "2026-11-01",
+    "moneda": "ARS",
+    "monto": 131325000,
+    "version": "Mustang Dark Horse 5.0L V8, la versión más cara (la GT Performance cuesta $115.875.000); precio sugerido al público de Ford Argentina vigente del 01/11/2026 al "
    }
   ],
   "subaru-crosstrek-hybrid": [
@@ -1631,6 +1919,12 @@
     "moneda": "ARS",
     "monto": 78300000,
     "version": "Nuevo 408 GT AM26, única versión del 408 en la «Lista de precios sugerida al público» de Stellantis Argentina de octubre de 2026 (vigencia a partir del 01/10/20"
+   },
+   {
+    "desde": "2026-11-01",
+    "moneda": "ARS",
+    "monto": 79170000,
+    "version": "Nuevo 408 GT AM26, única versión del 408; «Lista de precios sugerida al público» de Stellantis Argentina de noviembre de 2026 (vigencia a partir del 01/11/2026)"
    }
   ],
   "ram-1500-laramie-night-edition": [
@@ -1687,6 +1981,12 @@
     "moneda": "ARS",
     "monto": 86250000,
     "version": "NUEVO 5008 GT AM25, única versión del 5008 en la «Lista de precios sugerida al público» de Stellantis Argentina de octubre de 2026 (vigencia a partir del 01/10/"
+   },
+   {
+    "desde": "2026-11-01",
+    "moneda": "ARS",
+    "monto": 87200000,
+    "version": "NUEVO 5008 GT AM25, única versión del 5008; peugeot.com.ar no publica el precio; «Lista de precios sugerida al público» de Stellantis Argentina de noviembre de "
    }
   ],
   "kia-k4-sedan-gt-line": [
@@ -1735,6 +2035,12 @@
     "moneda": "ARS",
     "monto": 66638000,
     "version": "Highline 200TSI AT, la versión más cara del T-Cross que muestran hoy la página del modelo y la ficha técnica MY27 (la Extreme 200TSI AT, a $68.312.850, sigue en"
+   },
+   {
+    "desde": "2026-11-01",
+    "moneda": "ARS",
+    "monto": 66971200,
+    "version": "Highline 200TSI AT, la versión más cara del T-Cross que muestran la página del modelo y la ficha técnica MY27 (la Extreme 200TSI AT sigue en la lista de precios"
    }
   ],
   "kia-tasman-x-pro-2-5-tgdi": [
@@ -1817,6 +2123,12 @@
     "moneda": "ARS",
     "monto": 68312850,
     "version": "Extreme 200TSI AT, la versión más cara del T-Cross en la lista de precios sugeridos a público por Volkswagen Argentina S.A. a sus concesionarios, vigente hasta "
+   },
+   {
+    "desde": "2026-11-01",
+    "moneda": "ARS",
+    "monto": 68654400,
+    "version": "Extreme 200TSI AT, la versión más cara del T-Cross en la lista; lista de precios sugeridos a público de Volkswagen Argentina S.A. vigente del 01/11/2026 al 30/1"
    }
   ],
   "toyota-gr-yaris-at": [
@@ -1839,6 +2151,12 @@
     "moneda": "ARS",
     "monto": 59320000,
     "version": "Hybrid Max, versión de la tabla; «Lista de precios sugerida al público» de Stellantis Argentina de 10/2026 (vigencia a partir del 01/10/2026): https://www.media"
+   },
+   {
+    "desde": "2026-11-01",
+    "moneda": "ARS",
+    "monto": 59980000,
+    "version": "C4 HYBRID MAX, versión de la tabla; «Lista de precios sugerida al público» de Stellantis Argentina de noviembre de 2026 (vigencia a partir del 01/11/2026), publ"
    }
   ],
   "citroen-c5-aircross-max": [
@@ -1847,6 +2165,12 @@
     "moneda": "ARS",
     "monto": 64730000,
     "version": "Aircross Max, versión de la tabla; «Lista de precios sugerida al público» de Stellantis Argentina de 10/2026 (vigencia a partir del 01/10/2026): https://www.med"
+   },
+   {
+    "desde": "2026-11-01",
+    "moneda": "ARS",
+    "monto": 65450000,
+    "version": "C5 AIRCROSS MAX, versión de la tabla; «Lista de precios sugerida al público» de Stellantis Argentina de noviembre de 2026 (vigencia a partir del 01/11/2026), pu"
    }
   ],
   "audi-s3-sportback": [
